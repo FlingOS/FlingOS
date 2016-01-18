@@ -51,9 +51,6 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         public override void Enable()
         {
-            //TODO: Looks like this comment is out of date?
-            //We wouldn't want to accidentally add the IRQ handler multiple times
-            //  because then any one scancode would be processed multiple times!
             if (!enabled)
             {
                 DeviceManager.AddDevice(this);
@@ -67,10 +64,9 @@ namespace Kernel.Hardware.Keyboards
         {
             if (enabled)
             {
-                DeviceManager.Devices.Remove(this);
-                //TODO: Looks like this comment is out of date?
-                //As per requirements, set temp sote store of id to 0 to prevent
-                //  accidental multiple removal.
+                //TODO: This should be done through a DeviceManager.Remove function.
+                //TODO: This needs un-commenting and fixing
+                //DeviceManager.Devices.Remove(this);
                 enabled = false;
             }
         }

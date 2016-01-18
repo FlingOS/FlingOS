@@ -47,10 +47,8 @@ namespace Kernel.Tasks
         private static Queue DeferredSyscallsInfo_Queued;
 
         private static Thread DeferredSyscallsThread;
-
-        private static Pipes.Standard.StandardOutpoint StdOut;
         
-        private static uint WindowManagerTask_ProcessId;
+        public static uint WindowManagerTask_ProcessId;
 
         private static Hardware.Keyboards.VirtualKeyboard keyboard;
         private static Consoles.VirtualConsole console;
@@ -270,7 +268,7 @@ namespace Kernel.Tasks
 
                     BasicConsole.WriteLine("KT > Creating main shell...");
                     Shells.MainShell shell = new Shells.MainShell(console, keyboard);
-                                        
+                    
                     BasicConsole.WriteLine("KT > Running...");
 
                     uint loops = 0;
@@ -661,7 +659,7 @@ namespace Kernel.Tasks
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcessId, uint callerThreadId)
         {
-            SystemCallResults result = HandleSystemCallForKernel(syscallNumber, 
+            SystemCallResults result = HandleSystemCall(syscallNumber, 
                 param1, param2, param3, 
                 ref Return2, ref Return3, ref Return4,
                 callerProcessId, callerThreadId);
@@ -701,7 +699,7 @@ namespace Kernel.Tasks
         /// <remarks>
         /// Executes within the interrupt handler. Usual restrictions apply.
         /// </remarks>
-        public static SystemCallResults HandleSystemCallForKernel(uint syscallNumber,
+        public static SystemCallResults HandleSystemCall(uint syscallNumber,
             uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcesId, uint callerThreadId)
@@ -842,7 +840,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Receive message");
 #endif
-                    Tasks.KernelTask.ReceiveMessage(callerProcesId, param1, param2);
+                    ReceiveMessage(callerProcesId, param1, param2);
                     break;
                 //#if SYSCALLS_TRACE
                 default:

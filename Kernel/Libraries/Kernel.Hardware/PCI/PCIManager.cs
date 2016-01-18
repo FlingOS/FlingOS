@@ -36,7 +36,7 @@ namespace Kernel.Hardware.PCI
     /// <summary>
     /// Provides methods for managing PCI access.
     /// </summary>
-    public static class PCI
+    public static class PCIManager
     {
         /// <summary>
         /// The configuration address port.

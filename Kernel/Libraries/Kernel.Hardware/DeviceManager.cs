@@ -43,15 +43,24 @@ namespace Kernel.Hardware
         /// Some items may be more specific instances of a device so duplicate references to one physical device may 
         /// exist. For example, a PCIDevice instance and a EHCI instance would both exist for one physical EHCI device.
         /// </remarks>
-        public static List Devices = new List(20);
+        public static List Devices;
 
-        public static List DeviceAddedListeners = new List();
+        public static List DeviceAddedListeners;
+
+        public static void Init()
+        {
+            Devices = new List(20);
+            DeviceAddedListeners = new List();
+        }
 
         public static void AddDevice(Device aDevice)
         {
-            Devices.Add(aDevice);
+            if (Devices != null)
+            {
+                Devices.Add(aDevice);
 
-            NotifyDevicesNeedUpdate();
+                NotifyDevicesNeedUpdate();
+            }
         }
         public static void AddDeviceAddedListener(DeviceAddedHandler aHandler, FOS_System.Object aState)
         {
@@ -64,11 +73,12 @@ namespace Kernel.Hardware
 
         public static void NotifyDevicesNeedUpdate()
         {
-            if (Tasks.DeviceManagerTask.OwnerThread != null)
-            {
-                Tasks.DeviceManagerTask.Awake = true;
-                Tasks.DeviceManagerTask.OwnerThread._Wake();
-            }
+            //TODO
+            //if (Tasks.DeviceManagerTask.OwnerThread != null)
+            //{
+            //    Tasks.DeviceManagerTask.Awake = true;
+            //    Tasks.DeviceManagerTask.OwnerThread._Wake();
+            //}
         }
 
         public static void UpdateDevices()

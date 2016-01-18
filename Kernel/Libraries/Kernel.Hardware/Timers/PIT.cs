@@ -395,7 +395,11 @@ namespace Kernel.Hardware.Timers
                 //Ignore the process state for timer interrupts. Timer interrupts occur so frequently
                 //  that to continually switch state would be massively inefficient. Also, switching
                 //  state isn't necessary for the handlers queued in the timer.
-                DeviceManager.AddDevice(this);
+
+                //TODO: Should PIT remain as part of KernelTask or be transferred to DeviceManagerTask?
+                //DeviceManager.AddDevice(this);
+
+
                 enabled = true;
                 
                 T0RateGen = true;
@@ -411,7 +415,9 @@ namespace Kernel.Hardware.Timers
         {
             if (enabled)
             {
-                DeviceManager.Devices.Remove(this);
+                //TODO: This should be done through a DeviceManager.Remove function.
+                //TODO: This needs un-commenting and fixing
+                //DeviceManager.Devices.Remove(this);
                 //As per requirements, set temp sote store of id to 0 to prevent
                 //  accidental multiple removal.
                 InterruptHandlerId = 0;

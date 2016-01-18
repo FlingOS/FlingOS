@@ -82,5 +82,27 @@ namespace Kernel.Pipes.Standard
             byte[] data = ByteConverter.GetASCIIBytes(Message);
             base.Write(PipeId, data, 0, data.Length, Blocking);
         }
+
+        /// <summary>
+        /// Writes a message to the pipe followed by a new line character.
+        /// </summary>
+        /// <param name="PipeId">The Id of the pipe to write to.</param>
+        /// <param name="Message">The message to write.</param>
+        /// <param name="Blocking">Whether the write call should be blocking or not.</param>
+        /// <remarks>
+        /// <para>
+        /// Id required since an outpoint can be connected to multiple pipes.
+        /// </para>
+        /// <para>
+        /// Treats the message as ASCII. In future, may want to make this UTF16 (two bytes, Unicode).
+        /// </para>
+        /// </remarks>
+        public unsafe void WriteLine(int PipeId, FOS_System.String Message, bool Blocking)
+        {
+            byte[] data = ByteConverter.GetASCIIBytes(Message);
+            base.Write(PipeId, data, 0, data.Length, Blocking);
+            data[0] = (byte)'\n';
+            base.Write(PipeId, data, 0, 1, Blocking);
+        }
     }
 }

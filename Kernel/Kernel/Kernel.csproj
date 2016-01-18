@@ -115,6 +115,7 @@
     <Compile Include="Processes\ELF\ELFStringTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell.cs" />
+    <Compile Include="Shells\DeviceShell.cs" />
     <Compile Include="Shells\MainShell.cs" />
     <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\EasterTask.cs" />

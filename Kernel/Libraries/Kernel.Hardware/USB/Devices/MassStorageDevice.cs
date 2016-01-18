@@ -1665,7 +1665,9 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public void Destroy()
         {
-            DeviceManager.Devices.Remove(this);
+            //TODO: This should be done through a DeviceManager.Remove function.
+            //TODO: This needs un-commenting and fixing
+            //DeviceManager.Devices.Remove(this);
             msd = null;
         }
     }

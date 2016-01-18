@@ -114,9 +114,9 @@ namespace Kernel.Hardware.USB
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
-            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
+            for (int i = 0; i < PCI.PCIManager.Devices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
+                PCIDevice aDevice = (PCIDevice)(PCI.PCIManager.Devices[i]);
                 //0x0C = Serial bus controllers
                 if (aDevice.ClassCode == 0x0C)
                 {
@@ -151,9 +151,9 @@ namespace Kernel.Hardware.USB
                     }
                 }
             }
-            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
+            for (int i = 0; i < PCI.PCIManager.Devices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
+                PCIDevice aDevice = (PCIDevice)(PCI.PCIManager.Devices[i]);
                 //0x0C = Serial bus controllers
                 if (aDevice.ClassCode == 0x0C)
                 {
@@ -193,9 +193,9 @@ namespace Kernel.Hardware.USB
                     }
                 }
             }
-            for (int i = 0; i < PCI.PCI.Devices.Count; i++)
+            for (int i = 0; i < PCI.PCIManager.Devices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)(PCI.PCI.Devices[i]);
+                PCIDevice aDevice = (PCIDevice)(PCI.PCIManager.Devices[i]);
                 //0x0C = Serial bus controllers
                 if (aDevice.ClassCode == 0x0C)
                 {

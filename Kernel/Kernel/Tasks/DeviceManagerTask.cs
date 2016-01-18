@@ -27,6 +27,8 @@
 using System;
 using Kernel.FOS_System;
 using Kernel.Processes;
+using Kernel.Hardware;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Tasks
 {
@@ -35,9 +37,9 @@ namespace Kernel.Tasks
         public static bool Terminating = false;
 
         private static uint GCThreadId;
-
-        private static Pipes.Standard.StandardOutpoint StdOut;
-        //private static Pipes.Standard.StandardInpoint StdIn;
+        
+        private static Hardware.Keyboards.VirtualKeyboard keyboard;
+        private static Consoles.VirtualConsole console;
 
         public static void Main()
         {
@@ -52,38 +54,34 @@ namespace Kernel.Tasks
 
             try
             {
-                StdOut = new Pipes.Standard.StandardOutpoint(true);
-                int StdOutPipeId = StdOut.WaitForConnect();
+                BasicConsole.WriteLine("DM > Creating virtual keyboard...");
+                keyboard = new Hardware.Keyboards.VirtualKeyboard();
 
-                //int numOutpoints;
-                //Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
-                //if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
-                //{
-                //    Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
-                //    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_In);
-                //
-                //    if (SysCallResult == SystemCallResults.OK)
-                //    {
-                //        for (int i = 0; i < OutpointDescriptors.Length; i++)
-                //        {
-                //            Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
-                //            //TODO: Filter to target
-                //            StdIn = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, false);
-                //        }
-                //    }
-                //}
+                BasicConsole.WriteLine("DM > Registering for Receive Message syscall...");
+                SystemCalls.RegisterSyscallHandler(SystemCallNumbers.ReceiveMessage, SyscallHandler);
+
+                BasicConsole.WriteLine("DM > Creating virtual console...");
+                console = new Consoles.VirtualConsole();
+
+                BasicConsole.WriteLine("DM > Connecting virtual console...");
+                console.Connect();
+
+                BasicConsole.WriteLine("DM > Creating device shell...");
+                Shells.DeviceShell shell = new Shells.DeviceShell(console, keyboard);
+
+                BasicConsole.WriteLine("DM > Executing.");
 
                 uint loops = 0;
                 while (!Terminating)
                 {
                     try
                     {
-                        StdOut.Write(StdOutPipeId, "DM > Hello, world! (" + (FOS_System.String)loops++ + ")\n", true);
-                        SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+                        shell.Execute();
+                        //TODO: DeviceManager.UpdateDevices();
                     }
                     catch
                     {
-                        BasicConsole.WriteLine("DM > Error writing to StdOut!");
+                        BasicConsole.WriteLine("DM > Error executing shell!");
                         BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                     }
 
@@ -94,6 +92,72 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("DM > Error initialising!");
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            }
+        }
+
+        public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
+            ref uint Return2, ref uint Return3, ref uint Return4,
+            uint callerProcessId, uint callerThreadId)
+        {
+            SystemCallResults result = HandleSystemCall(syscallNumber,
+                param1, param2, param3,
+                ref Return2, ref Return3, ref Return4,
+                callerProcessId, callerThreadId);
+
+            return (int)result;
+        }
+
+        /// <summary>
+        /// Special handler method for system calls recognised/handlded by the task.
+        /// </summary>
+        /// <param name="syscallNumber">The system call number that has been invoked.</param>
+        /// <param name="param1">The value of the first parameter.</param>
+        /// <param name="param2">The value of the second parameter.</param>
+        /// <param name="param3">The value of the third parameter.</param>
+        /// <param name="Return2">Reference to the second return value.</param>
+        /// <param name="Return3">Reference to the third return value.</param>
+        /// <param name="Return4">Reference to the fourth return value.</param>
+        /// <param name="callerProcesId">The Id of the process which invoked the system call.</param>
+        /// <param name="callerThreadId">The Id of the thread which invoked the system call.</param>
+        /// <returns>A system call result indicating what has occurred and what should occur next.</returns>
+        /// <remarks>
+        /// Executes within the interrupt handler. Usual restrictions apply.
+        /// </remarks>
+        public static SystemCallResults HandleSystemCall(uint syscallNumber,
+            uint param1, uint param2, uint param3,
+            ref uint Return2, ref uint Return3, ref uint Return4,
+            uint callerProcesId, uint callerThreadId)
+        {
+            SystemCallResults result = SystemCallResults.Unhandled;
+
+            switch ((SystemCallNumbers)syscallNumber)
+            {
+                case SystemCallNumbers.ReceiveMessage:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("DM > Syscall: Receive message");
+#endif
+                    ReceiveMessage(callerProcesId, param1, param2);
+                    break;
+                default:
+                    BasicConsole.WriteLine("System call unrecognised/unhandled by Device Manager Task.");
+                    break;
+            }
+
+            return result;
+        }
+
+        public static void ReceiveMessage(uint CallerProcessId, uint Message1, uint Message2)
+        {
+            if (CallerProcessId == KernelTask.WindowManagerTask_ProcessId)
+            {
+                ReceiveKey(Message1);
+            }
+        }
+        public static void ReceiveKey(uint ScanCode)
+        {
+            if (keyboard != null)
+            {
+                keyboard.HandleScancode(ScanCode);
             }
         }
     }

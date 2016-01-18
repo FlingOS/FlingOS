@@ -52,7 +52,9 @@ namespace Kernel.Hardware.Keyboards
         {
             if (enabled)
             {
-                DeviceManager.Devices.Remove(this);
+                //TODO: This should be done through a DeviceManager.Remove function.
+                //TODO: This needs un-commenting and fixing
+                //DeviceManager.Devices.Remove(this);
                 enabled = false;
             }
         }
@@ -109,6 +111,5 @@ namespace Kernel.Hardware.Keyboards
                     }
             }
         }
-
     }
 }

@@ -107,20 +107,5 @@ namespace Kernel
         {
             console.WriteLine("--------------------------------------------------------");
         }
-
-        /// <summary>
-        /// The default shell for the core kernel.
-        /// </summary>
-        public static Shell Default;
-        /// <summary>
-        /// Initialises the default shell.
-        /// </summary>
-        public static void InitDefault()
-        {
-            if (Default == null)
-            {
-                Default = new Shells.MainShell();
-            }
-        }
     }
 }

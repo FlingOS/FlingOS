@@ -129,7 +129,6 @@
     <Compile Include="Processes\SystemCalls_Enums.cs" />
     <Compile Include="Processes\SystemCalls_Handlers.cs" />
     <Compile Include="Processes\Thread.cs" />
-    <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\PlayNotesTask.cs" />
     <Compile Include="IO\IOPort.cs" />
     <Compile Include="Devices\Keyboard.cs" />
@@ -141,7 +140,7 @@
     <Compile Include="Testing\USB\Tests_USB_RW.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="VirtMemManager.cs" />
-    <Compile Include="PCI\PCI.cs" />
+    <Compile Include="PCI\PCIManager.cs" />
     <Compile Include="PCI\PCIBaseAddress.cs" />
     <Compile Include="PCI\PCIDevice.cs" />
     <Compile Include="PCI\PCIDeviceBridge.cs" />

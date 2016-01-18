@@ -25,8 +25,7 @@
 #endregion
     
 //#define PERIODIC_REBOOT
-   
-using System;
+
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
@@ -60,7 +59,7 @@ namespace Kernel.Shells
         {
             try
             {
-                Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
+                //Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
 
                 try
                 {
@@ -187,29 +186,7 @@ namespace Kernel.Shells
                                     if (opt1 == "all")
                                     {
                                         //Initialise all sub-systems in order
-                                        InitATA();
-                                        InitPCI();
-                                        InitUSB();
                                         InitFS();
-                                    }
-                                    else if (opt1 == "pci")
-                                    {
-                                        //Initialise the PCI sub-system
-                                        InitPCI();
-                                    }
-                                    else if (opt1 == "ata")
-                                    {
-                                        //Initialise the ATA sub-system
-                                        InitATA();
-                                    }
-                                    else if (opt1 == "usb")
-                                    {
-                                        //Initialise the USB sub-system
-                                        //  This is dependent upon the PCI sub-system
-                                        //  but we assume the user was intelligent 
-                                        //  enough to have already initialised PCI. 
-                                        //  (Probably a bad assumption really... ;p )
-                                        InitUSB();
                                     }
                                     else if (opt1 == "fs")
                                     {
@@ -243,19 +220,7 @@ namespace Kernel.Shells
 
                                 if (opt1 != null)
                                 {
-                                    if (opt1 == "pci")
-                                    {
-                                        OutputPCI();
-                                    }
-                                    else if (opt1 == "ata")
-                                    {
-                                        OutputATA();
-                                    }
-                                    else if (opt1 == "usb")
-                                    {
-                                        OutputUSB();
-                                    }
-                                    else if (opt1 == "fs")
+                                    if (opt1 == "fs")
                                     {
                                         OutputFS();
                                     }
@@ -1037,7 +1002,7 @@ namespace Kernel.Shells
                 //  We do not know what the code outside this shell may do.
                 Processes.SystemCalls.SleepThread(1000);
             }
-            console.WriteLine("Shell exited.");
+            console.WriteLine("Main shell exited.");
         }
 
         /// <summary>
@@ -1829,231 +1794,6 @@ which should have been provided with the executable.");
                 console.WriteLine("    - Prefix: " + fsMapping.Prefix);
             }
         }
-        /// <summary>
-        /// Outputs the USB system information.
-        /// </summary>
-        private void OutputUSB()
-        {
-            console.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + Hardware.USB.USBManager.HCIDevices.Count);
-            console.WriteLine(((FOS_System.String)"                              UHCIs : ") + Hardware.USB.USBManager.NumUHCIDevices);
-            console.WriteLine(((FOS_System.String)"                              OHCIs : ") + Hardware.USB.USBManager.NumOHCIDevices);
-            console.WriteLine(((FOS_System.String)"                              EHCIs : ") + Hardware.USB.USBManager.NumEHCIDevices);
-            console.WriteLine(((FOS_System.String)"                              xHCIs : ") + Hardware.USB.USBManager.NumxHCIDevices);
-            console.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.Devices.Count);
-
-            int numDrives = 0;
-            for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
-            {
-                Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-
-                if (aDevice is Hardware.USB.HCIs.HCI)
-                {
-                    Hardware.USB.HCIs.HCI hciDevice = (Hardware.USB.HCIs.HCI)aDevice;
-                    console.WriteLine();
-
-                    console.Write("--------------------- HCI ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-
-                    FOS_System.String statusText = "";
-                    switch (hciDevice.Status)
-                    {
-                        case Hardware.USB.HCIs.HCI.HCIStatus.Dead:
-                            statusText = "Dead";
-                            break;
-                        case Hardware.USB.HCIs.HCI.HCIStatus.Unset:
-                            statusText = "Unset";
-                            break;
-                        case Hardware.USB.HCIs.HCI.HCIStatus.Active:
-                            statusText = "Active";
-                            break;
-                        default:
-                            statusText = "Uncreognised (was a new status type added?)";
-                            break;
-                    }
-                    console.WriteLine("Status: " + statusText);
-                }
-                else if (aDevice is Hardware.USB.Devices.USBDevice)
-                {
-                    Hardware.USB.Devices.USBDevice usbDevice = (Hardware.USB.Devices.USBDevice)aDevice;
-                    Hardware.USB.Devices.USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
-                    console.WriteLine();
-
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-
-                    if (aDevice is Hardware.USB.Devices.MassStorageDevice)
-                    {
-                        console.WriteLine("USB Mass Storage Device found.");
-                        Hardware.USB.Devices.MassStorageDevice theMSD = (Hardware.USB.Devices.MassStorageDevice)usbDevice;
-                        Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
-
-                        console.Write("Disk device num: ");
-                        console.WriteLine_AsDecimal(Hardware.DeviceManager.Devices.IndexOf(theMSDDisk));
-                        console.WriteLine(((FOS_System.String)"Block Size: ") + theMSDDisk.BlockSize + " bytes");
-                        console.WriteLine(((FOS_System.String)"Block Count: ") + theMSDDisk.BlockCount);
-                        console.WriteLine(((FOS_System.String)"Size: ") + ((theMSDDisk.BlockCount * theMSDDisk.BlockSize) >> 20) + " MB");
-
-                        numDrives++;
-                    }
-                    else
-                    {
-                        console.WriteLine("Unrecognised USB device found.");
-                    }
-
-                    console.WriteLine();
-
-                    if (usbDeviceInfo.usbSpec == 0x0100 || usbDeviceInfo.usbSpec == 0x0110 || usbDeviceInfo.usbSpec == 0x0200 || usbDeviceInfo.usbSpec == 0x0201 || usbDeviceInfo.usbSpec == 0x0210 || usbDeviceInfo.usbSpec == 0x0213 || usbDeviceInfo.usbSpec == 0x0300)
-                    {
-                        console.Write("USB ");
-                        console.Write_AsDecimal((usbDeviceInfo.usbSpec >> 8) & 0xFF);
-                        console.Write(".");
-                        console.WriteLine_AsDecimal(usbDeviceInfo.usbSpec & 0xFF);
-                    }
-                    else
-                    {
-                        console.ErrorColour();
-                        console.Write("Invalid USB version ");
-                        console.Write_AsDecimal((usbDeviceInfo.usbSpec >> 8) & 0xFF);
-                        console.Write(".");
-                        console.WriteLine_AsDecimal(usbDeviceInfo.usbSpec & 0xFF);
-                        console.DefaultColour();
-                    }
-
-                    if (usbDeviceInfo.usbClass == 0x09)
-                    {
-                        switch (usbDeviceInfo.usbProtocol)
-                        {
-                            case 0:
-                                console.WriteLine(" - Full speed USB hub");
-                                break;
-                            case 1:
-                                console.WriteLine(" - Hi-speed USB hub with single TT");
-                                break;
-                            case 2:
-                                console.WriteLine(" - Hi-speed USB hub with multiple TTs");
-                                break;
-                        }
-                    }
-
-                    console.Write("Endpoint 0 mps: ");
-                    console.Write_AsDecimal(((Hardware.USB.Endpoint)usbDeviceInfo.Endpoints[0]).MPS);
-                    console.WriteLine(" byte.");
-                    console.Write("Vendor:            ");
-                    console.WriteLine(usbDeviceInfo.vendor);
-                    console.Write("Product:           ");
-                    console.WriteLine(usbDeviceInfo.product);
-                    console.Write("Release number:    ");
-                    console.Write_AsDecimal((usbDeviceInfo.releaseNumber >> 8) & 0xFF);
-                    console.Write(".");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.releaseNumber & 0xFF);
-                    console.Write("Manufacturer:      ");
-                    console.WriteLine(usbDeviceInfo.ManufacturerString.Value);
-                    console.Write("Product:           ");
-                    console.WriteLine(usbDeviceInfo.ProductString.Value);
-                    console.Write("Serial number:     ");
-                    console.WriteLine(usbDeviceInfo.SerialNumberString.Value);
-                    console.Write("Number of config.: ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.numConfigurations); // number of possible configurations
-                    console.Write("MSDInterfaceNum:   ");
-                    console.WriteLine_AsDecimal(usbDeviceInfo.MSD_InterfaceNum);
-                    Hardware.Devices.Timer.Default.Wait(1000);
-                }
-            }
-        }
-        /// <summary>
-        /// Outputs the ATA system information.
-        /// </summary>
-        private void OutputATA()
-        {
-            int numDrives = 0;
-            for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
-            {
-                Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice is Hardware.ATA.PATA)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: PATA");
-                    
-                    Hardware.ATA.PATA theATA = (Hardware.ATA.PATA)aDevice;
-                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
-
-                    numDrives++;
-                }
-                else if (aDevice is Hardware.ATA.PATAPI)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: PATAPI");
-                    console.WriteLine("Warning: Read-only support.");
-
-                    Hardware.ATA.PATAPI theATA = (Hardware.ATA.PATAPI)aDevice;
-                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
-                }
-                else if (aDevice is Hardware.ATA.SATA)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: SATA");
-                    console.WriteLine("Warning: This disk device type is not supported.");
-                }
-                else if (aDevice is Hardware.ATA.SATAPI)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: SATAPI");
-                    console.WriteLine("Warning: This disk device type is not supported.");
-                }
-            }
-
-            console.Write("Total # of drives: ");
-            console.WriteLine_AsDecimal(numDrives);
-        }
-        /// <summary>
-        /// Outputs the PCI system information.
-        /// </summary>
-        private void OutputPCI()
-        {
-            for (int i = 0; i < Hardware.PCI.PCI.Devices.Count; i++)
-            {
-                Hardware.PCI.PCIDevice aDevice = (Hardware.PCI.PCIDevice)Hardware.PCI.PCI.Devices[i];
-                console.WriteLine(Hardware.PCI.PCIDevice.DeviceClassInfo.GetString(aDevice));
-                console.Write(" - Address: ");
-                console.Write(aDevice.bus);
-                console.Write(":");
-                console.Write(aDevice.slot);
-                console.Write(":");
-                console.WriteLine(aDevice.function);
-
-                console.Write(" - Vendor Id: ");
-                console.WriteLine(aDevice.VendorID);
-
-                console.Write(" - Device Id: ");
-                console.WriteLine(aDevice.DeviceID);
-            }
-        }
 
         /// <summary>
         /// Initialises the file systems.
@@ -2062,33 +1802,6 @@ which should have been provided with the executable.");
         {
             console.Write("Initialising file systems...");
             FileSystemManager.Init();
-            console.WriteLine("done.");
-        }
-        /// <summary>
-        /// Initialises the USB system.
-        /// </summary>
-        private void InitUSB()
-        {
-            console.Write("Initialising USB...");
-            Hardware.USB.USBManager.Init();
-            console.WriteLine("done.");
-        }
-        /// <summary>
-        /// Initialises the ATA system.
-        /// </summary>
-        private void InitATA()
-        {
-            console.Write("Initialising ATA...");
-            Hardware.ATA.ATAManager.Init();
-            console.WriteLine("done.");
-        }
-        /// <summary>
-        /// Initialises the PCI system.
-        /// </summary>
-        private void InitPCI()
-        {
-            console.Write("Initialising PCI...");
-            Hardware.PCI.PCI.Init();
             console.WriteLine("done.");
         }
 

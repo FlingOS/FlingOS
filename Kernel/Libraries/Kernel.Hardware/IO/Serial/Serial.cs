@@ -277,7 +277,6 @@ namespace Kernel.Hardware.IO.Serial
             if (COM1 == null)
             {
                 COM1 = new Serial(COMPorts.COM1, DataBits._8, ParityBits.None, StopBits.One, BaudRates._115200, Interrupts.None);
-                DeviceManager.AddDevice(COM1);
             }
         }
         public static Serial COM2;
@@ -286,7 +285,6 @@ namespace Kernel.Hardware.IO.Serial
             if (COM2 == null)
             {
                 COM2 = new Serial(COMPorts.COM2, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200, Interrupts.None);
-                DeviceManager.AddDevice(COM2);
             }
         }
         public static Serial COM3;
@@ -295,7 +293,6 @@ namespace Kernel.Hardware.IO.Serial
             if (COM3 == null)
             {
                 COM3 = new Serial(COMPorts.COM3, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200, Interrupts.None);
-                DeviceManager.AddDevice(COM3);
             }
         }
     }

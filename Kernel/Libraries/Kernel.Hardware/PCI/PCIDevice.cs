@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PCI_IO = Kernel.Hardware.PCI.PCI;
+using PCI_IO = Kernel.Hardware.PCI.PCIManager;
 
 namespace Kernel.Hardware.PCI
 {
