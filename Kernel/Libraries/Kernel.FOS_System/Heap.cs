@@ -61,6 +61,8 @@ namespace Kernel.FOS_System
         /// Used for optimisation.
         /// </summary>
         public UInt32 lfb;
+
+        public bool expanding;
     }
 
     /// <summary>
@@ -68,6 +70,9 @@ namespace Kernel.FOS_System
     /// </summary>
     public static unsafe class Heap
     {
+        public delegate bool ExpandHeapDelegate(uint ExtraSize);
+        public static ExpandHeapDelegate ExpandHeap = null;
+
         public static bool PreventAllocation = false;
         public static FOS_System.String PreventReason = "[NONE]";
 
@@ -303,6 +308,7 @@ namespace Kernel.FOS_System
             
             b->size = size - (UInt32)sizeof(HeapBlock);
             b->bsize = bsize;
+            b->expanding = false;
 
             bcnt = size / bsize;
             byte* bm = (byte*)&b[1];
@@ -335,12 +341,18 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static int AddBlock(HeapBlock* b)
         {
-            EnterCritical("AddBlock");
+            if (!fblock->expanding)
+            {
+                EnterCritical("AddBlock");
+            }
 
             b->next = fblock;
             fblock = b;
 
-            ExitCritical();
+            if (!fblock->expanding)
+            {
+                ExitCritical();
+            }
 
             return 1;
         }
@@ -467,84 +479,117 @@ namespace Kernel.FOS_System
             }
 
             EnterCritical("Alloc");
+            
+            int retry = 1;
 
-            HeapBlock* b;
-            byte* bm;
-            UInt32 bcnt;
-            UInt32 x, y, z;
-            UInt32 bneed;
-            byte nid;
-
-            if (boundary > 1)
+            do
             {
-                size += (boundary - 1);
-            }
+                HeapBlock* b;
+                byte* bm;
+                UInt32 bcnt;
+                UInt32 x, y, z;
+                UInt32 bneed;
+                byte nid;
 
-            /* iterate blocks */
-            for (b = fblock; (UInt32)b != 0; b = b->next)
-            {
-                /* check if block has enough room */
-                if (b->size - (b->used * b->bsize) >= size)
+                if (boundary > 1)
                 {
+                    size += (boundary - 1);
+                }
 
-                    bcnt = b->size / b->bsize;
-                    bneed = (size / b->bsize) * b->bsize < size ? size / b->bsize + 1 : size / b->bsize;
-                    bm = (byte*)&b[1];
-
-                    for (x = (b->lfb + 1 >= bcnt ? 0 : b->lfb + 1); x != b->lfb; ++x)
+                /* iterate blocks */
+                for (b = fblock; (UInt32)b != 0; b = b->next)
+                {
+                    /* check if block has enough room */
+                    if (b->size - (b->used * b->bsize) >= size)
                     {
-                        /* just wrap around */
-                        if (x >= bcnt)
-                        {
-                            x = 0;
-                        }
 
-                        if (bm[x] == 0)
-                        {
-                            /* count free blocks */
-                            for (y = 0; bm[x + y] == 0 && y < bneed && (x + y) < bcnt; ++y) ;
+                        bcnt = b->size / b->bsize;
+                        bneed = (size / b->bsize) * b->bsize < size ? size / b->bsize + 1 : size / b->bsize;
+                        bm = (byte*)&b[1];
 
-                            /* we have enough, now allocate them */
-                            if (y == bneed)
+                        for (x = (b->lfb + 1 >= bcnt ? 0 : b->lfb + 1); x != b->lfb; ++x)
+                        {
+                            /* just wrap around */
+                            if (x >= bcnt)
                             {
-                                /* find ID that does not match left or right */
-                                nid = GetNID(bm[x - 1], bm[x + y]);
-
-                                /* allocate by setting id */
-                                for (z = 0; z < y; ++z)
-                                {
-                                    bm[x + z] = nid;
-                                }
-
-                                /* optimization */
-                                b->lfb = (x + bneed) - 2;
-
-                                /* count used blocks NOT bytes */
-                                b->used += y;
-
-                                void* result = (void*)(x * b->bsize + (UInt32)(&b[1]));
-                                if (boundary > 1)
-                                {
-                                    result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
-
-//#if HEAP_TRACE
-//                                    ExitCritical();
-//                                    BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
-//                                    EnterCritical("Alloc:Boundary condition");
-//#endif
-                                }
-
-                                ExitCritical();
-                                return result;
+                                x = 0;
                             }
 
-                            /* x will be incremented by one ONCE more in our FOR loop */
-                            x += (y - 1);
-                            continue;
+                            if (bm[x] == 0)
+                            {
+                                /* count free blocks */
+                                for (y = 0; bm[x + y] == 0 && y < bneed && (x + y) < bcnt; ++y) ;
+
+                                /* we have enough, now allocate them */
+                                if (y == bneed)
+                                {
+                                    /* find ID that does not match left or right */
+                                    nid = GetNID(bm[x - 1], bm[x + y]);
+
+                                    /* allocate by setting id */
+                                    for (z = 0; z < y; ++z)
+                                    {
+                                        bm[x + z] = nid;
+                                    }
+
+                                    /* optimization */
+                                    b->lfb = (x + bneed) - 2;
+
+                                    /* count used blocks NOT bytes */
+                                    b->used += y;
+
+                                    void* result = (void*)(x * b->bsize + (UInt32)(&b[1]));
+                                    if (boundary > 1)
+                                    {
+                                        result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
+
+//#if HEAP_TRACE
+//                                      ExitCritical();
+//                                      BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
+//                                      EnterCritical("Alloc:Boundary condition");
+//#endif
+                                    }
+
+                                    ExitCritical();
+                                    return result;
+                                }
+
+                                /* x will be incremented by one ONCE more in our FOR loop */
+                                x += (y - 1);
+                                continue;
+                            }
                         }
                     }
                 }
+
+                BasicConsole.Write(name);
+                BasicConsole.WriteLine(" heap needs to expand!");
+
+                if (ExpandHeap != null)
+                {
+                    HeapBlock* oldFBlock = fblock;
+                    oldFBlock->expanding = true;
+                    if (!ExpandHeap(GetTotalMem()))
+                    {
+                        BasicConsole.WriteLine("Couldn't expand heap!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Heap expanded successfully.");
+                        BasicConsole.Write("New heap size: ");
+                        BasicConsole.Write(GetTotalMem() / 1024);
+                        BasicConsole.WriteLine("KiB");
+                    }
+                    oldFBlock->expanding = false;
+                }
+                else
+                {
+                    BasicConsole.WriteLine("Cannot expand heap as expand heap delegate is null.");
+                }
+
+                BasicConsole.WriteLine("Heap expansion complete.");
             }
+            while (retry-- > 0);
 
             {
                 bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;

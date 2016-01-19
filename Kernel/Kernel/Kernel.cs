@@ -76,7 +76,9 @@ namespace Kernel
                 BasicConsole.SecondaryOutputEnabled = true;
 
                 Hardware.Devices.CPU.InitDefault();
-                
+
+                ProcessManager.Init();
+
                 BasicConsole.WriteLine("Creating kernel process...");
                 Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
                 KernelProcess.TheMemoryLayout.NoUnload = true;

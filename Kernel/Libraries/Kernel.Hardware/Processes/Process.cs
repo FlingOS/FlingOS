@@ -250,6 +250,7 @@ namespace Kernel.Hardware.Processes
         }
         public void UnloadHeap()
         {
+            HeapPtr = FOS_System.Heap.FBlock;
             FOS_System.Heap.OutputTrace = OutputMemTrace;
             FOS_System.GC.OutputTrace = OutputMemTrace;
         }

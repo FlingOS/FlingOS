@@ -51,6 +51,27 @@ namespace Kernel.Hardware.Processes
         private static List Semaphores = new List(1024, 1024);
         private static SpinLock SemaphoresLock = new SpinLock();
 
+        public static void Init()
+        {
+            FOS_System.Heap.ExpandHeap = ExpandHeap;
+        }
+        public static bool ExpandHeap(uint Size)
+        {
+            uint NumPages = (Size + 4095) / 4096;
+            uint FinalSize = NumPages * 4096;
+            uint StartAddress;
+            Kernel.Processes.SystemCallResults MapPagesResult = Kernel.Processes.SystemCalls.RequestPages(NumPages, out StartAddress);
+            if(MapPagesResult != Kernel.Processes.SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Request for pages (to expand heap) failed!");
+                return false;
+            }
+            FOS_System.HeapBlock* NewBlockPtr = (FOS_System.HeapBlock*)StartAddress;
+            FOS_System.Heap.InitBlock(NewBlockPtr, FinalSize, 32);
+            FOS_System.Heap.AddBlock(NewBlockPtr);
+            return true;
+        }
+
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
         {
             return CreateProcess(MainMethod, Name, UserMode, false);
