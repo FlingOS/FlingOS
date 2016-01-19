@@ -107,19 +107,16 @@ namespace Kernel.Hardware.ATA
             //Note: IRQHandler is called from DeviceManagerTask
         }
 
-        public static int IRQHandler(uint irqNumber)
+        public static void IRQHandler(uint irqNumber)
         {
             if (irqNumber == 14)
             {
                 IRQ14Invoked = true;
-                return 0;
             }
             else if(irqNumber == 15)
             {
                 IRQ15Invoked = true;
-                return 0;
             }
-            return -1;
         }
 
         private bool WaitForIRQ()

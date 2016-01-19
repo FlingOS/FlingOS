@@ -42,8 +42,8 @@ namespace Kernel.Hardware.Processes
 
     public unsafe class Process : FOS_System.Object
     {
-        public List Threads = new List();
-        public MemoryLayout TheMemoryLayout = new MemoryLayout();
+        public List Threads;
+        public MemoryLayout TheMemoryLayout;
 
         public uint Id;
         public FOS_System.String Name;
@@ -77,6 +77,17 @@ namespace Kernel.Hardware.Processes
             Name = AName;
             UserMode = userMode;
 
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Process: ctor: Initialising fields...");
+#endif
+
+            Threads = new List();
+            TheMemoryLayout = new MemoryLayout();
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine("Process: ctor: Initialising memory layout...");
+#endif
+            
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: ctor: Creating thread...");
 #endif

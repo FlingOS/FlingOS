@@ -31,18 +31,34 @@ namespace Kernel.Shells
                 //DeviceManager.AddDevice(Serial.COM2);
                 //DeviceManager.AddDevice(Serial.COM3);
 
+                BasicConsole.WriteLine("DM > Initialising ATA Manager...");
                 ATAManager.Init();
+                BasicConsole.WriteLine("DM > Initialising PCI Manager...");
                 PCIManager.Init();
-                //USBManager.Init();
+                BasicConsole.WriteLine("DM > Initialising USB Manager...");
+                USBManager.Init();
+                BasicConsole.WriteLine("DM > Initialisation completed.");
 
                 while (!terminating)
                 {
                     try
                     {
-                        OutputATA();
-                        OutputPCI();
-                        OutputUSB();
-                        keyboard.ReadKey();
+                        KeyboardKey k = keyboard.ReadKey();
+                        switch (k)
+                        {
+                            case KeyboardKey.A:
+                                OutputATA();
+                                break;  
+                            case KeyboardKey.P:
+                                OutputPCI();
+                                break;
+                            case KeyboardKey.U:
+                                OutputUSB();
+                                break;
+                            default:
+                                console.WriteLine("Unrecognised. Options are (A):ATA, (P):PCI, (U):USB");
+                                break;
+                        }
                     }
                     catch
                     {

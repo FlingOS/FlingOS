@@ -114,6 +114,9 @@ namespace Kernel.Hardware.VirtMem
         /// </remarks>
         public abstract uint GetPhysicalAddress(uint vAddr);
 
+        public abstract bool IsVirtualMapped(uint vAddr);
+        public abstract bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd);
+
         /// <summary>
         /// Maps in the main kernel memory.
         /// </summary>

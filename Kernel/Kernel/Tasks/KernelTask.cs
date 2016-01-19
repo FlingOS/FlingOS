@@ -210,6 +210,11 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SendMessage);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReceiveMessage);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RequestPages);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsPhysicalAddressMapped);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsVirtualAddressMapped);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPhysicalAddress);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetVirtualAddress);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -246,7 +251,7 @@ namespace Kernel.Tasks
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
                 //DeviceManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
-                
+
                 BasicConsole.WriteLine("Started.");
 
                 BasicConsole.PrimaryOutputEnabled = false;
@@ -586,6 +591,107 @@ namespace Kernel.Tasks
 #endif
                     }
                     break;
+                case SystemCallNumbers.RequestPages:
+//#if DSC_TRACE
+                    BasicConsole.WriteLine("Syscall: Request pages");
+//#endif
+                    result = SystemCallResults.Fail;
+
+                    try
+                    {
+                        ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+                        uint ptr = 0xFFFFFFFF;
+                        uint[] pAddrs = null;
+
+                        int count = (int)Param3;
+
+                        // Param1: Start Phys or 0xFFFFFFFF
+                        // Param2: Start Virt or 0xFFFFFFFF
+                        // Param3: Count
+                        if (Param1 == 0xFFFFFFFF)
+                        {
+                            if (Param2 == 0xFFFFFFFF)
+                            {
+                                // Any physical, any virtual
+
+                                ptr = (uint)Hardware.VirtMemManager.MapFreePages(
+                                                    CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count);
+                            }
+                            else
+                            {
+                                // Any physical, specific virtual
+
+                                if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
+                                {
+                                    ptr = (uint)Hardware.VirtMemManager.MapFreePages(
+                                                    CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (Param2 == 0xFFFFFFFF)
+                            {
+                                // Specific physical, any virtual
+
+                                if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
+                                {
+                                    ptr = (uint)Hardware.VirtMemManager.MapFreePhysicalPages(
+                                                    CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
+                                }
+                            }
+                            else
+                            {
+                                // Specific physical, specific virtual
+
+                                if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
+                                {
+                                    if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
+                                    {
+                                        ptr = (uint)Hardware.VirtMemManager.MapFreePages(
+                                                        CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                                                        Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, Param1);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (ptr != 0xFFFFFFFF && ptr != 0xDEADBEEF)
+                        {
+                            pAddrs = new uint[count];
+                            for (uint currPtr = ptr, i = 0; i < count; currPtr += 4096, i++)
+                            {
+                                pAddrs[i] = Hardware.VirtMemManager.GetPhysicalAddress(currPtr);
+                            }
+
+                            // Add allocated new process's memory to layout
+                            CallerProcess.TheMemoryLayout.AddDataPages(ptr, pAddrs);
+
+                            result = SystemCallResults.OK;
+
+                            Return2 = ptr;
+                            Return3 = 0;
+                            Return4 = 0;
+
+//#if DSC_TRACE
+                            BasicConsole.WriteLine("Syscall: Request pages - OK.");
+//#endif
+                        }
+                    }
+                    catch
+                    {
+                        BasicConsole.WriteLine("Error during Request Pages system call!");
+                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    }
+                    finally
+                    {
+                        ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+                    }
+                    break;
                 default:
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
@@ -814,6 +920,98 @@ namespace Kernel.Tasks
 #endif
                     ReceiveMessage(callerProcesId, param1, param2);
                     break;
+                case SystemCallNumbers.RequestPages:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Request pages");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.IsPhysicalAddressMapped:
+//#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Is physical address mapped");
+                    //#endif
+                    
+                    // TODO: This is a bit hacky
+                    // If address is in low 1MiB then it is mapped
+                    if (param1 < 0x100000)
+                    {
+                        Return2 = 1u;
+                    }
+                    else
+                    {
+                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.ContainsPhysicalAddresses(param1, 1) ? 1u : 0u;
+                    }
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.IsVirtualAddressMapped:
+//#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Is virtual address mapped");
+                    //#endif
+                    // TODO: This is a bit hacky
+                    // If address is in low 1MiB then it is mapped
+                    if (param1 < 0x100000)
+                    {
+                        Return2 = 1u;
+                    }
+                    else
+                    {
+                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.ContainsVirtualAddresses(param1, 1) ? 1u : 0u;
+                    }
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.GetPhysicalAddress:
+                    //#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Get physical address");
+                    //#endif
+                    // TODO: This is a bit hacky
+                    // If address is in low 1MiB then it is mapped
+                    if (param1 < 0x100000)
+                    {
+                        Return2 = param1;
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.GetPhysicalAddress(param1 & 0xFFFFF000);
+                        if (Return2 != 0xFFFFFFFF)
+                        {
+                            Return2 = Return2 | (param1 & 0x00000FFF);
+                            result = SystemCallResults.OK;
+                        }
+                        else
+                        {
+                            Return2 = 0;
+                            result = SystemCallResults.Fail;
+                        }
+                    }
+                    break;
+                case SystemCallNumbers.GetVirtualAddress:
+                    //#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Get virtual address");
+                    //#endif
+                    // TODO: This is a bit hacky
+                    // If address is in low 1MiB then it is mapped
+                    if (param1 < 0x100000)
+                    {
+                        Return2 = param1;
+                        result = SystemCallResults.OK;
+                    }
+                    else
+                    {
+                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.GetVirtualAddress(param1 & 0xFFFFF000);
+                        if (Return2 != 0xFFFFFFFF)
+                        {
+                            Return2 = Return2 | (param1 & 0x00000FFF);
+                            result = SystemCallResults.OK;
+                        }
+                        else
+                        {
+                            Return2 = 0;
+                            result = SystemCallResults.Fail;
+                        }
+                    }
+                    break;
+                //TODO: Implement handlers for remaining sys calls
                 //#if SYSCALLS_TRACE
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Kernel Task.");

@@ -527,6 +527,7 @@ namespace Kernel.Processes.ELF
                         uint physPageAddr = Hardware.VirtMemManager.FindFreePhysPage();
                         uint virtPageAddr = (uint)pageAlignedDestMemPtr + pageOffset;
 
+                        //TODO: Probably need to update this to use system calls
                         Hardware.VirtMemManager.Map(
                             physPageAddr,
                             virtPageAddr,

@@ -24,8 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define USB_TRACE
-//#undef USB_TRACE
+//#define USB_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -89,17 +88,20 @@ namespace Kernel.Hardware.USB
         /// <summary>
         /// List of all the HCI device instances.
         /// </summary>
-        public static List HCIDevices = new List(1);
+        public static List HCIDevices;
         /// <summary>
         /// List of all the USB device instances.
         /// </summary>
-        public static List Devices = new List(5);
+        public static List Devices;
         
         /// <summary>
         /// Initialises USB management. Scans the PCI bus for HCIs and initialises any supported HCIs that are found.
         /// </summary>
         public static void Init()
         {
+            HCIDevices = new List(1);
+            Devices = new List(5);
+
             //Enumerate PCI devices looking for (unclaimed) USB host controllers
 
             //      UHCI:  Class ID: 0x0C, Sub-class: 0x03, Prog(ramming) Interface: 0x00
@@ -180,6 +182,7 @@ namespace Kernel.Hardware.USB
                                 EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                                 HCIDevices.Add(newEHCI);
                                 DeviceManager.AddDevice(newEHCI);
+                                newEHCI.Start();
                             }
 #if USB_TRACE
                             else
@@ -217,9 +220,9 @@ namespace Kernel.Hardware.USB
                                 UHCI_PCIDevice.Claimed = true;
 
                                 UHCI newUHCI = new UHCI(UHCI_PCIDevice);
-
                                 HCIDevices.Add(newUHCI);
                                 DeviceManager.AddDevice(newUHCI);
+                                newUHCI.Start();
                             }
 #if USB_TRACE
                             else
@@ -272,7 +275,7 @@ namespace Kernel.Hardware.USB
                     {
                         //xHCI detected
 #if USB_TRACE
-                                        BasicConsole.WriteLine("xHCI detected.");
+                        BasicConsole.WriteLine("xHCI detected.");
 #endif
 
                         //TODO: Add xHCI support
@@ -284,12 +287,12 @@ namespace Kernel.Hardware.USB
                             NumxHCIDevices++;
                         }
 #if USB_TRACE
-                            else
-                            {
-                                BasicConsole.WriteLine(" - Already claimed.");
-                            }
+                        else
+                        {
+                            BasicConsole.WriteLine(" - Already claimed.");
+                        }
 
-                            BasicConsole.DelayOutput(10);
+                        BasicConsole.DelayOutput(10);
 #endif
                     }
                     //EHCI = 0x20
@@ -297,7 +300,7 @@ namespace Kernel.Hardware.USB
                     {
                         //EHCI detected
 #if USB_TRACE
-                            BasicConsole.WriteLine("EHCI detected.");
+                        BasicConsole.WriteLine("EHCI detected.");
 #endif
                         if (!aDevice.Claimed)
                         {
@@ -309,14 +312,15 @@ namespace Kernel.Hardware.USB
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                             HCIDevices.Add(newEHCI);
                             DeviceManager.AddDevice(newEHCI);
+                            newEHCI.Start();
                         }
 #if USB_TRACE
-                            else
-                            {
-                                BasicConsole.WriteLine(" - Already claimed.");
-                            }
+                        else
+                        {
+                            BasicConsole.WriteLine(" - Already claimed.");
+                        }
 
-                            BasicConsole.DelayOutput(10);
+                        BasicConsole.DelayOutput(10);
 #endif
                     }
                     //UHCI = 0x00
@@ -324,7 +328,7 @@ namespace Kernel.Hardware.USB
                     {
                         //UHCI detected
 #if USB_TRACE
-                            BasicConsole.WriteLine("UHCI detected.");
+                        BasicConsole.WriteLine("UHCI detected.");
 #endif
                         if (!aDevice.Claimed)
                         {
@@ -334,17 +338,17 @@ namespace Kernel.Hardware.USB
                             UHCI_PCIDevice.Claimed = true;
 
                             UHCI newUHCI = new UHCI(UHCI_PCIDevice);
-
                             HCIDevices.Add(newUHCI);
                             DeviceManager.AddDevice(newUHCI);
+                            newUHCI.Start();
                         }
 #if USB_TRACE
-                            else
-                            {
-                                BasicConsole.WriteLine(" - Already claimed.");
-                            }
+                        else
+                        {
+                            BasicConsole.WriteLine(" - Already claimed.");
+                        }
 
-                            BasicConsole.DelayOutput(10);
+                        BasicConsole.DelayOutput(10);
 #endif
                     }
                     //OHCI = 0x10
@@ -352,7 +356,7 @@ namespace Kernel.Hardware.USB
                     {
                         //OHCI detected
 #if USB_TRACE
-                                        BasicConsole.WriteLine("OHCI detected.");
+                        BasicConsole.WriteLine("OHCI detected.");
 #endif
 
                         //TODO: Add OHCI support
@@ -364,12 +368,12 @@ namespace Kernel.Hardware.USB
                             NumOHCIDevices++;
                         }
 #if USB_TRACE
-                            else
-                            {
-                                BasicConsole.WriteLine(" - Already claimed.");
-                            }
+                        else
+                        {
+                            BasicConsole.WriteLine(" - Already claimed.");
+                        }
 
-                            BasicConsole.DelayOutput(10);
+                        BasicConsole.DelayOutput(10);
 #endif
                     }
                 }
@@ -1157,6 +1161,34 @@ namespace Kernel.Hardware.USB
 #endif
         }
 
+        /// <remarks>
+        /// Called by Device Manager Task.
+        /// </remarks>
+        public static void IRQHandler()
+        {
+#if USB_TRACE
+            BasicConsole.WriteLine("USBManager:IRQHandler");
+#endif
+            if (HCIDevices != null)
+            {
+#if USB_TRACE
+                BasicConsole.WriteLine("USBManager:IRQHandler:HCIDevices not null");
+#endif
+                for (int i = 0; i < HCIDevices.Count; i++)
+                {
+#if USB_TRACE
+                    BasicConsole.WriteLine("USBManager:IRQHandler:Calling handler");
+#endif
+                    ((HCI)HCIDevices[i]).IRQHandler();
+#if USB_TRACE
+                    BasicConsole.WriteLine("USBManager:IRQHandler:Done.");
+#endif
+                }
+            }
+#if USB_TRACE
+            BasicConsole.WriteLine("USBManager:IRQHandler:Done.");
+#endif
+        }
 
 #if USB_TRACE
         private static void ShowDevice(USBDeviceInfo usbDev)

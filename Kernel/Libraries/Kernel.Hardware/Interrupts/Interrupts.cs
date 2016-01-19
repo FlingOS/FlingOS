@@ -261,7 +261,7 @@ namespace Kernel.Hardware.Interrupts
             Process currProcess = ProcessManager.CurrentProcess;
             Thread currThread = ProcessManager.CurrentThread;
             bool switched = false;
-
+            
             Process handlerProcess = null;
             for (int i = 0; i < ProcessManager.Processes.Count; i++)
             {
@@ -273,6 +273,7 @@ namespace Kernel.Hardware.Interrupts
                         ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
                         switched = true;
                     }
+
                     if (handlerProcess.IRQHandler(IRQNum) == 0)
                     {
                         break;

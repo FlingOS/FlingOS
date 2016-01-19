@@ -86,7 +86,8 @@ namespace Kernel.Hardware
         /// <returns>The new byte array.</returns>
         public byte[] NewBlockArray(UInt32 aBlockCount)
         {
-            return new byte[aBlockCount * BlockSize];
+            //TODO: Support Conv_Ovf_I_Un IL op then remove the cast below
+            return new byte[aBlockCount * (uint)BlockSize];
         }
     }
 }

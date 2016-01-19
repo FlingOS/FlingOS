@@ -80,6 +80,8 @@ namespace Kernel
                 BasicConsole.WriteLine("Creating kernel process...");
                 Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
                 KernelProcess.TheMemoryLayout.NoUnload = true;
+                //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
+                //          by adding it to Kernel Process' memory layout.
                 ProcessManager.KernelProcess = KernelProcess;
 
                 BasicConsole.WriteLine("Getting kernel thread...");

@@ -30,6 +30,9 @@ using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.VirtMem
 {
+    /// <remarks>
+    /// Bit 1 of physical addresses is used to indicate whether the mapping came from a merge or not.
+    /// </remarks>
     public class MemoryLayout : FOS_System.Object
     {
         public bool NoUnload = false;
@@ -41,7 +44,7 @@ namespace Kernel.Hardware.VirtMem
         public void AddCodePage(uint pAddr, uint vAddr)
         {
             //BasicConsole.WriteLine("Adding code page...");
-            if (!CodePages.Contains(vAddr))
+            if (!CodePages.ContainsKey(vAddr))
             {
                 CodePages.Add(vAddr, pAddr);
             }
@@ -58,7 +61,7 @@ namespace Kernel.Hardware.VirtMem
         public void AddDataPage(uint pAddr, uint vAddr)
         {
             //BasicConsole.WriteLine("Adding data page...");
-            if (!DataPages.Contains(vAddr))
+            if (!DataPages.ContainsKey(vAddr))
             {
                 DataPages.Add(vAddr, pAddr);
             }
@@ -99,7 +102,7 @@ namespace Kernel.Hardware.VirtMem
             {
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
-                uint pAddr = pair.Value;
+                uint pAddr = pair.Value & 0xFFFFF000;
 
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading code page...");
@@ -114,7 +117,7 @@ namespace Kernel.Hardware.VirtMem
             {
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
-                uint pAddr = pair.Value;
+                uint pAddr = pair.Value & 0xFFFFF000;
 
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading data page...");
@@ -165,18 +168,40 @@ namespace Kernel.Hardware.VirtMem
             {
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
-                uint pAddr = pair.Value;
+                uint pAddr = pair.Value & 0xFFFFF000;
 
-                AddCodePage(pAddr, vAddr);
+                if (CodePages.ContainsKey(vAddr))
+                {
+                    if ((CodePages[vAddr] & 0xFFFFF000) != pAddr)
+                    {
+                        BasicConsole.WriteLine("Error merging layouts! Code virtual address would be mapped to two different physical addresses.");
+                    }
+                }
+                else
+                {
+                    // 0x1 indicates mapping was added by a merge
+                    CodePages.Add(vAddr, pAddr | 0x1);
+                }
             }
             iterator = y.DataPages.GetIterator();
             while (iterator.HasNext())
             {
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
-                uint pAddr = pair.Value;
+                uint pAddr = pair.Value & 0xFFFFF000;
 
-                AddDataPage(pAddr, vAddr);
+                if (DataPages.ContainsKey(vAddr))
+                {
+                    if((DataPages[vAddr] & 0xFFFFF000) != pAddr)
+                    {
+                        BasicConsole.WriteLine("Error merging layouts! Data virtual address would be mapped to two different physical addresses.");
+                    }
+                }
+                else
+                {
+                    // 0x1 indicates mapping was added by a merge
+                    DataPages.Add(vAddr, pAddr | 0x1);
+                }
             }
         }
         public void Unmerge(MemoryLayout y)
@@ -186,18 +211,80 @@ namespace Kernel.Hardware.VirtMem
             {
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
-                uint pAddr = pair.Value;
 
-                RemovePage(vAddr);
+                if (CodePages.ContainsKey(vAddr))
+                {
+                    // If the mapping was added by a merge
+                    if ((CodePages[vAddr] & 0x1) == 1)
+                    {
+                        CodePages.Remove(vAddr);
+                    }
+                }
             }
             iterator = y.DataPages.GetIterator();
             while (iterator.HasNext())
             {
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
-                uint pAddr = pair.Value;
 
-                RemovePage(vAddr);
+                if (DataPages.ContainsKey(vAddr))
+                {
+                    // If the mapping was added by a merge
+                    if ((DataPages[vAddr] & 0x1) == 1)
+                    {
+                        DataPages.Remove(vAddr);
+                    }
+                }
+            }
+        }
+
+        public bool ContainsVirtualAddresses(uint startAddr, int count)
+        {
+            return CodePages.ContainsKeyInRange(startAddr, startAddr + (uint)count) ||
+                   DataPages.ContainsKeyInRange(startAddr, startAddr + (uint)count);
+        }
+        public bool ContainsPhysicalAddresses(uint startAddr, int count)
+        {
+            return CodePages.ContainsValueInRange(startAddr, startAddr + (uint)count) ||
+                   DataPages.ContainsValueInRange(startAddr, startAddr + (uint)count);
+        }
+
+        public uint GetPhysicalAddress(uint virtAddr)
+        {
+            if (CodePages.ContainsKey(virtAddr))
+            {
+                return CodePages[virtAddr] & 0xFFFFF000;
+            }
+            else if (DataPages.ContainsKey(virtAddr))
+            {
+                return DataPages[virtAddr] & 0xFFFFF000;
+            }
+            else
+            {
+                return 0xFFFFFFFF;
+            }
+        }
+        public uint GetVirtualAddress(uint physAddr)
+        {
+            if (CodePages.ContainsValue(physAddr))
+            {
+                return CodePages.GetFirstKeyOfValue(physAddr);
+            }
+            else if (DataPages.ContainsValue(physAddr))
+            {
+                return DataPages.GetFirstKeyOfValue(physAddr);
+            }
+            else if (CodePages.ContainsValue(physAddr | 0x1))
+            {
+                return CodePages.GetFirstKeyOfValue(physAddr | 0x1);
+            }
+            else if (DataPages.ContainsValue(physAddr | 0x1))
+            {
+                return DataPages.GetFirstKeyOfValue(physAddr | 0x1);
+            }
+            else
+            {
+                return 0xFFFFFFFF;
             }
         }
 

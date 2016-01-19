@@ -90,9 +90,13 @@ namespace Kernel.Processes
         /// Deregisters the caller process for handling a system call.
         /// </summary>
         DeregisterSyscallHandler,
-        RequestPage,
-        UnmapPage,
-        SharePage,
+        IsPhysicalAddressMapped,
+        IsVirtualAddressMapped,
+        GetVirtualAddress,
+        GetPhysicalAddress,
+        RequestPages,
+        UnmapPages,
+        SharePages,
         StartProcess,
         EndProcess,
         SetProcessAttributes,

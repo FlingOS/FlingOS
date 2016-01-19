@@ -60,32 +60,7 @@ namespace Kernel.Shells
             try
             {
                 //Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
-
-                try
-                {
-                    // Auto-init all to save us writing the command
-                    //InitPCI();
-                }
-                catch
-                {
-                    console.WriteLine();
-                    console.WarningColour();
-                    console.WriteLine("Error initialising PCI subsystem:");
-                    OutputExceptionInfo(ExceptionMethods.CurrentException);
-                }
-                try
-                {
-                    // Auto-init all to save us writing the command
-                    //InitATA();
-                }
-                catch
-                {
-                    console.WriteLine();
-                    console.WarningColour();
-                    console.WriteLine("Error initialising ATA subsystem:");
-                    OutputExceptionInfo(ExceptionMethods.CurrentException);
-                }
-
+                
 #if PERIODIC_REBOOT
                 // 60 seconds
                 Hardware.Timers.PIT.Default.RegisterHandler(TriggerPeriodicReboot, 60000000000L, true, this);

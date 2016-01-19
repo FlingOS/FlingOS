@@ -23,13 +23,11 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-#define EHCI_TRACE
-#undef EHCI_TRACE
+
+//#define EHCI_TRACE
 
 #if EHCI_TRACE
-    #define EHCI_TESTS
-    #undef EHCI_TESTS //Note: Also comment out the undef in EHCITesting.cs
+    //#define EHCI_TESTS //Note: Also uncomment the undef in EHCITesting.cs
 #endif
 
 using System;
@@ -777,13 +775,38 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.WriteLine(((FOS_System.String)"EHCI: usbBaseAddress=") + (uint)usbBaseAddress);
 #endif
 
-            // Map in the required memory - we will use identity mapping for the PCI / USB registers for now
-            Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-                (uint)usbBaseAddress & 0xFFFFF000,
-                (uint)usbBaseAddress & 0xFFFFF000);
-            VirtMemManager.Map((uint)usbBaseAddress & 0xFFFFF000, (uint)usbBaseAddress & 0xFFFFF000, 4096, 
-                VirtMem.VirtMemImpl.PageFlags.KernelOnly);
-            
+            // Map in the required memory
+            bool isUSBPageAlreadyMapped = false;
+            Kernel.Processes.SystemCallResults checkUSBPageResult = Kernel.Processes.SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
+            if (checkUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Error! EHCI cannot check USB Base Address.");
+                ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot check USB Base Address."));
+            }
+
+            if (!isUSBPageAlreadyMapped)
+            {
+                uint actualAddress = 0xFFFFFFFF;
+                Kernel.Processes.SystemCallResults mapUSBPageResult = Kernel.Processes.SystemCalls.RequestPhysicalPages((uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
+                if (mapUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("Error! EHCI cannot map USB Base Address.");
+                    ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot map USB Base Address."));
+                }
+                usbBaseAddress = (byte*)actualAddress;
+            }
+            else
+            {
+                uint actualAddress = 0xFFFFFFFF;
+                Kernel.Processes.SystemCallResults getUSBPageResult = Kernel.Processes.SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000, out actualAddress);
+                if (getUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("Error! EHCI cannot get USB Base Address.");
+                    ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot get USB Base Address."));
+                }
+                usbBaseAddress = (byte*)actualAddress;
+            }
+
             // Caps registers start at the beginning of the memory mapped IO registers.
             // Section 2 of the Intel EHCI Spec
             CapabilitiesRegAddr = usbBaseAddress;
@@ -835,9 +858,6 @@ namespace Kernel.Hardware.USB.HCIs
             // Number of root ports 
             //  Section 2.2.3 of Intel EHCI Spec
             RootPortCount = (byte)(HCSParams & 0x000F);
-
-            // Start the host controller
-            Start();
         }
 
         /// <summary>
@@ -880,7 +900,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Starts the host controller including all necessary initialisation, port resets and port enabling. 
         /// Also detects any devices already connected to the controller.
         /// </summary>
-        protected void Start()
+        internal override void Start()
         {
             int hcErrors = HostSystemErrors;
 
@@ -939,8 +959,10 @@ namespace Kernel.Hardware.USB.HCIs
             if (IRQHandlerID == 0)
             {
                 // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
-                //TODO: Use system calls for adding IRQ handler(s)
-                //IRQHandlerID = Interrupts.Interrupts.AddIRQHandler(pciDevice.InterruptLine, EHCI.InterruptHandler, this, "EHCI");
+#if EHCI_TRACE
+                DBGMSG(((FOS_System.String)"EHCI Interrupt line: ") + pciDevice.InterruptLine);
+#endif
+                Kernel.Processes.SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);
             }
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
@@ -1165,7 +1187,7 @@ namespace Kernel.Hardware.USB.HCIs
                     // The OS tries to set SMI to disabled in case that BIOS bit stays at one.
                     pciDevice.WriteRegister32(USBLEGCTLSTS, 0x0); // USB SMI disabled
                 }
-              #if EHCI_TRACE
+#if EHCI_TRACE
                 else
                 {
                     DBGMSG("BIOS did not own the EHCI. No action needed.");
@@ -1174,7 +1196,7 @@ namespace Kernel.Hardware.USB.HCIs
             else
             {
                 DBGMSG("No valid eecp found.");
-          #endif
+#endif
             }
 
 #if EHCI_TRACE
@@ -1319,14 +1341,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// The static wrapper for the interrupt handler.
         /// </summary>
         /// <param name="data">The EHCI state object.</param>
-        protected static void InterruptHandler(FOS_System.Object data)
-        {
-            ((EHCI)data).InterruptHandler();
-        }
         /// <summary>
         /// The interrupt handler for all EHCI interrupts.
         /// </summary>
-        protected void InterruptHandler()
+        internal override void IRQHandler()
         {
 #if EHCI_TRACE
             DBGMSG("EHCI Interrupt Handler called");
@@ -2038,6 +2056,9 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void EnableAsyncSchedule()
         {
+#if EHCI_TRACE
+            DBGMSG("EHCI: Enabling Async Schedule...");
+#endif
             // Set the command to enable the async schedule
             //  Section 2.3.1 of Intel EHCI Spec
             USBCMD |= EHCI_Consts.CMD_AsyncScheduleEnableMask;
@@ -2051,6 +2072,9 @@ namespace Kernel.Hardware.USB.HCIs
             //  (Intel EHCI Spec, Section 2.3.2, Table 2-10, Asynchronous Schedule Status)
             while ((USBSTS & EHCI_Consts.STS_AsyncEnabled) == 0)
             {
+#if EHCI_TRACE
+                DBGMSG("EHCI: Waiting for enabled...");
+#endif
                 timeout--;
                 if (timeout>0)
                 {
@@ -2063,6 +2087,9 @@ namespace Kernel.Hardware.USB.HCIs
                     break;
                 }
             }
+#if EHCI_TRACE
+            DBGMSG("EHCI: Async Schedule enabled.");
+#endif
         }
         /// <summary>
         /// Adds a transfer for the async schedule.
@@ -2070,6 +2097,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="transfer">The transfer to add.</param>
         protected void AddToAsyncSchedule(USBTransfer transfer)
         {
+#if EHCI_TRACE
+            DBGMSG("EHCI: Add to Async Schedule");
+#endif
+
             // Set the expected number of USB Interrupts to 1
             //  1 because we expect one and only one for the last transaction of the transfer
             //  which we flagged to Interrupt On Complete in IssueTransfer.
@@ -2082,7 +2113,11 @@ namespace Kernel.Hardware.USB.HCIs
                 // Enable / start the async schedule
                 EnableAsyncSchedule();
             }
-            
+
+#if EHCI_TRACE
+            DBGMSG("EHCI: Updating queue");
+#endif
+
             // Save the old tail queue head (which may not be the idle queue head) (save in a wrapper)
             EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead);
             // The new queue head will now be end of the queue
@@ -2096,10 +2131,19 @@ namespace Kernel.Hardware.USB.HCIs
             // Insert the queue head into the queue as an element behind old queue head
             oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
 
+#if EHCI_TRACE
+            DBGMSG("EHCI: About to wait for transaction complete...");
+#endif
+
             int timeout = 100;
             while (USBIntCount > 0 && (HostSystemErrors == 0) && !IrrecoverableError && --timeout > 0)
             {
+#if EHCI_TRACE
+                DBGMSG("EHCI: Waiting for transaction complete...");
+#endif
+
                 Kernel.Processes.SystemCalls.SleepThread(50);
+                
 #if EHCI_TRACE
                 if (timeout % 10 == 0)
                 {
@@ -2107,6 +2151,10 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 #endif
             }
+
+#if EHCI_TRACE
+            DBGMSG("EHCI: Transaction completed.");
+#endif
 
 #if EHCI_TRACE
             if (timeout == 0)
@@ -2121,6 +2169,10 @@ namespace Kernel.Hardware.USB.HCIs
             // Because nothing else touches the async queue and this method is a synchronous method, 
             //  the idle queue head will now always be the end of the queue again.
             TailQueueHead = oldTailQH.queueHead;
+
+#if EHCI_TRACE
+            DBGMSG("EHCI: Returning from Add to Async Schedule");
+#endif
         }
 
         /// <summary>
@@ -2271,7 +2323,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
 #if EHCI_TESTS
-        #region EHCI Method Tests
+#region EHCI Method Tests
 
         //SetupTransfer
         //SETUPTransaction
@@ -2331,7 +2383,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(4);
         }
 
-        #endregion
+#endregion
 #endif
     }
     /// <summary>

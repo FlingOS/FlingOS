@@ -116,7 +116,7 @@ namespace Kernel.FOS_System.Collections
         {
             if (!SkipCheck)
             {
-                if (Contains(key))
+                if (ContainsKey(key))
                 {
                     ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
                 }
@@ -172,7 +172,7 @@ namespace Kernel.FOS_System.Collections
         }
         public void AddRange(UInt32 keyStart, UInt32 keyStep, UInt32[] values)
         {
-            if (ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
+            if (ContainsKeyInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
             }
@@ -246,7 +246,7 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
-        public bool Contains(UInt32 key)
+        public bool ContainsKey(UInt32 key)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -259,7 +259,20 @@ namespace Kernel.FOS_System.Collections
             }
             return false;
         }
-        public bool ContainsItemInRange(UInt32 startKey, UInt32 endKey)
+        public bool ContainsValue(UInt32 value)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (!cPair->Empty && cPair->Value == value)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
+        }
+        public bool ContainsKeyInRange(UInt32 startKey, UInt32 endKey)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -271,6 +284,33 @@ namespace Kernel.FOS_System.Collections
                 cPair = cPair->Prev;
             }
             return false;
+        }
+        public bool ContainsValueInRange(UInt32 startValue, UInt32 endValue)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (!cPair->Empty && cPair->Value >= startValue && cPair->Value < endValue)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
+        }
+
+        public UInt32 GetFirstKeyOfValue(UInt32 value)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (!cPair->Empty && cPair->Value == value)
+                {
+                    return cPair->Key;
+                }
+                cPair = cPair->Prev;
+            }
+            return 0;
         }
 
         public UInt32 this[UInt32 key]

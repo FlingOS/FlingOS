@@ -403,6 +403,37 @@ namespace Kernel.Hardware.VirtMem
             return ((ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF));
         }
 
+        public override bool IsVirtualMapped(uint vAddr)
+        {
+            //Calculate page directory and page table indices
+            uint pdIdx = vAddr >> 22;
+            uint ptIdx = (vAddr >> 12) & 0x3FF;
+            //Get a pointer to the pre-allocated page table
+            uint* ptPtr = GetFixedPage(pdIdx);
+
+            //Get the Present bit
+            return (ptPtr[ptIdx] & (uint)PTEFlags.Present) != 0;
+        }
+        public override bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd)
+        {
+            uint* ptPtr = GetFixedPage(0);
+            for (int i = 0; i < (1024*1024); i++)
+            {
+                uint value = *ptPtr;
+                bool present = (value & (uint)PTEFlags.Present) != 0;
+                if (present)
+                {
+                    uint addr = value & 0xFFFFF000;
+                    if (addr >= pAddrStart && addr < pAddrEnd)
+                    {
+                        return true;
+                    }
+                }
+                ptPtr++;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Maps in the main kernel memory.
         /// </summary>

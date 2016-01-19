@@ -35,6 +35,8 @@ namespace Kernel.Hardware
     /// </summary>
     public static unsafe class VirtMemManager
     {
+        //TODO: Calls to GetPhysicalAddress, MapFreePage(s), Map and Unmap must be wrapped by system calls
+
         /// <summary>
         /// The specific virtual memory implementation to use.
         /// </summary>
@@ -54,6 +56,8 @@ namespace Kernel.Hardware
             //     state
             impl.MapKernel();
         }
+
+        //TODO: Eliminate these obsolete (dangerous, breaking) functions
 
         [Obsolete]
         public static uint FindFreePhysPage()
@@ -85,38 +89,133 @@ namespace Kernel.Hardware
         public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages)
         {
             uint virtAddrsStart = 0xDEADBEEF;
+            uint physAddrsStart = 0xDEADBEEF;
+
+            MapFreePagesLock.Enter();
+
+            void* result = (void*)0xDEADBEEF;
+
             try
             {
-                MapFreePagesLock.Enter();
-
-                //BasicConsole.WriteLine("Mapping free pages:");
-
-                uint physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
                 virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
-                //BasicConsole.Write(" -- Phys start: ");
-                //BasicConsole.WriteLine(physAddrsStart);
-                //BasicConsole.Write(" -- Virt start: ");
-                //BasicConsole.WriteLine(virtAddrsStart);
-                //BasicConsole.Write(" -- Num pages: ");
-                //BasicConsole.WriteLine(numPages);
+
+                if (virtAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for virtual addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
+                physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+
+                if (physAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
                 for (uint i = 0; i < numPages; i++)
                 {
                     Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
                 }
+
+                result = (void*)virtAddrsStart;
             }
             finally
             {
                 MapFreePagesLock.Exit();
             }
 
-            if (virtAddrsStart == 0xDEADBEEF)
+            return result;
+        }
+        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages, uint virtAddrsStart)
+        {
+            uint physAddrsStart = 0xDEADBEEF;
+
+            MapFreePagesLock.Enter();
+
+            void* result = (void*)0xDEADBEEF;
+
+            try
             {
-                BasicConsole.WriteLine("!!! PANIC !!!");
-                BasicConsole.WriteLine("VirtMemManager.MapFreePages returning 0xDEADBEEF!");
-                BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+
+                if (physAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
+
+                result = (void*)virtAddrsStart;
+            }
+            finally
+            {
+                MapFreePagesLock.Exit();
             }
 
-            return (void*)virtAddrsStart;
+            return result;
+        }
+        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages, uint virtAddrsStart, uint physAddrsStart)
+        {
+            MapFreePagesLock.Enter();
+
+            void* result = (void*)0xDEADBEEF;
+
+            try
+            {
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
+
+                result = (void*)virtAddrsStart;
+            }
+            finally
+            {
+                MapFreePagesLock.Exit();
+            }
+
+            return result;
+        }
+        public static void* MapFreePhysicalPages(VirtMemImpl.PageFlags flags, int numPages, uint physAddrsStart)
+        {
+            uint virtAddrsStart = 0xDEADBEEF;
+
+            MapFreePagesLock.Enter();
+
+            void* result = (void*)0xDEADBEEF;
+
+            try
+            {
+                virtAddrsStart = impl.FindFreeVirtPageAddrs(numPages);
+
+                if (virtAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for virtual addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
+
+                result = (void*)virtAddrsStart;
+            }
+            finally
+            {
+                MapFreePagesLock.Exit();
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -210,6 +309,31 @@ namespace Kernel.Hardware
         public static void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             impl.Unmap(vAddr, UpdateUsedPages);
+        }
+
+        public static bool IsVirtualMapped(void* vAddr)
+        {
+            return IsVirtualMapped((uint)vAddr);
+        }
+        public static bool IsVirtualMapped(uint vAddr)
+        {
+            return impl.IsVirtualMapped(vAddr);
+        }
+        public static bool AreAnyVirtualMapped(uint vAddrStart, uint count)
+        {
+            uint vAddrEnd = vAddrStart + (count * 4096);
+            for (uint addr = vAddrStart; addr < vAddrEnd; addr += 4096)
+            {
+                if(IsVirtualMapped(addr))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static bool AreAnyPhysicalMapped(uint pAddrStart, uint count)
+        {
+            return impl.AreAnyPhysicalMapped(pAddrStart, pAddrStart + (count * 4096));
         }
 
         /// <summary>

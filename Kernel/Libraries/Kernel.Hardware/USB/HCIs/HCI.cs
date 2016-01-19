@@ -95,6 +95,8 @@ namespace Kernel.Hardware.USB.HCIs
             }
         }
 
+        internal abstract void Start();
+
         /// <summary>
         /// Sets up a USB transfer for sending via the EHCI.
         /// </summary>
@@ -288,6 +290,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         /// <param name="transfer">The transfer to issue.</param>
         protected abstract void _IssueTransfer(USBTransfer transfer);
+
+        internal abstract void IRQHandler();
 
         public abstract void ResetPort(byte port);
 

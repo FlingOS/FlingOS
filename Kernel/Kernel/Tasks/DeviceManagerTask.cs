@@ -101,11 +101,10 @@ namespace Kernel.Tasks
 
         public static int IRQHandler(uint irqNumber)
         {
-            int result = -1;
-
-            result = result == -1 ? Hardware.ATA.PATAPI.IRQHandler(irqNumber) : result;
-
-            return result;
+            Hardware.ATA.PATAPI.IRQHandler(irqNumber);
+            Hardware.USB.USBManager.IRQHandler();
+            
+            return 0;
         }
 
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,

@@ -390,10 +390,122 @@ namespace Kernel.Processes
 
 
 
+        //TODO: Implement methods for remaining system calls
 
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="StartPhys">The physical address to request pages start at.</param>
+        /// <param name="Count">The number of (contiguous) pages to request.</param>
+        /// <param name="StartAddress">Out. The virtual address mapped pages start from.</param>
+        /// <returns>OK if new pages mapped.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults RequestPages(uint StartVirt, uint Count, out uint StartAddress)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RequestPages, 0xFFFFFFFF, StartVirt, Count, ref Return1, ref Return2, ref Return3, ref Return4);
+            StartAddress = Return2;
+            return (SystemCallResults)Return1;
+        }
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="StartPhys">The physical address to request pages start at.</param>
+        /// <param name="StartVirt">The virtual address to request pages start at (or 0xFFFFFFFF for 'don't care').</param>
+        /// <param name="Count">The number of (contiguous) pages to request.</param>
+        /// <param name="StartAddress">Out. The virtual address mapped pages start from.</param>
+        /// <returns>OK if new pages mapped.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults RequestPages(uint StartVirt, uint StartPhys, uint Count, out uint StartAddress)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RequestPages, StartPhys, StartVirt, Count, ref Return1, ref Return2, ref Return3, ref Return4);
+            StartAddress = Return2;
+            return (SystemCallResults)Return1;
+        }
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="Count">The number of (contiguous) pages to request.</param>
+        /// <param name="StartAddress">Out. The virtual address mapped pages start from.</param>
+        /// <returns>OK if new pages mapped.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults RequestPages(uint Count, out uint StartAddress)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RequestPages, 0xFFFFFFFF, 0xFFFFFFFF, Count, ref Return1, ref Return2, ref Return3, ref Return4);
+            StartAddress = Return2;
+            return (SystemCallResults)Return1;
+        }
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="StartPhys">The physical address to request pages start at.</param>
+        /// <param name="Count">The number of (contiguous) pages to request.</param>
+        /// <param name="StartAddress">Out. The virtual address mapped pages start from.</param>
+        /// <returns>OK if new pages mapped.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults RequestPhysicalPages(uint StartPhys, uint Count, out uint StartAddress)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RequestPages, StartPhys, 0xFFFFFFFF, Count, ref Return1, ref Return2, ref Return3, ref Return4);
+            StartAddress = Return2;
+            return (SystemCallResults)Return1;
+        }
 
+        public static SystemCallResults IsPhysicalAddressMapped(uint PhysicalAddress, out bool IsMapped)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.IsPhysicalAddressMapped, PhysicalAddress, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            IsMapped = Return2 != 0;
+            return (SystemCallResults)Return1;
+        }
+        public static SystemCallResults IsVirtualAddressMapped(uint VirtualAddress, out bool IsMapped)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.IsVirtualAddressMapped, VirtualAddress, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            IsMapped = Return2 != 0;
+            return (SystemCallResults)Return1;
+        }
 
-
+        public static SystemCallResults GetPhysicalAddress(uint VirtualAddress, out uint PhysicalAddress)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetPhysicalAddress, VirtualAddress, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            PhysicalAddress = Return2;
+            return (SystemCallResults)Return1;
+        }
+        public static SystemCallResults GetVirtualAddress(uint PhysicalAddress, out uint VirtualAddress)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetVirtualAddress, PhysicalAddress, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            VirtualAddress = Return2;
+            return (SystemCallResults)Return1;
+        }
 
         //[Drivers.Compiler.Attributes.NoDebug]
         //[Drivers.Compiler.Attributes.NoGC]
