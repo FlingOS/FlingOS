@@ -187,7 +187,8 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Removing memory from current process (kernel task) layout...");
 #endif
-            
+
+            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePages((uint)heapPtr, heapPages);
             ProcessManager.DisableKernelAccessToProcessMemory(this);
         
 #if PROCESS_TRACE
