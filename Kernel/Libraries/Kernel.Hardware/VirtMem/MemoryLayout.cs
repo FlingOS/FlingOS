@@ -238,15 +238,51 @@ namespace Kernel.Hardware.VirtMem
             }
         }
 
-        public bool ContainsVirtualAddresses(uint startAddr, int count)
+        public bool ContainsAnyVirtualAddresses(uint startAddr, int count)
         {
-            return CodePages.ContainsKeyInRange(startAddr, startAddr + (uint)count) ||
-                   DataPages.ContainsKeyInRange(startAddr, startAddr + (uint)count);
+            return CodePages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count) ||
+                   DataPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count);
         }
-        public bool ContainsPhysicalAddresses(uint startAddr, int count)
+        public bool ContainsAllVirtualAddresses(uint startAddr, uint count, uint step)
         {
-            return CodePages.ContainsValueInRange(startAddr, startAddr + (uint)count) ||
-                   DataPages.ContainsValueInRange(startAddr, startAddr + (uint)count);
+            bool OK = true;
+
+            uint endAddr = startAddr + (count * step);
+            for (; startAddr < endAddr; startAddr += step)
+            {
+                if (!CodePages.ContainsKey(startAddr) &&
+                    !DataPages.ContainsKey(startAddr))
+                {
+                    OK = false;
+                    break;
+                }
+            }
+
+            return OK;
+        }
+        public bool ContainsAnyPhysicalAddresses(uint startAddr, int count)
+        {
+            return CodePages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count) ||
+                   DataPages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count);
+        }
+        public bool ContainsAllPhysicalAddresses(uint startAddr, uint count, uint step)
+        {
+            bool OK = true;
+
+            uint endAddr = startAddr + (count * step);
+            for (; startAddr < endAddr; startAddr += step)
+            {
+                if (!CodePages.ContainsValue(startAddr) &&
+                    !DataPages.ContainsValue(startAddr) &&
+                    !CodePages.ContainsValue(startAddr | 0x1) &&
+                    !DataPages.ContainsValue(startAddr | 0x1))
+                {
+                    OK = false;
+                    break;
+                }
+            }
+
+            return OK;
         }
 
         public uint GetPhysicalAddress(uint virtAddr)
@@ -263,6 +299,17 @@ namespace Kernel.Hardware.VirtMem
             {
                 return 0xFFFFFFFF;
             }
+        }
+        public uint[] GetPhysicalAddresses(uint startAddr, uint count, uint step)
+        {
+            uint[] result = new uint[count];
+
+            for (int i = 0; i < count; startAddr += step, i++)
+            {
+                result[i] = GetPhysicalAddress(startAddr) & 0xFFFFF000;
+            }
+
+            return result;
         }
         public uint GetVirtualAddress(uint physAddr)
         {
