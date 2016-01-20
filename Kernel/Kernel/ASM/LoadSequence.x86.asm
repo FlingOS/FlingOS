@@ -205,16 +205,8 @@ EXTERN Page_Directory
 ;		...
 ;		0x0-End of kernel	->	0x0-End of kernel
 
-; Calculate number of pages for the kernel
-mov eax, Kernel_MemEnd
-sub eax, 0 ; Kernel_MemStart
-mov edx, 0
-mov ebx, 4096
-div ebx
-mov ecx, eax
-add ecx, 1
-
-; Identity map low pages to low pages
+; Identity map low 1MiB pages to low 1MiB pages
+mov ecx, 256
 lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 mov ebx, 7
 .VirtMem_Loop1:
@@ -222,6 +214,32 @@ mov [eax], ebx
 add eax, 4
 add ebx, 4096
 loop .VirtMem_Loop1
+
+; Calculate number of pages for the kernel
+mov eax, Kernel_MemEnd
+sub eax, Kernel_MemStart
+mov edx, 0
+mov ebx, 4096
+div ebx
+mov ecx, eax
+add ecx, 1
+
+; Identity map low pages to low pages
+
+; Moves pointer to page table for kernel mem start mark
+lea eax, [Kernel_MemStart - KERNEL_VIRTUAL_BASE] ; ((x / (4096*1024)) * (1024*4)) 
+mov edx, 0
+mov ebx, 1024
+div ebx
+add eax, (Page_Table1 - KERNEL_VIRTUAL_BASE)
+
+mov ebx, 7
+add ebx, (Kernel_MemStart - KERNEL_VIRTUAL_BASE)
+.VirtMem_Loop2:
+mov [eax], ebx
+add eax, 4
+add ebx, 4096
+loop .VirtMem_Loop2
 
 
 ; 2. Map virtual memory for virtual address execution
@@ -232,9 +250,20 @@ loop .VirtMem_Loop1
 ;		...
 ;		0xC-End of kernel	->	0x0-End of kernel
 
+; Map high 1MiB pages to low 1MiB pages
+mov ecx, 256
+lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
+add eax, 0x300000 ; Moves pointer to page table for 3GiB mark ((0xC0000000 / (4096 * 1024)) * (1024*4))
+mov ebx, 7
+.VirtMem_Loop3:
+mov [eax], ebx
+add eax, 4
+add ebx, 4096
+loop .VirtMem_Loop3
+
 ; Calculate number of pages for the kernel
 mov eax, Kernel_MemEnd
-sub eax, 0 ; Kernel_MemStart
+sub eax, Kernel_MemStart
 mov edx, 0
 mov ebx, 4096
 div ebx
@@ -242,14 +271,21 @@ mov ecx, eax
 add ecx, 1
 
 ; Map high pages to low pages
-lea eax, [Page_Table1 - KERNEL_VIRTUAL_BASE]
-add eax, 0x300000 ; Moves pointer to page table for 3GiB mark ((0xC0000000 / (4096 * 1024)) * (1024*4))
+
+; Moves pointer to page table for kernel mem start mark
+lea eax, [Kernel_MemStart] ; ((x / (4096*1024)) * (1024*4)) 
+mov edx, 0
+mov ebx, 1024
+div ebx
+add eax, (Page_Table1 - KERNEL_VIRTUAL_BASE)
+
 mov ebx, 7
-.VirtMem_Loop2:
+add ebx, (Kernel_MemStart - KERNEL_VIRTUAL_BASE)
+.VirtMem_Loop4:
 mov [eax], ebx
 add eax, 4
 add ebx, 4096
-loop .VirtMem_Loop2
+loop .VirtMem_Loop4
 
 ; 3. Set page directory
 ;	- Load page directory entries
@@ -257,11 +293,11 @@ lea ebx, [Page_Table1 - KERNEL_VIRTUAL_BASE]
 lea edx, [Page_Directory - KERNEL_VIRTUAL_BASE]
 or ebx, 7
 mov ecx, 1024
-.VirtMem_Loop3:
+.VirtMem_Loop5:
 mov [edx], ebx
 add edx, 4
 add ebx, 4096
-loop .VirtMem_Loop3
+loop .VirtMem_Loop5
 
 
 ; Load the physical address of the page directory 
