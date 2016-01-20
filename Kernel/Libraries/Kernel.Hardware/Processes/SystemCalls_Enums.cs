@@ -97,6 +97,7 @@ namespace Kernel.Processes
         RequestPages,
         UnmapPages,
         SharePages,
+        AcceptPages,
         StartProcess,
         EndProcess,
         SetProcessAttributes,

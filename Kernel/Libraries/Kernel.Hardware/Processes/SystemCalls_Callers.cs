@@ -465,6 +465,7 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults IsPhysicalAddressMapped(uint PhysicalAddress, out bool IsMapped)
         {
             uint Return1 = 0;
@@ -475,6 +476,7 @@ namespace Kernel.Processes
             IsMapped = Return2 != 0;
             return (SystemCallResults)Return1;
         }
+        [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults IsVirtualAddressMapped(uint VirtualAddress, out bool IsMapped)
         {
             uint Return1 = 0;
@@ -486,6 +488,7 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults GetPhysicalAddress(uint VirtualAddress, out uint PhysicalAddress)
         {
             uint Return1 = 0;
@@ -496,6 +499,7 @@ namespace Kernel.Processes
             PhysicalAddress = Return2;
             return (SystemCallResults)Return1;
         }
+        [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults GetVirtualAddress(uint PhysicalAddress, out uint VirtualAddress)
         {
             uint Return1 = 0;
@@ -507,16 +511,27 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
-        //[Drivers.Compiler.Attributes.NoDebug]
-        //[Drivers.Compiler.Attributes.NoGC]
-        //public static uint RequestPages(int numPages)
-        //{
-        //    uint Return1 = 0;
-        //    uint Return2 = 0;
-        //    uint Return3 = 0;
-        //    uint Return4 = 0;
-        //    Call(SystemCallNumbers.RequestPages, (uint)numPages, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-        //    return Return1;
-        //}
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults UnmapPages(uint StartVirtualAddress, uint Count)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.UnmapPages, StartVirtualAddress, Count, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults SharePages(uint StartVirtualAddress, uint Count, uint TargetProcessId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.SharePages, StartVirtualAddress, Count, TargetProcessId, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+
     }
 }

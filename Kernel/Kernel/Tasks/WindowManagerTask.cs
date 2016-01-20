@@ -68,6 +68,10 @@ namespace Kernel.Tasks
 
         private static bool CurrentPipeIndex_Changed = false;
 
+        private static uint AcceptedPages_StartAddress = 0;
+        private static uint AcceptedPages_Count = 0;
+        private static uint AcceptedPages_FromProcessId = 0;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Window Manager: Started.");
@@ -89,14 +93,22 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("Window Manager: InputProcessing thread failed to create!");
             }
-
             BasicConsole.Write("WM > InputProcessing thread id: ");
             BasicConsole.WriteLine(InputProcessingThreadId);
+            
+            // Start thread for other testing
+            uint TestThreadId;
+            if (SystemCalls.StartThread(TestThread, out TestThreadId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
+            }
+            BasicConsole.Write("WM > Test thread id: ");
+            BasicConsole.WriteLine(TestThreadId);
 
-            BasicConsole.Write("WM > Register RegisterPipeOutpoint syscall handler");
+            BasicConsole.Write("WM > Register syscall handlers");
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
-
-
+            SystemCalls.RegisterSyscallHandler(SystemCallNumbers.AcceptPages);
+            
             // Start thread for handling background output processing
             if (SystemCalls.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
             {
@@ -148,6 +160,29 @@ namespace Kernel.Tasks
             }
         }
 
+        public static void TestThread()
+        {
+            while (!Terminating)
+            {
+                if (AcceptedPages_Count > 0)
+                {
+                    char* TextPtr = (char*)AcceptedPages_StartAddress;
+                    while (*TextPtr == '\0')
+                    {
+                        SystemCalls.SleepThread(50);
+                    }
+                    TextPtr++;
+                    while (*TextPtr != '\0')
+                    {
+                        BasicConsole.Write(*TextPtr++);
+                    }
+                    TextPtr = (char*)AcceptedPages_StartAddress;
+                    *TextPtr = '\0';
+                }
+                SystemCalls.SleepThread(1000);
+            }
+        }
+
         public static void InputProcessing()
         {
             ready_count++;
@@ -158,7 +193,7 @@ namespace Kernel.Tasks
 
                 if (!InputProcessingThreadAwake)
                 {
-                    SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+                    SystemCalls.SleepThread(10000);
                 }
                 InputProcessingThreadAwake = false;
 
@@ -246,23 +281,34 @@ namespace Kernel.Tasks
         }
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
-            uint callerProcesId, uint callerThreadId)
+            uint callerProcessId, uint callerThreadId)
         {
             SystemCallResults result = SystemCallResults.Unhandled;
 
             switch ((SystemCallNumbers)syscallNumber)
             {
                 case SystemCallNumbers.RegisterPipeOutpoint:
-                    BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
-                    Pipes.PipeClasses Class = (Pipes.PipeClasses)param1;
-                    Pipes.PipeSubclasses Subclass = (Pipes.PipeSubclasses)param2;
-                    if (Class == Pipes.PipeClasses.Standard &&
-                        Subclass == Pipes.PipeSubclasses.Standard_Out)
                     {
-                        BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
-                        result = SystemCallResults.RequestAction_WakeThread;
-                        Return2 = InputProcessingThreadId;
-                        InputProcessingThreadAwake = true;
+                        BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
+                        Pipes.PipeClasses Class = (Pipes.PipeClasses)param1;
+                        Pipes.PipeSubclasses Subclass = (Pipes.PipeSubclasses)param2;
+                        if (Class == Pipes.PipeClasses.Standard &&
+                            Subclass == Pipes.PipeSubclasses.Standard_Out)
+                        {
+                            BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
+                            result = SystemCallResults.RequestAction_WakeThread;
+                            Return2 = InputProcessingThreadId;
+                            InputProcessingThreadAwake = true;
+                        }
+                    }
+                    break;
+                case SystemCallNumbers.AcceptPages:
+                    {
+                        BasicConsole.WriteLine("WM > Accept pages");
+                        AcceptedPages_StartAddress = param1;
+                        AcceptedPages_Count = param2;
+                        AcceptedPages_FromProcessId = callerProcessId;
+                        result = SystemCallResults.OK;
                     }
                     break;
             }

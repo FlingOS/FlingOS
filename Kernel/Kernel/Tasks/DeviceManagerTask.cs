@@ -80,6 +80,46 @@ namespace Kernel.Tasks
                 {
                     try
                     {
+                        uint SharedPages_StartAddress;
+                        SystemCallResults RequestPagesResult = SystemCalls.RequestPages(0xE0000000, 1, out SharedPages_StartAddress);
+                        if (RequestPagesResult == SystemCallResults.OK)
+                        {
+                            BasicConsole.WriteLine("DM > Allocated pages for sharing with WM.");
+
+                            char* TextPtr = (char*)SharedPages_StartAddress;
+                            TextPtr[0] = '\0';
+
+                            SystemCallResults SharePagesResult = SystemCalls.SharePages(SharedPages_StartAddress, 1, KernelTask.WindowManagerTask_ProcessId);
+                            if (SharePagesResult == SystemCallResults.OK)
+                            {
+                                for (int j = 0; j < 5; j++)
+                                {
+                                    FOS_System.String TestMessage = "Hello, world!";
+                                    TestMessage += j;
+
+                                    for (int i = 0; i < TestMessage.length; i++)
+                                    {
+                                        TextPtr[i + 1] = TestMessage[i];
+                                    }
+                                    TextPtr[TestMessage.length + 1] = '\0';
+                                    TextPtr[0] = '1';
+
+                                    while (TextPtr[0] != '\0')
+                                    {
+                                        SystemCalls.SleepThread(100);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                BasicConsole.WriteLine("DM > Couldn't share pages with WM.");
+                            }
+                        }
+                        else
+                        {
+                            BasicConsole.WriteLine("DM > Couldn't allocate pages for sharing with WM.");
+                        }
+
                         shell.Execute();
                         //TODO: DeviceManager.UpdateDevices();
                     }
@@ -129,7 +169,7 @@ namespace Kernel.Tasks
         /// <param name="Return2">Reference to the second return value.</param>
         /// <param name="Return3">Reference to the third return value.</param>
         /// <param name="Return4">Reference to the fourth return value.</param>
-        /// <param name="callerProcesId">The Id of the process which invoked the system call.</param>
+        /// <param name="callerProcessId">The Id of the process which invoked the system call.</param>
         /// <param name="callerThreadId">The Id of the thread which invoked the system call.</param>
         /// <returns>A system call result indicating what has occurred and what should occur next.</returns>
         /// <remarks>
@@ -138,7 +178,7 @@ namespace Kernel.Tasks
         public static SystemCallResults HandleSystemCall(uint syscallNumber,
             uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
-            uint callerProcesId, uint callerThreadId)
+            uint callerProcessId, uint callerThreadId)
         {
             SystemCallResults result = SystemCallResults.Unhandled;
 
@@ -148,7 +188,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("DM > Syscall: Receive message");
 #endif
-                    ReceiveMessage(callerProcesId, param1, param2);
+                    ReceiveMessage(callerProcessId, param1, param2);
                     break;
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Device Manager Task.");

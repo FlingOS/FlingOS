@@ -211,6 +211,8 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SendMessage);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReceiveMessage);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RequestPages);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.UnmapPages);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SharePages);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsPhysicalAddressMapped);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsVirtualAddressMapped);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPhysicalAddress);
@@ -593,7 +595,7 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.RequestPages:
 //#if DSC_TRACE
-                    BasicConsole.WriteLine("Syscall: Request pages");
+                    BasicConsole.WriteLine("DSC: Request pages");
 //#endif
                     result = SystemCallResults.Fail;
 
@@ -615,6 +617,8 @@ namespace Kernel.Tasks
                             {
                                 // Any physical, any virtual
 
+                                BasicConsole.WriteLine("DSC: Request pages : Any physical, Any virtual");
+                                BasicConsole.WriteLine("DSC: Request pages : Okay to map");
                                 ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count);
@@ -623,11 +627,19 @@ namespace Kernel.Tasks
                             {
                                 // Any physical, specific virtual
 
+                                BasicConsole.WriteLine("DSC: Request pages : Any physical, Specific virtual");
+                                BasicConsole.WriteLine("Request virtual address: " + (FOS_System.String)Param2);
+                                BasicConsole.WriteLine("Request count: " + (FOS_System.String)count);
                                 if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
+                                    BasicConsole.WriteLine("DSC: Request pages : Okay to map");
                                     ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2);
+                                }
+                                else
+                                {
+                                    BasicConsole.WriteLine("First page mapped physical address: " + (FOS_System.String)Hardware.VirtMemManager.GetPhysicalAddress(Param2));
                                 }
                             }
                         }
@@ -637,8 +649,10 @@ namespace Kernel.Tasks
                             {
                                 // Specific physical, any virtual
 
+                                BasicConsole.WriteLine("DSC: Request pages : Specific physical, Any virtual");
                                 if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                 {
+                                    BasicConsole.WriteLine("DSC: Request pages : Okay to map");
                                     ptr = (uint)Hardware.VirtMemManager.MapFreePhysicalPages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
@@ -648,10 +662,12 @@ namespace Kernel.Tasks
                             {
                                 // Specific physical, specific virtual
 
+                                BasicConsole.WriteLine("DSC: Request pages : Specific physical, Specific virtual");
                                 if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
                                     if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                     {
+                                        BasicConsole.WriteLine("DSC: Request pages : Okay to map");
                                         ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                         CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                         Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, Param1);
@@ -662,6 +678,8 @@ namespace Kernel.Tasks
 
                         if (ptr != 0xFFFFFFFF && ptr != 0xDEADBEEF)
                         {
+                            BasicConsole.WriteLine("DSC: Request pages : Map successful.");
+
                             pAddrs = new uint[count];
                             for (uint currPtr = ptr, i = 0; i < count; currPtr += 4096, i++)
                             {
@@ -677,9 +695,9 @@ namespace Kernel.Tasks
                             Return3 = 0;
                             Return4 = 0;
 
-//#if DSC_TRACE
-                            BasicConsole.WriteLine("Syscall: Request pages - OK.");
-//#endif
+#if DSC_TRACE
+                            BasicConsole.WriteLine("DSC: Request pages - OK.");
+#endif
                         }
                     }
                     catch
@@ -691,6 +709,33 @@ namespace Kernel.Tasks
                     {
                         ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
                     }
+                    break;
+                case SystemCallNumbers.UnmapPages:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Unmap pages");
+#endif
+                    // Param1: Start Virtual Address
+                    // Param2: Count
+                    CallerProcess.TheMemoryLayout.RemovePages(Param1, Param2);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.SharePages:
+//#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Share pages");
+//#endif
+                    // Param1: Start Virtual Address
+                    // Param2: Count
+                    // Param3: Target Process Id
+
+                    // 2nd stage of Share Pages - deferred, pages already accepted
+
+                    Process TargetProcess = ProcessManager.GetProcessById(Param3);
+                    uint[] PhysicalAddresses = CallerProcess.TheMemoryLayout.GetPhysicalAddresses(Param1, Param2, 4096u);
+                    TargetProcess.TheMemoryLayout.AddDataPages(Param1, PhysicalAddresses);
+                    TargetProcess.ResumeThreads();
+
+                    result = SystemCallResults.OK;
+
                     break;
                 default:
 #if DSC_TRACE
@@ -771,7 +816,7 @@ namespace Kernel.Tasks
         /// <param name="Return2">Reference to the second return value.</param>
         /// <param name="Return3">Reference to the third return value.</param>
         /// <param name="Return4">Reference to the fourth return value.</param>
-        /// <param name="callerProcesId">The Id of the process which invoked the system call.</param>
+        /// <param name="callerProcessId">The Id of the process which invoked the system call.</param>
         /// <param name="callerThreadId">The Id of the thread which invoked the system call.</param>
         /// <returns>A system call result indicating what has occurred and what should occur next.</returns>
         /// <remarks>
@@ -780,7 +825,7 @@ namespace Kernel.Tasks
         public static SystemCallResults HandleSystemCall(uint syscallNumber,
             uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
-            uint callerProcesId, uint callerThreadId)
+            uint callerProcessId, uint callerThreadId)
         {
             SystemCallResults result = SystemCallResults.Unhandled;
 
@@ -790,21 +835,21 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Sleep Thread");
 #endif
-                    SysCall_Sleep((int)param1, callerProcesId, callerThreadId);
+                    SysCall_Sleep((int)param1, callerProcessId, callerThreadId);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.WakeThread:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Wake Thread");
 #endif
-                    SysCall_Wake(callerProcesId, param1);
+                    SysCall_Wake(callerProcessId, param1);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterISRHandler:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register ISR Handler");
 #endif
-                    if (SysCall_RegisterISRHandler((int)param1, param2, callerProcesId))
+                    if (SysCall_RegisterISRHandler((int)param1, param2, callerProcessId))
                     {
                         result = SystemCallResults.OK;
                     }
@@ -817,14 +862,14 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister ISR Handler");
 #endif
-                    SysCall_DeregisterISRHandler((int)param1, callerProcesId);
+                    SysCall_DeregisterISRHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterIRQHandler:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register IRQ Handler");
 #endif
-                    if (SysCall_RegisterIRQHandler((int)param1, param2, callerProcesId))
+                    if (SysCall_RegisterIRQHandler((int)param1, param2, callerProcessId))
                     {
                         result = SystemCallResults.OK;
                     }
@@ -837,14 +882,14 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister IRQ Handler");
 #endif
-                    SysCall_DeregisterIRQHandler((int)param1, callerProcesId);
+                    SysCall_DeregisterIRQHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterSyscallHandler:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Syscall Handler");
 #endif
-                    if (SysCall_RegisterSyscallHandler((int)param1, param2, callerProcesId))
+                    if (SysCall_RegisterSyscallHandler((int)param1, param2, callerProcessId))
                     {
                         result = SystemCallResults.OK;
                     }
@@ -857,7 +902,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister Syscall Handler");
 #endif
-                    SysCall_DeregisterSyscallHandler((int)param1, callerProcesId);
+                    SysCall_DeregisterSyscallHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.StartThread:
@@ -912,13 +957,13 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Send message");
 #endif
-                    result = SysCall_SendMessage(callerProcesId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
+                    result = SysCall_SendMessage(callerProcessId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
                     break;
                 case SystemCallNumbers.ReceiveMessage:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Receive message");
 #endif
-                    ReceiveMessage(callerProcesId, param1, param2);
+                    ReceiveMessage(callerProcessId, param1, param2);
                     break;
                 case SystemCallNumbers.RequestPages:
 #if SYSCALLS_TRACE
@@ -927,9 +972,9 @@ namespace Kernel.Tasks
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.IsPhysicalAddressMapped:
-//#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Is physical address mapped");
-                    //#endif
+#endif
                     
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
@@ -939,14 +984,14 @@ namespace Kernel.Tasks
                     }
                     else
                     {
-                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.ContainsPhysicalAddresses(param1, 1) ? 1u : 0u;
+                        Return2 = ProcessManager.GetProcessById(callerProcessId).TheMemoryLayout.ContainsAnyPhysicalAddresses(param1, 1) ? 1u : 0u;
                     }
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.IsVirtualAddressMapped:
-//#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Is virtual address mapped");
-                    //#endif
+#endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
                     if (param1 < 0x100000)
@@ -955,14 +1000,14 @@ namespace Kernel.Tasks
                     }
                     else
                     {
-                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.ContainsVirtualAddresses(param1, 1) ? 1u : 0u;
+                        Return2 = ProcessManager.GetProcessById(callerProcessId).TheMemoryLayout.ContainsAnyVirtualAddresses(param1, 1) ? 1u : 0u;
                     }
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.GetPhysicalAddress:
-                    //#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Get physical address");
-                    //#endif
+#endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
                     if (param1 < 0x100000)
@@ -972,7 +1017,7 @@ namespace Kernel.Tasks
                     }
                     else
                     {
-                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.GetPhysicalAddress(param1 & 0xFFFFF000);
+                        Return2 = ProcessManager.GetProcessById(callerProcessId).TheMemoryLayout.GetPhysicalAddress(param1 & 0xFFFFF000);
                         if (Return2 != 0xFFFFFFFF)
                         {
                             Return2 = Return2 | (param1 & 0x00000FFF);
@@ -986,9 +1031,9 @@ namespace Kernel.Tasks
                     }
                     break;
                 case SystemCallNumbers.GetVirtualAddress:
-                    //#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Get virtual address");
-                    //#endif
+#endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
                     if (param1 < 0x100000)
@@ -998,7 +1043,7 @@ namespace Kernel.Tasks
                     }
                     else
                     {
-                        Return2 = ProcessManager.GetProcessById(callerProcesId).TheMemoryLayout.GetVirtualAddress(param1 & 0xFFFFF000);
+                        Return2 = ProcessManager.GetProcessById(callerProcessId).TheMemoryLayout.GetVirtualAddress(param1 & 0xFFFFF000);
                         if (Return2 != 0xFFFFFFFF)
                         {
                             Return2 = Return2 | (param1 & 0x00000FFF);
@@ -1009,6 +1054,63 @@ namespace Kernel.Tasks
                             Return2 = 0;
                             result = SystemCallResults.Fail;
                         }
+                    }
+                    break;
+                case SystemCallNumbers.UnmapPages:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Unmap pages");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.SharePages:
+//#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Share pages");
+//#endif
+                    // Param1: Start Virtual Address
+                    // Param2: Count
+                    // Param3: Target Process Id
+
+                    // 1st stage of Share Pages - propose, accept/reject, defer for adding/return
+                    {
+                        // Assume failure
+                        result = SystemCallResults.Fail;
+
+                        BasicConsole.WriteLine("Syscall: Getting caller process...");
+                        Process CallerProcess = ProcessManager.GetProcessById(callerProcessId);
+                        BasicConsole.WriteLine("Syscall: Checking memory layout...");
+                        if (CallerProcess.TheMemoryLayout.ContainsAllVirtualAddresses(param1, param2, 4096u))
+                        {
+                            BasicConsole.WriteLine("Syscall: Getting target process...");
+                            Process TargetProcess = ProcessManager.GetProcessById(param3);
+                            BasicConsole.WriteLine("Syscall: Checking target layout...");
+                            if (!TargetProcess.TheMemoryLayout.ContainsAnyVirtualAddresses(param1, (int)param2 * 4096))
+                            {
+                                BasicConsole.WriteLine("Syscall: Checking target process can handle Accept Pages syscall...");
+                                if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.AcceptPages) && TargetProcess.SyscallHandler != null)
+                                {
+                                    uint XReturn2 = 0;
+                                    uint XReturn3 = 0;
+                                    uint XReturn4 = 0;
+                                    BasicConsole.WriteLine("Syscall: Switching process...");
+                                    ProcessManager.SwitchProcess(param3, -1);
+                                    BasicConsole.WriteLine("Syscall: Making Accept Pages syscall...");
+                                    SystemCallResults AcceptPagesResult = (SystemCallResults)TargetProcess.SyscallHandler((uint)SystemCallNumbers.AcceptPages, param1, param2, 0, ref XReturn2, ref XReturn3, ref XReturn4, CallerProcess.Id, 0xFFFFFFFF);
+                                    BasicConsole.WriteLine("Syscall: Switching back to Kernel process...");
+                                    ProcessManager.SwitchProcess(ProcessManager.KernelProcess.Id, (int)DeferredSyscallsThread.Id);
+                                    BasicConsole.WriteLine("Syscall: Checking result...");
+                                    if (AcceptPagesResult == SystemCallResults.OK)
+                                    {
+                                        //Suspend the target process until the memory has actually been added to its layout
+                                        //  Adding the pages to the layout has to be deferred as it may require more memory for the underlying dictionaries.
+                                        BasicConsole.WriteLine("Syscall: Suspending target process...");
+                                        TargetProcess.SuspendThreads();
+                                        BasicConsole.WriteLine("Syscall: Deferring syscall...");
+                                        result = SystemCallResults.Deferred;
+                                    }
+                                }
+                            }
+                        }
+                        BasicConsole.WriteLine("Syscall: Complete.");
                     }
                     break;
                 //TODO: Implement handlers for remaining sys calls
@@ -1180,19 +1282,17 @@ namespace Kernel.Tasks
             Process CallerProcess = ProcessManager.GetProcessById(callerProcessId);
             Process TargetProcess = ProcessManager.GetProcessById(targetProcessId);
 
-            ProcessManager.SwitchProcess(targetProcessId, -1);
-
             if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.ReceiveMessage) && TargetProcess.SyscallHandler != null)
             {
                 uint Return2 = 0;
                 uint Return3 = 0;
                 uint Return4 = 0;
+                ProcessManager.SwitchProcess(targetProcessId, -1);
                 TargetProcess.SyscallHandler((uint)SystemCallNumbers.ReceiveMessage, message1, message2, 0, ref Return2, ref Return3, ref Return4, callerProcessId, 0xFFFFFFFF);
+                ProcessManager.SwitchProcess(callerProcessId, (int)callerThreadId);
 
                 Result = true;
             }
-
-            ProcessManager.SwitchProcess(callerProcessId, (int)callerThreadId);
 
             return Result;
         }
