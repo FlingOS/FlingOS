@@ -49,8 +49,7 @@ namespace Kernel.Hardware.Processes
         private static uint ProcessIdGenerator = 1;
 
         private static List Semaphores = new List(1024, 1024);
-        private static SpinLock SemaphoresLock = new SpinLock();
-
+        
         public static void Init()
         {
             FOS_System.Heap.ExpandHeap = ExpandHeap;
@@ -272,8 +271,6 @@ namespace Kernel.Hardware.Processes
             int result = -1;
             Semaphore theSemaphore = null;
 
-            SemaphoresLock.Enter();
-
             for (int i = 0; i < Semaphores.Count; i++)
             {
                 Semaphore aSemaphore = (Semaphore)Semaphores[i];
@@ -291,20 +288,16 @@ namespace Kernel.Hardware.Processes
                 Semaphores.Add(theSemaphore = new Semaphore(result, limit));
             }
 
-            SemaphoresLock.Exit();
-
             theSemaphore.OwnerProcesses.Add(aProcess.Id);
 
             return result;
         }
-        public static bool Semaphore_Deallocate(int id, Process aProcess)
+        public static bool Semaphore_Deallocate(int id)
         {
-            if (Semaphore_VerifyOwner(id, aProcess))
+            if (Semaphore_CheckExists(id))
             {
-                SemaphoresLock.Enter();
                 Semaphores[id] = null;
-                SemaphoresLock.Exit();
-
+                
                 return true;
             }
             return false;
@@ -326,23 +319,47 @@ namespace Kernel.Hardware.Processes
             }
             return false;
         }
-        public static bool Semaphore_AddOwner(int semaphoreId, uint processId, Process aProcess)
+        public static bool Semaphore_AddOwner(int semaphoreId, uint NewProcessId, Process CallerProcess)
         {
-            if (Semaphore_VerifyOwner(semaphoreId, aProcess))
+            if (Semaphore_VerifyOwner(semaphoreId, CallerProcess))
             {
-                ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Add(processId);
+                ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Add(NewProcessId);
                 return true;
+            }
+            return false;
+        }
+        public static bool Semaphore_RemoveOwner(int semaphoreId, uint RemoveProcessId, Process CallerProcess)
+        {
+            if (Semaphore_VerifyOwner(semaphoreId, CallerProcess) && RemoveProcessId == CallerProcess.Id)
+            {
+                ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Remove(RemoveProcessId);
+                return true;
+            }
+            return false;
+        }
+        public static bool Semaphore_CheckForDeallocate(int semaphoreId)
+        {
+            if (Semaphore_CheckExists(semaphoreId))
+            {
+                if (((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Count == 0)
+                {
+                    return Semaphore_Deallocate(semaphoreId);
+                }
             }
             return false;
         }
         private static bool Semaphore_VerifyOwner(int id, Process aProcess)
         {
-            if (id > -1 && id < Semaphores.Count && Semaphores[id] != null)
+            if (Semaphore_CheckExists(id))
             {
                 Semaphore theSemaphore = ((Semaphore)Semaphores[id]);
                 return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) > -1;
             }
             return false;
+        }
+        private static bool Semaphore_CheckExists(int id)
+        {
+            return id > -1 && id < Semaphores.Count && Semaphores[id] != null;
         }
 
         public static void EnableKernelAccessToProcessMemory(uint TargetProcessId)

@@ -533,5 +533,57 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults CreateSemaphore(int Limit, out int SemaphoreId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.CreateSemaphore, (uint)Limit, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            SemaphoreId = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults ShareSemaphore(int SemaphoreId, uint TargetProcessId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.ShareSemaphore, (uint)SemaphoreId, TargetProcessId, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults ReleaseSemaphore(int SemaphoreId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.ReleaseSemaphore, (uint)SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults WaitSemaphore(int SemaphoreId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.WaitSemaphore, (uint)SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults SignalSemaphore(int SemaphoreId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.SignalSemaphore, (uint)SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
     }
 }

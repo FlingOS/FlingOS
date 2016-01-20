@@ -111,6 +111,7 @@ namespace Kernel.Processes
         SleepThread,
         WakeThread,
         CreateSemaphore,
+        ShareSemaphore,
         ReleaseSemaphore,
         WaitSemaphore,
         SignalSemaphore,
@@ -229,6 +230,10 @@ namespace Kernel.Processes
         /// this cannot also handle the system call.
         /// </para>
         /// </remarks>
-        RequestAction_WakeThread = 0xC6DEC6DE
+        RequestAction_WakeThread = 0xC6DEC6DE,
+        /// <summary>
+        /// The system call was handled successfully but the thread should not be woken.
+        /// </summary>
+        OK_NoWake = 0xC7DEC7DE,
     }
 }

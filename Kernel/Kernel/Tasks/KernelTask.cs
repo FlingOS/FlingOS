@@ -217,6 +217,11 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsVirtualAddressMapped);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPhysicalAddress);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetVirtualAddress);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreateSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ShareSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SignalSemaphore);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -754,6 +759,59 @@ namespace Kernel.Tasks
                     result = SystemCallResults.OK;
 
                     break;
+                case SystemCallNumbers.CreateSemaphore:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Create semaphore");
+#endif
+                    // Param1: Limit
+                    Return2 = (uint)ProcessManager.Semaphore_Allocate((int)Param1, CallerProcess);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.ShareSemaphore:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Share semaphore");
+#endif
+                    // Param1: Id
+                    // Param2: New owner Id
+                    {
+                        bool added = ProcessManager.Semaphore_AddOwner((int)Param1, Param2, CallerProcess);
+                        result = added ? SystemCallResults.OK : SystemCallResults.Fail;
+                    }
+                    break;
+                case SystemCallNumbers.ReleaseSemaphore:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Release semaphore");
+#endif
+                    // Param1: Id
+                    {
+                        bool removed = ProcessManager.Semaphore_RemoveOwner((int)Param1, CallerProcess.Id, CallerProcess);
+                        if (removed)
+                        {
+                            ProcessManager.Semaphore_CheckForDeallocate((int)Param1);
+                        }
+                        result = removed ? SystemCallResults.OK : SystemCallResults.Fail;
+                    }
+                    break;
+                case SystemCallNumbers.WaitSemaphore:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Wait semaphore");
+#endif
+                    // Param1: Id
+                    {
+                        int waitResult = ProcessManager.Semaphore_Wait((int)Param1, CallerProcess, CallerThread);
+                        result = waitResult == -1 ? SystemCallResults.Fail : (waitResult == 1 ? SystemCallResults.OK : SystemCallResults.OK_NoWake);
+                    }
+                    break;
+                case SystemCallNumbers.SignalSemaphore:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Signal semaphore");
+#endif
+                    // Param1: Id
+                    {
+                        bool signalResult = ProcessManager.Semaphore_Signal((int)Param1, CallerProcess);
+                        result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
+                    }
+                    break;
                 default:
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
@@ -767,13 +825,16 @@ namespace Kernel.Tasks
         public static void EndDeferredSystemCall(Process CallerProcess, Thread CallerThread, SystemCallResults result, uint Return2, uint Return3, uint Return4)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-            CallerThread.Return1 = (uint)result;
+            CallerThread.Return1 = (uint)(result == SystemCallResults.OK_NoWake ? SystemCallResults.OK : result);
             CallerThread.Return2 = Return2;
             CallerThread.Return3 = Return3;
             CallerThread.Return4 = Return4;
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
-            
-            CallerThread._Wake();
+
+            if (result != SystemCallResults.OK_NoWake)
+            {
+                CallerThread._Wake();
+            }
         }
 
         public static int HandleISR(uint ISRNum)
@@ -822,7 +883,6 @@ namespace Kernel.Tasks
 
             return (int)result;
         }
-
         /// <summary>
         /// Special handler method for system calls recognised/handlded by the kernel task.
         /// </summary>
@@ -1116,9 +1176,39 @@ namespace Kernel.Tasks
                                 }
                             }
                         }
-                        BasicConsole.WriteLine("Syscall: Complete.");
                     }
                     break;
+                case SystemCallNumbers.CreateSemaphore:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Create semaphore");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.ShareSemaphore:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Share semaphore");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.ReleaseSemaphore:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Release semaphore");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.WaitSemaphore:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Wait semaphore");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.SignalSemaphore:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("Syscall: Signal semaphore");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                    
                 //TODO: Implement handlers for remaining sys calls
                 //#if SYSCALLS_TRACE
                 default:

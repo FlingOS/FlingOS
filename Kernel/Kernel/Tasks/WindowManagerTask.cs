@@ -183,6 +183,21 @@ namespace Kernel.Tasks
                     MessageCount++;
                 }
             }
+
+            {
+                char* TextPtr = (char*)AcceptedPages_StartAddress;
+                while (*TextPtr == '\0')
+                {
+                    SystemCalls.SleepThread(50);
+                }
+
+                int* IdPtr = (int*)(TextPtr + 1);
+                int SemaphoreId = *IdPtr;
+                BasicConsole.WriteLine("Waiting on semaphore");
+                SystemCalls.WaitSemaphore(SemaphoreId);
+                BasicConsole.WriteLine("Wait completed");
+            }
+
             SystemCalls.UnmapPages(AcceptedPages_StartAddress, AcceptedPages_Count);
             BasicConsole.WriteLine("Test thread exiting.");
         }

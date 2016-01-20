@@ -111,6 +111,19 @@ namespace Kernel.Tasks
                                     }
                                 }
 
+                                int SemaphoreId;
+                                SystemCalls.CreateSemaphore(0, out SemaphoreId);
+                                SystemCalls.ShareSemaphore(SemaphoreId, KernelTask.WindowManagerTask_ProcessId);
+                                int* IdPtr = (int*)(TextPtr + 1);
+                                *IdPtr = SemaphoreId;
+                                TextPtr[0] = '1';
+                                for (int i = 0; i < 10; i++)
+                                {
+                                    BasicConsole.WriteLine("Delaying semaphore signal: " + (FOS_System.String)i);
+                                    SystemCalls.SleepThread(1000);
+                                }
+                                SystemCalls.SignalSemaphore(SemaphoreId);
+
                                 SystemCalls.UnmapPages(SharedPages_StartAddress, 1);
 
                                 // This worked last time I tested it 
