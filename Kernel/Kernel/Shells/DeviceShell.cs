@@ -47,6 +47,9 @@ namespace Kernel.Shells
                 {
                     try
                     {
+                        console.WriteLine();
+                        console.WriteLine(rtc.GetDateTime().ToString());
+                        console.WriteLine("--------------------------");
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)
                         {

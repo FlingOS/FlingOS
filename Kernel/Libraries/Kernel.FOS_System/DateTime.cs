@@ -48,11 +48,11 @@ namespace Kernel.FOS_System
         public FOS_System.String ToString()
         {
             return FOS_System.Int32.ToDecimalString((int)Year) + "-" +
-                   FOS_System.Int32.ToDecimalString(Month) + "-" +
-                   FOS_System.Int32.ToDecimalString(Day) + " " +
-                   FOS_System.Int32.ToDecimalString(Hour) + ":" +
-                   FOS_System.Int32.ToDecimalString(Minute) + ":" +
-                   FOS_System.Int32.ToDecimalString(Second);
+                   FOS_System.Int32.ToDecimalString(Month).PadLeft(2, '0') + "-" +
+                   FOS_System.Int32.ToDecimalString(Day).PadLeft(2, '0') + " " +
+                   FOS_System.Int32.ToDecimalString(Hour).PadLeft(2, '0') + ":" +
+                   FOS_System.Int32.ToDecimalString(Minute).PadLeft(2, '0') + ":" +
+                   FOS_System.Int32.ToDecimalString(Second).PadLeft(2, '0');
         }
     }
 }
