@@ -38,7 +38,7 @@ namespace Kernel.Hardware.Processes
     public delegate int IRQHanderDelegate(uint irqNumber);
     public delegate int SyscallHanderDelegate(uint syscallNumber, uint param1, uint param2, uint param3, 
             ref uint Return2, ref uint Return3, ref uint Return4,
-            uint callerProcesId, uint callerThreadId);
+            uint callerProcessId, uint callerThreadId);
 
     public unsafe class Process : FOS_System.Object
     {
@@ -277,6 +277,21 @@ namespace Kernel.Hardware.Processes
         {
             //BasicConsole.WriteLine("Process Unload calling MemoryLayout unload");
             TheMemoryLayout.Unload();
+        }
+
+        public void SuspendThreads()
+        {
+            for (int i = 0; i < Threads.Count; i++)
+            {
+                ((Thread)Threads[i]).Suspend = true;
+            }
+        }
+        public void ResumeThreads()
+        {
+            for (int i = 0; i < Threads.Count; i++)
+            {
+                ((Thread)Threads[i]).Suspend = false;
+            }
         }
     }
 }

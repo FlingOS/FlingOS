@@ -44,6 +44,7 @@ namespace Kernel.Hardware.Processes
         }
 
         public Process Owner;
+        
         private bool debug_Suspend;
         public bool Debug_Suspend
         {
@@ -55,6 +56,20 @@ namespace Kernel.Hardware.Processes
             {
                 LastActiveState = ActiveState;
                 debug_Suspend = value;
+                Scheduler.UpdateList(this);
+            }
+        }
+        private bool suspend;
+        public bool Suspend
+        {
+            get
+            {
+                return suspend;
+            }
+            set
+            {
+                LastActiveState = ActiveState;
+                suspend = value;
                 Scheduler.UpdateList(this);
             }
         }
@@ -92,14 +107,14 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public bool Suspended
+        public bool IsSuspended
         {
             get
             {
-                return Debug_Suspend || TimeToSleep == IndefiniteSleep;
+                return Debug_Suspend || Suspend || TimeToSleep == IndefiniteSleep;
             }
         }
-        public bool Active
+        public bool IsActive
         {
             get
             {
@@ -113,8 +128,8 @@ namespace Kernel.Hardware.Processes
                 return 
                     !State->Started ? ActiveStates.NotStarted : 
                     State->Terminated ? ActiveStates.Terminated : 
-                    Suspended ? ActiveStates.Suspended : 
-                    Active ? ActiveStates.Active : 
+                    IsSuspended ? ActiveStates.Suspended : 
+                    IsActive ? ActiveStates.Active : 
                     ActiveStates.Inactive;
             }
         }
