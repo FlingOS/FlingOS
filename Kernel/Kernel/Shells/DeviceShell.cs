@@ -31,6 +31,10 @@ namespace Kernel.Shells
                 //DeviceManager.AddDevice(Serial.COM2);
                 //DeviceManager.AddDevice(Serial.COM3);
 
+                Hardware.Timers.RTC rtc = new Hardware.Timers.RTC();
+                DeviceManager.AddDevice(rtc);
+                BasicConsole.WriteLine("The time is: " + rtc.GetDateTime().ToString());
+
                 BasicConsole.WriteLine("DM > Initialising ATA Manager...");
                 ATAManager.Init();
                 BasicConsole.WriteLine("DM > Initialising PCI Manager...");

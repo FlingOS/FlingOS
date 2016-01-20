@@ -221,62 +221,8 @@ namespace Kernel
         /// <param name="num">The number to write as a decimal.</param>
         public virtual void Write_AsDecimal(UInt32 num)
         {
-            FOS_System.String result = "";
-            //If the number is already 0, just output 0
-            //  straight off. The algorithm below does not
-            //  work if num is 0.
-            if (num != 0)
-            {
-                //Loop through outputting the units value (base 10)
-                //  and then dividing by 10 to move to the next digit.
-                while (num > 0)
-                {
-                    //Get the units
-                    uint rem = num % 10;
-                    //Output the units character
-                    switch (rem)
-                    {
-                        case 0:
-                            result = "0" + result;
-                            break;
-                        case 1:
-                            result = "1" + result;
-                            break;
-                        case 2:
-                            result = "2" + result;
-                            break;
-                        case 3:
-                            result = "3" + result;
-                            break;
-                        case 4:
-                            result = "4" + result;
-                            break;
-                        case 5:
-                            result = "5" + result;
-                            break;
-                        case 6:
-                            result = "6" + result;
-                            break;
-                        case 7:
-                            result = "7" + result;
-                            break;
-                        case 8:
-                            result = "8" + result;
-                            break;
-                        case 9:
-                            result = "9" + result;
-                            break;
-                    }
-                    //Divide by 10 to move to the next digit.
-                    num /= 10;
-                }
-            }
-            else
-            {
-                result = "0";
-            }
             //Write the resulting number
-            Write(result);
+            Write(FOS_System.Stubs.UInt32.ToDecimalString(num));
         }
         /// <summary>
         /// Writes the specified number as an signed decimal string.
@@ -284,67 +230,7 @@ namespace Kernel
         /// <param name="num">The number to write as a decimal.</param>
         public virtual void Write_AsDecimal(Int32 num)
         {
-            //This functions exactly the same as its unsigned 
-            //  counterpart but it adds a minus sign if the number
-            //  is negative.
-            FOS_System.String result = "";
-            if (num != 0)
-            {
-                bool neg = num < 0;
-                if (neg)
-                {
-                    num = -num;
-                }
-
-                while (num > 0)
-                {
-                    int rem = num % 10;
-                    switch (rem)
-                    {
-                        case 0:
-                            result = "0" + result;
-                            break;
-                        case 1:
-                            result = "1" + result;
-                            break;
-                        case 2:
-                            result = "2" + result;
-                            break;
-                        case 3:
-                            result = "3" + result;
-                            break;
-                        case 4:
-                            result = "4" + result;
-                            break;
-                        case 5:
-                            result = "5" + result;
-                            break;
-                        case 6:
-                            result = "6" + result;
-                            break;
-                        case 7:
-                            result = "7" + result;
-                            break;
-                        case 8:
-                            result = "8" + result;
-                            break;
-                        case 9:
-                            result = "9" + result;
-                            break;
-                    }
-                    num /= 10;
-                }
-
-                if (neg)
-                {
-                    result = "-" + result;
-                }
-            }
-            else
-            {
-                result = "0";
-            }
-            Write(result);
+            Write(FOS_System.Int32.ToDecimalString(num));
         }
 
         /// <summary>

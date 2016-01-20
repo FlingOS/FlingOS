@@ -47,5 +47,64 @@ namespace Kernel.FOS_System.Stubs
                 return 4294967295;
             }
         }
+
+        public static FOS_System.String ToDecimalString(uint num)
+        {
+            FOS_System.String result = "";
+            //If the number is already 0, just output 0
+            //  straight off. The algorithm below does not
+            //  work if num is 0.
+            if (num != 0)
+            {
+                //Loop through outputting the units value (base 10)
+                //  and then dividing by 10 to move to the next digit.
+                while (num > 0)
+                {
+                    //Get the units
+                    uint rem = num % 10;
+                    //Output the units character
+                    switch (rem)
+                    {
+                        case 0:
+                            result = "0" + result;
+                            break;
+                        case 1:
+                            result = "1" + result;
+                            break;
+                        case 2:
+                            result = "2" + result;
+                            break;
+                        case 3:
+                            result = "3" + result;
+                            break;
+                        case 4:
+                            result = "4" + result;
+                            break;
+                        case 5:
+                            result = "5" + result;
+                            break;
+                        case 6:
+                            result = "6" + result;
+                            break;
+                        case 7:
+                            result = "7" + result;
+                            break;
+                        case 8:
+                            result = "8" + result;
+                            break;
+                        case 9:
+                            result = "9" + result;
+                            break;
+                    }
+                    //Divide by 10 to move to the next digit.
+                    num /= 10;
+                }
+            }
+            else
+            {
+                result = "0";
+            }
+            return result;
+        }
     }
 }

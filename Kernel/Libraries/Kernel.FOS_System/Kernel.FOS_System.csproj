@@ -102,6 +102,7 @@
     <Compile Include="Collections\UInt32List.cs" />
     <Compile Include="Collections\UInt64List.cs" />
     <Compile Include="ConstantsUtils.cs" />
+    <Compile Include="DateTime.cs" />
     <Compile Include="Exception.cs" />
     <Compile Include="ExceptionMethods.cs" />
     <Compile Include="Exceptions\OutOfMemoryException.cs" />

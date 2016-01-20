@@ -117,5 +117,70 @@ namespace Kernel.FOS_System
             }
             return result;
         }
+
+        public static FOS_System.String ToDecimalString(int num)
+        {
+            //This functions exactly the same as its unsigned 
+            //  counterpart but it adds a minus sign if the number
+            //  is negative.
+            FOS_System.String result = "";
+            if (num != 0)
+            {
+                bool neg = num < 0;
+                if (neg)
+                {
+                    num = -num;
+                }
+
+                while (num > 0)
+                {
+                    int rem = num % 10;
+                    switch (rem)
+                    {
+                        case 0:
+                            result = "0" + result;
+                            break;
+                        case 1:
+                            result = "1" + result;
+                            break;
+                        case 2:
+                            result = "2" + result;
+                            break;
+                        case 3:
+                            result = "3" + result;
+                            break;
+                        case 4:
+                            result = "4" + result;
+                            break;
+                        case 5:
+                            result = "5" + result;
+                            break;
+                        case 6:
+                            result = "6" + result;
+                            break;
+                        case 7:
+                            result = "7" + result;
+                            break;
+                        case 8:
+                            result = "8" + result;
+                            break;
+                        case 9:
+                            result = "9" + result;
+                            break;
+                    }
+                    num /= 10;
+                }
+
+                if (neg)
+                {
+                    result = "-" + result;
+                }
+            }
+            else
+            {
+                result = "0";
+            }
+            return result;
+        }
     }
 }

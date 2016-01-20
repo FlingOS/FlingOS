@@ -138,6 +138,7 @@
     <Compile Include="Testing\ATA\Tests_PATA_RW.cs" />
     <Compile Include="Testing\Test.cs" />
     <Compile Include="Testing\USB\Tests_USB_RW.cs" />
+    <Compile Include="Timers\RTC.cs" />
     <Compile Include="USB\HCIs\UHCI.cs" />
     <Compile Include="VirtMemManager.cs" />
     <Compile Include="PCI\PCIManager.cs" />
