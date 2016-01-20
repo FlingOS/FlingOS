@@ -405,31 +405,28 @@ namespace Kernel.Hardware.VirtMem
 
         public override bool IsVirtualMapped(uint vAddr)
         {
-            //Calculate page directory and page table indices
-            uint pdIdx = vAddr >> 22;
-            uint ptIdx = (vAddr >> 12) & 0x3FF;
-            //Get a pointer to the pre-allocated page table
-            uint* ptPtr = GetFixedPage(pdIdx);
+            uint virtPDIdx = vAddr >> 22;
+            uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
-            //Get the Present bit
-            return (ptPtr[ptIdx] & (uint)PTEFlags.Present) != 0;
+            return UsedVirtPages.IsSet((int)((virtPDIdx * 1024) + virtPTIdx));
         }
         public override bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd)
         {
-            uint* ptPtr = GetFixedPage(0);
-            for (int i = 0; i < (1024*1024); i++)
+            uint physPDIdx = pAddrStart >> 22;
+            uint physPTIdx = (pAddrStart >> 12) & 0x03FF;
+
+            uint physEndPDIdx = pAddrEnd >> 22;
+            uint physEndPTIdx = (pAddrEnd >> 12) & 0x03FF;
+
+            int entry = (int)((physPDIdx * 1024) + physPTIdx);
+            int endEntry = (int)((physEndPDIdx * 1024) + physEndPTIdx);
+
+            for (; entry < endEntry; entry++)
             {
-                uint value = *ptPtr;
-                bool present = (value & (uint)PTEFlags.Present) != 0;
-                if (present)
+                if (UsedPhysPages.IsSet(entry))
                 {
-                    uint addr = value & 0xFFFFF000;
-                    if (addr >= pAddrStart && addr < pAddrEnd)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                ptPtr++;
             }
             return false;
         }
@@ -477,10 +474,10 @@ namespace Kernel.Hardware.VirtMem
             // Round the end pointer up to nearest page
             KernelMemEndPtr = (((KernelMemEndPtr / 4096) + 1) * 4096);
             
-#if PAGING_TRACE
-            BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
-            BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
-#endif
+//#if PAGING_TRACE
+            BasicConsole.WriteLine("VM: Start pointer : " + (FOS_System.String)KernelMemStartPtr);
+            BasicConsole.WriteLine("VM: End pointer : " + (FOS_System.String)KernelMemEndPtr);
+//#endif
             
             physAddr = KernelMemStartPtr - VirtToPhysOffset;
             
