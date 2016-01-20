@@ -197,6 +197,10 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine(" > Initialising system calls...");
                 ProcessManager.CurrentProcess.SyscallHandler = SyscallHandler;
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterISRHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterISRHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterIRQHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterIRQHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
@@ -206,6 +210,7 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumPipeOutpoints);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPipeOutpoints);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitOnPipeCreate);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreatePipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SendMessage);
@@ -910,7 +915,7 @@ namespace Kernel.Tasks
             {
                 case SystemCallNumbers.SleepThread:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("System call : Sleep Thread");
+                    //BasicConsole.WriteLine("System call : Sleep Thread");
 #endif
                     SysCall_Sleep((int)param1, callerProcessId, callerThreadId);
                     result = SystemCallResults.OK;
@@ -1229,7 +1234,7 @@ namespace Kernel.Tasks
         private static void SysCall_Sleep(int ms, uint callerProcessId, uint callerThreadId)
         {
 #if SYSCALLS_TRACE
-            BasicConsole.WriteLine("Sleeping thread...");
+            //BasicConsole.WriteLine("Sleeping thread...");
 #endif
             ProcessManager.GetThreadById(callerThreadId, ProcessManager.GetProcessById(callerProcessId))._EnterSleep(ms);
         }

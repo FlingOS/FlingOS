@@ -68,7 +68,7 @@ namespace Kernel.FOS_System.Collections
         [Drivers.Compiler.Attributes.NoDebug]
         public bool IsSet(int entry)
         {
-            return (bitmap[entry / 8] & ~(byte)(entry % 8)) != 0;
+            return (bitmap[entry / 8] & (1 << (entry % 8))) != 0;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
