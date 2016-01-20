@@ -594,9 +594,9 @@ namespace Kernel.Tasks
                     }
                     break;
                 case SystemCallNumbers.RequestPages:
-//#if DSC_TRACE
+#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Request pages");
-//#endif
+#endif
                     result = SystemCallResults.Fail;
 
                     try
@@ -616,9 +616,10 @@ namespace Kernel.Tasks
                             if (Param2 == 0xFFFFFFFF)
                             {
                                 // Any physical, any virtual
-
+#if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Any physical, Any virtual");
                                 BasicConsole.WriteLine("DSC: Request pages : Okay to map");
+#endif
                                 ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count);
@@ -627,20 +628,26 @@ namespace Kernel.Tasks
                             {
                                 // Any physical, specific virtual
 
+#if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Any physical, Specific virtual");
                                 BasicConsole.WriteLine("Request virtual address: " + (FOS_System.String)Param2);
                                 BasicConsole.WriteLine("Request count: " + (FOS_System.String)count);
+#endif
                                 if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
+#if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
+#endif
                                     ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2);
                                 }
+#if DSC_TRACE
                                 else
                                 {
                                     BasicConsole.WriteLine("First page mapped physical address: " + (FOS_System.String)Hardware.VirtMemManager.GetPhysicalAddress(Param2));
                                 }
+#endif
                             }
                         }
                         else
@@ -649,10 +656,14 @@ namespace Kernel.Tasks
                             {
                                 // Specific physical, any virtual
 
+#if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Specific physical, Any virtual");
+#endif
                                 if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                 {
+#if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
+#endif
                                     ptr = (uint)Hardware.VirtMemManager.MapFreePhysicalPages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
@@ -662,12 +673,16 @@ namespace Kernel.Tasks
                             {
                                 // Specific physical, specific virtual
 
+#if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Specific physical, Specific virtual");
+#endif
                                 if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
                                     if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                     {
+#if DSC_TRACE
                                         BasicConsole.WriteLine("DSC: Request pages : Okay to map");
+#endif
                                         ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                         CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                         Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, Param1);
@@ -678,7 +693,9 @@ namespace Kernel.Tasks
 
                         if (ptr != 0xFFFFFFFF && ptr != 0xDEADBEEF)
                         {
+#if DSC_TRACE
                             BasicConsole.WriteLine("DSC: Request pages : Map successful.");
+#endif
 
                             pAddrs = new uint[count];
                             for (uint currPtr = ptr, i = 0; i < count; currPtr += 4096, i++)
@@ -720,9 +737,9 @@ namespace Kernel.Tasks
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.SharePages:
-//#if DSC_TRACE
+#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Share pages");
-//#endif
+#endif
                     // Param1: Start Virtual Address
                     // Param2: Count
                     // Param3: Target Process Id
@@ -730,7 +747,7 @@ namespace Kernel.Tasks
                     // 2nd stage of Share Pages - deferred, pages already accepted
 
                     Process TargetProcess = ProcessManager.GetProcessById(Param3);
-                    uint[] PhysicalAddresses = CallerProcess.TheMemoryLayout.GetPhysicalAddresses(Param1, Param2, 4096u);
+                    uint[] PhysicalAddresses = CallerProcess.TheMemoryLayout.GetPhysicalAddresses(Param1, Param2);
                     TargetProcess.TheMemoryLayout.AddDataPages(Param1, PhysicalAddresses);
                     TargetProcess.ResumeThreads();
 
@@ -1063,9 +1080,9 @@ namespace Kernel.Tasks
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.SharePages:
-//#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("Syscall: Share pages");
-//#endif
+#endif
                     // Param1: Start Virtual Address
                     // Param2: Count
                     // Param3: Target Process Id
@@ -1075,36 +1092,25 @@ namespace Kernel.Tasks
                         // Assume failure
                         result = SystemCallResults.Fail;
 
-                        BasicConsole.WriteLine("Syscall: Getting caller process...");
                         Process CallerProcess = ProcessManager.GetProcessById(callerProcessId);
-                        BasicConsole.WriteLine("Syscall: Checking memory layout...");
                         if (CallerProcess.TheMemoryLayout.ContainsAllVirtualAddresses(param1, param2, 4096u))
                         {
-                            BasicConsole.WriteLine("Syscall: Getting target process...");
                             Process TargetProcess = ProcessManager.GetProcessById(param3);
-                            BasicConsole.WriteLine("Syscall: Checking target layout...");
                             if (!TargetProcess.TheMemoryLayout.ContainsAnyVirtualAddresses(param1, (int)param2 * 4096))
                             {
-                                BasicConsole.WriteLine("Syscall: Checking target process can handle Accept Pages syscall...");
                                 if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.AcceptPages) && TargetProcess.SyscallHandler != null)
                                 {
                                     uint XReturn2 = 0;
                                     uint XReturn3 = 0;
                                     uint XReturn4 = 0;
-                                    BasicConsole.WriteLine("Syscall: Switching process...");
                                     ProcessManager.SwitchProcess(param3, -1);
-                                    BasicConsole.WriteLine("Syscall: Making Accept Pages syscall...");
                                     SystemCallResults AcceptPagesResult = (SystemCallResults)TargetProcess.SyscallHandler((uint)SystemCallNumbers.AcceptPages, param1, param2, 0, ref XReturn2, ref XReturn3, ref XReturn4, CallerProcess.Id, 0xFFFFFFFF);
-                                    BasicConsole.WriteLine("Syscall: Switching back to Kernel process...");
                                     ProcessManager.SwitchProcess(ProcessManager.KernelProcess.Id, (int)DeferredSyscallsThread.Id);
-                                    BasicConsole.WriteLine("Syscall: Checking result...");
                                     if (AcceptPagesResult == SystemCallResults.OK)
                                     {
                                         //Suspend the target process until the memory has actually been added to its layout
                                         //  Adding the pages to the layout has to be deferred as it may require more memory for the underlying dictionaries.
-                                        BasicConsole.WriteLine("Syscall: Suspending target process...");
                                         TargetProcess.SuspendThreads();
-                                        BasicConsole.WriteLine("Syscall: Deferring syscall...");
                                         result = SystemCallResults.Deferred;
                                     }
                                 }

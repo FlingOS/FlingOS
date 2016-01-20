@@ -94,8 +94,9 @@ namespace Kernel.Tasks
                             {
                                 for (int j = 0; j < 5; j++)
                                 {
-                                    FOS_System.String TestMessage = "Hello, world!";
+                                    FOS_System.String TestMessage = "Shared paging proof of concept message number ";
                                     TestMessage += j;
+                                    TestMessage += "\n";
 
                                     for (int i = 0; i < TestMessage.length; i++)
                                     {
@@ -109,6 +110,20 @@ namespace Kernel.Tasks
                                         SystemCalls.SleepThread(100);
                                     }
                                 }
+
+                                SystemCalls.UnmapPages(SharedPages_StartAddress, 1);
+
+                                // This worked last time I tested it 
+                                //      [ Ed Nutting - 2016-01-20 18:29 ]
+                                //try
+                                //{
+                                //    // This should now cause a page fault
+                                //    TextPtr[0] = '\0';
+                                //}
+                                //catch
+                                //{
+                                //    BasicConsole.WriteLine("Expected page fault caught.");
+                                //}
                             }
                             else
                             {

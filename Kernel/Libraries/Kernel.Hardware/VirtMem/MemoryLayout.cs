@@ -35,11 +35,13 @@ namespace Kernel.Hardware.VirtMem
     /// </remarks>
     public class MemoryLayout : FOS_System.Object
     {
+        //TODO: When do physical pages that are no longer in use (in any memory layout) get unmapped from the Virtual Memory Manager?
+
         public bool NoUnload = false;
         
         public UInt32Dictionary CodePages = new UInt32Dictionary();
         public UInt32Dictionary DataPages = new UInt32Dictionary();
-        
+
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
@@ -300,11 +302,11 @@ namespace Kernel.Hardware.VirtMem
                 return 0xFFFFFFFF;
             }
         }
-        public uint[] GetPhysicalAddresses(uint startAddr, uint count, uint step)
+        public uint[] GetPhysicalAddresses(uint startAddr, uint count)
         {
             uint[] result = new uint[count];
 
-            for (int i = 0; i < count; startAddr += step, i++)
+            for (int i = 0; i < count; startAddr += 4096, i++)
             {
                 result[i] = GetPhysicalAddress(startAddr) & 0xFFFFF000;
             }

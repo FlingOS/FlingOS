@@ -162,8 +162,10 @@ namespace Kernel.Tasks
 
         public static void TestThread()
         {
-            while (!Terminating)
+            int MessageCount = 0;
+            while (MessageCount < 5)
             {
+                SystemCalls.SleepThread(3000);
                 if (AcceptedPages_Count > 0)
                 {
                     char* TextPtr = (char*)AcceptedPages_StartAddress;
@@ -178,9 +180,11 @@ namespace Kernel.Tasks
                     }
                     TextPtr = (char*)AcceptedPages_StartAddress;
                     *TextPtr = '\0';
+                    MessageCount++;
                 }
-                SystemCalls.SleepThread(1000);
             }
+            SystemCalls.UnmapPages(AcceptedPages_StartAddress, AcceptedPages_Count);
+            BasicConsole.WriteLine("Test thread exiting.");
         }
 
         public static void InputProcessing()
