@@ -38,6 +38,8 @@ namespace Kernel.Processes
         /// </summary>
         public const int IndefiniteSleepThread = Hardware.Processes.Thread.IndefiniteSleep;
 
+        //TODO: Implement methods for remaining system calls
+
         /// <summary>
         /// Performs the specified system call.
         /// </summary>
@@ -60,6 +62,8 @@ namespace Kernel.Processes
             ref uint Return4)
         {
         }
+
+        #region ISRs, IRQs and Syscalls
 
         /// <summary>
         /// Performs the named system call.
@@ -200,6 +204,25 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        #endregion
+
+        #region Processes - Full TODO
+
+        //TODO: Start Process syscall
+        //TODO: End Process syscall
+        //TODO: Set Process Attributes syscall
+        //TODO: Get Process List syscall
+        //TODO: Wait On Process syscall
+
+        #endregion
+
+        #region Threads - Partial TODO
+
+        //TODO: End Thread syscall
+        //TODO: Set Thread Attributes syscall
+        //TODO: Get Thread List syscall
+        //TODO: Wait On Thread syscall
+
         /// <summary>
         /// Performs the named system call.
         /// </summary>
@@ -250,6 +273,12 @@ namespace Kernel.Processes
             Call(SystemCallNumbers.WakeThread, ThreadId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
+
+        #endregion
+
+        #region IPC
+
+        #region Pipes
 
         /// <summary>
         /// Performs the named system call.
@@ -370,6 +399,8 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        #endregion
+
         /// <summary>
         /// Performs the named system call.
         /// </summary>
@@ -388,9 +419,9 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        #endregion
 
-
-        //TODO: Implement methods for remaining system calls
+        #region Memory
 
         /// <summary>
         /// Performs the named system call.
@@ -464,6 +495,26 @@ namespace Kernel.Processes
             StartAddress = Return2;
             return (SystemCallResults)Return1;
         }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults UnmapPages(uint StartVirtualAddress, uint Count)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.UnmapPages, StartVirtualAddress, Count, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults SharePages(uint StartVirtualAddress, uint Count, uint TargetProcessId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.SharePages, StartVirtualAddress, Count, TargetProcessId, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
 
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults IsPhysicalAddressMapped(uint PhysicalAddress, out bool IsMapped)
@@ -511,28 +562,9 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults UnmapPages(uint StartVirtualAddress, uint Count)
-        {
-            uint Return1 = 0;
-            uint Return2 = 0;
-            uint Return3 = 0;
-            uint Return4 = 0;
-            Call(SystemCallNumbers.UnmapPages, StartVirtualAddress, Count, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults)Return1;
-        }
+        #endregion
 
-        [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults SharePages(uint StartVirtualAddress, uint Count, uint TargetProcessId)
-        {
-            uint Return1 = 0;
-            uint Return2 = 0;
-            uint Return3 = 0;
-            uint Return4 = 0;
-            Call(SystemCallNumbers.SharePages, StartVirtualAddress, Count, TargetProcessId, ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults)Return1;
-        }
-
+        #region Semaphores
 
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults CreateSemaphore(int Limit, out int SemaphoreId)
@@ -586,6 +618,12 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
 
+        #endregion
+
+        #region Time - Partial TODO
+
+        //TODO: Set Time syscall
+
         [Drivers.Compiler.Attributes.NoGC]
         public static SystemCallResults GetTime(out UInt64 UTCTime)
         {
@@ -608,5 +646,16 @@ namespace Kernel.Processes
             UpTime = (((Int64)Return3) << 32) | (Int64)Return2;
             return (SystemCallResults)Return1;
         }
+
+        #endregion
+
+        #region Devices - Full TODO
+
+        //TODO: Register Device syscall
+        //TODO: Deregister Device syscall
+        //TODO: Assign Device syscall
+        //TODO: Release Device syscall
+
+        #endregion
     }
 }

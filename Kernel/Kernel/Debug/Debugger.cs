@@ -168,16 +168,12 @@ namespace Kernel.Debug
                     DebugPort.Write(" > Checking suspended threads list\n");
 #endif
 
-#if DEBUG
                     bool SuspendAtAddessesContains = ThreadsToSuspendAtAddresses.Contains(ProcessThreadId);
                     // Should suspend the thread if EITHER: It is in the suspend list and not the suspend at addresses list 
                     //                                  OR: It is in the suspend at addresses list and the process's current instruction address matches
                     //      Note: Current instruction address of the paused process not the current interrupt handler routine
                     bool ShouldSuspend = (!SuspendAtAddessesContains && ThreadsToSuspend.IndexOf(ProcessThreadId) > -1) ||
                                          (SuspendAtAddessesContains && ThreadsToSuspendAtAddresses[ProcessThreadId] == ProcessManager.CurrentThread.EIPFromInterruptStack);
-#else
-                    bool ShouldSuspend = ThreadsToSuspend.IndexOf(ProcessThreadId) > -1;
-#endif
 
                     if (ShouldSuspend)
                     {
