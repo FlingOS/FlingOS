@@ -31,10 +31,8 @@ namespace Kernel.Shells
                 //DeviceManager.AddDevice(Serial.COM2);
                 //DeviceManager.AddDevice(Serial.COM3);
 
-                Hardware.Timers.RTC rtc = new Hardware.Timers.RTC();
-                DeviceManager.AddDevice(rtc);
-                BasicConsole.WriteLine("The time is: " + rtc.GetDateTime().ToString());
-
+                //Hardware.Timers.RTC rtc = (Hardware.Timers.RTC)DeviceManager.FindDevice((FOS_System.Type)typeof(Hardware.Timers.RTC));
+                
                 BasicConsole.WriteLine("DM > Initialising ATA Manager...");
                 ATAManager.Init();
                 BasicConsole.WriteLine("DM > Initialising PCI Manager...");
@@ -48,7 +46,7 @@ namespace Kernel.Shells
                     try
                     {
                         console.WriteLine();
-                        console.WriteLine(rtc.GetDateTime().ToString());
+                        //console.WriteLine(rtc.GetDateTime().ToString());
                         console.WriteLine("--------------------------");
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)

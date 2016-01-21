@@ -67,7 +67,8 @@ namespace Kernel.Processes
             uint Return3 = 0;
             uint Return4 = 0;
 
-            if (syscallNumber != (uint)SystemCallNumbers.ReceiveMessage)
+            if (syscallNumber != (uint)SystemCallNumbers.ReceiveMessage &&
+                syscallNumber != (uint)SystemCallNumbers.AcceptPages)
             {
                 Process handlerProcess = null;
 

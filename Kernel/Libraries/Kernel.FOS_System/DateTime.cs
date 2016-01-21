@@ -24,6 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
+using System;
+
 namespace Kernel.FOS_System
 {
     public class DateTime : FOS_System.Object
@@ -44,6 +46,27 @@ namespace Kernel.FOS_System
             Month = aMonth;
             Year = aYear;
         }
+        public DateTime(UInt64 utc)
+        {
+            //TODO: Decode UTC time from 64-bit value (when 64-bit division and modulo are supported)
+            UInt32 castUTC = (UInt32)utc;
+            Year = (castUTC / 31556926u) + 1970u;
+            
+            castUTC -= (Year-1970) * 31556926u;
+            Month = (byte)(castUTC / 2629743u);
+
+            castUTC -= Month * 2629743u;
+            Day = (byte)(castUTC / 86400u);
+
+            castUTC -= Day * 86400u;
+            Hour = (byte)(castUTC / 3600u);
+
+            castUTC -= Hour * 3600u;
+            Minute = (byte)(castUTC / 60u);
+            
+            castUTC -= Minute * 60u;
+            Second = (byte)(castUTC);
+        }
 
         public FOS_System.String ToString()
         {
@@ -53,6 +76,14 @@ namespace Kernel.FOS_System
                    FOS_System.Int32.ToDecimalString(Hour).PadLeft(2, '0') + ":" +
                    FOS_System.Int32.ToDecimalString(Minute).PadLeft(2, '0') + ":" +
                    FOS_System.Int32.ToDecimalString(Second).PadLeft(2, '0');
+        }
+        public UInt64 ToUTC()
+        {
+            return DateTime.ToUTC(Second, Minute, Hour, Day, Month, Year);
+        }
+        public static UInt64 ToUTC(byte aSecond, byte aMinute, byte anHour, byte aDay, byte aMonth, uint aYear)
+        {
+            return ((aYear - 1970) * 31556926u) + (aMonth * 2629743u) + (aDay * 86400u) + (anHour * 3600u) + (aMinute * 60u) + aSecond;
         }
     }
 }

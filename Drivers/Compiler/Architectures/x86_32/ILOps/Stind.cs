@@ -115,7 +115,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                 //Mov [address], value
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "[EBX+4]" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "[EBX]" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[EBX]" });
             }
             else if (bytesToStore == 4)
             {

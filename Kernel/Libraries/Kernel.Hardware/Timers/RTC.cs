@@ -24,6 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
+using System;
+
 namespace Kernel.Hardware.Timers
 {
     //TODO: RTC should inherit from Devices.Timer and implement the necessary functions
@@ -36,7 +38,7 @@ namespace Kernel.Hardware.Timers
         // TODO: Set by ACPI table parsing code if the century register is available
         internal byte century_register = 0x00;
 
-        private const uint CURRENT_YEAR = 2015;
+        private const uint CURRENT_YEAR = 2016;
 
         private byte second = 0;
         private byte minute = 0;
@@ -62,7 +64,7 @@ namespace Kernel.Hardware.Timers
             return DataPort.Read_Byte();
         }
 
-        public FOS_System.DateTime GetDateTime()
+        private void UpdateTime()
         {
             byte century = 0x0;
             byte last_second;
@@ -73,22 +75,24 @@ namespace Kernel.Hardware.Timers
             uint last_year;
             byte last_century;
             byte registerB;
- 
+
             // Note: This uses the "read registers until you get the same values twice in a row" technique
             //       to avoid getting dodgy/inconsistent values due to RTC updates
- 
-            while (GetUpdateInProgressFlag());                // Make sure an update isn't in progress
+
+            while (GetUpdateInProgressFlag()) ;                // Make sure an update isn't in progress
             second = GetRTCRegister(0x00);
             minute = GetRTCRegister(0x02);
             hour = GetRTCRegister(0x04);
             day = GetRTCRegister(0x07);
             month = GetRTCRegister(0x08);
             year = GetRTCRegister(0x09);
-            if(century_register != 0) {
+            if (century_register != 0)
+            {
                 century = GetRTCRegister(century_register);
             }
- 
-            do {
+
+            do
+            {
                 last_second = second;
                 last_minute = minute;
                 last_hour = hour;
@@ -96,53 +100,69 @@ namespace Kernel.Hardware.Timers
                 last_month = month;
                 last_year = year;
                 last_century = century;
- 
-                while (GetUpdateInProgressFlag());           // Make sure an update isn't in progress
+
+                while (GetUpdateInProgressFlag()) ;           // Make sure an update isn't in progress
                 second = GetRTCRegister(0x00);
                 minute = GetRTCRegister(0x02);
                 hour = GetRTCRegister(0x04);
                 day = GetRTCRegister(0x07);
                 month = GetRTCRegister(0x08);
                 year = GetRTCRegister(0x09);
-                if(century_register != 0) {
+                if (century_register != 0)
+                {
                     century = GetRTCRegister(century_register);
                 }
-            } while( (last_second != second) || (last_minute != minute) || (last_hour != hour) ||
+            } while ((last_second != second) || (last_minute != minute) || (last_hour != hour) ||
                     (last_day != day) || (last_month != month) || (last_year != year) ||
-                    (last_century != century) );
+                    (last_century != century));
 
             registerB = GetRTCRegister(0x0B);
- 
+
             // Convert BCD to binary values if necessary
- 
-            if ((registerB & 0x04) == 0) {
+
+            if ((registerB & 0x04) == 0)
+            {
                 second = (byte)((second & 0x0F) + ((second / 16) * 10));
                 minute = (byte)((minute & 0x0F) + ((minute / 16) * 10));
                 hour = (byte)(((hour & 0x0F) + (((hour & 0x70) / 16) * 10)) | (hour & 0x80));
                 day = (byte)((day & 0x0F) + ((day / 16) * 10));
                 month = (byte)((month & 0x0F) + ((month / 16) * 10));
                 year = (byte)((year & 0x0F) + ((year / 16) * 10));
-                if(century_register != 0) {
+                if (century_register != 0)
+                {
                     century = (byte)((century & 0x0F) + ((century / 16) * 10));
                 }
             }
- 
+
             // Convert 12 hour clock to 24 hour clock if necessary
- 
-            if ((registerB & 0x02) == 0 && (hour & 0x80) != 0) {
+
+            if ((registerB & 0x02) == 0 && (hour & 0x80) != 0)
+            {
                 hour = (byte)(((hour & 0x7F) + 12) % 24);
             }
- 
-            // Calculate the full (4-digit) year
- 
-            if(century_register != 0) {
-                year += (uint)(century * 100);
-            } else {
-                year += (CURRENT_YEAR / 100) * 100;
-                if(year < CURRENT_YEAR) year += 100;
-            }
 
+            // Calculate the full (4-digit) year
+
+            if (century_register != 0)
+            {
+                year += (uint)(century * 100);
+            }
+            else
+            {
+                year += (CURRENT_YEAR / 100) * 100;
+                if (year < CURRENT_YEAR) year += 100;
+            }
+        }
+
+        public FOS_System.DateTime GetDateTime()
+        {
+            UpdateTime();
             return new FOS_System.DateTime(second, minute, hour, day, month, year);
+        }
+        public UInt64 GetUTCTime()
+        {
+            UpdateTime();
+            return FOS_System.DateTime.ToUTC(second, minute, hour, day, month, year);
         }
     }
 }

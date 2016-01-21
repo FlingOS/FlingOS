@@ -26,6 +26,7 @@
     
 //#define PERIODIC_REBOOT
 
+using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
@@ -124,6 +125,21 @@ namespace Kernel.Shells
                                 console.WriteLine("Closing...");
                                 //Halt execution of the current shell
                                 terminating = true;
+                            }
+                            else if (cmd == "time")
+                            {
+                                UInt64 UTCTime;
+                                Processes.SystemCallResults TimeResult = Processes.SystemCalls.GetTime(out UTCTime);
+                                if (TimeResult == Processes.SystemCallResults.OK)
+                                {
+                                    BasicConsole.WriteLine(UTCTime);
+                                    FOS_System.DateTime time = new FOS_System.DateTime(UTCTime);
+                                    console.WriteLine(time.ToString());
+                                }
+                                else
+                                {
+                                    console.WriteLine("Couldn't get time!");
+                                }
                             }
                             else if (cmd == "init")
                             {

@@ -41,6 +41,8 @@ namespace Kernel.Tasks
         private static Hardware.Keyboards.VirtualKeyboard keyboard;
         private static Consoles.VirtualConsole console;
 
+        private static Hardware.Timers.RTC rtc;
+
         public static void Main()
         {
             BasicConsole.WriteLine("Device Manager started.");
@@ -74,6 +76,14 @@ namespace Kernel.Tasks
                 Shells.DeviceShell shell = new Shells.DeviceShell(console, keyboard);
 
                 BasicConsole.WriteLine("DM > Executing.");
+
+                //TODO: This is x86 specific
+                rtc = new Hardware.Timers.RTC();
+                BasicConsole.WriteLine("Time:");
+                BasicConsole.WriteLine(rtc.GetDateTime().ToString());
+                BasicConsole.WriteLine(rtc.GetUTCTime());
+                DeviceManager.AddDevice(rtc);
+                SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetTime);
 
                 uint loops = 0;
                 while (!Terminating)
@@ -217,6 +227,15 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DM > Syscall: Receive message");
 #endif
                     ReceiveMessage(callerProcessId, param1, param2);
+                    break;
+                case SystemCallNumbers.GetTime:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("DM > Syscall: Get time");
+#endif
+                    UInt64 UTCTime = rtc.GetUTCTime();
+                    Return2 = (UInt32)(UTCTime);
+                    Return3 = (UInt32)(UTCTime >> 32);
+                    result = SystemCallResults.OK;
                     break;
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Device Manager Task.");
