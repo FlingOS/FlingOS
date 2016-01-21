@@ -22,8 +22,6 @@ namespace Kernel.Shells
         {
             try
             {
-                DeviceManager.Init();
-
                 //TODO: These need transferring from KernelTask memory (somehow) before we can add them to device manager
                 //      Really they shouldn't be initialised by Kernel Task nor used by Kernel/Debugger Tasks directly.
                 //      But they are needed for from-startup/first-instance/fail-proof debugging.
@@ -31,8 +29,12 @@ namespace Kernel.Shells
                 //DeviceManager.AddDevice(Serial.COM2);
                 //DeviceManager.AddDevice(Serial.COM3);
 
-                //Hardware.Timers.RTC rtc = (Hardware.Timers.RTC)DeviceManager.FindDevice((FOS_System.Type)typeof(Hardware.Timers.RTC));
-                
+                Hardware.Timers.RTC rtc = (Hardware.Timers.RTC)DeviceManager.FindDevice((FOS_System.Type)typeof(Hardware.Timers.RTC));
+                if (rtc == null)
+                {
+                    BasicConsole.WriteLine("RTC is null!");
+                }
+
                 BasicConsole.WriteLine("DM > Initialising ATA Manager...");
                 ATAManager.Init();
                 BasicConsole.WriteLine("DM > Initialising PCI Manager...");
@@ -46,7 +48,7 @@ namespace Kernel.Shells
                     try
                     {
                         console.WriteLine();
-                        //console.WriteLine(rtc.GetDateTime().ToString());
+                        console.WriteLine(rtc.GetDateTime().ToString());
                         console.WriteLine("--------------------------");
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)
@@ -67,7 +69,9 @@ namespace Kernel.Shells
                     }
                     catch
                     {
+                        console.WriteLine("Error in Device Shell!");
                         OutputExceptionInfo(ExceptionMethods.CurrentException);
+                        Processes.SystemCalls.SleepThread(1000);
                     }
                 }
             }

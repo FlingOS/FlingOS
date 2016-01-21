@@ -108,5 +108,18 @@ namespace Kernel.Hardware
             internal DeviceAddedHandler handler;
             internal FOS_System.Object state;
         }
+
+        public static Device FindDevice(FOS_System.Type DeviceType)
+        {
+            for (int i = 0; i < Devices.Count; i++)
+            {
+                Device device = (Device)Devices[i];
+                if (device._Type == DeviceType)
+                {
+                    return device;
+                }
+            }
+            return null;
+        }
     }
 }

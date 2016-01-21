@@ -41,7 +41,8 @@ namespace Kernel.Tasks
         private static Hardware.Keyboards.VirtualKeyboard keyboard;
         private static Consoles.VirtualConsole console;
 
-        private static Hardware.Timers.RTC rtc;
+        private static Hardware.Timers.RTC RTC;
+        private static UInt64 StartTime;
 
         public static void Main()
         {
@@ -77,13 +78,23 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine("DM > Executing.");
 
+                DeviceManager.Init();
+
+                #region Real Time Clock initialisation
+                
                 //TODO: This is x86 specific
-                rtc = new Hardware.Timers.RTC();
-                BasicConsole.WriteLine("Time:");
-                BasicConsole.WriteLine(rtc.GetDateTime().ToString());
-                BasicConsole.WriteLine(rtc.GetUTCTime());
-                DeviceManager.AddDevice(rtc);
+                RTC = new Hardware.Timers.RTC();
+                DeviceManager.AddDevice(RTC);
+
+                StartTime = RTC.GetUTCTime();
+                
+                BasicConsole.WriteLine("Start time:");
+                BasicConsole.WriteLine(new FOS_System.DateTime(StartTime).ToString());
+
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetTime);
+                SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetUpTime);
+
+                #endregion
 
                 uint loops = 0;
                 while (!Terminating)
@@ -229,13 +240,27 @@ namespace Kernel.Tasks
                     ReceiveMessage(callerProcessId, param1, param2);
                     break;
                 case SystemCallNumbers.GetTime:
+                    {
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("DM > Syscall: Get time");
 #endif
-                    UInt64 UTCTime = rtc.GetUTCTime();
-                    Return2 = (UInt32)(UTCTime);
-                    Return3 = (UInt32)(UTCTime >> 32);
-                    result = SystemCallResults.OK;
+                        UInt64 CurrentUTCTime = RTC.GetUTCTime();
+                        Return2 = (UInt32)(CurrentUTCTime);
+                        Return3 = (UInt32)(CurrentUTCTime >> 32);
+                        result = SystemCallResults.OK;
+                    }
+                    break;
+                case SystemCallNumbers.GetUpTime:
+                    {
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("DM > Syscall: Get time");
+#endif
+                        UInt64 CurrentUTCTime = RTC.GetUTCTime();
+                        UInt64 UpTime = CurrentUTCTime - StartTime;
+                        Return2 = (UInt32)(UpTime);
+                        Return3 = (UInt32)(UpTime >> 32);
+                        result = SystemCallResults.OK;
+                    }
                     break;
                 default:
                     BasicConsole.WriteLine("System call unrecognised/unhandled by Device Manager Task.");

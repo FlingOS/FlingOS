@@ -597,5 +597,16 @@ namespace Kernel.Processes
             UTCTime = (((UInt64)Return3) << 32) | (UInt64)Return2;
             return (SystemCallResults)Return1;
         }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetUpTime(out Int64 UpTime)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetUpTime, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            UpTime = (((Int64)Return3) << 32) | (Int64)Return2;
+            return (SystemCallResults)Return1;
+        }
     }
 }

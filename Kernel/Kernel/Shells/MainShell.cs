@@ -132,13 +132,26 @@ namespace Kernel.Shells
                                 Processes.SystemCallResults TimeResult = Processes.SystemCalls.GetTime(out UTCTime);
                                 if (TimeResult == Processes.SystemCallResults.OK)
                                 {
-                                    BasicConsole.WriteLine(UTCTime);
                                     FOS_System.DateTime time = new FOS_System.DateTime(UTCTime);
                                     console.WriteLine(time.ToString());
                                 }
                                 else
                                 {
                                     console.WriteLine("Couldn't get time!");
+                                }
+                            }
+                            else if (cmd == "uptime")
+                            {
+                                long UpTimeSeconds;
+                                Processes.SystemCallResults TimeResult = Processes.SystemCalls.GetUpTime(out UpTimeSeconds);
+                                if (TimeResult == Processes.SystemCallResults.OK)
+                                {
+                                    FOS_System.TimeSpan time = new FOS_System.TimeSpan(UpTimeSeconds);
+                                    console.WriteLine("The system has been up for: " + time.ToLongString());
+                                }
+                                else
+                                {
+                                    console.WriteLine("Couldn't get up time!");
                                 }
                             }
                             else if (cmd == "init")
