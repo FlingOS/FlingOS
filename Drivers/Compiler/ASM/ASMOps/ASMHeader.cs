@@ -35,5 +35,10 @@ namespace Drivers.Compiler.ASM.ASMOps
     [ASMOpTarget(Target = OpCodes.Header)]
     public abstract class ASMHeader : ASMOp
     {
+        protected string Section;
+        public ASMHeader(string aSection)
+        {
+            Section = aSection;
+        }
     }
 }

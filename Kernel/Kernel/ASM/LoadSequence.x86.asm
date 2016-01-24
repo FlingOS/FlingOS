@@ -34,7 +34,6 @@ GLOBAL MultibootGraphicsRuntime_VbeMode:data
 GLOBAL MultiBootInfo_Memory_High:data
 GLOBAL MultiBootInfo_Memory_Low:data
 
-GLOBAL Kernel_MemStart:data
 GLOBAL Before_Kernel_Stack:data
 GLOBAL Kernel_Stack
 GLOBAL MultiBootInfo_Structure:data
@@ -45,8 +44,6 @@ GLOBAL IDT_Contents:data
 GLOBAL IDT_Pointer:data
 GLOBAL TSS_Contents:data
 GLOBAL TSS_POINTER:data
-
-Kernel_MemStart:
 
 ; BEGIN - Multiboot Signature
 MultibootSignature dd 464367618
@@ -59,7 +56,11 @@ MultiBootInfo_Memory_Low dd 0
 Before_Kernel_Stack: TIMES 65535 db 0
 Kernel_Stack:
 
+EXTERN Kernel_MemStart
 EXTERN Kernel_MemEnd
+
+EXTERN __bss_start
+EXTERN __bss_end
 
 KERNEL_VIRTUAL_BASE equ 0xC0000000					; 3GiB
 KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
@@ -177,6 +178,29 @@ Kernel_Start:
 	; loop .Kernel_Start_Loop2
 
 	; END - Multiboot Info
+
+
+	; START - Zero out bss
+
+	lea ecx, [__bss_end - KERNEL_VIRTUAL_BASE]
+	lea eax, [__bss_start - KERNEL_VIRTUAL_BASE]
+	sub ecx, eax
+	.ZeroOutBSS:
+	mov byte [eax], 0
+	add eax, 1
+	loop .ZeroOutBSS
+	
+	
+	mov dword eax, 0x5F
+	mov dword ebx, 0xB8000
+	mov dword ecx, 2000
+	.ColourChange1:
+	mov byte [ebx+1], al
+	add ebx, 2
+	loop .ColourChange1
+
+	; END - Zero out bss
+
 ; END - Kernel Start
 
 EXTERN Page_Table1

@@ -34,10 +34,15 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
     public class Header : ASM.ASMOps.ASMHeader
     {
+        public Header(string aSection)
+            : base(aSection)
+        {
+        }
+
         public override string Convert(ASM.ASMBlock theBlock)
         {
             return @"BITS 32
-SECTION .text";
+SECTION ." + Section;
         }
     }
 }

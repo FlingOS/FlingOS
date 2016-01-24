@@ -142,19 +142,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ASM\Exceptions\AddExceptionHandlerInfo.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="ASM\Exceptions\ArbitaryReturn.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Exceptions\HandleEndFinally.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Exceptions\HandleException.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Exceptions\HandleLeave.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Exceptions\BasePointer.x86_32.asm">
@@ -164,9 +152,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Exceptions\StackPointer.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Exceptions\Throw.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\GetEIP.x86.asm">

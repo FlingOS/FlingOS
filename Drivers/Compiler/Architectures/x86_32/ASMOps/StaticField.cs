@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
 
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return string.Format("GLOBAL {0}:data\r\n{0}: times {1} db 0", FieldID, Size);
+            return string.Format("GLOBAL {0}:\r\n{0}: resb {1}", FieldID, Size);
         }
     }
 }

@@ -113,6 +113,8 @@ namespace Drivers.Compiler
                 }
             }
 
+            ResultLines = ResultLines.OrderBy(x => int.Parse(x.Split('¬')[0], System.Globalization.NumberStyles.HexNumber)).ToList();
+
             File.Delete(FileName);
             File.WriteAllLines(FileName, ResultLines.ToArray());
         }

@@ -14,6 +14,7 @@ GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetKerne
 GLOBAL method_System_Void_RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_InvalidatePTE_NAMEEND__System_UInt32_:function
 
 EXTERN Kernel_MemStart
+EXTERN Kernel_MemEnd
 
 ; BEGIN - x86 Virt Mem
 
@@ -105,13 +106,9 @@ SECTION .bss
 
 GLOBAL Page_Directory:data
 GLOBAL Page_Table1:data
-GLOBAL Kernel_MemEnd:data
 
-align 4096
 Page_Directory: resb 4096
 Page_Table1: resb 4194304
 				 ; 4194304 = 1024 * 1024 * 4 = Page tables to cover 4GiB
-
-Kernel_MemEnd:
-
+				 
 ; END - x86 Virt Mem

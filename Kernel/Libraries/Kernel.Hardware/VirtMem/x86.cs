@@ -563,7 +563,7 @@ namespace Kernel.Hardware.VirtMem
         /// </summary>
         /// <param name="entry">The entry to invalidate.</param>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MaxValue)]
+        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 100)]
         private void InvalidatePTE(uint entry)
         {
 

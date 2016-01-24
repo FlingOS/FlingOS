@@ -36,7 +36,6 @@ GLOBAL MultibootGraphicsRuntime_VbeMode:data
 GLOBAL MultiBootInfo_Memory_High:data
 GLOBAL MultiBootInfo_Memory_Low:data
 
-GLOBAL Kernel_MemStart:data
 GLOBAL Before_Kernel_Stack:data
 GLOBAL Kernel_Stack
 GLOBAL MultiBootInfo_Structure:data
@@ -62,7 +61,7 @@ MultiBootInfo_Memory_Low dd 0
 KERNEL_VIRTUAL_BASE equ 0x00000000					; 3GiB
 KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)
 
-Kernel_MemStart:
+EXTERN Kernel_MemStart
 
 Before_Kernel_Stack: TIMES 65535 db 0
 Kernel_Stack:

@@ -73,6 +73,7 @@ namespace Drivers.Compiler.IL
             {
                 Priority = (long.MinValue / 2) - 9
             };
+            InitialiseBssBlock(StaticFieldsBlock);
             TheLibrary.TheASMLibrary.ASMBlocks.Add(StaticFieldsBlock);
 
             // Create / Add Types Table ASM Block
@@ -80,6 +81,7 @@ namespace Drivers.Compiler.IL
             {
                 Priority = (long.MinValue / 2) - 8
             };
+            InitialiseDataBlock(TypesTableBlock);
             TheLibrary.TheASMLibrary.ASMBlocks.Add(TypesTableBlock);
 
             // Create / Add Method Tables ASM Block
@@ -87,6 +89,7 @@ namespace Drivers.Compiler.IL
             {
                 Priority = (long.MinValue / 2) + 0
             };
+            InitialiseDataBlock(MethodTablesBlock);
             TheLibrary.TheASMLibrary.ASMBlocks.Add(MethodTablesBlock);
 
             // Create / Add Field Tables ASM Block
@@ -94,6 +97,7 @@ namespace Drivers.Compiler.IL
             {
                 Priority = (long.MinValue / 2) + 1
             };
+            InitialiseDataBlock(FieldTablesBlock);
             TheLibrary.TheASMLibrary.ASMBlocks.Add(FieldTablesBlock);
 
             // Don't use foreach or you get collection modified exceptions
@@ -137,6 +141,7 @@ namespace Drivers.Compiler.IL
             {
                 Priority = (long.MinValue / 2) - 10
             };
+            InitialiseDataBlock(StringLiteralsBlock);
             TheLibrary.TheASMLibrary.ASMBlocks.Add(StringLiteralsBlock);
 
             string StringTypeId = ILLibrary.SpecialClasses[typeof(Attributes.StringClassAttribute)].First().ID;
@@ -156,7 +161,23 @@ namespace Drivers.Compiler.IL
 
             return result;
         }
-
+        
+        private static void InitialiseTextBlock(ASM.ASMBlock TheBlock)
+        {
+            ASM.ASMOp newHeaderOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Header, "text");
+            TheBlock.ASMOps.Insert(0, newHeaderOp);
+        }
+        private static void InitialiseDataBlock(ASM.ASMBlock TheBlock)
+        {
+            ASM.ASMOp newHeaderOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Header, "data");
+            TheBlock.ASMOps.Insert(0, newHeaderOp);
+        }
+        private static void InitialiseBssBlock(ASM.ASMBlock TheBlock)
+        {
+            ASM.ASMOp newHeaderOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Header, "bss");
+            TheBlock.ASMOps.Insert(0, newHeaderOp);
+        }
+        
         /// <summary>
         /// The number of types scanned.
         /// </summary>
@@ -410,6 +431,7 @@ namespace Drivers.Compiler.IL
                 OriginMethodInfo = theMethodInfo,
                 Priority = theMethodInfo.Priority
             };
+            InitialiseTextBlock(TheASMBlock);
             
             ILConversionState convState = new ILConversionState()
             {

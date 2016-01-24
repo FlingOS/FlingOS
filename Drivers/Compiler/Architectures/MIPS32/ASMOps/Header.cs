@@ -34,9 +34,14 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
     public class Header : ASM.ASMOps.ASMHeader
     {
+        public Header(string aSection)
+            : base(aSection)
+        {
+        }
+
         public override string Convert(ASM.ASMBlock theBlock)
         {
-            return ".text";
+            return "." + Section;
         }
     }
 }

@@ -106,16 +106,26 @@ namespace Drivers.Compiler.ASM
         {
             // Due to "insert 0", asm ops are constructed in reverse order here
 
+            int InsertIndex = 0;
+
+            if (!typeof(ASMOps.ASMHeader).IsAssignableFrom(theBlock.ASMOps[InsertIndex].GetType()))
+            {
+                ASM.ASMOp newHeaderOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Header, "text");
+                theBlock.ASMOps.Insert(InsertIndex, newHeaderOp);
+            }
+
+            InsertIndex = 1;
+
             string currMethodLabel = theBlock.GenerateMethodLabel();
             if (currMethodLabel != null)
             {
                 ASM.ASMOp newLabelOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Label, true);
-                theBlock.ASMOps.Insert(0, newLabelOp);
+                theBlock.ASMOps.Insert(InsertIndex, newLabelOp);
             }
             if (currMethodLabel != null)
             {
                 ASM.ASMOp newGlobalLabelOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.GlobalLabel, currMethodLabel);
-                theBlock.ASMOps.Insert(0, newGlobalLabelOp);
+                theBlock.ASMOps.Insert(InsertIndex, newGlobalLabelOp);
             }
             
             foreach (string anExternalLabel in theBlock.ExternalLabels.Distinct())
@@ -123,11 +133,9 @@ namespace Drivers.Compiler.ASM
                 if (anExternalLabel != currMethodLabel)
                 {
                     ASM.ASMOp newExternalLabelOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.ExternalLabel, anExternalLabel);
-                    theBlock.ASMOps.Insert(0, newExternalLabelOp);
+                    theBlock.ASMOps.Insert(InsertIndex, newExternalLabelOp);
                 }
             }
-            ASM.ASMOp newHeaderOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.Header);
-            theBlock.ASMOps.Insert(0, newHeaderOp);
         }
     }
 }

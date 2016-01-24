@@ -126,6 +126,8 @@ SECTIONS {
       physical address space. */
    . = 0x" + Options.BaseAddress.ToString("X8") + @";
 
+   Kernel_MemStart = .;
+
    .text : AT(ADDR(.text) - " + Options.LoadOffset.ToString() + @") {
 ");
 
@@ -134,22 +136,38 @@ SECTIONS {
                 LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
                 ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
-
-
             LinkScript.AppendLine(@"
           * (.text);
           * (.rodata*);
    }
 
    . = ALIGN(0x1000);
+    data_start = .;
    .data : AT(ADDR(.data) - " + Options.LoadOffset.ToString() + @") {
-          * (.data*);
+");
+
+            for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
+            {
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.data);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+            }
+            LinkScript.AppendLine(@"
    }
+    data_end = .;
 
    . = ALIGN(0x1000);
+    __bss_start = .;
    .bss : AT(ADDR(.bss) - " + Options.LoadOffset.ToString() + @") {
-          * (.bss*);
+");
+
+            for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
+            {
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.bss);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+            }
+            LinkScript.AppendLine(@"
    }
+   __bss_end = .;
+
+   Kernel_MemEnd = .;
 }
 ");
 
@@ -231,14 +249,16 @@ SECTIONS {
    }
 
    . = ALIGN(0x1000);
-   .data : AT(ADDR(.data)) {
+   .data : {
           * (.data*);
    }
 
    . = ALIGN(0x1000);
-   .bss : AT(ADDR(.bss)) {
-          * (.bss*);
+   __bss_start = .;
+   .bss : {
+          * (.bss);
    }
+   __bss_end = .;
 }
 ");
             ASMWriter.Close();

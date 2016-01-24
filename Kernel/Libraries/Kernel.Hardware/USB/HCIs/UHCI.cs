@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-//#define UHCI_TRACE
+#define UHCI_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -612,13 +612,6 @@ namespace Kernel.Hardware.USB.HCIs
                 return;
             }
 
-            //if ((val & UHCI_Consts.STS_USBINT) == 0)
-            //{
-            //    //printf("\nUSB UHCI %u: ", u->num);
-            //}
-
-            //textColor(IMPORTANT);
-            
 #if UHCI_TRACE
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
 #endif
@@ -753,8 +746,7 @@ namespace Kernel.Hardware.USB.HCIs
             if ((val & UHCI_Consts.PORT_CS) != 0) { BasicConsole.WriteLine(" DEVICE ATTACHED"); }
             else { BasicConsole.WriteLine(" NO DEVICE ATTACHED"); }
         }
-
-
+        
         protected bool isTransactionSuccessful(UHCITransaction uT)
         {
 #if UHCI_TRACE
