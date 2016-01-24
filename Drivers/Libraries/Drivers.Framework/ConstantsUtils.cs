@@ -25,31 +25,24 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Drivers.Framework
+namespace Drivers.Utilities
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    /// Static utility methods for constant values.
     /// </summary>
-    public class Object : ObjectWithType
-    {
-    }
-    /// <summary>
-    /// Represents an object with a type. You should use the <see cref="Drivers.Framework.Object"/> class.
-    /// </summary>
-    /// <remarks>
-    /// We implement it like this so that _Type field is always the first
-    /// field in memory of all objects.
-    /// </remarks>
-    public class ObjectWithType
+    public static class ConstantsUtils
     {
         /// <summary>
-        /// The underlying, specific type of the object specified when it was created.
+        /// Creates a mask for the specified bit index.
         /// </summary>
-        public Type _Type;   
+        /// <param name="bitNum">The bit index to mask.</param>
+        /// <returns>The mask.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static uint BIT(int bitNum)
+        {
+            return 1u << bitNum;
+        }
     }
 }

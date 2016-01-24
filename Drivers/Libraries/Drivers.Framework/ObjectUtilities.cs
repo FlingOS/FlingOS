@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Framework.Utilities
+namespace Drivers.Utilities
 {
     /// <summary>
     /// Utility methods for object manipulation.

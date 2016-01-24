@@ -30,26 +30,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Framework
+namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    /// Represents a page fault exception.
+    /// Usually thrown by the hardware interrupt.
     /// </summary>
-    public class Object : ObjectWithType
-    {
-    }
-    /// <summary>
-    /// Represents an object with a type. You should use the <see cref="Drivers.Framework.Object"/> class.
-    /// </summary>
-    /// <remarks>
-    /// We implement it like this so that _Type field is always the first
-    /// field in memory of all objects.
-    /// </remarks>
-    public class ObjectWithType
+    public class PageFaultException : Framework.Exception
     {
         /// <summary>
-        /// The underlying, specific type of the object specified when it was created.
+        /// The error code passed with the exception.
         /// </summary>
-        public Type _Type;   
+        public uint errorCode;
+        /// <summary>
+        /// The (virtual) address that caused the exception.
+        /// </summary>
+        public uint address;
+
+        /// <summary>
+        /// Sets the message to "Page fault"
+        /// </summary>
+        /// <param name="anErrorCode">The error code associated with the page fault.</param>
+        /// <param name="anAddress">The address which caused the fault.</param>
+        public PageFaultException(uint anErrorCode, uint anAddress)
+            : base("Page fault")
+        {
+            errorCode = anErrorCode;
+            address = anAddress;
+        }
     }
 }

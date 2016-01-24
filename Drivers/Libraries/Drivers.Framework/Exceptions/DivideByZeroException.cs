@@ -30,26 +30,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Framework
+namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    /// Represents a divide by zero exception.
+    /// Usually thrown by hardware interrupt 0 when code attempts to divide a number (always integer?) by 0.
     /// </summary>
-    public class Object : ObjectWithType
-    {
-    }
-    /// <summary>
-    /// Represents an object with a type. You should use the <see cref="Drivers.Framework.Object"/> class.
-    /// </summary>
-    /// <remarks>
-    /// We implement it like this so that _Type field is always the first
-    /// field in memory of all objects.
-    /// </remarks>
-    public class ObjectWithType
+    public class DivideByZeroException : Framework.Exception
     {
         /// <summary>
-        /// The underlying, specific type of the object specified when it was created.
+        /// Sets the message to "Attempt to divide by zero invalid."
         /// </summary>
-        public Type _Type;   
+        public DivideByZeroException()
+            : base("Attempt to divide by zero invalid.")
+        {
+        }
+        /// <summary>
+        /// Sets the message to "Attempt to divide by zero invalid. Address: [address]"
+        /// </summary>
+        /// <param name="address">The address of the instruction which caused the exception.</param>
+        public DivideByZeroException(uint address)
+            : base(((Framework.String)"Attempt to divide by zero invalid. Address: ") + address)
+        {
+        }
     }
 }

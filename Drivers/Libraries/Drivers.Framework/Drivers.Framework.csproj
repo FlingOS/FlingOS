@@ -43,12 +43,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Array.cs" />
+    <Compile Include="BasicConsole.cs" />
+    <Compile Include="ByteConverter.cs" />
+    <Compile Include="Collections\Bitmap.cs" />
+    <Compile Include="Collections\CircularBuffer.cs" />
+    <Compile Include="Collections\Comparable.cs" />
+    <Compile Include="Collections\DelegateList.cs" />
+    <Compile Include="Collections\Dictionary.cs" />
+    <Compile Include="Collections\List.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Collections\Queue.cs" />
+    <Compile Include="Collections\Stack.cs" />
+    <Compile Include="Collections\UInt32List.cs" />
+    <Compile Include="Collections\UInt64List.cs" />
+    <Compile Include="ConstantsUtils.cs" />
+    <Compile Include="DateTime.cs" />
+    <Compile Include="Exception.cs" />
+    <Compile Include="ExceptionMethods.cs" />
+    <Compile Include="Exceptions\ArgumentException.cs" />
+    <Compile Include="Exceptions\ArrayTypeMismatchException.cs" />
+    <Compile Include="Exceptions\DivideByZeroException.cs" />
+    <Compile Include="Exceptions\DoubleFaultException.cs" />
+    <Compile Include="Exceptions\IndexOutOfRangeException.cs" />
+    <Compile Include="Exceptions\InvalidOpCodeException.cs" />
+    <Compile Include="Exceptions\NotSupportedException.cs" />
+    <Compile Include="Exceptions\NullReferenceException.cs" />
+    <Compile Include="Exceptions\OutOfMemoryException.cs" />
+    <Compile Include="Exceptions\OverflowException.cs" />
+    <Compile Include="Exceptions\PageFaultException.cs" />
+    <Compile Include="Exceptions\StackException.cs" />
+    <Compile Include="GC.cs" />
+    <Compile Include="Heap.cs" />
+    <Compile Include="Int32.cs" />
+    <Compile Include="Int64.cs" />
     <Compile Include="Math.cs" />
+    <Compile Include="MemoryUtils.cs" />
     <Compile Include="Object.cs" />
     <Compile Include="ObjectUtilities.cs" />
+    <Compile Include="Processes\Requests\Pipes.cs" />
+    <Compile Include="Processes\Requests\Processes.cs" />
+    <Compile Include="Processes\Synchronisation\SpinLock.cs" />
+    <Compile Include="Processes\SystemCalls_Callers.cs" />
+    <Compile Include="Processes\SystemCalls_Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="String.cs" />
+    <Compile Include="TimeSpan.cs" />
     <Compile Include="Type.cs" />
+    <Compile Include="UInt32.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\Drivers.Compiler.csproj">
@@ -57,17 +99,44 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\Kernel\Kernel\Kernel.licenseheader">
+      <Link>Kernel.licenseheader</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ASM\Exceptions\ArbitaryReturn.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\BasePointer.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\ShiftStack.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Exceptions\StackPointer.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\GetEIP.x86.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Math\Divide.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\MemoryUtils.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\ObjectUtilities\GetHandle.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\ObjectUtilities\GetObject.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\Kernel\Kernel\Kernel.licenseheader">
-      <Link>Kernel.licenseheader</Link>
-    </None>
+    <Content Include="ASM\Processes\Synchronisation\SpinLock.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\SystemCalls.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -30,26 +30,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Drivers.Framework
+namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    /// Represents a stack exception.
+    /// Usually thrown by the hardware interrupt.
     /// </summary>
-    public class Object : ObjectWithType
-    {
-    }
-    /// <summary>
-    /// Represents an object with a type. You should use the <see cref="Drivers.Framework.Object"/> class.
-    /// </summary>
-    /// <remarks>
-    /// We implement it like this so that _Type field is always the first
-    /// field in memory of all objects.
-    /// </remarks>
-    public class ObjectWithType
+    public class StackException : Framework.Exception
     {
         /// <summary>
-        /// The underlying, specific type of the object specified when it was created.
+        /// Sets the message to "Stack error."
         /// </summary>
-        public Type _Type;   
+        public StackException()
+            : base("Stack error.")
+        {
+        }
     }
 }

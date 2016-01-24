@@ -33,23 +33,52 @@ using System.Threading.Tasks;
 namespace Drivers.Framework
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    /// An exception object.
     /// </summary>
-    public class Object : ObjectWithType
+    public class Exception : Object
     {
-    }
-    /// <summary>
-    /// Represents an object with a type. You should use the <see cref="Drivers.Framework.Object"/> class.
-    /// </summary>
-    /// <remarks>
-    /// We implement it like this so that _Type field is always the first
-    /// field in memory of all objects.
-    /// </remarks>
-    public class ObjectWithType
-    {
+        protected Framework.String message;
         /// <summary>
-        /// The underlying, specific type of the object specified when it was created.
+        /// The exception message.
         /// </summary>
-        public Type _Type;   
+        public Framework.String Message
+        {
+            get
+            {
+                if (InnerException != null)
+                {
+                    return message + "\nInner exception:\n" + InnerException.Message + "\nInstruction address: " + InstructionAddress;
+                }
+                else
+                {
+                    return message + "\nInstruction address: " + InstructionAddress;
+                }
+            }
+            set
+            {
+                message = value;
+            }
+        }
+
+        public Drivers.Framework.Exception InnerException;
+
+        public uint InstructionAddress = 0;
+
+        /// <summary>
+        /// Creates a new, empty exception.
+        /// </summary>
+        public Exception()
+            : base()
+        {
+        }
+        /// <summary>
+        /// Creates a new exception with specified message.
+        /// </summary>
+        /// <param name="aMessage">The exception message.</param>
+        public Exception(Framework.String aMessage)
+            : base()
+        {
+            Message = aMessage;
+        }
     }
 }

@@ -87,12 +87,7 @@ namespace Drivers.Framework
         /// it indicates there is no base type.
         /// </summary>
         public Type TheBaseType;
-        
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public Type()
-        {
-        }
+
 
         /// <summary>
         /// Compares two types by ID to see if they represent the same type.
@@ -105,16 +100,16 @@ namespace Drivers.Framework
         public static bool operator ==(Type x, Type y)
         {
             //Prevent recursive calls to this "==" implicit method!
-            //if (Utilities.ObjectUtilities.GetHandle(x) == null ||
-            //    Utilities.ObjectUtilities.GetHandle(y) == null)
-            //{
-            //    if (Utilities.ObjectUtilities.GetHandle(x) == null &&
-            //        Utilities.ObjectUtilities.GetHandle(y) == null)
-            //    {
-            //        return true;
-            //    }
-            //    return false;
-            //}
+            if (Utilities.ObjectUtilities.GetHandle(x) == null ||
+                Utilities.ObjectUtilities.GetHandle(y) == null)
+            {
+                if (Utilities.ObjectUtilities.GetHandle(x) == null &&
+                    Utilities.ObjectUtilities.GetHandle(y) == null)
+                {
+                    return true;
+                }
+                return false;
+            }
             return x.Id == y.Id;
         }
         /// <summary>

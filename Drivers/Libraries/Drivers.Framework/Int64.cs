@@ -25,31 +25,22 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Drivers.Framework
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    /// Replacement class for methods, properties and fields usually found on standard System.Int64 type.
     /// </summary>
-    public class Object : ObjectWithType
-    {
-    }
-    /// <summary>
-    /// Represents an object with a type. You should use the <see cref="Drivers.Framework.Object"/> class.
-    /// </summary>
-    /// <remarks>
-    /// We implement it like this so that _Type field is always the first
-    /// field in memory of all objects.
-    /// </remarks>
-    public class ObjectWithType
+    public static class Int64
     {
         /// <summary>
-        /// The underlying, specific type of the object specified when it was created.
+        /// Returns the maximum value of an Int32.
         /// </summary>
-        public Type _Type;   
+        public static long MaxValue
+        {
+            get
+            {
+                return 9223372036854775807;
+            }
+        }
     }
 }

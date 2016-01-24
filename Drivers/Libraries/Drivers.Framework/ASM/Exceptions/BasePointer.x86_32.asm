@@ -1,0 +1,14 @@
+﻿BITS 32
+
+SECTION .text
+
+GLOBAL method_System_Byte__RETEND_Drivers_ExceptionMethods_DECLEND_get_BasePointer_NAMEEND___:function
+GLOBAL method_System_Void_RETEND_Drivers_ExceptionMethods_DECLEND_set_BasePointer_NAMEEND__System_Byte__:function
+
+method_System_Byte__RETEND_Drivers_ExceptionMethods_DECLEND_get_BasePointer_NAMEEND___:
+mov dword [esp+4], ebp
+ret
+
+method_System_Void_RETEND_Drivers_ExceptionMethods_DECLEND_set_BasePointer_NAMEEND__System_Byte__:
+mov dword ebp, [esp+4]
+ret
