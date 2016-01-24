@@ -35,6 +35,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.MemoryUtils;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.USB.Devices
 {
@@ -1173,7 +1174,7 @@ namespace Kernel.Hardware.USB.Devices
                 }
                 else
                 {
-                    Kernel.Processes.SystemCalls.SleepThread(50);
+                    SystemCalls.SleepThread(50);
                 }
             }
 
@@ -1321,7 +1322,7 @@ namespace Kernel.Hardware.USB.Devices
             {
                 ;
             }
-            Kernel.Processes.SystemCalls.SleepThread(20);
+            SystemCalls.SleepThread(20);
 
             return retries > 0;
         }
@@ -1354,7 +1355,7 @@ namespace Kernel.Hardware.USB.Devices
             // Reset Interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
 
-            Kernel.Processes.SystemCalls.SleepThread(500);
+            SystemCalls.SleepThread(500);
 
             // Clear Feature HALT to the Bulk-In  endpoint
 #if MSD_TRACE
@@ -1383,7 +1384,7 @@ namespace Kernel.Hardware.USB.Devices
                 DBGMSG(((FOS_System.String)"Configuration: ") + config + " (to be: 1)");
             }
 #endif
-            Kernel.Processes.SystemCalls.SleepThread(500);
+            SystemCalls.SleepThread(500);
         }
         
         /// <summary>

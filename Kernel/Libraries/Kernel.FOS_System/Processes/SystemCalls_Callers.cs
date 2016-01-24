@@ -25,10 +25,18 @@
 #endregion
     
 using System;
-using Kernel.Hardware.Processes.Requests.Pipes;
+using Kernel.FOS_System.Processes.Requests.Pipes;
 
-namespace Kernel.Processes
+namespace Kernel.FOS_System.Processes
 {
+    public delegate void ThreadStartMethod();
+
+    public delegate int ISRHanderDelegate(uint isrNumber);
+    public delegate int IRQHanderDelegate(uint irqNumber);
+    public delegate int SyscallHanderDelegate(uint syscallNumber, uint param1, uint param2, uint param3,
+                                              ref uint Return2, ref uint Return3, ref uint Return4,
+                                              uint callerProcessId, uint callerThreadId);
+
     /// <summary>
     /// Contains callers and handlers for system calls.
     /// </summary>
@@ -37,7 +45,7 @@ namespace Kernel.Processes
         /// <summary>
         /// The value used to indicate a thread should sleep indefinitely.
         /// </summary>
-        public const int IndefiniteSleepThread = Hardware.Processes.Thread.IndefiniteSleep;
+        public const int IndefiniteSleepThread = -1;
 
         //TODO: Implement methods for remaining system calls
 
@@ -88,7 +96,7 @@ namespace Kernel.Processes
         /// <param name="handler">The handler function to call for all handled ISR events.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterISRHandler(uint ISRNum, Hardware.Processes.ISRHanderDelegate handler)
+        public static SystemCallResults RegisterISRHandler(uint ISRNum, ISRHanderDelegate handler)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -134,7 +142,7 @@ namespace Kernel.Processes
         /// <param name="handler">The handler function to call for all handled IRQ events.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterIRQHandler(uint IRQNum, Hardware.Processes.IRQHanderDelegate handler)
+        public static SystemCallResults RegisterIRQHandler(uint IRQNum, IRQHanderDelegate handler)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -180,7 +188,7 @@ namespace Kernel.Processes
         /// <param name="handler">The handler function to call for all handled system call events.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterSyscallHandler(SystemCallNumbers syscall, Hardware.Processes.SyscallHanderDelegate handler)
+        public static SystemCallResults RegisterSyscallHandler(SystemCallNumbers syscall, SyscallHanderDelegate handler)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -231,7 +239,7 @@ namespace Kernel.Processes
         /// <param name="NewThreadId">OUT: The Id of the new thread.</param>
         /// <returns>OK if the new thread was started.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults StartThread(Hardware.Processes.ThreadStartMethod startMethod, out uint NewThreadId)
+        public static SystemCallResults StartThread(ThreadStartMethod startMethod, out uint NewThreadId)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -637,14 +645,14 @@ namespace Kernel.Processes
             return (SystemCallResults)Return1;
         }
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults GetUpTime(out Int64 UpTime)
+        public static SystemCallResults GetUpTime(out System.Int64 UpTime)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.GetUpTime, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            UpTime = (((Int64)Return3) << 32) | (Int64)Return2;
+            UpTime = (((System.Int64)Return3) << 32) | (System.Int64)Return2;
             return (SystemCallResults)Return1;
         }
 

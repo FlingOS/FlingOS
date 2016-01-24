@@ -26,6 +26,6 @@
     
 using System;
 
-namespace Kernel.Hardware.Processes.Requests.Processes
+namespace Kernel.FOS_System.Processes.Requests.Processes
 {
 }

@@ -25,11 +25,11 @@
 #endregion
     
 using System;
-using Kernel.Processes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
-using Kernel.Hardware.Processes.Requests.Pipes;
+using Kernel.FOS_System.Processes;
+using Kernel.FOS_System.Processes.Requests.Pipes;
 
 namespace Kernel.Tasks
 {

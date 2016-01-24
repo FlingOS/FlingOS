@@ -31,6 +31,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.Hardware.USB.Devices;
 using Utils = Kernel.Utilities.ConstantsUtils;
 using Kernel.Utilities;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.USB.HCIs
 {
@@ -149,8 +150,8 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
             bool isUSBPageAlreadyMapped = false;
-            Kernel.Processes.SystemCallResults checkUSBPageResult = Kernel.Processes.SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
-            if (checkUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+            SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
+            if (checkUSBPageResult != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Error! UHCI cannot check USB Base Address.");
                 ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot check USB Base Address."));
@@ -159,8 +160,8 @@ namespace Kernel.Hardware.USB.HCIs
             if (!isUSBPageAlreadyMapped)
             {
                 uint actualAddress = 0xFFFFFFFF;
-                Kernel.Processes.SystemCallResults mapUSBPageResult = Kernel.Processes.SystemCalls.RequestPhysicalPages((uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
-                if (mapUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages((uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
+                if (mapUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot map USB Base Address.");
                     ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot map USB Base Address."));
@@ -170,8 +171,8 @@ namespace Kernel.Hardware.USB.HCIs
             else
             {
                 uint actualAddress = 0xFFFFFFFF;
-                Kernel.Processes.SystemCallResults getUSBPageResult = Kernel.Processes.SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000, out actualAddress);
-                if (getUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000, out actualAddress);
+                if (getUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot get USB Base Address.");
                     ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot get USB Base Address."));
@@ -193,8 +194,8 @@ namespace Kernel.Hardware.USB.HCIs
 
             {
                 uint actualAddress = 0xFFFFFFFF;
-                Kernel.Processes.SystemCallResults mapFrameListPageResult = Kernel.Processes.SystemCalls.RequestPages(1, out actualAddress);
-                if (mapFrameListPageResult != Kernel.Processes.SystemCallResults.OK)
+                SystemCallResults mapFrameListPageResult = SystemCalls.RequestPages(1, out actualAddress);
+                if (mapFrameListPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot map page for Frame List.");
                     ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot map page for Frame List."));
@@ -212,8 +213,8 @@ namespace Kernel.Hardware.USB.HCIs
             {
 
                 bool isUSBPageAlreadyMapped = false;
-                Kernel.Processes.SystemCallResults checkUSBPageResult = Kernel.Processes.SystemCalls.IsPhysicalAddressMapped((uint)portAddr & 0xFFFFF000, out isUSBPageAlreadyMapped);
-                if (checkUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped((uint)portAddr & 0xFFFFF000, out isUSBPageAlreadyMapped);
+                if (checkUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot check USB Port Address.");
                     ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot check USB Port Address."));
@@ -222,8 +223,8 @@ namespace Kernel.Hardware.USB.HCIs
                 if (!isUSBPageAlreadyMapped)
                 {
                     uint actualAddress = 0xFFFFFFFF;
-                    Kernel.Processes.SystemCallResults mapUSBPageResult = Kernel.Processes.SystemCalls.RequestPhysicalPages((uint)portAddr & 0xFFFFF000, 1, out actualAddress);
-                    if (mapUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                    SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages((uint)portAddr & 0xFFFFF000, 1, out actualAddress);
+                    if (mapUSBPageResult != SystemCallResults.OK)
                     {
                         BasicConsole.WriteLine("Error! UHCI cannot map USB Port Address.");
                         ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot map USB Port Address."));
@@ -233,8 +234,8 @@ namespace Kernel.Hardware.USB.HCIs
                 else
                 {
                     uint actualAddress = 0xFFFFFFFF;
-                    Kernel.Processes.SystemCallResults getUSBPageResult = Kernel.Processes.SystemCalls.GetVirtualAddress((uint)portAddr & 0xFFFFF000, out actualAddress);
-                    if (getUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                    SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)portAddr & 0xFFFFF000, out actualAddress);
+                    if (getUSBPageResult != SystemCallResults.OK)
                     {
                         BasicConsole.WriteLine("Error! UHCI cannot get USB Port Address.");
                         ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot get USB Port Address."));
@@ -272,7 +273,7 @@ namespace Kernel.Hardware.USB.HCIs
             pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.IO | PCI.PCIDevice.PCICommand.Master;
 
             // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
-            Kernel.Processes.SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);
+            SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);
 
             ResetHC();
         }
@@ -291,7 +292,7 @@ namespace Kernel.Hardware.USB.HCIs
             pciDevice.WriteRegister16(UHCI_Consts.PCI_LEGACY_SUPPORT, UHCI_Consts.PCI_LEGACY_SUPPORT_STATUS); // resets support status bits in Legacy support register
                 
             USBCMD.Write_UInt16(UHCI_Consts.CMD_GRESET);
-            Kernel.Processes.SystemCalls.SleepThread(50);
+            SystemCalls.SleepThread(50);
             USBCMD.Write_UInt16(0);
             
             RootPortCount = (byte)(pciDevice.BaseAddresses[4].Size() / 2);
@@ -351,7 +352,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
                 USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
-                Kernel.Processes.SystemCalls.SleepThread(1);
+                SystemCalls.SleepThread(1);
                 USBCMD.Write_UInt16(UHCI_Consts.CMD_HCRESET);
 
                 byte timeout = 50;
@@ -365,7 +366,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
                         break;
                     }
-                    Kernel.Processes.SystemCalls.SleepThread(10);
+                    SystemCalls.SleepThread(10);
                     timeout--;
                 }
                 
@@ -469,14 +470,14 @@ namespace Kernel.Hardware.USB.HCIs
 #if UHCI_TRACE
             BasicConsole.WriteLine("     - FGR issued");
 #endif
-            Kernel.Processes.SystemCalls.SleepThread(20);
+            SystemCalls.SleepThread(20);
             USBCMD.Write_UInt16((ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
 #if UHCI_TRACE
             BasicConsole.WriteLine("     - FGR cleared");            
             BasicConsole.DelayOutput(1);
 #endif
 
-            Kernel.Processes.SystemCalls.SleepThread(100);
+            SystemCalls.SleepThread(100);
             
 #if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Getting run state...");
@@ -545,9 +546,9 @@ namespace Kernel.Hardware.USB.HCIs
             PORTSC1.Write_UInt16((ushort)(UHCI_Consts.PORT_CS_CHANGE | UHCI_Consts.PORT_ENABLE_CHANGE), portOffset);
 
             PORTSC1.Write_UInt16(UHCI_Consts.PORT_RESET, portOffset);
-            Kernel.Processes.SystemCalls.SleepThread(60); // do not delete this wait
+            SystemCalls.SleepThread(60); // do not delete this wait
             PORTSC1.Write_UInt16((ushort)(PORTSC1.Read_UInt16(portOffset) & ~UHCI_Consts.PORT_RESET), portOffset); // clear reset bit
-            Kernel.Processes.SystemCalls.SleepThread(20);
+            SystemCalls.SleepThread(20);
 
             for (int i = 0; i < 10; i++)
             {
@@ -587,7 +588,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             // Enable
             PORTSC1.Write_UInt16(0xF, portOffset);
-            Kernel.Processes.SystemCalls.SleepThread(10);
+            SystemCalls.SleepThread(10);
 
             
 #if UHCI_TRACE
@@ -889,7 +890,7 @@ namespace Kernel.Hardware.USB.HCIs
                 USBCMD.Write_UInt16((ushort)(USBCMD.Read_UInt16() & ~UHCI_Consts.CMD_RS));
                 while ((USBSTS.Read_UInt16() & UHCI_Consts.STS_HCHALTED) == 0)
                 {
-                    Kernel.Processes.SystemCalls.SleepThread(10);
+                    SystemCalls.SleepThread(10);
                 }
 
                 // update scheduler
@@ -902,7 +903,7 @@ namespace Kernel.Hardware.USB.HCIs
                 USBCMD.Write_UInt16((ushort)(USBCMD.Read_UInt16() | UHCI_Consts.CMD_RS));
                 while ((USBSTS.Read_UInt16() & UHCI_Consts.STS_HCHALTED) != 0)
                 {
-                    Kernel.Processes.SystemCalls.SleepThread(10);
+                    SystemCalls.SleepThread(10);
                 }
 
 #if UHCI_TRACE
@@ -922,7 +923,7 @@ namespace Kernel.Hardware.USB.HCIs
                         active = active || ((uT.qTD->u1 & 0x00FF0000) == 0x00800000);
                     }
 
-                    Kernel.Processes.SystemCalls.SleepThread(50);
+                    SystemCalls.SleepThread(50);
                     timeout--;
                 }
 

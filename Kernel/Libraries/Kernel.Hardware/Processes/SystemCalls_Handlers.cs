@@ -27,13 +27,14 @@
 //#define SYSCALLS_TRACE
 
 using Kernel.Hardware.Processes;
+using Kernel.FOS_System.Processes;
 
-namespace Kernel.Processes
+namespace Kernel.Hardware.Processes
 {
     /// <summary>
     /// Contains callers and handlers for system calls.
     /// </summary>
-    public static unsafe partial class SystemCalls
+    public static unsafe class SystemCallHandlers
     {
         /// <summary>
         /// Main interrupt handler routine for system calls.
@@ -267,37 +268,7 @@ namespace Kernel.Processes
             DeferredSystemCalls_CurrentThread.Return4 = 0;
         }*/
     }
-
-    /*public enum SemaphoreRequests
-    {
-        INVALID = 0,
-        Allocate = 1,
-        Deallocate = 2,
-        Wait = 3,
-        Signal = 4,
-        AddOwner = 5
-    }
-    public enum SemaphoreResponses
-    {
-        Error = -1,
-        INVALID = 0,
-        Success = 1,
-        Fail = 2
-    }
-
-    public enum ThreadRequests
-    {
-        INVALID = 0,
-        Create = 1
-    }
-    public enum ThreadResponses
-    {
-        Error = -1,
-        INVALID = 0,
-        Success = 1
-    }
-    */
-
+    
     #region Play Note
 
     public enum MusicalNote : int

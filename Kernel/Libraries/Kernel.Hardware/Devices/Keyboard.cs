@@ -23,8 +23,9 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.Devices
 {
@@ -351,7 +352,7 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised character is found
             while (!GetCharValue(ReadScancode(), out xResult))
             {
-                Kernel.Processes.SystemCalls.SleepThread(5);
+                SystemCalls.SleepThread(5);
             }
             return xResult;
         }
@@ -366,7 +367,7 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised keyboard key is found
             while (!GetKeyValue(ReadScancode(), out xResult))
             {
-                Kernel.Processes.SystemCalls.SleepThread(5);
+                SystemCalls.SleepThread(5);
             }
             return xResult;
         }
@@ -380,7 +381,7 @@ namespace Kernel.Hardware.Devices
             //Wait until we get a scancode
             while (scancodeBuffer.Count == 0)
             {
-                Kernel.Processes.SystemCalls.SleepThread(5);
+                SystemCalls.SleepThread(5);
             }
 
             return Dequeue();

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.IO.Serial
 {
@@ -244,7 +245,7 @@ namespace Kernel.Hardware.IO.Serial
         {
             while (!TransmitReady)
             {
-                Kernel.Processes.SystemCalls.SleepThread(10);
+                SystemCalls.SleepThread(10);
                 //Hardware.Devices.Timer.Default.Wait(10);
             }
             Data.Write_Byte(val);
@@ -255,7 +256,7 @@ namespace Kernel.Hardware.IO.Serial
         {
             while (!ReceiveReady)
             {
-                Kernel.Processes.SystemCalls.SleepThread(10);
+                SystemCalls.SleepThread(10);
                 //Hardware.Devices.Timer.Default.Wait(10);
             }
             return Data.Read_Byte();

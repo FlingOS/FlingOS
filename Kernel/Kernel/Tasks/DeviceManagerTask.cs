@@ -26,9 +26,9 @@
     
 using System;
 using Kernel.FOS_System;
-using Kernel.Processes;
 using Kernel.Hardware;
 using Kernel.Hardware.Devices;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {

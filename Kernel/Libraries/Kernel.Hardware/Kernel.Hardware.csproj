@@ -122,11 +122,8 @@
     <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
-    <Compile Include="Processes\Requests\Pipes.cs" />
     <Compile Include="Processes\Scheduler.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
-    <Compile Include="Processes\SystemCalls_Callers.cs" />
-    <Compile Include="Processes\SystemCalls_Enums.cs" />
     <Compile Include="Processes\SystemCalls_Handlers.cs" />
     <Compile Include="Processes\Thread.cs" />
     <Compile Include="Tasks\PlayNotesTask.cs" />
@@ -187,9 +184,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Scheduler.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\SystemCalls.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\VirtMem\x86.x86_32.asm">

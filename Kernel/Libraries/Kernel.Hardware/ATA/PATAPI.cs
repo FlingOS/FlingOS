@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.ATA
 {
@@ -123,7 +124,7 @@ namespace Kernel.Hardware.ATA
         {
             int timeout = 20;
             while (!IRQInvoked && timeout-- > 0)
-                Kernel.Processes.SystemCalls.SleepThread(5);
+                SystemCalls.SleepThread(5);
 
             return timeout == 0;
         }

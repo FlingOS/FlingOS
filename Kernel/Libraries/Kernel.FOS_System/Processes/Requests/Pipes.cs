@@ -26,7 +26,7 @@
     
 using System;
 
-namespace Kernel.Hardware.Processes.Requests.Pipes
+namespace Kernel.FOS_System.Processes.Requests.Pipes
 {
     /// <summary>
     /// Global, constant values used in the pipes subsystem.

@@ -29,14 +29,14 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.IO;
 using Kernel.FOS_System.IO.Streams;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Processes;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Processes.ELF
 {
     public unsafe class ELFProcess : FOS_System.Object
     {
-        protected Process theProcess = null;
-        public Process TheProcess
+        protected Hardware.Processes.Process theProcess = null;
+        public Hardware.Processes.Process TheProcess
         {
             get
             {
@@ -72,12 +72,12 @@ namespace Kernel.Processes.ELF
                 bool DynamicLinkingRequired = false;
 
                 ThreadStartMethod mainMethod = (ThreadStartMethod)Utilities.ObjectUtilities.GetObject(theFile.Header.EntryPoint);
-                theProcess = ProcessManager.CreateProcess(
+                theProcess = Hardware.Processes.ProcessManager.CreateProcess(
                     mainMethod, theFile.TheFile.Name, UserMode);
 
-                uint threadStackVirtAddr = (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092;
+                uint threadStackVirtAddr = (uint)((Hardware.Processes.Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092;
                 uint threadStackPhysAddr = (uint)Hardware.VirtMemManager.GetPhysicalAddress(threadStackVirtAddr);
-                ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
+                Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
                 
                 // Load the ELF segments (i.e. the program code and data)
                 BaseAddress = theFile.BaseAddress;
@@ -449,7 +449,7 @@ namespace Kernel.Processes.ELF
                     for (int j = 0; j < SOSegments.Count; j++)
                     {
                         ELFSegment SOSegment = (ELFSegment)SOSegments[j];
-                        ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
+                        Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
                             (MemBaseAddress + ((uint)SOSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
                     }
                 }
@@ -461,14 +461,14 @@ namespace Kernel.Processes.ELF
                     for (int j = 0; j < ExeSegments.Count; j++)
                     {
                         ELFSegment ExeSegment = (ELFSegment)ExeSegments[j];
-                        ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
+                        Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
                             (MemBaseAddress + ((uint)ExeSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
                     }
                 }
 
                 #endregion
 
-                ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(threadStackVirtAddr);
+                Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(threadStackVirtAddr);
 
             }
             finally
@@ -533,7 +533,7 @@ namespace Kernel.Processes.ELF
                             virtPageAddr,
                             4096,
                             theProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
-                        ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
+                        Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
 
                         if (executable)
                         {

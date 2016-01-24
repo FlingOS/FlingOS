@@ -35,6 +35,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.Hardware.USB.Devices;
 using Utils = Kernel.Utilities.ConstantsUtils;
 using Kernel.Utilities;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.USB.HCIs
 {
@@ -777,8 +778,8 @@ namespace Kernel.Hardware.USB.HCIs
 
             // Map in the required memory
             bool isUSBPageAlreadyMapped = false;
-            Kernel.Processes.SystemCallResults checkUSBPageResult = Kernel.Processes.SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
-            if (checkUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+            SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
+            if (checkUSBPageResult != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Error! EHCI cannot check USB Base Address.");
                 ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot check USB Base Address."));
@@ -787,8 +788,8 @@ namespace Kernel.Hardware.USB.HCIs
             if (!isUSBPageAlreadyMapped)
             {
                 uint actualAddress = 0xFFFFFFFF;
-                Kernel.Processes.SystemCallResults mapUSBPageResult = Kernel.Processes.SystemCalls.RequestPhysicalPages((uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
-                if (mapUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages((uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
+                if (mapUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! EHCI cannot map USB Base Address.");
                     ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot map USB Base Address."));
@@ -798,8 +799,8 @@ namespace Kernel.Hardware.USB.HCIs
             else
             {
                 uint actualAddress = 0xFFFFFFFF;
-                Kernel.Processes.SystemCallResults getUSBPageResult = Kernel.Processes.SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000, out actualAddress);
-                if (getUSBPageResult != Kernel.Processes.SystemCallResults.OK)
+                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000, out actualAddress);
+                if (getUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! EHCI cannot get USB Base Address.");
                     ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot get USB Base Address."));
@@ -962,7 +963,7 @@ namespace Kernel.Hardware.USB.HCIs
 #if EHCI_TRACE
                 DBGMSG(((FOS_System.String)"EHCI Interrupt line: ") + pciDevice.InterruptLine);
 #endif
-                Kernel.Processes.SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);
+                SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);
             }
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
@@ -1024,7 +1025,7 @@ namespace Kernel.Hardware.USB.HCIs
             // We just told the any Companion HCs (CHCs) to transfer control to the Enhanced HC (EHC)
             //  This takes a moment so we want to wait for the HC to stabalise and for any new 
             //  interrupts to occur (if they are going to).
-            Kernel.Processes.SystemCalls.SleepThread(100);
+            SystemCalls.SleepThread(100);
         }
         /// <summary>
         /// Enables all the necessary interrupts for the EHCI driver. Does not add the Interrupts Handler.
@@ -1059,7 +1060,7 @@ namespace Kernel.Hardware.USB.HCIs
             while (!HCHalted)
             {
                 //Sleep for 1ms (8 micro frames)
-                Kernel.Processes.SystemCalls.SleepThread(1);
+                SystemCalls.SleepThread(1);
             }
 
             // Set the reset bit to signal the reset command
@@ -1085,7 +1086,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Wait while the reset-bit is still set
             while ((USBCMD & EHCI_Consts.CMD_HCResetMask) != 0)
             {
-                Kernel.Processes.SystemCalls.SleepThread(10);
+                SystemCalls.SleepThread(10);
 
                 timeout--;
                 if (timeout==0)
@@ -1157,7 +1158,7 @@ namespace Kernel.Hardware.USB.HCIs
                     while ((pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0 && (timeout > 0))
                     {
                         timeout--;
-                        Kernel.Processes.SystemCalls.SleepThread(10);
+                        SystemCalls.SleepThread(10);
                     }
                     // If the bit is clear, i.e. we didn't time-out 
                     // Note: This is a safer check than checking if "timeout == 0"
@@ -1171,7 +1172,7 @@ namespace Kernel.Hardware.USB.HCIs
                         while ((pciDevice.ReadRegister8(OSownedSemaphore) & 0x01) == 0 && (timeout > 0))
                         {
                             timeout--;
-                            Kernel.Processes.SystemCalls.SleepThread(10);
+                            SystemCalls.SleepThread(10);
                         }
                     }
 #if EHCI_TRACE
@@ -1296,7 +1297,7 @@ namespace Kernel.Hardware.USB.HCIs
             //      "Software must keep this bit at a one long enough to ensure the reset 
             //       sequence, as specified in the USB Specification Revision 2.0, completes."
             //Waits ~200ms which is ample amounts of time
-            Kernel.Processes.SystemCalls.SleepThread(200);
+            SystemCalls.SleepThread(200);
 
             // Terminate the reset port sequence.
             //      " Software writes a zero to this bit to terminate the bus reset sequence."
@@ -1317,7 +1318,7 @@ namespace Kernel.Hardware.USB.HCIs
             while ((PORTSC[portNum] & EHCI_Consts.PSTS_PortReset) != 0)
             {
                 // ~1ms
-                Kernel.Processes.SystemCalls.SleepThread(1);
+                SystemCalls.SleepThread(1);
 
                 timeout--;
                 if (timeout == 0)
@@ -1335,7 +1336,7 @@ namespace Kernel.Hardware.USB.HCIs
             //  (This is not grounded in any spec but seems logical to me. It may be possible
             //   to remove this wait but it's only short and occurs infrequently so no harm in
             //   having it.)
-            Kernel.Processes.SystemCalls.SleepThread(20);
+            SystemCalls.SleepThread(20);
         }
         /// <summary>
         /// The static wrapper for the interrupt handler.
@@ -1959,7 +1960,7 @@ namespace Kernel.Hardware.USB.HCIs
             USBCMD |= EHCI_Consts.CMD_AsyncInterruptDoorbellMask;
             while (AsyncDoorbellIntCount > 0)
             {
-                Kernel.Processes.SystemCalls.SleepThread(5);
+                SystemCalls.SleepThread(5);
             }
 
             FOS_System.Heap.Free(transfer.underlyingTransferData);
@@ -2079,7 +2080,7 @@ namespace Kernel.Hardware.USB.HCIs
                 if (timeout>0)
                 {
                     //~10ms
-                    Kernel.Processes.SystemCalls.SleepThread(10);
+                    SystemCalls.SleepThread(10);
                 }
                 else
                 {
@@ -2142,7 +2143,7 @@ namespace Kernel.Hardware.USB.HCIs
                 DBGMSG("EHCI: Waiting for transaction complete...");
 #endif
 
-                Kernel.Processes.SystemCalls.SleepThread(50);
+                SystemCalls.SleepThread(50);
                 
 #if EHCI_TRACE
                 if (timeout % 10 == 0)

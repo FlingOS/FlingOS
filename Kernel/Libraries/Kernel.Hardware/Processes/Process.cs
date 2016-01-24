@@ -31,15 +31,10 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Synchronisation;
 using Kernel.Hardware;
 using Kernel.Hardware.VirtMem;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.Processes
 {
-    public delegate int ISRHanderDelegate(uint isrNumber);
-    public delegate int IRQHanderDelegate(uint irqNumber);
-    public delegate int SyscallHanderDelegate(uint syscallNumber, uint param1, uint param2, uint param3, 
-            ref uint Return2, ref uint Return3, ref uint Return4,
-            uint callerProcessId, uint callerThreadId);
-
     public unsafe class Process : FOS_System.Object
     {
         public List Threads;

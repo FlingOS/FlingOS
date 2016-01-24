@@ -31,6 +31,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using Kernel.Hardware.Devices;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Shells
 {
@@ -129,8 +130,8 @@ namespace Kernel.Shells
                             else if (cmd == "time")
                             {
                                 UInt64 UTCTime;
-                                Processes.SystemCallResults TimeResult = Processes.SystemCalls.GetTime(out UTCTime);
-                                if (TimeResult == Processes.SystemCallResults.OK)
+                                SystemCallResults TimeResult = SystemCalls.GetTime(out UTCTime);
+                                if (TimeResult == SystemCallResults.OK)
                                 {
                                     FOS_System.DateTime time = new FOS_System.DateTime(UTCTime);
                                     console.WriteLine(time.ToString());
@@ -143,8 +144,8 @@ namespace Kernel.Shells
                             else if (cmd == "uptime")
                             {
                                 long UpTimeSeconds;
-                                Processes.SystemCallResults TimeResult = Processes.SystemCalls.GetUpTime(out UpTimeSeconds);
-                                if (TimeResult == Processes.SystemCallResults.OK)
+                                SystemCallResults TimeResult = SystemCalls.GetUpTime(out UpTimeSeconds);
+                                if (TimeResult == SystemCallResults.OK)
                                 {
                                     FOS_System.TimeSpan time = new FOS_System.TimeSpan(UpTimeSeconds);
                                     console.WriteLine("The system has been up for: " + time.ToLongString());
@@ -995,7 +996,7 @@ namespace Kernel.Shells
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
                 //Pause to give us the chance to read the output. 
                 //  We do not know what the code outside this shell may do.
-                Processes.SystemCalls.SleepThread(1000);
+                SystemCalls.SleepThread(1000);
             }
             console.WriteLine("Main shell exited.");
         }
@@ -3448,7 +3449,7 @@ which should have been provided with the executable.");
                 console.Write("Sleeping for 5 lot(s) of 1 second(s)");
                 for (int i = 0; i < 5; i++)
                 {
-                    Processes.SystemCalls.SleepThread(1000);
+                    SystemCalls.SleepThread(1000);
                     console.Write(".");
                 }
                 console.WriteLine("completed.");
@@ -3457,7 +3458,7 @@ which should have been provided with the executable.");
                 console.Write("Sleeping for 1 lot(s) of 5 second(s)");
                 //for (int i = 0; i < 5; i++)
                 {
-                    Processes.SystemCalls.SleepThread(5000);
+                    SystemCalls.SleepThread(5000);
                     console.Write(".");
                 }
                 console.WriteLine("completed.");

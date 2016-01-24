@@ -25,6 +25,7 @@
 #endregion
     
 using System;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
@@ -54,7 +55,7 @@ namespace Kernel.Tasks
                     VidMemPtr[i] = ImageMap[i];
                 }
 
-                Processes.SystemCalls.SleepThread(1000);
+                SystemCalls.SleepThread(1000);
 
                 /*
                  * --------------------------------------------------------------------------------

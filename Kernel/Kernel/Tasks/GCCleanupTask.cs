@@ -28,10 +28,7 @@
 #undef GCTASK_TRACE
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
@@ -86,7 +83,7 @@ namespace Kernel.Tasks
                 //{
                 //    Hardware.Processes.Scheduler.Enable();
                 //}
-                Processes.SystemCalls.SleepThread(1000);
+                SystemCalls.SleepThread(1000);
             }
         }
     }

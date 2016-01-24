@@ -31,7 +31,14 @@
 using Kernel.FOS_System.Collections;
 using Kernel.Processes;
 using Kernel.Hardware.Processes;
-using Kernel.Hardware.Processes.Requests.Pipes;
+using SystemCalls = Kernel.FOS_System.Processes.SystemCalls;
+using SystemCallNumbers = Kernel.FOS_System.Processes.SystemCallNumbers;
+using SystemCallResults = Kernel.FOS_System.Processes.SystemCallResults;
+using ThreadStartMethod = Kernel.FOS_System.Processes.ThreadStartMethod;
+using SyscallHanderDelegate = Kernel.FOS_System.Processes.SyscallHanderDelegate;
+using ISRHanderDelegate = Kernel.FOS_System.Processes.ISRHanderDelegate;
+using IRQHanderDelegate = Kernel.FOS_System.Processes.IRQHanderDelegate;
+using Kernel.FOS_System.Processes.Requests.Pipes;
 
 namespace Kernel.Tasks
 {
@@ -847,7 +854,7 @@ namespace Kernel.Tasks
         {
             if (ISRNum == 48)
             {
-                SystemCalls.InterruptHandler();
+                Hardware.Processes.SystemCallHandlers.InterruptHandler();
                 return 0;
             }
             return -1;
@@ -1272,7 +1279,7 @@ namespace Kernel.Tasks
 
             if (handlerAddr != 0xFFFFFFFF)
             {
-                theProcess.ISRHandler = (Hardware.Processes.ISRHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+                theProcess.ISRHandler = (ISRHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
             }
 
             theProcess.ISRsToHandle.Set(ISRNum);
@@ -1312,7 +1319,7 @@ namespace Kernel.Tasks
 
             if (handlerAddr != 0xFFFFFFFF)
             {
-                theProcess.IRQHandler = (Hardware.Processes.IRQHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+                theProcess.IRQHandler = (IRQHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
             }
 
             theProcess.IRQsToHandle.Set(IRQNum);
@@ -1349,7 +1356,7 @@ namespace Kernel.Tasks
 
             if (handlerAddr != 0xFFFFFFFF)
             {
-                theProcess.SyscallHandler = (Hardware.Processes.SyscallHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
+                theProcess.SyscallHandler = (FOS_System.Processes.SyscallHanderDelegate)Utilities.ObjectUtilities.GetObject((void*)handlerAddr);
             }
 
             theProcess.SyscallsToHandle.Set(syscallNum);

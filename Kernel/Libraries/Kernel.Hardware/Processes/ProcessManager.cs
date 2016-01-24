@@ -32,6 +32,7 @@ using System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Synchronisation;
 using Kernel.Hardware.Processes.Synchronisation;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.Processes
 {
@@ -59,8 +60,8 @@ namespace Kernel.Hardware.Processes
             uint NumPages = (Size + 4095) / 4096;
             uint FinalSize = NumPages * 4096;
             uint StartAddress;
-            Kernel.Processes.SystemCallResults MapPagesResult = Kernel.Processes.SystemCalls.RequestPages(NumPages, out StartAddress);
-            if(MapPagesResult != Kernel.Processes.SystemCallResults.OK)
+            SystemCallResults MapPagesResult = SystemCalls.RequestPages(NumPages, out StartAddress);
+            if(MapPagesResult != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Request for pages (to expand heap) failed!");
                 return false;

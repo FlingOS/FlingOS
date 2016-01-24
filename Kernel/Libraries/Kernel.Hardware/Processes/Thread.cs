@@ -27,11 +27,10 @@
 //#define THREAD_TRACE
 
 using System;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.Processes
 {
-    public delegate void ThreadStartMethod();
-
     public unsafe class Thread : FOS_System.Collections.Comparable
     {
         public enum ActiveStates

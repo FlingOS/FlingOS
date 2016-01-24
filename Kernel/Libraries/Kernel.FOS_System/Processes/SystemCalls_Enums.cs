@@ -26,7 +26,7 @@
     
 using System;
 
-namespace Kernel.Processes
+namespace Kernel.FOS_System.Processes
 {
     /// <summary>
     /// The complete list of system calls.

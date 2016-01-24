@@ -26,14 +26,14 @@
     
 using System;
 using Kernel.FOS_System.IO;
-using Kernel.Hardware.Processes;
+using Kernel.FOS_System.Processes;
 using Kernel.Processes.ELF;
 
 namespace Kernel.Processes
 {
     public static unsafe class DynamicLinkerLoader
     {
-        public static Process LoadProcess_FromRawExe(File RawExeFile, bool UserMode)
+        public static Hardware.Processes.Process LoadProcess_FromRawExe(File RawExeFile, bool UserMode)
         {
             // - Read in file contents
             // - Map enough memory for the exe file contents
@@ -60,12 +60,12 @@ namespace Kernel.Processes
             //      further down.
             //  Note: The page fault will only be hit on starting a second process because
             //      the scheduler doesn't change the context when only one process is running.
-            ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+            Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
                 (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr),
                 (uint)destMemPtr);
             // We could have been "scheduler interrupted" just after the map but just before the 
             //  add data page...
-            ProcessManager.CurrentProcess.LoadMemLayout();
+            Hardware.Processes.ProcessManager.CurrentProcess.LoadMemLayout();
 
             //BasicConsole.WriteLine("Reading file...");
             int bytesRead = 0;
@@ -82,7 +82,7 @@ namespace Kernel.Processes
 
             // - Create the process
             //BasicConsole.WriteLine("Creating process...");
-            Process process = ProcessManager.CreateProcess(
+            Hardware.Processes.Process process = Hardware.Processes.ProcessManager.CreateProcess(
                 mainMethod, name, UserMode);
             //BasicConsole.WriteLine("Adding process' code page...");
             // Add code page to new processes memory layout
@@ -91,7 +91,7 @@ namespace Kernel.Processes
 
             //BasicConsole.WriteLine("Removing process' code page from current process...");
             //Remove from current processes memory layout
-            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+            Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
 
             //if (reenable)
             //{

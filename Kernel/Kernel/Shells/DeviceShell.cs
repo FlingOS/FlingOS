@@ -4,6 +4,7 @@ using Kernel.Hardware.Devices;
 using Kernel.Hardware.PCI;
 using Kernel.Hardware.USB;
 using Kernel.Hardware.IO.Serial;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Shells
 {
@@ -71,7 +72,7 @@ namespace Kernel.Shells
                     {
                         console.WriteLine("Error in Device Shell!");
                         OutputExceptionInfo(ExceptionMethods.CurrentException);
-                        Processes.SystemCalls.SleepThread(1000);
+                        SystemCalls.SleepThread(1000);
                     }
                 }
             }
@@ -80,7 +81,7 @@ namespace Kernel.Shells
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
                 //Pause to give us the chance to read the output. 
                 //  We do not know what the code outside this shell may do.
-                Processes.SystemCalls.SleepThread(1000);
+                SystemCalls.SleepThread(1000);
             }
             console.WriteLine("Device shell exited.");
         }
@@ -214,7 +215,7 @@ namespace Kernel.Shells
                     console.WriteLine_AsDecimal(usbDeviceInfo.numConfigurations); // number of possible configurations
                     console.Write("MSDInterfaceNum:   ");
                     console.WriteLine_AsDecimal(usbDeviceInfo.MSD_InterfaceNum);
-                    Processes.SystemCalls.SleepThread(1000);
+                    SystemCalls.SleepThread(1000);
                 }
             }
         }

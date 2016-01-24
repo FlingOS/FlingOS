@@ -28,11 +28,12 @@
 #undef PIPES_TRACE
 
 using System;
-using Kernel.Processes;
+using Kernel.Hardware.Processes;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
 using Kernel.Hardware.VirtMem;
-using Kernel.Hardware.Processes.Requests.Pipes;
+using Kernel.FOS_System.Processes;
+using Kernel.FOS_System.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {

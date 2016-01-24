@@ -28,7 +28,7 @@ using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
-using Kernel.Hardware.Processes;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
@@ -45,7 +45,7 @@ namespace Kernel.Tasks
             Console.InitDefault();
 
             // Wait for other system startup to occur
-            Processes.SystemCalls.SleepThread(1000);
+            SystemCalls.SleepThread(1000);
             
             MainConsole = new Consoles.AdvancedConsole();
             MainConsole.ScreenHeight = 7;
@@ -66,7 +66,7 @@ namespace Kernel.Tasks
 
             Hardware.DeviceManager.AddDeviceAddedListener(DeviceManager_DeviceAdded, null);
 
-            Processes.SystemCalls.SleepThread(500);
+            SystemCalls.SleepThread(500);
             Console.Default.ScreenHeight = 25 - 8;
             Console.Default.ScreenStartLine = 8;
 
@@ -90,19 +90,19 @@ namespace Kernel.Tasks
                     StatusLine1 = !StatusLine1;
 
                     StatusConsole.Write("Processes: ");
-                    StatusConsole.WriteLine_AsDecimal(ProcessManager.Processes.Count);
+                    StatusConsole.WriteLine_AsDecimal(Hardware.Processes.ProcessManager.Processes.Count);
 
                     int ThreadCount = 0;
                     int SleptThreads = 0;
                     int IndefiniteSleptThreads = 0;
-                    for (int i = 0; i < ProcessManager.Processes.Count; i++)
+                    for (int i = 0; i < Hardware.Processes.ProcessManager.Processes.Count; i++)
                     {
-                        List threads = ((Process)ProcessManager.Processes[i]).Threads;
+                        List threads = ((Hardware.Processes.Process)Hardware.Processes.ProcessManager.Processes[i]).Threads;
                         ThreadCount += threads.Count;
                         for (int j = 0; j < threads.Count; j++)
                         {
-                            Thread thread = (Thread)threads[j];
-                            if (thread.TimeToSleep == Thread.IndefiniteSleep)
+                            Hardware.Processes.Thread thread = (Hardware.Processes.Thread)threads[j];
+                            if (thread.TimeToSleep == Hardware.Processes.Thread.IndefiniteSleep)
                             {
                                 IndefiniteSleptThreads++;
                                 SleptThreads++;
@@ -160,7 +160,7 @@ namespace Kernel.Tasks
                 MainConsole.Update();
                 StatusConsole.Update();
 
-                Processes.SystemCalls.SleepThread(500);
+                SystemCalls.SleepThread(500);
             }
         }
 
