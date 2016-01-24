@@ -238,52 +238,6 @@ namespace Kernel.FOS_System
             return aBlock->size - (aBlock->used * aBlock->bsize);
         }
 
-        /// <summary>
-        /// Whether the kernel's fixed heap has been initialised or not.
-        /// </summary>
-        private static bool FixedHeapInitialised = false;
-
-        /// <summary>
-        /// Gets a pointer to the block of memory to allocate to the kernel's fixed heap.
-        /// </summary>
-        /// <returns>The pointer to the block of memory.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Heap\GetFixedHeapPtr")]
-        public static UInt32* GetFixedHeapPtr()
-        {
-            //Stub for use by testing framework
-            return (UInt32*)System.Runtime.InteropServices.Marshal.AllocHGlobal((int)GetFixedHeapSize());
-        }
-        /// <summary>
-        /// Gets the size of the block of memory to allocate to the kernel's fixed heap.
-        /// </summary>
-        /// <returns>The size of the block of memory.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static UInt32 GetFixedHeapSize()
-        {
-            //Stub for use by testing framework
-            //Exact 0.5MB
-            return 524288;
-        }
-
-        /// <summary>
-        /// Intialises the kernel's fixed heap.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void InitFixedHeap()
-        {
-            if (!FixedHeapInitialised)
-            {
-                Heap.Init();
-                
-                HeapBlock* heapPtr = (HeapBlock*)Heap.GetFixedHeapPtr();
-                Heap.InitBlock(heapPtr, Heap.GetFixedHeapSize(), 32);
-                Heap.AddBlock(heapPtr);
-
-                FixedHeapInitialised = true;
-            }
-        }
-
         public static void Load(HeapBlock* heapPtr, SpinLock heapLock)
         {
             fblock = heapPtr;

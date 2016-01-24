@@ -306,10 +306,8 @@ namespace Kernel.FOS_System
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        static GC()
+        public static void Init()
         {
-            Heap.InitFixedHeap();
-
             ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
 
             Enabled = true;

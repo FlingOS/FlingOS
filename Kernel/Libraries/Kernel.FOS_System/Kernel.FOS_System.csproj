@@ -102,6 +102,7 @@
     <Compile Include="Collections\UInt32List.cs" />
     <Compile Include="Collections\UInt64List.cs" />
     <Compile Include="ConstantsUtils.cs" />
+    <Compile Include="Heap_Kernel.cs" />
     <Compile Include="Object.cs" />
     <Compile Include="ObjectUtilities.cs" />
     <Compile Include="Processes\Requests\Pipes.cs" />

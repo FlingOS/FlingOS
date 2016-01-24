@@ -306,7 +306,7 @@ namespace Drivers.Framework
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
-        static GC()
+        public static void Init()
         {
             ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
 
