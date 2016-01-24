@@ -25,6 +25,7 @@
 #endregion
     
 using System;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Processes
 {
@@ -288,7 +289,7 @@ namespace Kernel.Processes
         /// <param name="MaxConnections">The maximum number of connections to the outpoint. Use -1 for unlimited.</param>
         /// <returns>OK if the outpoint was registered successfully.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterPipeOutpoint(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, int MaxConnections)
+        public static SystemCallResults RegisterPipeOutpoint(PipeClasses Class, PipeSubclasses Subclass, int MaxConnections)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -305,7 +306,7 @@ namespace Kernel.Processes
         /// <param name="NumOutpoints">The number of matching outpoints found.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults GetNumPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, out int NumOutpoints)
+        public static SystemCallResults GetNumPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, out int NumOutpoints)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -323,7 +324,7 @@ namespace Kernel.Processes
         /// <param name="RequestPtr">A pointer to a request structure, including a pre-allocated descriptors array.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults GetPipeOutpoints(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, Pipes.PipeOutpointsRequest* RequestPtr)
+        public static SystemCallResults GetPipeOutpoints(PipeClasses Class, PipeSubclasses Subclass, PipeOutpointsRequest* RequestPtr)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -339,7 +340,7 @@ namespace Kernel.Processes
         /// <param name="RequestPtr">A pointer to a request structure.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults CreatePipe(uint OutProcessId, Pipes.CreatePipeRequest* RequestPtr)
+        public static SystemCallResults CreatePipe(uint OutProcessId, CreatePipeRequest* RequestPtr)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -356,7 +357,7 @@ namespace Kernel.Processes
         /// <param name="NewPipeId">The Id of the newly created pipe.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults WaitOnPipeCreate(Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass, out int NewPipeId)
+        public static SystemCallResults WaitOnPipeCreate(PipeClasses Class, PipeSubclasses Subclass, out int NewPipeId)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -373,7 +374,7 @@ namespace Kernel.Processes
         /// <param name="BytesRead">The actual number of bytes read from the pipe.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults ReadPipe(Pipes.ReadPipeRequest* Request, out int BytesRead)
+        public static SystemCallResults ReadPipe(ReadPipeRequest* Request, out int BytesRead)
         {
             uint Return1 = 0;
             uint Return2 = 0;
@@ -389,7 +390,7 @@ namespace Kernel.Processes
         /// <param name="Request">A pointer to a write pipe request structure.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults WritePipe(Pipes.WritePipeRequest* Request)
+        public static SystemCallResults WritePipe(WritePipeRequest* Request)
         {
             uint Return1 = 0;
             uint Return2 = 0;

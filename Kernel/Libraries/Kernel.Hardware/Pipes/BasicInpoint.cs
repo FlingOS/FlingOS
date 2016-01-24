@@ -27,6 +27,7 @@
 using System;
 using Kernel.Processes;
 using Kernel.FOS_System;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {
@@ -101,7 +102,7 @@ namespace Kernel.Pipes
             Subclass = aSubclass;
             BufferSize = aBufferSize;
 
-            Pipes.CreatePipeRequest* RequestPtr = (Pipes.CreatePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.CreatePipeRequest), "BasicInPipe : Alloc CreatePipeRequest");
+            CreatePipeRequest* RequestPtr = (CreatePipeRequest*)Heap.AllocZeroed((uint)sizeof(CreatePipeRequest), "BasicInPipe : Alloc CreatePipeRequest");
             if (RequestPtr != null)
             {
                 try
@@ -155,7 +156,7 @@ namespace Kernel.Pipes
         {
             int BytesRead = 0;
 
-            Pipes.ReadPipeRequest* ReadPipeRequestPtr = (Pipes.ReadPipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.ReadPipeRequest), "BasicInPipe : Alloc ReadPipeRequest");
+            ReadPipeRequest* ReadPipeRequestPtr = (ReadPipeRequest*)Heap.AllocZeroed((uint)sizeof(ReadPipeRequest), "BasicInPipe : Alloc ReadPipeRequest");
             try
             {
                 if (ReadPipeRequestPtr != null)

@@ -29,6 +29,7 @@ using Kernel.Processes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Tasks
 {
@@ -220,7 +221,7 @@ namespace Kernel.Tasks
 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
-                Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
+                Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Standard, PipeSubclasses.Standard_Out);
 
                 //BasicConsole.WriteLine("WM > IP : (1)");
 
@@ -228,8 +229,8 @@ namespace Kernel.Tasks
                 {
                     //BasicConsole.WriteLine("WM > IP : (2)");
 
-                    Pipes.PipeOutpointDescriptor[] OutpointDescriptors;
-                    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, Pipes.PipeClasses.Standard, Pipes.PipeSubclasses.Standard_Out);
+                    PipeOutpointDescriptor[] OutpointDescriptors;
+                    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Standard, PipeSubclasses.Standard_Out);
 
                     //BasicConsole.WriteLine("WM > IP : (3)");
 
@@ -241,7 +242,7 @@ namespace Kernel.Tasks
                         {
                             //BasicConsole.WriteLine("WM > IP : (5)");
 
-                            Pipes.PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
+                            PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
                             bool PipeExists = false;
 
                             for (int j = 0; j < ConnectedPipes.Count; j++)
@@ -309,10 +310,10 @@ namespace Kernel.Tasks
                 case SystemCallNumbers.RegisterPipeOutpoint:
                     {
                         BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
-                        Pipes.PipeClasses Class = (Pipes.PipeClasses)param1;
-                        Pipes.PipeSubclasses Subclass = (Pipes.PipeSubclasses)param2;
-                        if (Class == Pipes.PipeClasses.Standard &&
-                            Subclass == Pipes.PipeSubclasses.Standard_Out)
+                        PipeClasses Class = (PipeClasses)param1;
+                        PipeSubclasses Subclass = (PipeSubclasses)param2;
+                        if (Class == PipeClasses.Standard &&
+                            Subclass == PipeSubclasses.Standard_Out)
                         {
                             BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
                             result = SystemCallResults.RequestAction_WakeThread;

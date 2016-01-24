@@ -115,7 +115,6 @@
     <Compile Include="Pipes\Exceptions\RWFailedException.cs" />
     <Compile Include="Pipes\Exceptions\RWUnhandledException.cs" />
     <Compile Include="Pipes\Pipe.cs" />
-    <Compile Include="Pipes\PipeGlobals.cs" />
     <Compile Include="Pipes\PipeInpoint.cs" />
     <Compile Include="Pipes\PipeManager.cs" />
     <Compile Include="Pipes\PipeOutpoint.cs" />
@@ -123,6 +122,7 @@
     <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
+    <Compile Include="Processes\Requests\Pipes.cs" />
     <Compile Include="Processes\Scheduler.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
     <Compile Include="Processes\SystemCalls_Callers.cs" />

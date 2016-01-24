@@ -31,6 +31,7 @@
 using Kernel.FOS_System.Collections;
 using Kernel.Processes;
 using Kernel.Hardware.Processes;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Tasks
 {
@@ -443,7 +444,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Register Pipe Outpoint");
 #endif
                         Pipes.PipeOutpoint outpoint;
-                        bool registered = Pipes.PipeManager.RegisterPipeOutpoint(CallerProcess.Id, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (int)Param3, out outpoint);
+                        bool registered = Pipes.PipeManager.RegisterPipeOutpoint(CallerProcess.Id, (PipeClasses)Param1, (PipeSubclasses)Param2, (int)Param3, out outpoint);
                         if (registered)
                         {
                             result = SystemCallResults.OK;
@@ -463,7 +464,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints");
 #endif
                         int numOutpoints;
-                        bool obtained = Pipes.PipeManager.GetNumPipeOutpoints((Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, out numOutpoints);
+                        bool obtained = Pipes.PipeManager.GetNumPipeOutpoints((PipeClasses)Param1, (PipeSubclasses)Param2, out numOutpoints);
                         if (obtained)
                         {
                             result = SystemCallResults.OK;
@@ -484,7 +485,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
 #endif
 
-                        bool obtained = Pipes.PipeManager.GetPipeOutpoints(CallerProcess, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2, (Pipes.PipeOutpointsRequest*)Param3);
+                        bool obtained = Pipes.PipeManager.GetPipeOutpoints(CallerProcess, (PipeClasses)Param1, (PipeSubclasses)Param2, (PipeOutpointsRequest*)Param3);
                         if (obtained)
                         {
                             result = SystemCallResults.OK;
@@ -505,7 +506,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Create Pipe");
 #endif
 
-                        bool created = Pipes.PipeManager.CreatePipe(CallerProcess.Id, Param1, (Pipes.CreatePipeRequest*)Param2);
+                        bool created = Pipes.PipeManager.CreatePipe(CallerProcess.Id, Param1, (CreatePipeRequest*)Param2);
                         if (created)
                         {
                             result = SystemCallResults.OK;
@@ -526,7 +527,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Wait On Pipe Create");
 #endif
 
-                        bool waiting = Pipes.PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id, (Pipes.PipeClasses)Param1, (Pipes.PipeSubclasses)Param2);
+                        bool waiting = Pipes.PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id, (PipeClasses)Param1, (PipeSubclasses)Param2);
                         if (waiting)
                         {
                             result = SystemCallResults.Deferred;
@@ -549,7 +550,7 @@ namespace Kernel.Tasks
 
                         // Need access to calling process' memory to be able to read values from request structure
                         ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-                        Pipes.ReadPipeRequest* RequestPtr = (Pipes.ReadPipeRequest*)Param1;
+                        ReadPipeRequest* RequestPtr = (ReadPipeRequest*)Param1;
                         int PipeId = RequestPtr->PipeId;
                         bool Blocking = RequestPtr->Blocking;
                         ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -580,7 +581,7 @@ namespace Kernel.Tasks
 
                         // Need access to calling process' memory to be able to read values from request structure
                         ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-                        Pipes.ReadPipeRequest* RequestPtr = (Pipes.ReadPipeRequest*)Param1;
+                        ReadPipeRequest* RequestPtr = (ReadPipeRequest*)Param1;
                         int PipeId = RequestPtr->PipeId;
                         bool Blocking = RequestPtr->Blocking;
                         ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);

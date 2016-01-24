@@ -27,6 +27,7 @@
 using System;
 using Kernel.Processes;
 using Kernel.FOS_System;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes.Standard
 {

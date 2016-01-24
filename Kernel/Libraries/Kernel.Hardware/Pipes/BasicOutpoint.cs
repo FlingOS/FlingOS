@@ -27,6 +27,7 @@
 using System;
 using Kernel.Processes;
 using Kernel.FOS_System;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {
@@ -127,7 +128,7 @@ namespace Kernel.Pipes
         /// <param name="Blocking">Whether the write call should be blocking or not.</param>
         /// <remarks>
         /// <para>
-        /// Id required since an outpoint can be connected to multiple pipes.
+        /// Id required since an outpoint can be connected to multiple 
         /// </para>
         /// <para>
         /// Non-blocking calls will still be deferred but will fail if the data cannot be written 
@@ -136,7 +137,7 @@ namespace Kernel.Pipes
         /// </remarks>
         public void Write(int PipeId, byte[] Data, int Offset, int Length, bool Blocking)
         {
-            Pipes.WritePipeRequest* WritePipeRequestPtr = (Pipes.WritePipeRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
+            WritePipeRequest* WritePipeRequestPtr = (WritePipeRequest*)Heap.AllocZeroed((uint)sizeof(WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
             try
             {
                 if (WritePipeRequestPtr != null)
@@ -195,7 +196,7 @@ namespace Kernel.Pipes
         /// <param name="SysCallResult">Out : The result of the system call. Check this is set to OK.</param>
         /// <param name="Class">The class of pipe to search for.</param>
         /// <param name="Subclass">The subclass of pipe to search for.</param>
-        public static void GetNumPipeOutpoints(out int numOutpoints, out SystemCallResults SysCallResult, Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass)
+        public static void GetNumPipeOutpoints(out int numOutpoints, out SystemCallResults SysCallResult, PipeClasses Class, PipeSubclasses Subclass)
         {
             SysCallResult = SystemCalls.GetNumPipeOutpoints(Class, Subclass, out numOutpoints);
             switch (SysCallResult)
@@ -225,17 +226,17 @@ namespace Kernel.Pipes
         /// <param name="OutpointDescriptors">Out : The array of outpoint descriptors.</param>
         /// <param name="Class">The class of pipe to search for.</param>
         /// <param name="Subclass">The subclass of pipe to search for.</param>
-        public static void GetOutpointDescriptors(int numOutpoints, out SystemCallResults SysCallResult, out Pipes.PipeOutpointDescriptor[] OutpointDescriptors, Pipes.PipeClasses Class, Pipes.PipeSubclasses Subclass)
+        public static void GetOutpointDescriptors(int numOutpoints, out SystemCallResults SysCallResult, out PipeOutpointDescriptor[] OutpointDescriptors, PipeClasses Class, PipeSubclasses Subclass)
         {
-            OutpointDescriptors = new Pipes.PipeOutpointDescriptor[numOutpoints];
+            OutpointDescriptors = new PipeOutpointDescriptor[numOutpoints];
 
-            Pipes.PipeOutpointsRequest* RequestPtr = (Pipes.PipeOutpointsRequest*)Heap.AllocZeroed((uint)sizeof(Pipes.PipeOutpointsRequest), "BasicServerHelpers : Alloc PipeOutpointsRequest");
+            PipeOutpointsRequest* RequestPtr = (PipeOutpointsRequest*)Heap.AllocZeroed((uint)sizeof(PipeOutpointsRequest), "BasicServerHelpers : Alloc PipeOutpointsRequest");
             if (RequestPtr != null)
             {
                 try
                 {
                     RequestPtr->MaxDescriptors = numOutpoints;
-                    RequestPtr->Outpoints = (Pipes.PipeOutpointDescriptor*)((byte*)Utilities.ObjectUtilities.GetHandle(OutpointDescriptors) + FOS_System.Array.FieldsBytesSize);
+                    RequestPtr->Outpoints = (PipeOutpointDescriptor*)((byte*)Utilities.ObjectUtilities.GetHandle(OutpointDescriptors) + FOS_System.Array.FieldsBytesSize);
                     if (RequestPtr->Outpoints != null)
                     {
                         SysCallResult = SystemCalls.GetPipeOutpoints(Class, Subclass, RequestPtr);

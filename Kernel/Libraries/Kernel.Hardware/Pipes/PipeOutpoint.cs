@@ -26,6 +26,7 @@
     
 using System;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {
@@ -81,30 +82,5 @@ namespace Kernel.Pipes
 
             WaitingThreads = new UInt64List();
         }
-    }
-
-    /// <summary>
-    /// Describes an outpoint. Used to return outpoint data from a system call.
-    /// </summary>
-    public struct PipeOutpointDescriptor
-    {
-        /// <summary>
-        /// The Id of the process which owns the outpoint.
-        /// </summary>
-        public uint ProcessId;
-    }
-    /// <summary>
-    /// Represents a Get Outpoints request (used in a system call).
-    /// </summary>
-    public unsafe struct PipeOutpointsRequest
-    {
-        /// <summary>
-        /// The maximum number of outpoint descriptors to return.
-        /// </summary>
-        public int MaxDescriptors;
-        /// <summary>
-        /// The requested outpoint descriptors.
-        /// </summary>
-        public PipeOutpointDescriptor* Outpoints;
     }
 }
