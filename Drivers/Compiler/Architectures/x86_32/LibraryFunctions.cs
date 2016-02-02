@@ -133,6 +133,11 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
+                if (LinkInfo.SequencedASMBlocks[i].PageAlign)
+                {
+                    LinkScript.AppendLine(". = ALIGN(0x1000);");
+                    LinkScript.AppendLine(LinkInfo.SequencedASMBlocks[i].PageAlignLabel + "_Code = .;");
+                }
                 LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
                 ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
@@ -148,6 +153,11 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
+                if (LinkInfo.SequencedASMBlocks[i].PageAlign)
+                {
+                    LinkScript.AppendLine(". = ALIGN(0x1000);");
+                    LinkScript.AppendLine(LinkInfo.SequencedASMBlocks[i].PageAlignLabel + "_Data = .;");
+                }
                 LinkScript.AppendLine(string.Format("       \"{0}\" (.data);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
             }
             LinkScript.AppendLine(@"
@@ -161,6 +171,11 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
+                if (LinkInfo.SequencedASMBlocks[i].PageAlign)
+                {
+                    LinkScript.AppendLine(". = ALIGN(0x1000);");
+                    LinkScript.AppendLine(LinkInfo.SequencedASMBlocks[i].PageAlignLabel + "_BSS = .;");
+                }
                 LinkScript.AppendLine(string.Format("       \"{0}\" (.bss);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
             }
             LinkScript.AppendLine(@"
@@ -238,6 +253,11 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
+                if (LinkInfo.SequencedASMBlocks[i].PageAlign)
+                {
+                    LinkScript.AppendLine(". = ALIGN(0x1000);");
+                    LinkScript.AppendLine(LinkInfo.SequencedASMBlocks[i].PageAlignLabel + "_Code = .;");
+                }
                 LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
                 ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
@@ -250,13 +270,35 @@ SECTIONS {
 
    . = ALIGN(0x1000);
    .data : {
-          * (.data*);
+");
+
+            for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
+            {
+                if (LinkInfo.SequencedASMBlocks[i].PageAlign)
+                {
+                    LinkScript.AppendLine(". = ALIGN(0x1000);");
+                    LinkScript.AppendLine(LinkInfo.SequencedASMBlocks[i].PageAlignLabel + "_Data = .;");
+                }
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.data);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+            }
+            LinkScript.AppendLine(@"
    }
 
    . = ALIGN(0x1000);
    __bss_start = .;
    .bss : {
-          * (.bss);
+");
+
+            for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
+            {
+                if (LinkInfo.SequencedASMBlocks[i].PageAlign)
+                {
+                    LinkScript.AppendLine(". = ALIGN(0x1000);");
+                    LinkScript.AppendLine(LinkInfo.SequencedASMBlocks[i].PageAlignLabel + "_BSS = .;");
+                }
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.bss);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+            }
+            LinkScript.AppendLine(@"
    }
    __bss_end = .;
 }

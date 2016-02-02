@@ -83,6 +83,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
         public override bool LinkISO(IL.ILLibrary TheLibrary, LinkInformation LinkInfo)
         {
+            //TODO: Update this to match the LinkISO of the x86 kernel
+
             bool OK = true;
 
             string BinPath = LinkInfo.ISOPath.Replace(".iso", ".bin");

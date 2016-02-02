@@ -68,6 +68,7 @@ namespace Kernel.Hardware.Interrupts
     {
         //TODO: This lot is all x86 specific. It needs to be abstracted into a separate x86 interrupts class to support new architectures.
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static bool insideCriticalHandler = false;
         public static bool InsideCriticalHandler
         {
@@ -80,6 +81,7 @@ namespace Kernel.Hardware.Interrupts
             set
             {
                 insideCriticalHandler = value;
+                FOS_System.GC.UseCurrentState = !value;
 
                 FOS_System.Heap.PreventAllocation = value;
                 if (value)
@@ -104,11 +106,13 @@ namespace Kernel.Hardware.Interrupts
         /// <summary>
         /// Used to disable attempts to process switch while the OS is initialising.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static bool EnableProcessSwitching = false;
 
         /// <summary>
         /// Exception state for during interrupt handlers.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static ExceptionState* InterruptsExState;
 
         static Interrupts()

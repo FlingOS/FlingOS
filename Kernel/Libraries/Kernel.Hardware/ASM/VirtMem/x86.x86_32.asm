@@ -102,6 +102,105 @@ pop dword ebp
 
 ret
 
+EXTERN StaticFields_Start
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetStaticFields_StartPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetStaticFields_StartPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], StaticFields_Start
+
+pop dword ebp
+
+ret
+
+EXTERN __bss_end
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetStaticFields_EndPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetStaticFields_EndPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], __bss_end
+
+pop dword ebp
+
+ret
+
+
+
+
+EXTERN IsolatedKernel_BSS
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetIsolatedKernelPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetIsolatedKernelPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], IsolatedKernel_BSS
+
+pop dword ebp
+
+ret
+
+
+EXTERN IsolatedKernel_Hardware_BSS
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetIsolatedKernel_HardwarePtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetIsolatedKernel_HardwarePtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], IsolatedKernel_Hardware_BSS
+
+pop dword ebp
+
+ret
+
+
+EXTERN IsolatedKernel_FOS_System_BSS
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetIsolatedKernel_FOS_SystemPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetIsolatedKernel_FOS_SystemPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], IsolatedKernel_FOS_System_BSS
+
+pop dword ebp
+
+ret
+
+
+
+EXTERN __bss_start
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetBSS_StartPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetBSS_StartPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], __bss_start
+
+pop dword ebp
+
+ret
+
+EXTERN __bss_end
+GLOBAL method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetBSS_EndPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_Hardware_VirtMem_x86_DECLEND_GetBSS_EndPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], __bss_end
+
+pop dword ebp
+
+ret
+
+
 SECTION .bss
 
 GLOBAL Page_Directory:data

@@ -65,6 +65,7 @@ namespace Kernel.Tasks
                 return ready_count == 3;
             }
         }
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static int ready_count = 0;
 
         private static bool CurrentPipeIndex_Changed = false;
@@ -78,8 +79,9 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("Window Manager: Started.");
 
             // Initialise heap & GC
-            Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
-
+            BasicConsole.WriteLine("WM > Creating heap...");
+            FOS_System.Heap.InitForProcess();
+            BasicConsole.WriteLine("WM > Starting GC thread...");
             // Start thread for calling GC Cleanup method
             if (SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
             {
@@ -356,16 +358,16 @@ namespace Kernel.Tasks
                     bool GotScancode = Keyboard.Default.GetScancode(out Scancode);
                     if (GotScancode)
                     {
-                        //BasicConsole.WriteLine("WM > OP : (1)");
+                        BasicConsole.WriteLine("WM > OP : (1)");
 
                         KeyboardKey Key;
                         if (Keyboard.Default.GetKeyValue(Scancode, out Key))
                         {
-                            //BasicConsole.WriteLine("WM > OP : (2)");
+                            BasicConsole.WriteLine("WM > OP : (2)");
 
                             if (AltPressed && Key == KeyboardKey.Tab)
                             {
-                                //BasicConsole.WriteLine("WM > OP : (3)");
+                                BasicConsole.WriteLine("WM > OP : (3)");
 
                                 CurrentPipeIdx++;
                                 if (CurrentPipeIdx >= ConnectedPipes.Count)
@@ -376,15 +378,15 @@ namespace Kernel.Tasks
                                 CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
                                 CurrentPipeIndex_Changed = true;
 
-                                //BasicConsole.WriteLine("WM > OP : (4)");
+                                BasicConsole.WriteLine("WM > OP : (4)");
                             }
                             else
                             {
-                                //BasicConsole.WriteLine("WM > OP : (5)");
+                                BasicConsole.WriteLine("WM > OP : (5)");
 
                                 SystemCalls.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
 
-                                //BasicConsole.WriteLine("WM > OP : (6)");
+                                BasicConsole.WriteLine("WM > OP : (6)");
                             }
                         }
                     }
@@ -405,6 +407,7 @@ namespace Kernel.Tasks
         {
             if (IRQNum == 1)
             {
+                BasicConsole.WriteLine("Keyoard interrupt");
                 ((Hardware.Keyboards.PS2)Keyboard.Default).InterruptHandler();
                 return 0;
             }

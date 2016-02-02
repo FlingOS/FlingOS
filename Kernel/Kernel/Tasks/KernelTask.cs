@@ -25,6 +25,7 @@
 #endregion
 
 //DSC: Deferred System Calls
+
 //#define DSC_TRACE
 //#define SYSCALLS_TRACE
 
@@ -55,7 +56,8 @@ namespace Kernel.Tasks
         private static Queue DeferredSyscallsInfo_Queued;
 
         private static Thread DeferredSyscallsThread;
-        
+
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         public static uint WindowManagerTask_ProcessId;
 
         private static Hardware.Keyboards.VirtualKeyboard keyboard;
@@ -203,6 +205,11 @@ namespace Kernel.Tasks
 
             try
             {
+                BasicConsole.WriteLine("Initialising kernel ISRs...");
+                ProcessManager.CurrentProcess.ISRHandler = Tasks.KernelTask.HandleISR;
+                ProcessManager.CurrentProcess.SwitchProcessForISRs = false;
+                ProcessManager.CurrentProcess.ISRsToHandle.Set(48);
+
                 BasicConsole.WriteLine(" > Initialising system calls...");
                 ProcessManager.CurrentProcess.SyscallHandler = SyscallHandler;
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterISRHandler);
@@ -238,23 +245,23 @@ namespace Kernel.Tasks
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
-                BasicConsole.WriteLine(" > Starting Idle process...");
-                Process IdleProcess = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle", false, true);
-                ProcessManager.RegisterProcess(IdleProcess, Scheduler.Priority.ZeroTimed);
-                
-                BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
-                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
-
-#if DEBUG
-                BasicConsole.WriteLine(" > Starting Debugger thread...");
-                Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
-#endif
-
                 BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
                 ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
 
+                BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
+                DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
+
+                BasicConsole.WriteLine(" > Starting Idle process...");
+                Process IdleProcess = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle", false);
+                ProcessManager.RegisterProcess(IdleProcess, Scheduler.Priority.ZeroTimed);
+
+#if DEBUG
+                //BasicConsole.WriteLine(" > Starting Debugger thread...");
+                //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
+#endif
+
                 BasicConsole.WriteLine(" > Starting Window Manager...");
-                Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false, true);
+                Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false);
                 WindowManagerTask_ProcessId = WindowManagerProcess.Id;
                 //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
@@ -268,7 +275,7 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 
                 BasicConsole.WriteLine(" > Starting Device Manager...");
-                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false, true);
+                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false);
                 //DeviceManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
 
@@ -1045,25 +1052,26 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.SendMessage:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Send message");
+                    BasicConsole.WriteLine("System call : Send message");
 #endif
                     result = SysCall_SendMessage(callerProcessId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
                     break;
                 case SystemCallNumbers.ReceiveMessage:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Receive message");
+                    BasicConsole.WriteLine("System call : Receive message");
 #endif
                     ReceiveMessage(callerProcessId, param1, param2);
                     break;
                 case SystemCallNumbers.RequestPages:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Request pages");
+                    BasicConsole.Write("System call : Request pages for ");
+                    BasicConsole.WriteLine(ProcessManager.GetProcessById(callerProcessId).Name);
 #endif
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.IsPhysicalAddressMapped:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Is physical address mapped");
+                    BasicConsole.WriteLine("System call : Is physical address mapped");
 #endif
                     
                     // TODO: This is a bit hacky
@@ -1080,7 +1088,7 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.IsVirtualAddressMapped:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Is virtual address mapped");
+                    BasicConsole.WriteLine("System call : Is virtual address mapped");
 #endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
@@ -1096,7 +1104,7 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.GetPhysicalAddress:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Get physical address");
+                    BasicConsole.WriteLine("System call : Get physical address");
 #endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
@@ -1122,7 +1130,7 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.GetVirtualAddress:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Get virtual address");
+                    BasicConsole.WriteLine("System call : Get virtual address");
 #endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
@@ -1148,13 +1156,13 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.UnmapPages:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Unmap pages");
+                    BasicConsole.WriteLine("System call : Unmap pages");
 #endif
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.SharePages:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Share pages");
+                    BasicConsole.WriteLine("System call : Share pages");
 #endif
                     // Param1: Start Virtual Address
                     // Param2: Count
@@ -1193,31 +1201,31 @@ namespace Kernel.Tasks
                     break;
                 case SystemCallNumbers.CreateSemaphore:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Create semaphore");
+                    BasicConsole.WriteLine("System call : Create semaphore");
 #endif
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.ShareSemaphore:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Share semaphore");
+                    BasicConsole.WriteLine("System call : Share semaphore");
 #endif
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.ReleaseSemaphore:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Release semaphore");
+                    BasicConsole.WriteLine("System call : Release semaphore");
 #endif
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.WaitSemaphore:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Wait semaphore");
+                    BasicConsole.WriteLine("System call : Wait semaphore");
 #endif
                     result = SystemCallResults.Deferred;
                     break;
                 case SystemCallNumbers.SignalSemaphore:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("Syscall: Signal semaphore");
+                    BasicConsole.WriteLine("System call : Signal semaphore");
 #endif
                     result = SystemCallResults.Deferred;
                     break;

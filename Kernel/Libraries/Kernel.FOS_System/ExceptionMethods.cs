@@ -43,6 +43,7 @@ namespace Kernel
         /// The reason the kernel is halting. Useful for debugging purposes in case an exception causes
         /// an immediate halt.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static FOS_System.String HaltReason = "";
 
         /// <summary>
@@ -54,7 +55,9 @@ namespace Kernel
         /// </summary>
         public static string UnhandledException_PanicMessage = "Unhandled exception! Panic!";
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static ExceptionState* State;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static ExceptionState* DefaultState;
 
         [Drivers.Compiler.Attributes.NoGC]
@@ -610,6 +613,7 @@ namespace Kernel
             HaltReason = "Overflow exception.";
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
+            PrintStackTrace();
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.OverflowException("Processor reported an overflow."));
         }
@@ -621,6 +625,8 @@ namespace Kernel
         /// </remarks>
         public static void Throw_InvalidOpCodeException()
         {
+            PrintStack();
+
             HaltReason = "Invalid op code exception.";
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
@@ -1082,6 +1088,32 @@ namespace Kernel
                 BasicConsole.WriteLine(msg);
 
                 EBP = (uint*)PrevEBP;
+            }
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        public static void PrintStack()
+        {
+            uint* ESP = (uint*)StackPointer;
+
+            {
+                FOS_System.String msg = "ESP: 0x        ";
+                FillString((uint)ESP, 14, msg);
+                BasicConsole.WriteLine(msg);
+            }
+
+            while ((uint)ESP < 0xC0110013)
+            {
+                FOS_System.String msg = "ESP: 0x        , Value: 0x        ";
+                //ESP: 14
+                //Value: 33
+
+                uint Value = *ESP;
+                FillString((uint)ESP, 14, msg);
+                FillString(Value, 33, msg);
+                BasicConsole.WriteLine(msg);
+
+                ESP++;
             }
         }
 

@@ -36,12 +36,12 @@ namespace Kernel.Shells
                     BasicConsole.WriteLine("RTC is null!");
                 }
 
-                BasicConsole.WriteLine("DM > Initialising ATA Manager...");
-                ATAManager.Init();
-                BasicConsole.WriteLine("DM > Initialising PCI Manager...");
-                PCIManager.Init();
-                BasicConsole.WriteLine("DM > Initialising USB Manager...");
-                USBManager.Init();
+                //BasicConsole.WriteLine("DM > Initialising ATA Manager...");
+                //ATAManager.Init();
+                //BasicConsole.WriteLine("DM > Initialising PCI Manager...");
+                //PCIManager.Init();
+                //BasicConsole.WriteLine("DM > Initialising USB Manager...");
+                //USBManager.Init();
                 BasicConsole.WriteLine("DM > Initialisation completed.");
 
                 while (!terminating)

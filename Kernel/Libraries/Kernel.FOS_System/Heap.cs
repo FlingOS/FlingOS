@@ -25,10 +25,11 @@
 #endregion
     
 #define HEAP_TRACE
-#undef HEAP_TRACE
-    
+#define PROCESS_TRACE
+
 using System;
 using Kernel.FOS_System.Processes.Synchronisation;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.FOS_System
 {
@@ -70,9 +71,6 @@ namespace Kernel.FOS_System
     /// </summary>
     public static unsafe class Heap
     {
-        public delegate bool ExpandHeapDelegate(uint ExtraSize);
-        public static ExpandHeapDelegate ExpandHeap = null;
-
         public static bool PreventAllocation = false;
         public static FOS_System.String PreventReason = "[NONE]";
 
@@ -245,15 +243,6 @@ namespace Kernel.FOS_System
             AccessLockInitialised = (AccessLock != null);
         }
 
-        /// <summary>
-        /// Intialises the heap.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void Init()
-        {
-            fblock = null;
-        }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static int InitBlock(HeapBlock* b, UInt32 size, UInt32 bsize)
@@ -295,15 +284,20 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static int AddBlock(HeapBlock* b)
         {
-            if (!fblock->expanding)
+            bool ShouldExitCritical = false;
+            if (fblock != null)
             {
-                EnterCritical("AddBlock");
+                if (!fblock->expanding)
+                {
+                    EnterCritical("AddBlock");
+                    ShouldExitCritical = true;
+                }
             }
 
             b->next = fblock;
             fblock = b;
 
-            if (!fblock->expanding)
+            if (ShouldExitCritical)
             {
                 ExitCritical();
             }
@@ -497,11 +491,11 @@ namespace Kernel.FOS_System
                                     {
                                         result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
 
-//#if HEAP_TRACE
-//                                      ExitCritical();
-//                                      BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
-//                                      EnterCritical("Alloc:Boundary condition");
-//#endif
+                                        //#if HEAP_TRACE
+                                        //                                      ExitCritical();
+                                        //                                      BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
+                                        //                                      EnterCritical("Alloc:Boundary condition");
+                                        //#endif
                                     }
 
                                     ExitCritical();
@@ -519,28 +513,8 @@ namespace Kernel.FOS_System
                 BasicConsole.Write(name);
                 BasicConsole.WriteLine(" heap needs to expand!");
 
-                if (ExpandHeap != null)
-                {
-                    HeapBlock* oldFBlock = fblock;
-                    oldFBlock->expanding = true;
-                    if (!ExpandHeap(GetTotalMem()))
-                    {
-                        BasicConsole.WriteLine("Couldn't expand heap!");
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("Heap expanded successfully.");
-                        BasicConsole.Write("New heap size: ");
-                        BasicConsole.Write(GetTotalMem() / 1024);
-                        BasicConsole.WriteLine("KiB");
-                    }
-                    oldFBlock->expanding = false;
-                }
-                else
-                {
-                    BasicConsole.WriteLine("Cannot expand heap as expand heap delegate is null.");
-                }
-
+                ExpandHeap(true);
+                
                 BasicConsole.WriteLine("Heap expansion complete.");
             }
             while (retry-- > 0);
@@ -622,6 +596,131 @@ namespace Kernel.FOS_System
 
             /* this error needs to be raised or reported somehow */
             ExitCritical();
+        }
+
+        /// <summary>
+        /// Intialises the heap.
+        /// </summary>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        public static void InitForKernel()
+        {
+            fblock = null;
+        }
+        public static void InitForProcess()
+        {
+            return;
+
+            GC.State = null;
+            AccessLockInitialised = false;
+            AccessLock = null;
+            fblock = null;
+            OutputTrace = false;
+            GC.UseCurrentState = true;
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" > Initialising process heap...");
+#endif
+            // Initial heap creation
+            FOS_System.Heap.ExpandHeap(false);
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Creating heap lock...");
+#endif
+            AccessLock = new SpinLock();
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting heap lock initialised...");
+#endif
+            AccessLockInitialised = true;
+
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Creating new GC state...");
+#endif
+            GCState TheGCState = new GCState();
+
+            if ((uint)TheGCState.CleanupList == 0xFFFFFFFF)
+            {
+                BasicConsole.WriteLine(" !!! PANIC !!! ");
+                BasicConsole.WriteLine(" GC.state.CleanupList is 0xFFFFFFFF NOT null!");
+                BasicConsole.WriteLine(" !-!-!-!-!-!-! ");
+            }
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Creating new GC lock...");
+#endif
+            TheGCState.AccessLock = new SpinLock();
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting GC lock initialised...");
+#endif
+            TheGCState.AccessLockInitialised = true;
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Setting GC state...");
+#endif
+            FOS_System.GC.State = TheGCState;
+#if PROCESS_TRACE
+            BasicConsole.WriteLine(" >> Done.");
+#endif
+        }
+        
+        public static void ExpandHeap(bool print)
+        {
+            if (fblock == null)
+            {
+                // Creates initial heap of 4MiB
+                if (!DoExpandHeap(/*0x400000*/0xA000))
+                {
+                    BasicConsole.WriteLine("New heap NOT created (via expand)!");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("New heap created (via expand)!");
+                    if (print)
+                    {
+                        BasicConsole.Write("New heap size: ");
+                        BasicConsole.Write(GetTotalMem() / 1024);
+                        BasicConsole.WriteLine("KiB");
+                    }
+                }
+            }
+            else
+            {
+                if (!fblock->expanding)
+                {
+                    HeapBlock* oldFBlock = fblock;
+                    oldFBlock->expanding = true;
+                    if (!DoExpandHeap(GetTotalMem()))
+                    {
+                        BasicConsole.WriteLine("Couldn't expand heap!");
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Heap expanded successfully.");
+                        if (print)
+                        {
+                            BasicConsole.Write("New heap size: ");
+                            BasicConsole.Write(GetTotalMem() / 1024);
+                            BasicConsole.WriteLine("KiB");
+                        }
+                    }
+                    oldFBlock->expanding = false;
+                }
+            }
+        }
+        private static bool DoExpandHeap(uint Size)
+        {
+            uint NumPages = (Size + 4095) / 4096;
+            uint FinalSize = NumPages * 4096;
+            uint StartAddress;
+            SystemCallResults MapPagesResult = SystemCalls.RequestPages(NumPages, out StartAddress);
+            if (MapPagesResult != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Request for pages (to expand heap) failed!");
+                return false;
+            }
+            FOS_System.HeapBlock* NewBlockPtr = (FOS_System.HeapBlock*)StartAddress;
+            FOS_System.Heap.InitBlock(NewBlockPtr, FinalSize, 32);
+            FOS_System.Heap.AddBlock(NewBlockPtr);
+            return true;
         }
     }
 }

@@ -72,6 +72,7 @@
     <Compile Include="Attributes\MethodInfoStructAttribute.cs" />
     <Compile Include="Attributes\NewArrMethodAttribute.cs" />
     <Compile Include="Attributes\NewObjMethodAttribute.cs" />
+    <Compile Include="Attributes\GroupAttribute.cs" />
     <Compile Include="Attributes\SequencePriorityAttribute.cs" />
     <Compile Include="Attributes\StringClassAttribute.cs" />
     <Compile Include="Attributes\ThrowIndexOutOfRangeExceptionMethodAttribute.cs" />

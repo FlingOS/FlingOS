@@ -98,6 +98,7 @@ namespace Kernel
         /// output directly to a file.
         /// </para>
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static bool PrimaryOutputEnabled = true;
         /// <summary>
         /// Whether the secondary output destination is enabled or not. 
@@ -108,6 +109,7 @@ namespace Kernel
         /// </para>
         /// </remarks>
         /// <seealso cref="SecondaryOutput"/>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static bool SecondaryOutputEnabled = true;
         /// <summary>
         /// The secondary output handler. 
@@ -116,19 +118,8 @@ namespace Kernel
         /// If <see cref="SecondaryOutputEnabled"/> is set to true, this handler will be called for all Write calls to
         /// the BasicConsole.
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static SecondaryOutputHandler SecondaryOutput = null;
-
-        /// <summary>
-        /// Static constructor for the Basic Console.
-        /// </summary>
-        /// <remarks>
-        /// This constructor should, assuming the compiler hasn't changed much, be one of the first, if not
-        /// the first, static constructor to be called. Almost all other static constructors rely on the
-        /// Basic Console being enable, one way or another.
-        /// </remarks>
-        static BasicConsole()
-        {
-        }
 
         /// <summary>
         /// Used to indicate whether the Basic Console has been initialised or not.
@@ -137,6 +128,7 @@ namespace Kernel
         /// Useful for when fixing low-level errors in compiler which result in incorrect execution order
         /// and thus use of Basic Console before it is ready.
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static bool Initialised = false;
 
         /// <summary>
@@ -146,6 +138,7 @@ namespace Kernel
         /// This would cause an issue if you changed the line length after already having printed text
         /// because you'd want to leave the next print location at the start of a new line.
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         static int offset = 0;
         /// <summary>
         /// The offset from the start of the memory (in characters) to write the next character to.
@@ -163,36 +156,64 @@ namespace Kernel
         /// <summary>
         /// A pointer to the start of the (character-based) video memory.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static char* vidMemBasePtr = (char*)0xB8000;
 
         /// <summary>
         /// Numbers of rows in the video memory.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static int rows = 25;
         /// <summary>
         /// Number of columns in the video memory.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static int cols = 80;
         /// <summary>
         /// The colour to print characters in. Do not set directly, use SetTextColour/SetBackgroundColour.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static char colour;
         /// <summary>
         /// The background colour. Do not set directly, use SetTextColour/SetBackgroundColour.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static char bg_colour;
         /// <summary>
         /// Default colour to print characters in.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static char default_colour;
         /// <summary>
         /// Colour to print warning characters in.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static char warning_colour;
         /// <summary>
         /// Colour to print error characters in.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static char error_colour;
+
+        /// <summary>
+        /// Whether to disable the delay output method. Used when debugging is enabled.
+        /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
+        public static bool DisableDelayOutput = false;
+
+        /// <summary>
+        /// Static constructor for the Basic Console.
+        /// </summary>
+        /// <remarks>
+        /// This constructor should, assuming the compiler hasn't changed much, be one of the first, if not
+        /// the first, static constructor to be called. Almost all other static constructors rely on the
+        /// Basic Console being enable, one way or another.
+        /// </remarks>
+        static BasicConsole()
+        {
+            BasicConsole.Init();
+            BasicConsole.Clear();
+        }
 
         /// <summary>
         /// Initialises the BasicConsole class.
@@ -219,7 +240,7 @@ namespace Kernel
 
             Initialised = true;
         }
-
+        
         /// <summary>
         /// Sets the console text colour.
         /// </summary>
@@ -439,10 +460,6 @@ namespace Kernel
             }
         }
 
-        /// <summary>
-        /// Whether to disable the delay output method. Used when debugging is enabled.
-        /// </summary>
-        public static bool DisableDelayOutput = false;
         /// <summary>
         /// Synchronous processing delay.
         /// </summary>

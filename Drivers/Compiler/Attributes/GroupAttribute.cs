@@ -30,30 +30,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.Tasks
+namespace Drivers.Compiler.Attributes
 {
-    public static unsafe class IdleTask
+    /// <summary>
+    /// Allows methods or fields to be grouped into separate page aligned blocks.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+    public class GroupAttribute : Attribute
     {
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void Main()
+        public string Name
         {
-            // Initialise heap & GC
-            BasicConsole.WriteLine("IDLE > Creating heap...");
-            FOS_System.Heap.InitForProcess();
-
-            //TODO: Use some kind of factory for creating the correct CPU class
-            Hardware.Devices.CPU TheCPU = new Hardware.CPUs.CPUx86_32();
-
-            //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
-            //      is to be the only thread left awake when all others are slept.
-            while (true)
-            {
-                *((ushort*)0xB809E) = (0x1F00 | '1');
-                TheCPU.Halt();
-
-                *((ushort*)0xB809E) = (0x3F00 | '2');
-                TheCPU.Halt();
-            }
+            get;
+            set;
         }
     }
 }

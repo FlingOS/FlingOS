@@ -46,6 +46,7 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <returns>The pointer to the block of memory.</returns>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Heap\GetFixedHeapPtr")]
+        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 101)]
         public static UInt32* GetFixedHeapPtr()
         {
             return null;
@@ -71,7 +72,7 @@ namespace Kernel.FOS_System
         {
             if (!FixedHeapInitialised)
             {
-                Heap.Init();
+                Heap.InitForKernel();
 
                 HeapBlock* heapPtr = (HeapBlock*)GetFixedHeapPtr();
                 Heap.InitBlock(heapPtr, GetFixedHeapSize(), 32);

@@ -126,6 +126,9 @@ namespace Drivers.Compiler.ASM
         /// </remarks>
         public long Priority = 0;
 
+        public bool PageAlign = false;
+        public string PageAlignLabel = null;
+
         /// <summary>
         /// Appends the specified op to the list of ASM ops.
         /// </summary>

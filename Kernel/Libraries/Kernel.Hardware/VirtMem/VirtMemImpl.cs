@@ -121,5 +121,10 @@ namespace Kernel.Hardware.VirtMem
         /// Maps in the main kernel memory.
         /// </summary>
         public abstract void MapKernel();
+
+
+        public abstract void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout);
+        public abstract void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout);
+        public abstract uint[] GetBuiltInProcessVAddrs();
     }
 }

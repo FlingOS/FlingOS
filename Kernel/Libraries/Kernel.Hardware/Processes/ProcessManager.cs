@@ -40,48 +40,102 @@ namespace Kernel.Hardware.Processes
     {
         public const int THREAD_DONT_CARE = -1;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static List Processes = new List();
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static Process CurrentProcess = null;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static Thread CurrentThread = null;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static ThreadState* CurrentThread_State = null;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static Process KernelProcess = null;
 
-        private static uint ProcessIdGenerator = 1;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        public static uint ProcessIdGenerator = 1;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static List Semaphores = new List(1024, 1024);
         
-        public static void Init()
-        {
-            FOS_System.Heap.ExpandHeap = ExpandHeap;
-        }
-        public static bool ExpandHeap(uint Size)
-        {
-            uint NumPages = (Size + 4095) / 4096;
-            uint FinalSize = NumPages * 4096;
-            uint StartAddress;
-            SystemCallResults MapPagesResult = SystemCalls.RequestPages(NumPages, out StartAddress);
-            if(MapPagesResult != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Request for pages (to expand heap) failed!");
-                return false;
-            }
-            FOS_System.HeapBlock* NewBlockPtr = (FOS_System.HeapBlock*)StartAddress;
-            FOS_System.Heap.InitBlock(NewBlockPtr, FinalSize, 32);
-            FOS_System.Heap.AddBlock(NewBlockPtr);
-            return true;
-        }
-
         public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
-        {
-            return CreateProcess(MainMethod, Name, UserMode, false);
-        }
-        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode, bool CreateHeap)
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process object...");
 #endif
-            return new Process(MainMethod, ProcessIdGenerator++, Name, UserMode, CreateHeap);
+            Scheduler.Disable();
+
+            Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+
+            uint[] newDataVAddrs = VirtMemManager.GetBuiltInProcessVAddrs();
+            for (int i = 0; i < newDataVAddrs.Length; i++)
+            {
+                uint vAddr = newDataVAddrs[i];
+                uint pAddr = VirtMemManager.GetPhysicalAddress(vAddr);
+                void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, 1);
+                void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
+
+                BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
+                NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
+
+                CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
+                uint* srcPtr = (uint*)vAddr;
+                uint* dstPtr = (uint*)newVAddr;
+                for (uint j = 0; j < 1024; j++, srcPtr++, dstPtr++)
+                {
+                    *dstPtr = *srcPtr;
+                }
+                CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
+            }
+
+            Scheduler.Enable();
+
+            return NewProcess;
+        }
+        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode, Process ProcessToFork)
+        {
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Creating process object...");
+#endif
+            Scheduler.Disable();
+
+            Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+
+            UInt32Dictionary.Iterator iterator = ProcessToFork.TheMemoryLayout.CodePages.GetNewIterator();
+            while (iterator.HasNext())
+            {
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                NewProcess.TheMemoryLayout.AddCodePage(pair.Value & 0xFFFFF000, pair.Key);
+            }
+
+            BasicConsole.WriteLine("Forking " + ProcessToFork.Name);
+
+            iterator = ProcessToFork.TheMemoryLayout.DataPages.GetNewIterator();
+            while (iterator.HasNext())
+            {
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value & 0xFFFFF000;
+                void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, 1);
+                void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
+
+                BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
+                NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
+
+                CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
+                uint* srcPtr = (uint*)vAddr;
+                uint* dstPtr = (uint*)newVAddr;
+                for (uint i = 0; i < 1024; i++, srcPtr++, dstPtr++)
+                {
+                    *dstPtr = *srcPtr;
+                }
+                CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
+            }
+
+            Scheduler.Enable();
+
+            return NewProcess;
         }
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
@@ -191,13 +245,11 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.Write("Switching out: ");
                 BasicConsole.WriteLine(CurrentProcess.Name);
 #endif
-                CurrentProcess.UnloadHeap();
-                CurrentProcess.UnloadMemLayout();
-
-                CurrentProcess = GetProcessById(processId);
+                
+                Process NewProcess = GetProcessById(processId);
 
                 // Process not found
-                if (CurrentProcess == null)
+                if (NewProcess == null)
                 {
 #if PROCESSMANAGER_SWITCH_TRACE
                     BasicConsole.WriteLine("Process not found.");
@@ -207,10 +259,13 @@ namespace Kernel.Hardware.Processes
 
 #if PROCESSMANAGER_SWITCH_TRACE
                 BasicConsole.Write("Switching in: ");
-                BasicConsole.WriteLine(CurrentProcess.Name);
+                BasicConsole.WriteLine(NewProcess.Name);
 #endif
-                CurrentProcess.LoadMemLayout();
-                CurrentProcess.LoadHeap();
+                NewProcess.SwitchFromLayout(CurrentProcess.TheMemoryLayout);
+                CurrentProcess = NewProcess;
+#if PROCESSMANAGER_SWITCH_TRACE
+                BasicConsole.Write("Switched in.");
+#endif
             }
 
             CurrentThread = null;
@@ -379,8 +434,11 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.WriteLine("~E~");
 #endif
 
-                KernelProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout);
-                KernelProcess.TheMemoryLayout.Load(KernelProcess.UserMode);
+                KernelProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout, false);
+
+#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+                BasicConsole.WriteLine("¬E¬");
+#endif
             }
         }
         public static void DisableKernelAccessToProcessMemory(Process TargetProcess)
@@ -392,7 +450,10 @@ namespace Kernel.Hardware.Processes
 #endif
 
                 KernelProcess.TheMemoryLayout.Unmerge(TargetProcess.TheMemoryLayout);
-                TargetProcess.TheMemoryLayout.Unload();
+
+#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+                BasicConsole.WriteLine("¬D¬");
+#endif
             }
         }
     }

@@ -25,6 +25,7 @@
 #endregion
     
 //#define MEMLAYOUT_TRACE
+//#define MEMLAYOUT_MERGE_TRACE
 
 using Kernel.FOS_System.Collections;
 
@@ -162,48 +163,144 @@ namespace Kernel.Hardware.VirtMem
             }
             iterator.RestoreState();
         }
-
-        public void Merge(MemoryLayout y)
+        public void SwitchFrom(bool ProcessIsUM, MemoryLayout old)
         {
+            if (!old.NoUnload)
+            {
+                UInt32Dictionary.Iterator iterator = old.CodePages.GetIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    uint vAddr = pair.Key;
+
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Unloading code page...");
+#endif
+                    if (!CodePages.ContainsKey(vAddr))
+                    {
+                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
+                    }
+                }
+                iterator.RestoreState();
+
+                iterator = old.DataPages.GetIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    uint vAddr = pair.Key;
+
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Unloading data page...");
+#endif
+                    if (!DataPages.ContainsKey(vAddr))
+                    {
+                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
+                    }
+                }
+                iterator.RestoreState();
+            }
+
+            {
+                VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+
+                UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    uint vAddr = pair.Key;
+                    uint pAddr = pair.Value & 0xFFFFF000;
+
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Loading code page...");
+#endif
+                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                }
+                iterator.RestoreState();
+
+                flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+                iterator = DataPages.GetIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    uint vAddr = pair.Key;
+                    uint pAddr = pair.Value & 0xFFFFF000;
+
+#if MEMLAYOUT_TRACE
+                BasicConsole.WriteLine("Loading data page...");
+#endif
+                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                }
+                iterator.RestoreState();
+            }
+        }
+
+        public void Merge(MemoryLayout y, bool ProcessIsUM)
+        {
+            VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+
             UInt32Dictionary.Iterator iterator = y.CodePages.GetIterator();
             while (iterator.HasNext())
             {
+#if MEMLAYOUT_MERGE_TRACE
+                BasicConsole.WriteLine("~M-C~");
+#endif
+
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
                 uint pAddr = pair.Value & 0xFFFFF000;
 
-                if (CodePages.ContainsKey(vAddr))
+                if (!CodePages.ContainsKey(vAddr))
+                {
+                    // 0x1 indicates mapping was added by a merge
+                    CodePages.Add(vAddr, pAddr | 0x1);
+
+                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                }
+#if MEMLAYOUT_MERGE_TRACE
+                else
                 {
                     if ((CodePages[vAddr] & 0xFFFFF000) != pAddr)
                     {
                         BasicConsole.WriteLine("Error merging layouts! Code virtual address would be mapped to two different physical addresses.");
+                        BasicConsole.WriteLine(vAddr);
+                        BasicConsole.WriteLine(DataPages[vAddr]);
+                        BasicConsole.WriteLine(pAddr);
                     }
                 }
-                else
-                {
-                    // 0x1 indicates mapping was added by a merge
-                    CodePages.Add(vAddr, pAddr | 0x1);
-                }
+#endif
             }
+
+            flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
             iterator = y.DataPages.GetIterator();
             while (iterator.HasNext())
             {
+#if MEMLAYOUT_MERGE_TRACE
+                BasicConsole.WriteLine("~M-D~");
+#endif
+
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
                 uint vAddr = pair.Key;
                 uint pAddr = pair.Value & 0xFFFFF000;
 
-                if (DataPages.ContainsKey(vAddr))
-                {
-                    if((DataPages[vAddr] & 0xFFFFF000) != pAddr)
-                    {
-                        BasicConsole.WriteLine("Error merging layouts! Data virtual address would be mapped to two different physical addresses.");
-                    }
-                }
-                else
+                if (!DataPages.ContainsKey(vAddr))
                 {
                     // 0x1 indicates mapping was added by a merge
                     DataPages.Add(vAddr, pAddr | 0x1);
+
+                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                 }
+#if MEMLAYOUT_MERGE_TRACE
+                else
+                {
+                    if ((DataPages[vAddr] & 0xFFFFF000) != pAddr)
+                    {
+                        BasicConsole.WriteLine("Error merging layouts! Data virtual address would be mapped to two different physical addresses.");
+                        BasicConsole.WriteLine(vAddr);
+                        BasicConsole.WriteLine(DataPages[vAddr]);
+                        BasicConsole.WriteLine(pAddr);
+                    }
+                }
+#endif
             }
         }
         public void Unmerge(MemoryLayout y)
@@ -220,6 +317,7 @@ namespace Kernel.Hardware.VirtMem
                     if ((CodePages[vAddr] & 0x1) == 1)
                     {
                         CodePages.Remove(vAddr);
+                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
                     }
                 }
             }
@@ -235,6 +333,7 @@ namespace Kernel.Hardware.VirtMem
                     if ((DataPages[vAddr] & 0x1) == 1)
                     {
                         DataPages.Remove(vAddr);
+                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
                     }
                 }
             }

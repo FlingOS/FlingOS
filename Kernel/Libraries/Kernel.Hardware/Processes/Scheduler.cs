@@ -36,7 +36,9 @@ namespace Kernel.Hardware.Processes
 {
     public static unsafe class Scheduler
     {
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static PriorityQueue ActiveQueue = new PriorityQueue(1024);
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static PriorityQueue InactiveQueue = new PriorityQueue(1024);
         //private static List SuspendedList = new List(1024);
 
@@ -48,11 +50,16 @@ namespace Kernel.Hardware.Processes
             High = 5
         }
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static bool Enabled = false;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static bool Initialised = false;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public const int MSFreq = 5;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static int UpdatePeriod = MSFreq;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static int UpdateCountdown;
 
         //private static int LockupCounter = 0;
@@ -271,6 +278,7 @@ namespace Kernel.Hardware.Processes
 
             if (!Enabled || !Initialised)
             {
+                //BasicConsole.Write("D");
                 return;
             }
 

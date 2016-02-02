@@ -40,6 +40,7 @@ namespace Kernel.Hardware
         /// <summary>
         /// The specific virtual memory implementation to use.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static VirtMemImpl impl;
 
         /// <summary>
@@ -80,6 +81,7 @@ namespace Kernel.Hardware
             return impl.FindFreeVirtPageAddrs(num);
         }
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static FOS_System.Processes.Synchronisation.SpinLock MapFreePagesLock = new FOS_System.Processes.Synchronisation.SpinLock(-1);
         
         public static void* MapFreePage(VirtMemImpl.PageFlags flags)
@@ -334,6 +336,19 @@ namespace Kernel.Hardware
         public static bool AreAnyPhysicalMapped(uint pAddrStart, uint count)
         {
             return impl.AreAnyPhysicalMapped(pAddrStart, pAddrStart + (count * 4096));
+        }
+
+        public static void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout)
+        {
+            impl.MapKernelProcessToMemoryLayout(TheLayout);
+        }
+        public static void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
+        {
+            impl.MapBuiltInProcessToMemoryLayout(TheLayout);
+        }
+        public static uint[] GetBuiltInProcessVAddrs()
+        {
+            return impl.GetBuiltInProcessVAddrs();
         }
 
         /// <summary>

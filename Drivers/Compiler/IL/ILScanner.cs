@@ -68,13 +68,17 @@ namespace Drivers.Compiler.IL
                 Scan(depLib);
             }
             
-            // Create / Add Static Fields ASM Block
-            ASM.ASMBlock StaticFieldsBlock = new ASM.ASMBlock()
+            // Create / Add Static Fields ASM Blocks
+            Dictionary<string, ASM.ASMBlock> StaticFieldsBlocks = new Dictionary<string, ASM.ASMBlock>();
+            ASM.ASMBlock DefaultStaticFieldsBlock = new ASM.ASMBlock()
             {
-                Priority = (long.MinValue / 2) - 9
+                Priority = (long.MinValue / 2) - 9,
+                PageAlign = true,
+                PageAlignLabel = Utilities.FilterIdentifierForInvalidChars(TheLibrary.TheAssembly.GetName().Name) + "_default"
             };
-            InitialiseBssBlock(StaticFieldsBlock);
-            TheLibrary.TheASMLibrary.ASMBlocks.Add(StaticFieldsBlock);
+            InitialiseBssBlock(DefaultStaticFieldsBlock);
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(DefaultStaticFieldsBlock);
+            StaticFieldsBlocks.Add("default", DefaultStaticFieldsBlock);
 
             // Create / Add Types Table ASM Block
             ASM.ASMBlock TypesTableBlock = new ASM.ASMBlock()
@@ -107,7 +111,7 @@ namespace Drivers.Compiler.IL
                 if (!ScannedTypes.ContainsKey(aTypeInfo.ID))
                 {
                     ScannedTypes.Add(aTypeInfo.ID, TheLibrary);
-                    ScanStaticFields(TheLibrary, aTypeInfo, StaticFieldsBlock);
+                    ScanStaticFields(TheLibrary, aTypeInfo, StaticFieldsBlocks);
                     ScanType(TheLibrary, aTypeInfo, TypesTableBlock);
                     ScanMethods(TheLibrary, aTypeInfo, MethodTablesBlock);
                     ScanFields(TheLibrary, aTypeInfo, FieldTablesBlock);
@@ -245,7 +249,7 @@ namespace Drivers.Compiler.IL
         /// <param name="TheLibrary">The library currently being compiled.</param>
         /// <param name="TheTypeInfo">The type to scan the static fields of.</param>
         /// <param name="StaticFieldsBlock">The ASM block for the static fields for the library currently being compiled.</param>
-        private static void ScanStaticFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, ASM.ASMBlock StaticFieldsBlock)
+        private static void ScanStaticFields(ILLibrary TheLibrary, Types.TypeInfo TheTypeInfo, Dictionary<string, ASM.ASMBlock> StaticFieldsBlocks)
         {
             foreach (Types.FieldInfo aFieldInfo in TheTypeInfo.FieldInfos)
             {
@@ -257,7 +261,20 @@ namespace Drivers.Compiler.IL
                     string Size = fieldTypeInfo.SizeOnStackInBytes.ToString();
 
                     ASM.ASMOp newStaticFieldOp = TargetArchitecture.CreateASMOp(ASM.OpCodes.StaticField, FieldID, Size);
-                    StaticFieldsBlock.Append(newStaticFieldOp);
+                    if (!StaticFieldsBlocks.ContainsKey(aFieldInfo.Group))
+                    {
+                        ASM.ASMBlock NewStaticFieldsBlock = new ASM.ASMBlock()
+                        {
+                            Priority = (long.MinValue / 2) - 9,
+                            PageAlign = true,
+                            PageAlignLabel = aFieldInfo.Group
+                        };
+                        InitialiseBssBlock(NewStaticFieldsBlock);
+                        TheLibrary.TheASMLibrary.ASMBlocks.Add(NewStaticFieldsBlock);
+
+                        StaticFieldsBlocks.Add(aFieldInfo.Group, NewStaticFieldsBlock);
+                    }
+                    StaticFieldsBlocks[aFieldInfo.Group].Append(newStaticFieldOp);
                 }
             }
         }

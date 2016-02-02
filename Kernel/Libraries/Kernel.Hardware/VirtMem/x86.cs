@@ -618,12 +618,119 @@ namespace Kernel.Hardware.VirtMem
         {
             return null;
         }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetStaticFields_StartPtr()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetStaticFields_EndPtr()
+        {
+            return null;
+        }
 
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetIsolatedKernelPtr()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetIsolatedKernel_HardwarePtr()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetIsolatedKernel_FOS_SystemPtr()
+        {
+            return null;
+        }
+
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetBSS_StartPtr()
+        {
+            return null;
+        }
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        private static uint* GetBSS_EndPtr()
+        {
+            return null;
+        }
 
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         public static uint GetCR3()
         {
             return 0;
+        }
+
+        public override void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout)
+        {
+            uint cPtr = (uint)GetBSS_StartPtr();
+            uint endPtr = (uint)GetBSS_EndPtr();
+            uint cPhysPtr = GetPhysicalAddress(cPtr);
+
+            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+            {
+                TheLayout.AddDataPage(cPhysPtr, cPtr);
+            }
+        }
+        public override void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
+        {
+            uint cPtr = (uint)GetStaticFields_StartPtr();
+            uint endPtr = (uint)GetStaticFields_EndPtr();
+            uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
+            uint isolatedKHPtr = (uint)GetIsolatedKernel_HardwarePtr();
+            uint isolatedKFSPtr = (uint)GetIsolatedKernel_FOS_SystemPtr();
+
+            uint cPhysPtr = GetPhysicalAddress(cPtr);
+
+            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+            {
+                if (cPtr != isolatedKPtr && cPtr != isolatedKHPtr && cPtr != isolatedKFSPtr)
+                {
+                    TheLayout.AddDataPage(cPhysPtr, cPtr);
+                }
+            }
+        }
+        uint[] BuiltInProcessVAddrs = null;
+        public override uint[] GetBuiltInProcessVAddrs()
+        {
+            if (BuiltInProcessVAddrs == null)
+            {
+                uint startPtr = (uint)GetStaticFields_StartPtr();
+                uint endPtr = (uint)GetStaticFields_EndPtr();
+                uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
+                uint isolatedKHPtr = (uint)GetIsolatedKernel_HardwarePtr();
+                uint isolatedKFSPtr = (uint)GetIsolatedKernel_FOS_SystemPtr();
+
+                uint startPhysPtr = GetPhysicalAddress(startPtr);
+
+                int count = 0;
+
+                uint cPtr = startPtr;
+                uint cPhysPtr = startPhysPtr;
+                for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+                {
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKHPtr && cPtr != isolatedKFSPtr)
+                    {
+                        count++;
+                    }
+                }
+
+                BuiltInProcessVAddrs = new uint[count];
+
+                cPtr = startPtr;
+                cPhysPtr = startPhysPtr;
+                for (int i = 0; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+                {
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKHPtr && cPtr != isolatedKFSPtr)
+                    {
+                        BuiltInProcessVAddrs[i++] = cPtr;
+                    }
+                }
+            }
+
+            return BuiltInProcessVAddrs;
         }
     }
 }

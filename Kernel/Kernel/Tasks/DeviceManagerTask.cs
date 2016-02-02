@@ -48,7 +48,9 @@ namespace Kernel.Tasks
         {
             BasicConsole.WriteLine("Device Manager started.");
 
-            Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
+            BasicConsole.WriteLine("DM > Creating heap...");
+            FOS_System.Heap.InitForProcess();
+            BasicConsole.WriteLine("DM > Starting GC thread...");
             SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
             if (SysCallResult != SystemCallResults.OK)
             {

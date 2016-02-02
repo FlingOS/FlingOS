@@ -51,6 +51,27 @@ namespace Drivers.Compiler.Types
         /// </summary>
         /// <value>Gets the value of underlying info's IsStatic property.</value>
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
+        private string group = null;
+        public string Group
+        {
+            get
+            {
+                if (group == null)
+                {
+                    object[] groupAttrs = UnderlyingInfo.GetCustomAttributes(typeof(Attributes.GroupAttribute), false);
+                    if (groupAttrs.Length > 0)
+                    {
+                        Attributes.GroupAttribute priorAttr = (Attributes.GroupAttribute)groupAttrs[0];
+                        group = priorAttr.Name;
+                    }
+                    else
+                    {
+                        group = "default";
+                    }
+                }
+                return group;
+            }
+        }
 
         /// <summary>
         /// The offset to the beginning of the field from the start of the type, in bytes.

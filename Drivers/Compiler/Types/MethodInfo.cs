@@ -96,7 +96,7 @@ namespace Drivers.Compiler.Types
         /// </summary>
         /// <value>Gets the value of the underlying info's IsStatic property.</value>
         public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
-
+        
         /// <summary>
         /// The method body (i.e. IL bytes) extracted from the underlying method base.
         /// </summary>
@@ -190,7 +190,7 @@ namespace Drivers.Compiler.Types
                 return priority.Value;
             }
         }
-
+        
         /// <summary>
         /// Whether the method has been preprocessed or not.
         /// </summary>

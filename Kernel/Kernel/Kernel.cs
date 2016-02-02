@@ -43,8 +43,6 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static Kernel()
         {
-            BasicConsole.Init();
-            BasicConsole.Clear();
         }
 
         /// <summary>
@@ -67,20 +65,18 @@ namespace Kernel
       
 
             try
-            {                
+            {
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
                 Hardware.IO.Serial.Serial.InitCOM3();
 
-                BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
+                BasicConsole.SecondaryOutput = Kernel.BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
 
                 Hardware.Devices.CPU.InitDefault();
-
-                ProcessManager.Init();
-
+                
                 BasicConsole.WriteLine("Creating kernel process...");
-                Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
+                Process KernelProcess = new Process(Tasks.KernelTask.Main, ProcessManager.ProcessIdGenerator++, "Kernel Task", false);
                 KernelProcess.TheMemoryLayout.NoUnload = true;
                 //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
                 //          by adding it to Kernel Process' memory layout.
@@ -92,6 +88,7 @@ namespace Kernel
                 BasicConsole.WriteLine("Initialising kernel thread stack...");
                 Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - 4092);
                 KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - 4092);
+                Hardware.VirtMemManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
                 KernelThread.State->ThreadStackTop = GetKernelStackPtr();
                 KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
 
@@ -104,12 +101,7 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Registering kernel process...");
                 ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
-
-                BasicConsole.WriteLine("Initialising kernel ISRs...");
-                KernelProcess.ISRHandler = Tasks.KernelTask.HandleISR;
-                KernelProcess.SwitchProcessForISRs = false;
-                KernelProcess.ISRsToHandle.Set(48);
-
+                
                 BasicConsole.WriteLine("Initialising kernel IRQs...");
                 KernelProcess.IRQHandler = Tasks.KernelTask.HandleIRQ;
                 KernelProcess.SwitchProcessForIRQs = false;

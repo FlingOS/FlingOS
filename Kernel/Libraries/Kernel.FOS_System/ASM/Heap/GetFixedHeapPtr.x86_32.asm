@@ -33,6 +33,10 @@ pop ebp
 ret
 
 SECTION .bss
+
 ; (524288 * 20) bytes = 10MiB
 KernelFixedHeap_Start: resb (524288 * 20)
 KernelFixedHeap_End:
+
+GLOBAL StaticFields_Start:data
+StaticFields_Start:

@@ -52,30 +52,54 @@ namespace Kernel.FOS_System
         /// Whether the GC has been initialised yet or not.
         /// Used to prevent the GC running before it has been initialised properly.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
         public static bool Enabled = false;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
+        public static bool UseCurrentState = false;
+
         private static GCState state;
+        [Drivers.Compiler.Attributes.Group(Name="IsolatedKernel_FOS_System")]
+        private static GCState kernel_state;
         public static GCState State
         {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
-                return state;
+                if (UseCurrentState)
+                {
+                    return state;
+                }
+                else
+                {
+                    return kernel_state;
+                }
             }
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
-                state = value;
+                if (UseCurrentState)
+                {
+                    state = value;
+                }
+                else
+                {
+                    kernel_state = value;
+                }
             }
         }
-
         private static bool StateInitialised
         {
             [Drivers.Compiler.Attributes.NoGC]
             [Drivers.Compiler.Attributes.NoDebug]
             get
             {
-                return state != null;
+                return State != null;
             }
         }
+        
         public static bool OutputTrace
         {
             [Drivers.Compiler.Attributes.NoGC]
@@ -84,7 +108,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.OutputTrace;
+                    return State.OutputTrace;
                 }
                 else
                 {
@@ -97,7 +121,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.OutputTrace = value;
+                    State.OutputTrace = value;
                 }
             }
         }
@@ -109,7 +133,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.InsideGC;
+                    return State.InsideGC;
                 }
                 else
                 {
@@ -122,7 +146,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.InsideGC = value;
+                    State.InsideGC = value;
                 }
             }
         }
@@ -134,7 +158,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.AccessLockInitialised;
+                    return State.AccessLockInitialised;
                 }
                 else
                 {
@@ -150,7 +174,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.AccessLock;
+                    return State.AccessLock;
                 }
                 return null;
             }
@@ -164,7 +188,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.NumObjs;
+                    return State.NumObjs;
                 }
                 else
                 {
@@ -177,7 +201,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.NumObjs = value;
+                    State.NumObjs = value;
                 }
             }
         }
@@ -188,7 +212,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.NumStrings;
+                    return State.NumStrings;
                 }
                 else
                 {
@@ -200,7 +224,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.NumStrings = value;
+                    State.NumStrings = value;
                 }
             }
         }
@@ -212,7 +236,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.lastEnabler;
+                    return State.lastEnabler;
                 }
                 else
                 {
@@ -224,7 +248,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.lastEnabler = value;
+                    State.lastEnabler = value;
                 }
             }
         }
@@ -258,7 +282,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.lastLocker;
+                    return State.lastLocker;
                 }
                 else
                 {
@@ -270,7 +294,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.lastLocker = value;
+                    State.lastLocker = value;
                 }
             }
         }
@@ -283,7 +307,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    return state.CleanupList;
+                    return State.CleanupList;
                 }
                 else
                 {
@@ -296,7 +320,7 @@ namespace Kernel.FOS_System
             {
                 if (StateInitialised)
                 {
-                    state.CleanupList = value;
+                    State.CleanupList = value;
                 }
             }
         }
@@ -309,27 +333,24 @@ namespace Kernel.FOS_System
         public static void Init()
         {
             ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
-
+            
             Enabled = true;
 
             Heap.AccessLock = new SpinLock();
             Heap.AccessLockInitialised = true;
 
-            GC.state = new GCState();
-            GC.state.AccessLock = new SpinLock();
-            GC.state.AccessLockInitialised = true;
-
-            if ((uint)GC.state.CleanupList == 0xFFFFFFFF)
+            GCState newState = new GCState();
+            kernel_state = newState;
+            state = newState;
+            GC.State.AccessLock = new SpinLock();
+            GC.State.AccessLockInitialised = true;
+            
+            if ((uint)GC.State.CleanupList == 0xFFFFFFFF)
             {
                 BasicConsole.WriteLine(" !!! PANIC !!! ");
                 BasicConsole.WriteLine(" GC.state.CleanupList is 0xFFFFFFFF NOT null!");
                 BasicConsole.WriteLine(" !-!-!-!-!-!-! ");
             }
-        }
-
-        public static void Load(GCState newState)
-        {
-            state = newState;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
