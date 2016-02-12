@@ -239,13 +239,8 @@ namespace Kernel
                             State->CurrentHandlerPtr->PrevHandlerPtr->Ex = State->CurrentHandlerPtr->Ex;
                             State->CurrentHandlerPtr->PrevHandlerPtr->ExPending = State->CurrentHandlerPtr->ExPending;
                         }
-                        State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
-                        State->depth--;
-                        State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
-                        if (State->history_pos > 31)
-                        {
-                            State->history_pos = 0;
-                        }
+
+                        MoveToPreviousHandler();
                     }
                 }
 
@@ -423,13 +418,7 @@ namespace Kernel
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
 
-                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
-                State->depth--;
-                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
-                if (State->history_pos > 31)
-                {
-                    State->history_pos = 0;
-                }
+                MoveToPreviousHandler();
 
                 ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
             }
@@ -515,17 +504,34 @@ namespace Kernel
                 //BasicConsole.Write("Actual continue addr (from EBP): ");
                 //BasicConsole.WriteLine(*((uint*)(BasePointer + 4)));
 
-                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
-                State->depth--;
-                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
-                if (State->history_pos > 31)
-                {
-                    State->history_pos = 0;
-                }
-
+                MoveToPreviousHandler();
+                                
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
                     retAddr);
+            }
+        }
+
+        /// <summary>
+        /// Sets the current handler pointer to the previous pointer and updates the relevant state info safely.
+        /// </summary>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static unsafe void MoveToPreviousHandler()
+        {
+            State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+            State->depth--;
+            if (State->CurrentHandlerPtr == null)
+            {
+                State->history[State->history_pos++] = 0;
+            }
+            else
+            {
+                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
+            }
+            if (State->history_pos > 31)
+            {
+                State->history_pos = 0;
             }
         }
         
