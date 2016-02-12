@@ -224,7 +224,10 @@ namespace Kernel.FOS_System.Collections
                     {
                         cPair->Next = list->Next;
                         list->Next = cPair;
-                        cPair->Next->Prev = cPair;
+                        if (cPair->Next != null)
+                        {
+                            cPair->Next->Prev = cPair;
+                        }
                     }
                     else
                     {
