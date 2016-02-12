@@ -1143,6 +1143,7 @@ namespace Kernel.FOS_System
 
                 if (CleanupList != null)
                 {
+                    newObjToCleanupPtr->nextPtr = null;
                     newObjToCleanupPtr->prevPtr = CleanupList;
                     CleanupList->nextPtr = newObjToCleanupPtr;
                 }
@@ -1201,7 +1202,10 @@ namespace Kernel.FOS_System
             {
                 prevPtr->nextPtr = nextPtr;
             }
-            nextPtr->prevPtr = prevPtr;
+            if (nextPtr != null)
+            {
+                nextPtr->prevPtr = prevPtr;
+            }
 
             if(CleanupList == objToCleanupPtr)
             {

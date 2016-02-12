@@ -452,6 +452,8 @@ namespace Kernel.Hardware.VirtMem
                 Map(physAddr, virtAddr, PageFlags.Present | PageFlags.Writeable);
             }
 
+            Unmap(0, UpdateUsedPagesFlags.None);
+             
 #if PAGING_TRACE
             BasicConsole.WriteLine("Done.");
             BasicConsole.WriteLine("Mapping kernel...");
