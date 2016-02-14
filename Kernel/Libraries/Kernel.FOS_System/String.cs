@@ -104,6 +104,7 @@ namespace Kernel.FOS_System
         public unsafe char this[int index]
         {
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
@@ -111,6 +112,7 @@ namespace Kernel.FOS_System
                 return ((char*)thisPtr)[index];
             }
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
@@ -126,6 +128,7 @@ namespace Kernel.FOS_System
         public unsafe char this[uint index]
         {
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
@@ -133,6 +136,7 @@ namespace Kernel.FOS_System
                 return ((char*)thisPtr)[index];
             }
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
@@ -601,66 +605,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public static implicit operator FOS_System.String(byte x)
         {
-            FOS_System.String result = "";
-            uint y = x;
-            while (y > 0)
-            {
-                uint rem = y % 16u;
-                switch (rem)
-                {
-                    case 0:
-                        result = "0" + result;
-                        break;
-                    case 1:
-                        result = "1" + result;
-                        break;
-                    case 2:
-                        result = "2" + result;
-                        break;
-                    case 3:
-                        result = "3" + result;
-                        break;
-                    case 4:
-                        result = "4" + result;
-                        break;
-                    case 5:
-                        result = "5" + result;
-                        break;
-                    case 6:
-                        result = "6" + result;
-                        break;
-                    case 7:
-                        result = "7" + result;
-                        break;
-                    case 8:
-                        result = "8" + result;
-                        break;
-                    case 9:
-                        result = "9" + result;
-                        break;
-                    case 10:
-                        result = "A" + result;
-                        break;
-                    case 11:
-                        result = "B" + result;
-                        break;
-                    case 12:
-                        result = "C" + result;
-                        break;
-                    case 13:
-                        result = "D" + result;
-                        break;
-                    case 14:
-                        result = "E" + result;
-                        break;
-                    case 15:
-                        result = "F" + result;
-                        break;
-                }
-                y = y / 16u;
-            }
-            result = "0x" + result.PadLeft(2, '0');
-            return result;
+            return ConvertToString(New(4), x);
         }
         /// <summary>
         /// Implicitly converts the specified value to a hex FOS_System.String.
@@ -670,65 +615,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public static implicit operator FOS_System.String(UInt16 x)
         {
-            FOS_System.String result = "";
-            uint y = x;
-            while (y > 0)
-            {
-                uint rem = y & 0xFu;
-                switch (rem)
-                {
-                    case 0:
-                        result = "0" + result;
-                        break;
-                    case 1:
-                        result = "1" + result;
-                        break;
-                    case 2:
-                        result = "2" + result;
-                        break;
-                    case 3:
-                        result = "3" + result;
-                        break;
-                    case 4:
-                        result = "4" + result;
-                        break;
-                    case 5:
-                        result = "5" + result;
-                        break;
-                    case 6:
-                        result = "6" + result;
-                        break;
-                    case 7:
-                        result = "7" + result;
-                        break;
-                    case 8:
-                        result = "8" + result;
-                        break;
-                    case 9:
-                        result = "9" + result;
-                        break;
-                    case 10:
-                        result = "A" + result;
-                        break;
-                    case 11:
-                        result = "B" + result;
-                        break;
-                    case 12:
-                        result = "C" + result;
-                        break;
-                    case 13:
-                        result = "D" + result;
-                        break;
-                    case 14:
-                        result = "E" + result;
-                        break;
-                    case 15:
-                        result = "F" + result;
-                        break;
-                }
-                y >>= 4;
-            }
-            return "0x" + result.PadLeft(4, '0');
+            return ConvertToString(New(6), x);
         }
         /// <summary>
         /// Implicitly converts the specified value to an FOS_System.String.
@@ -760,65 +647,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public static implicit operator FOS_System.String(uint x)
         {
-            FOS_System.String result = "";
-            uint y = x;
-            while (y > 0)
-            {
-                uint rem = y & 0xFu;
-                switch (rem)
-                {
-                    case 0:
-                        result = "0" + result;
-                        break;
-                    case 1:
-                        result = "1" + result;
-                        break;
-                    case 2:
-                        result = "2" + result;
-                        break;
-                    case 3:
-                        result = "3" + result;
-                        break;
-                    case 4:
-                        result = "4" + result;
-                        break;
-                    case 5:
-                        result = "5" + result;
-                        break;
-                    case 6:
-                        result = "6" + result;
-                        break;
-                    case 7:
-                        result = "7" + result;
-                        break;
-                    case 8:
-                        result = "8" + result;
-                        break;
-                    case 9:
-                        result = "9" + result;
-                        break;
-                    case 10:
-                        result = "A" + result;
-                        break;
-                    case 11:
-                        result = "B" + result;
-                        break;
-                    case 12:
-                        result = "C" + result;
-                        break;
-                    case 13:
-                        result = "D" + result;
-                        break;
-                    case 14:
-                        result = "E" + result;
-                        break;
-                    case 15:
-                        result = "F" + result;
-                        break;
-                }
-                y >>= 4;
-            }
-            return "0x" + result.PadLeft(8, '0');
+            return ConvertToString(New(10), x);
         }
         /// <summary>
         /// Implicitly converts the specified value to a hex FOS_System.String.
@@ -838,9 +667,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public static implicit operator FOS_System.String(ulong x)
         {
-            uint part1 = (uint)x;
-            uint part2 = (uint)(x >> 16 >> 16);
-            return ((FOS_System.String)part2) + " " + ((FOS_System.String)part1);
+            return ConvertToString(New(18), x);
         }
         /// <summary>
         /// Implicitly converts the specified value to a hex FOS_System.String.
@@ -851,6 +678,77 @@ namespace Kernel.FOS_System
         public static implicit operator FOS_System.String(long x)
         {
             return (ulong)x;
+        }
+
+        private static String ConvertToString(FOS_System.String result, ulong x)
+        {
+            result[0] = '0';
+            result[1] = 'x';
+            for (int i = 2; i < result.length; i++)
+            {
+                result[i] = '0';
+            }
+
+            int index = 9;
+            ulong y = x;
+            while (y > 0)
+            {
+                ulong rem = y & 0xFu;
+                switch (rem)
+                {
+                    case 0:
+                        result[index] = '0';
+                        break;
+                    case 1:
+                        result[index] = '1';
+                        break;
+                    case 2:
+                        result[index] = '2';
+                        break;
+                    case 3:
+                        result[index] = '3';
+                        break;
+                    case 4:
+                        result[index] = '4';
+                        break;
+                    case 5:
+                        result[index] = '5';
+                        break;
+                    case 6:
+                        result[index] = '6';
+                        break;
+                    case 7:
+                        result[index] = '7';
+                        break;
+                    case 8:
+                        result[index] = '8';
+                        break;
+                    case 9:
+                        result[index] = '9';
+                        break;
+                    case 10:
+                        result[index] = 'A';
+                        break;
+                    case 11:
+                        result[index] = 'B';
+                        break;
+                    case 12:
+                        result[index] = 'C';
+                        break;
+                    case 13:
+                        result[index] = 'D';
+                        break;
+                    case 14:
+                        result[index] = 'E';
+                        break;
+                    case 15:
+                        result[index] = 'F';
+                        break;
+                }
+                y >>= 4;
+                index--;
+            }
+            return result;
         }
     }
 }
