@@ -273,12 +273,22 @@ namespace Kernel.Hardware.VirtMem
 #if PAGING_TRACE
             BasicConsole.WriteLine("Mapping addresses...");
 #endif
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.1");
+            //}
+
             //Calculate page directory and page table indices
             uint virtPDIdx = vAddr >> 22;
             uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
             uint physPDIdx = pAddr >> 22;
             uint physPTIdx = (pAddr >> 12) & 0x03FF;
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.2");
+            //}
 
 #if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
@@ -297,18 +307,56 @@ namespace Kernel.Hardware.VirtMem
                 UsedVirtPages.Set((int)((virtPDIdx * 1024) + virtPTIdx));
             }
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.3");
+            //}
+
             //Get a pointer to the pre-allocated page table
             uint* virtPTPtr = GetFixedPage(virtPDIdx);
 #if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)virtPTPtr);
 #endif
+            if (Processes.Scheduler.OutputMessages)
+            {
+                if (vAddr == 0x00106000)
+                {
+                    BasicConsole.Write("Remapping 0x00106000 from ");
+                    FOS_System.String valStr = "0x        ";
+                    ExceptionMethods.FillString(GetPhysicalAddress(vAddr), 9, valStr);
+                    BasicConsole.Write(valStr);
+                    BasicConsole.Write(" to ");
+                    ExceptionMethods.FillString(pAddr, 9, valStr);
+                    BasicConsole.WriteLine(valStr);
+                    BasicConsole.Write("ESP: ");
+                    ExceptionMethods.FillString((uint)ExceptionMethods.StackPointer, 9, valStr);
+                    BasicConsole.WriteLine(valStr);
+                }
+            }
+
             //Set the page table entry
             SetPageEntry(virtPTPtr, virtPTIdx, pAddr, flags);
+            
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.5");
+            //}
+
             //Set directory table entry
             SetDirectoryEntry(virtPDIdx, (uint*)GetPhysicalAddress((uint)virtPTPtr));
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.6");
+            //}
+
             //Invalidate the page table entry so that mapping isn't CPU cached.
             InvalidatePTE(vAddr);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.7");
+            //}
         }
         /// <summary>
         /// Unmaps the specified page of virtual memory.
@@ -332,7 +380,17 @@ namespace Kernel.Hardware.VirtMem
             //    BasicConsole.WriteLine("Getting physical addr...");
             //}
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.1");
+            //}
+
             uint pAddr = GetPhysicalAddress(vAddr);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.2");
+            //}
 
             //if (Unmap_Print)
             //{
@@ -341,12 +399,22 @@ namespace Kernel.Hardware.VirtMem
             uint virtPDIdx = vAddr >> 22;
             uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.3");
+            //}
+
             //if (Unmap_Print)
             //{
             //    BasicConsole.WriteLine("Calculating phys addr parts...");
             //}
             uint physPDIdx = pAddr >> 22;
             uint physPTIdx = (pAddr >> 12) & 0x03FF;
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.4");
+            //}
 
             //if (Unmap_Print)
             //{
@@ -361,23 +429,59 @@ namespace Kernel.Hardware.VirtMem
                 UsedVirtPages.Clear((int)((virtPDIdx * 1024) + virtPTIdx));
             }
 
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.5");
+            //}
+
             //if (Unmap_Print)
             //{
             //    BasicConsole.WriteLine("Getting page table...");
             //}
             uint* virtPTPtr = GetFixedPage(virtPDIdx);
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.6");
+            //}
+
             //if (Unmap_Print)
             //{
             //    BasicConsole.WriteLine("Setting page entry...");
             //}
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.7");
+            //}
+
+            if (Processes.Scheduler.OutputMessages)
+            {
+                if (vAddr == 0x00106000)
+                {
+                    BasicConsole.WriteLine("Unmapping 0x00106000");
+                }
+            }
+
             SetPageEntry(virtPTPtr, virtPTIdx, 0, PTEFlags.None);
 
             //if (Unmap_Print)
             //{
             //    BasicConsole.WriteLine("Invalidating page table entry...");
             //}
-            InvalidatePTE(vAddr);            
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.8");
+            //}
+
+            InvalidatePTE(vAddr);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.9");
+            //}
         }
         /// <summary>
         /// Gets the physical address for the specified virtual address.

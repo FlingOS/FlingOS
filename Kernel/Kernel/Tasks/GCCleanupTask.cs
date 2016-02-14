@@ -25,7 +25,6 @@
 #endregion
     
 #define GCTASK_TRACE
-#undef GCTASK_TRACE
 
 using System;
 using Kernel.FOS_System.Processes;
@@ -35,11 +34,11 @@ namespace Kernel.Tasks
     public static class GCCleanupTask
     {
 
-        public static bool Terminate = false;
+        public static bool Terminating = false;
 
         public static void Main()
         {
-            while (!Terminate)
+            while (!Terminating)
             {
                 //bool reenable = Hardware.Processes.Scheduler.Enabled;
                 try

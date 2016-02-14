@@ -69,36 +69,46 @@ namespace Kernel.Hardware.Interrupts
         //TODO: This lot is all x86 specific. It needs to be abstracted into a separate x86 interrupts class to support new architectures.
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        public static bool wasPrintingMessages = false;
+
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         public static bool insideCriticalHandler = false;
         public static bool InsideCriticalHandler
         {
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return insideCriticalHandler;
             }
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
-                insideCriticalHandler = value;
-                FOS_System.GC.UseCurrentState = !value;
+                if (value)
+                {
+                    insideCriticalHandler = true;
+                    FOS_System.GC.UseCurrentState = false;
+                    ExceptionMethods.UseCurrentState = false;
 
-                FOS_System.Heap.PreventAllocation = value;
-                if (value)
-                {
+                    //wasPrintingMessages = ExceptionMethods.PrintMessages;
+                    //ExceptionMethods.PrintMessages = false;
+
+                    FOS_System.Heap.PreventAllocation = true;
                     FOS_System.Heap.PreventReason = "Inside critical interrupt handler.";
-                }
-                else
-                {
-                    FOS_System.Heap.PreventReason = "[NONE]";
-                }
-                if (value)
-                {
                     FOS_System.GC.Disable("InsideCriticalHandler");
                 }
                 else
                 {
                     FOS_System.GC.Enable("InsideCriticalHandler");
+                    FOS_System.Heap.PreventReason = "[NONE]";
+                    FOS_System.Heap.PreventAllocation = false;
+
+                    //ExceptionMethods.PrintMessages = wasPrintingMessages;
+
+                    ExceptionMethods.UseCurrentState = true;
+                    FOS_System.GC.UseCurrentState = true;
+                    insideCriticalHandler = false;
                 }
             }
         }
@@ -117,7 +127,7 @@ namespace Kernel.Hardware.Interrupts
 
         static Interrupts()
         {
-            /*ExceptionMethods.InterruptsState = */InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Interrupts : Interrupts()");
+            InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Interrupts : Interrupts()");
         }
 
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
@@ -204,32 +214,28 @@ namespace Kernel.Hardware.Interrupts
         private static void CommonISR(uint ISRNum)
         {
             InsideCriticalHandler = true;
-
+            
             try
             {
-                try
+                if (ISRNum > 31 && ISRNum < 48)
                 {
-                    if (ISRNum > 31 && ISRNum < 48)
-                    {
-                        HandleIRQ(ISRNum - 32);
-                    }
-                    else
-                    {
-                        HandleISR(ISRNum);
-                    }
+                    HandleIRQ(ISRNum - 32);
                 }
-                catch
+                else
                 {
-                    BasicConsole.WriteLine("Error processing ISR/IRQ!");
-                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    HandleISR(ISRNum);
                 }
             }
-            finally
+            catch
             {
-                InsideCriticalHandler = false;
+                BasicConsole.WriteLine("Error processing ISR/IRQ!");
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
             }
+
+            InsideCriticalHandler = false;
         }
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void HandleISR(uint ISRNum)
         {
             Process currProcess = ProcessManager.CurrentProcess;
@@ -260,6 +266,7 @@ namespace Kernel.Hardware.Interrupts
             }
         }
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         private static void HandleIRQ(uint IRQNum)
         {
             Process currProcess = ProcessManager.CurrentProcess;

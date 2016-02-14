@@ -365,6 +365,8 @@ namespace Kernel.FOS_System.Collections
 
     public unsafe class UInt64Dictionary : Object
     {
+        //TODO: Update this implementation to match UInt32Dictionary (including signifcant bug fixes)
+
         public struct KeyValuePair
         {
             public UInt64 Key;

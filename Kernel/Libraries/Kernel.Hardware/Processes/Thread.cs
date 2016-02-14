@@ -166,7 +166,22 @@ namespace Kernel.Hardware.Processes
                 }
             }
         }
-        
+
+        public static uint ThreadStackTopOffset
+        {
+            get
+            {
+                return (uint)(4096 - sizeof(ExceptionState) - 4);
+            }
+        }
+        public static uint KernelStackTopOffset
+        {
+            get
+            {
+                return (uint)(4096 - 4);
+            }
+        }
+
         public Thread(Process AnOwner, ThreadStartMethod StartMethod, uint AnId, bool UserMode, FOS_System.String AName)
         {
 #if THREAD_TRACE
@@ -179,7 +194,7 @@ namespace Kernel.Hardware.Processes
             #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating state memory...");
 #endif
-            State = (ThreadState*)FOS_System.Heap.Alloc((uint)sizeof(ThreadState), "Thread : Thread() (1)");
+            State = (ThreadState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ThreadState), "Thread : Thread() (1)");
 
             // Init Id and EIP
             //  Set EIP to the first instruction of the main method
@@ -196,8 +211,9 @@ namespace Kernel.Hardware.Processes
 #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating kernel stack...");
 #endif
-            // TODO: Allocate using virt mem manager not the heap (see ThreadStackTop below)
-            State->KernelStackTop = (byte*)FOS_System.Heap.Alloc(0x1000, 4) + 0xFFC; //4KiB, 4-byte aligned
+            State->KernelStackTop = (byte*)/*FOS_System.Heap.Alloc(0x1000, 4)*/Hardware.VirtMemManager.MapFreePage(
+                UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly) + KernelStackTopOffset; //4KiB, 4-byte aligned
             
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
@@ -207,7 +223,7 @@ namespace Kernel.Hardware.Processes
             State->UserMode = UserMode;
             State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly) + 4092; //4 KiB, page-aligned
+                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly) + ThreadStackTopOffset; //4KiB, page-aligned
             
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
@@ -239,9 +255,12 @@ namespace Kernel.Hardware.Processes
 #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating exception state...");
 #endif
-            //TODO: This is currently incorrectly allocated from the current process's heap instead of the heap of the owner process
-            // Init Exception State
-            State->ExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Thread : Thread() (2)");
+            State->ExState = (ExceptionState*)(State->ThreadStackTop + 4);
+            byte* exStateBytePtr = (byte*)State->ExState;
+            for (int i = 0; i < sizeof(ExceptionState); i++)
+            {
+                *exStateBytePtr++ = 0;
+            }
 
 #if THREAD_TRACE
             BasicConsole.WriteLine("Done.");

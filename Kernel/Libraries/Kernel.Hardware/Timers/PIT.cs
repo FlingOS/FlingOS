@@ -107,6 +107,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public ushort T0Reload
         {
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return _T0Reload;
@@ -125,6 +126,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public uint T0Frequency
         {
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (PITFrequency / ((uint)_T0Reload));
@@ -145,6 +147,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public uint T0DelyNS
         {
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (PITDelayNS * _T0Reload);
@@ -166,6 +169,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public ushort T2Reload
         {
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return _T2Reload;
@@ -184,6 +188,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public uint T2Frequency
         {
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (PITFrequency / ((uint)_T2Reload));
@@ -204,6 +209,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public uint T2DelyNS
         {
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 return (PITDelayNS * _T2Reload);
@@ -336,10 +342,17 @@ namespace Kernel.Hardware.Timers
         /// <summary>
         /// The internal timer 0 interrupt handler.
         /// </summary>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void InterruptHandler()
         {
             //if (Processes.ProcessManager.Processes.Count > 1)
             //    BasicConsole.WriteLine("PIT: 1");
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 2");
+            //}
 
             uint T0Delay = T0DelyNS;
             PITHandler hndlr = null;

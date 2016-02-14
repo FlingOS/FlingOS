@@ -266,10 +266,26 @@ namespace Kernel.Hardware
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Map(uint pAddr, uint vAddr, uint size, VirtMemImpl.PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.1");
+            //}
+
             flags |= VirtMemImpl.PageFlags.Present | VirtMemImpl.PageFlags.Writeable;
             while (size > 0)
             {
+                //if (Processes.Scheduler.OutputMessages)
+                //{
+                //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2");
+                //}
+
                 impl.Map(pAddr, vAddr, flags, UpdateUsedPages);
+
+                //if (Processes.Scheduler.OutputMessages)
+                //{
+                //    BasicConsole.WriteLine("Debug Point 9.1.4.5.3");
+                //}
+
                 size -= 4096;
                 pAddr += 4096;
                 vAddr += 4096;
@@ -310,7 +326,17 @@ namespace Kernel.Hardware
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1");
+            //}
+
             impl.Unmap(vAddr, UpdateUsedPages);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.2-5.2");
+            //}
         }
 
         public static bool IsVirtualMapped(void* vAddr)

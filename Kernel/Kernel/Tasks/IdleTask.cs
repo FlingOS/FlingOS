@@ -34,6 +34,8 @@ namespace Kernel.Tasks
 {
     public static unsafe class IdleTask
     {
+        private static bool Terminating = false;
+
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {
@@ -46,7 +48,7 @@ namespace Kernel.Tasks
 
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
             //      is to be the only thread left awake when all others are slept.
-            while (true)
+            while (!Terminating)
             {
                 *((ushort*)0xB809E) = (0x1F00 | '1');
                 TheCPU.Halt();

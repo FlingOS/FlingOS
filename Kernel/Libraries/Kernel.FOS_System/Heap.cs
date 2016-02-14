@@ -609,14 +609,13 @@ namespace Kernel.FOS_System
         }
         public static void InitForProcess()
         {
-            return;
-
             GC.State = null;
             AccessLockInitialised = false;
             AccessLock = null;
             fblock = null;
             OutputTrace = false;
             GC.UseCurrentState = true;
+            ExceptionMethods.UseCurrentState = true;
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine(" > Initialising process heap...");

@@ -25,7 +25,7 @@
 #endregion
     
 #define GC_TRACE
-#undef GC_TRACE
+//#undef GC_TRACE
 
 using System;
 using System.Collections.Generic;
@@ -232,6 +232,7 @@ namespace Kernel.FOS_System
         public static FOS_System.String lastEnabler
         {
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get
             {
                 if (StateInitialised)
@@ -244,6 +245,7 @@ namespace Kernel.FOS_System
                 }
             }
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (StateInitialised)
@@ -255,6 +257,7 @@ namespace Kernel.FOS_System
         public static FOS_System.String lastDisabler
         {
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             get;
             //{
             //    if (StateInitialised)
@@ -267,6 +270,7 @@ namespace Kernel.FOS_System
             //    }
             //}
             [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
             set;
             //{
             //    if (StateInitialised)
@@ -332,7 +336,7 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoGC]
         public static void Init()
         {
-            ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
+            ExceptionMethods.state = ExceptionMethods.kernel_state = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
             
             Enabled = true;
 
@@ -342,18 +346,12 @@ namespace Kernel.FOS_System
             GCState newState = new GCState();
             kernel_state = newState;
             state = newState;
-            GC.State.AccessLock = new SpinLock();
-            GC.State.AccessLockInitialised = true;
-            
-            if ((uint)GC.State.CleanupList == 0xFFFFFFFF)
-            {
-                BasicConsole.WriteLine(" !!! PANIC !!! ");
-                BasicConsole.WriteLine(" GC.state.CleanupList is 0xFFFFFFFF NOT null!");
-                BasicConsole.WriteLine(" !-!-!-!-!-!-! ");
-            }
+            newState.AccessLock = new SpinLock();
+            newState.AccessLockInitialised = true;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Enable(FOS_System.String caller)
         {
             //BasicConsole.Write(caller);
@@ -364,6 +362,7 @@ namespace Kernel.FOS_System
             GC.Enabled = true;
         }
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Disable(FOS_System.String caller)
         {
             //BasicConsole.Write(caller);
@@ -398,6 +397,9 @@ namespace Kernel.FOS_System
                         BasicConsole.Write("Previous caller: ");
                         BasicConsole.WriteLine(lastLocker);
                         BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                        //ExceptionMethods.PrintStack();
+                        //ExceptionMethods.PrintStackTrace();
                     }
 #endif
 
@@ -879,10 +881,9 @@ namespace Kernel.FOS_System
 #if GC_TRACE
                     if (OutputTrace)
                     {
-                        BasicConsole.WriteLine("Cleaned up object.");
+                        BasicConsole.WriteLine("Object ref count hit zero.");
                     }
 #endif
-
                     FOS_System.Object obj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(objPtr);
                     if (obj is FOS_System.Array)
                     {
@@ -917,7 +918,7 @@ namespace Kernel.FOS_System
 #if GC_TRACE
                                 if (OutputTrace)
                                 {
-                                    BasicConsole.WriteLine("Cleaned up field.");
+                                    BasicConsole.WriteLine("Decremented ref count of field.");
                                 }
 #endif
                             }
@@ -931,6 +932,12 @@ namespace Kernel.FOS_System
                         }
                     }
 
+#if GC_TRACE
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("Adding object to cleanup list.");
+                    }
+#endif
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
                 }
             }
@@ -977,14 +984,15 @@ namespace Kernel.FOS_System
             
             EnterCritical("Cleanup");
 
+#if GC_TRACE
+            int startNumObjs = NumObjs;
+            int startNumStrings = NumStrings;
+#endif
+
             try
             {
                 InsideGC = true;
 
-#if GC_TRACE
-                int startNumObjs = NumObjs;
-                int startNumStrings = NumStrings;
-#endif
                 if (OutputTrace)
                 {
                     BasicConsole.WriteLine(" > Inside GC & Cleaning...");
@@ -1039,6 +1047,7 @@ namespace Kernel.FOS_System
                             if (OutputTrace)
                             {
                                 BasicConsole.WriteLine("   > (It's a string).");
+                                BasicConsole.WriteLine((FOS_System.String)obj);
                             }
 
                             NumStrings--;
@@ -1094,18 +1103,18 @@ namespace Kernel.FOS_System
                 }
 
                 InsideGC = false;
-
-#if GC_TRACE
-                if (OutputTrace)
-                {
-                    PrintCleanupData(startNumObjs, startNumStrings);
-                }
-#endif
             }
             finally
             {
                 ExitCritical();
             }
+
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                PrintCleanupData(startNumObjs, startNumStrings);
+            }
+#endif
         }
         /// <summary>
         /// Outputs, via the basic console, how much memory was cleaned up.

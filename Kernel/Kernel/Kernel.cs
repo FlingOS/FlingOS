@@ -77,7 +77,6 @@ namespace Kernel
                 
                 BasicConsole.WriteLine("Creating kernel process...");
                 Process KernelProcess = new Process(Tasks.KernelTask.Main, ProcessManager.ProcessIdGenerator++, "Kernel Task", false);
-                KernelProcess.TheMemoryLayout.NoUnload = true;
                 //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
                 //          by adding it to Kernel Process' memory layout.
                 ProcessManager.KernelProcess = KernelProcess;
@@ -86,11 +85,17 @@ namespace Kernel
                 Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
 
                 BasicConsole.WriteLine("Initialising kernel thread stack...");
-                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - 4092);
-                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - 4092);
+                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
                 Hardware.VirtMemManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
-                KernelThread.State->ThreadStackTop = GetKernelStackPtr();
+                KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
                 KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
+                KernelThread.State->ExState = (ExceptionState*)(KernelThread.State->ThreadStackTop + 4);
+                byte* exStateBytePtr = (byte*)KernelThread.State->ExState;
+                for (int i = 0; i < sizeof(ExceptionState); i++)
+                {
+                    *exStateBytePtr++ = 0;
+                }
 
                 BasicConsole.WriteLine("Initialising kernel process heap...");
                 KernelProcess.HeapLock = Heap.AccessLock;
@@ -202,6 +207,8 @@ namespace Kernel
                 //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
                 //    bpm);
 
+                //FOS_System.GC.OutputTrace = true;
+                
                 BasicConsole.WriteLine("Initialising scheduler...");
                 Scheduler.Init();
 

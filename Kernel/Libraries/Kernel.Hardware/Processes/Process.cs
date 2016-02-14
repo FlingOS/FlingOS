@@ -78,6 +78,7 @@ namespace Kernel.Hardware.Processes
 
             Threads = new List();
             TheMemoryLayout = new MemoryLayout();
+            TheMemoryLayout.AddAllDataToKernel = ProcessManager.KernelProcess == null;
 
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: ctor: Initialising memory layout...");
@@ -100,15 +101,48 @@ namespace Kernel.Hardware.Processes
                 // Required so that page allocations by new Thread don't create conflicts
                 ProcessManager.EnableKernelAccessToProcessMemory(this);
 
+                bool reenable = Scheduler.Enabled;
+                if (reenable)
+                {
+                    Scheduler.Disable();
+                }
+
+                BasicConsole.Write("Physical address of 0x00106000 is ");
+                FOS_System.String valStr = "0x        ";
+                ExceptionMethods.FillString(VirtMemManager.GetPhysicalAddress(0x00106000), 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
                 Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
                 // Add the page to the processes memory layout
-                uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - 4092;
-                uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - 4092);
+                uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
+                uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+                uint kernelStackVirtAddr = (uint)newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
+                uint kernelStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->KernelStackTop - Thread.KernelStackTopOffset);
+
+                if (reenable)
+                {
+                    Scheduler.Enable();
+                }
+
                 TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
+                TheMemoryLayout.AddKernelPage(kernelStackPhysAddr, kernelStackVirtAddr);
                 
+                if (ProcessManager.KernelProcess != null && this != ProcessManager.KernelProcess)
+                {
+                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage(kernelStackPhysAddr, kernelStackVirtAddr);
+                }
+
+                if (Name != "Main")
+                {
+                    BasicConsole.WriteLine("New thread info:");
+                    BasicConsole.WriteLine("Name : " + Name);
+                    BasicConsole.WriteLine("Thread stack : " + (FOS_System.String)threadStackVirtAddr + " => " + threadStackPhysAddr);
+                    BasicConsole.WriteLine("Kernel stack : " + (FOS_System.String)kernelStackVirtAddr + " => " + kernelStackPhysAddr);
+                }
+
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding thread...");
 #endif

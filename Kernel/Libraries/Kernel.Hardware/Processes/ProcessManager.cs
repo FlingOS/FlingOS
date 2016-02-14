@@ -72,23 +72,49 @@ namespace Kernel.Hardware.Processes
             {
                 uint vAddr = newDataVAddrs[i];
                 uint pAddr = VirtMemManager.GetPhysicalAddress(vAddr);
+                BasicConsole.WriteLine("Mapping free pages...");
+                //ExceptionMethods.PrintMessages = true;
                 void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, 1);
+                //ExceptionMethods.PrintMessages = false;
+                BasicConsole.WriteLine("Mapped.");
                 void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
 
                 BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
                 NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
 
-                CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
+                //CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
                 uint* srcPtr = (uint*)vAddr;
                 uint* dstPtr = (uint*)newVAddr;
                 for (uint j = 0; j < 1024; j++, srcPtr++, dstPtr++)
                 {
                     *dstPtr = *srcPtr;
                 }
-                CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
+                //CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
             }
 
             Scheduler.Enable();
+
+            {
+                BasicConsole.WriteLine("New process memory layout:");
+                UInt32Dictionary.Iterator iterator = NewProcess.TheMemoryLayout.CodePages.GetNewIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                }
+                iterator = NewProcess.TheMemoryLayout.DataPages.GetNewIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                }
+                iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                }
+            }
 
             return NewProcess;
         }
@@ -121,16 +147,17 @@ namespace Kernel.Hardware.Processes
                 void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
 
                 BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
-                NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
+                //NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
 
-                CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
+                //CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
                 uint* srcPtr = (uint*)vAddr;
                 uint* dstPtr = (uint*)newVAddr;
                 for (uint i = 0; i < 1024; i++, srcPtr++, dstPtr++)
                 {
                     *dstPtr = *srcPtr;
                 }
-                CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
+                //CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
+                VirtMemManager.Unmap(newVAddr, VirtMem.UpdateUsedPagesFlags.Virtual);
             }
 
             Scheduler.Enable();
@@ -261,7 +288,18 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.Write("Switching in: ");
                 BasicConsole.WriteLine(NewProcess.Name);
 #endif
+                //if (Scheduler.OutputMessages)
+                //{
+                //    BasicConsole.WriteLine("Debug Point 9.1");
+                //}
+
                 NewProcess.SwitchFromLayout(CurrentProcess.TheMemoryLayout);
+
+                //if (Scheduler.OutputMessages)
+                //{
+                //    BasicConsole.WriteLine("Debug Point 9.2");
+                //}
+
                 CurrentProcess = NewProcess;
 #if PROCESSMANAGER_SWITCH_TRACE
                 BasicConsole.Write("Switched in.");
@@ -270,6 +308,11 @@ namespace Kernel.Hardware.Processes
 
             CurrentThread = null;
             CurrentThread_State = null;
+
+            //if (Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.3");
+            //}
 
             if (threadId == THREAD_DONT_CARE)
             {
@@ -283,6 +326,11 @@ namespace Kernel.Hardware.Processes
                 CurrentThread = GetThreadById((uint)threadId, CurrentProcess);
             }
 
+            //if (Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.4");
+            //}
+
             // No threads in the process (?!) or process not found
             if (CurrentThread == null)
             {
@@ -295,10 +343,31 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Thread found.");
 #endif
 
+            //if (Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.5");
+            //}
+
             CurrentThread_State = CurrentThread.State;
+
 #if PROCESSMANAGER_SWITCH_TRACE
             BasicConsole.WriteLine("Thread state updated.");
 #endif
+
+            //BasicConsole.Write("Load ex state");
+            ExceptionMethods.state = ProcessManager.CurrentThread_State->ExState;
+
+#if PROCESSMANAGER_SWITCH_TRACE
+            BasicConsole.WriteLine("Exception state updated.");
+#endif
+
+            if (Scheduler.OutputMessages)
+            {
+                BasicConsole.Write("Switch to ");
+                BasicConsole.Write(CurrentProcess.Name);
+                BasicConsole.Write(" : ");
+                BasicConsole.WriteLine(CurrentThread.Name);
+            }
         }
 
         public static bool WakeProcess(uint processId, uint threadId)

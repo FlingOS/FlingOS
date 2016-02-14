@@ -56,10 +56,44 @@ namespace Kernel
         public static string UnhandledException_PanicMessage = "Unhandled exception! Panic!";
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
-        public static ExceptionState* State;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
-        public static ExceptionState* DefaultState;
+        public static bool UseCurrentState = false;
 
+        //[Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
+        //public static bool PrintMessages = false;
+
+        public static ExceptionState* state;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
+        public static ExceptionState* kernel_state;
+        public static ExceptionState* State
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (UseCurrentState)
+                {
+                    return state;
+                }
+                else
+                {
+                    return kernel_state;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (UseCurrentState)
+                {
+                    state = value;
+                }
+                else
+                {
+                    kernel_state = value;
+                }
+            }
+        }
+        
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
         static ExceptionMethods()
@@ -216,6 +250,8 @@ namespace Kernel
             ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
         }
+
+        private static bool HasErrored = false;
 
         /// <summary>
         /// Handles the current pending exception.
@@ -486,18 +522,53 @@ namespace Kernel
             if (State->CurrentHandlerPtr->ExPending != 0)
             {
                 // Case 1 : Pending exception
-                
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: Handle pending exception");
+                //}
+
                 HandleException();
             }
             else
             {
                 // Case 2 : No pending exception
-                
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: No pending exception");
+                //}
+
                 State->CurrentHandlerPtr->InHandler = 0;
 
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 1");
+                //}
+
                 uint EBP = State->CurrentHandlerPtr->EBP;
+                
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 2");
+                //}
+
                 uint ESP = State->CurrentHandlerPtr->ESP;
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 3");
+                //}
+
                 byte* retAddr = State->CurrentHandlerPtr->HandlerAddress;//(byte*)*((uint*)(BasePointer + 4));
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 4");
+                //    FOS_System.String addrStr = "retAddr: 0x        ";
+                //    FillString((uint)retAddr, 18, addrStr);
+                //    BasicConsole.WriteLine(addrStr);
+                //}
 
                 //BasicConsole.Write("Continue ptr (from HandlerAddress): ");
                 //BasicConsole.WriteLine((uint)State->CurrentHandlerPtr->HandlerAddress);
@@ -505,7 +576,12 @@ namespace Kernel
                 //BasicConsole.WriteLine(*((uint*)(BasePointer + 4)));
 
                 MoveToPreviousHandler();
-                                
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 5");
+                //}
+
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
                     retAddr);
@@ -620,6 +696,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
             PrintStackTrace();
+            PrintExceptionState();
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.OverflowException("Processor reported an overflow."));
         }
@@ -802,17 +879,28 @@ namespace Kernel
         /// <remarks>
         /// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
         /// </remarks>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Throw_PageFaultException(uint eip, uint errorCode, uint address)
         {
-            if (ThePageFaultHandler != null)
+            if (HasErrored)
             {
-                ThePageFaultHandler(eip, errorCode, address);
+                for (int i = 0; i < 50000000; i++)
+                {
+                }
             }
-            else
-            {
+
+            HasErrored = true;
+
+            //if (ThePageFaultHandler != null)
+            //{
+            //    ThePageFaultHandler(eip, errorCode, address);
+            //}
+            //else
+            //{
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
-                BasicConsole.WriteLine("Page fault exception!");
-                BasicConsole.DelayOutput(10);
+                //BasicConsole.WriteLine("Page fault exception!");
+                //BasicConsole.DelayOutput(10);
 
                 HaltReason = "Page fault exception. Address: 0x        , errorCode: 0x        , eip: 0x        ";
 
@@ -1010,10 +1098,19 @@ namespace Kernel
                 BasicConsole.WriteLine(HaltReason);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
+                PrintStack();
                 PrintStackTrace();
+                PrintExceptionState();
 
-                Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
-            }
+                if (ThePageFaultHandler != null)
+                {
+                    ThePageFaultHandler(eip, errorCode, address);
+                }
+                else
+                {
+                    Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
+                }
+            //}
         }
 
         public static PageFaultHandler ThePageFaultHandler = null;
@@ -1030,13 +1127,14 @@ namespace Kernel
             HaltReason = "Null reference exception. Instruction: 0x        ";
             FillString(address, 48, HaltReason);
             
-            bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
-            BasicConsole.PrimaryOutputEnabled = true;
+            //bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
+            //BasicConsole.PrimaryOutputEnabled = true;
             BasicConsole.WriteLine(HaltReason);
-            BasicConsole.DelayOutput(10);
-            BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
+            //BasicConsole.DelayOutput(10);
+            //BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
 
             PrintStackTrace();
+            PrintExceptionState();
 
             FOS_System.Exception ex = new FOS_System.Exceptions.NullReferenceException();
             ex.InstructionAddress = address;
@@ -1079,7 +1177,7 @@ namespace Kernel
         public static void PrintStackTrace()
         {
             uint* EBP = (uint*)BasePointer;
-            while((uint)EBP % 4096 != 0)
+            while ((uint)EBP % 4096 < 4092 && (uint)EBP % 4096 != 0 && (uint)EBP > 4096)
             {
                 FOS_System.String msg = "EBP: 0x        , Return Address: 0x        , Prev EBP: 0x        ";
                 //EBP: 14
@@ -1108,7 +1206,7 @@ namespace Kernel
                 BasicConsole.WriteLine(msg);
             }
 
-            while ((uint)ESP < 0xC0110013)
+            while ((uint)ESP % 4096 < 4092 && (uint)ESP % 4096 != 0)
             {
                 FOS_System.String msg = "ESP: 0x        , Value: 0x        ";
                 //ESP: 14
@@ -1120,6 +1218,52 @@ namespace Kernel
                 BasicConsole.WriteLine(msg);
 
                 ESP++;
+            }
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        public static void PrintExceptionState()
+        {
+            if (State != null)
+            {
+                FOS_System.String valStr = "0x        ";
+
+                BasicConsole.WriteLine("Exception state:");
+
+                BasicConsole.Write("    > Current handler pointer : ");
+                FillString((uint)State->CurrentHandlerPtr, 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
+                BasicConsole.Write("    > Depth : ");
+                FillString((uint)State->depth, 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
+                BasicConsole.Write("    > History position : ");
+                FillString((uint)State->history_pos, 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
+                int startI = State->history_pos - 1;
+                bool once = false;
+                for (int i = startI, counter = 0; i != startI || !once; i--, counter++)
+                {
+                    once = true;
+
+                    if (i < 0)
+                    {
+                        i = 31;
+                    }
+
+                    BasicConsole.Write("        [");
+                    FillString((uint)counter, 9, valStr);
+                    BasicConsole.Write(valStr);
+                    BasicConsole.Write("] = ");
+                    FillString(State->history[i], 9, valStr);
+                    BasicConsole.WriteLine(valStr);
+                }
+            }
+            else
+            {
+                BasicConsole.WriteLine("Current exception state is null!");
             }
         }
 

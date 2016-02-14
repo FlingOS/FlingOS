@@ -50,6 +50,9 @@ namespace Kernel.Tasks
 
             BasicConsole.WriteLine("DM > Creating heap...");
             FOS_System.Heap.InitForProcess();
+
+            Hardware.Processes.Scheduler.OutputMessages = true;
+
             BasicConsole.WriteLine("DM > Starting GC thread...");
             SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
             if (SysCallResult != SystemCallResults.OK)
@@ -65,9 +68,9 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("DM > Registering for Receive Message syscall...");
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.ReceiveMessage, SyscallHandler);
 
-                BasicConsole.WriteLine("DM > Registering for IRQs...");
-                SystemCalls.RegisterIRQHandler(14, IRQHandler);
-                SystemCalls.RegisterIRQHandler(15);
+                //BasicConsole.WriteLine("DM > Registering for IRQs...");
+                //SystemCalls.RegisterIRQHandler(14, IRQHandler);
+                //SystemCalls.RegisterIRQHandler(15);
 
                 BasicConsole.WriteLine("DM > Creating virtual console...");
                 console = new Consoles.VirtualConsole();

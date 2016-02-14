@@ -53,12 +53,14 @@ namespace Kernel.FOS_System.Collections
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Set(int entry)
         {
             bitmap[entry / 8] = (byte)(bitmap[entry / 8] | (1 << (entry % 8)));
             setCount++;
         }
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Clear(int entry)
         {
             bitmap[entry / 8] = (byte)(bitmap[entry / 8] & ~(1 << (entry % 8)));
@@ -66,12 +68,14 @@ namespace Kernel.FOS_System.Collections
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public bool IsSet(int entry)
         {
             return (bitmap[entry / 8] & (1 << (entry % 8))) != 0;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public int FindFirstClearEntry()
         {
             for (int i = 0; i < bitmap.Length; i++)
@@ -87,6 +91,7 @@ namespace Kernel.FOS_System.Collections
             return -1;
         }
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public int FindLastClearEntry()
         {
             for (int i = bitmap.Length - 1; i > -1; i--)
@@ -103,6 +108,7 @@ namespace Kernel.FOS_System.Collections
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public int FindContiguousClearEntries(int num)
         {
             int contiguousEntries = 0;

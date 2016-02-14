@@ -37,6 +37,9 @@ namespace Kernel.Hardware.Processes
     public static unsafe class Scheduler
     {
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        public static bool OutputMessages = false;
+
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static PriorityQueue ActiveQueue = new PriorityQueue(1024);
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static PriorityQueue InactiveQueue = new PriorityQueue(1024);
@@ -88,7 +91,7 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.NoDebug]
         public static void Init()
         {
-            //ExceptionMethods.ThePageFaultHandler = HandlePageFault;
+            ExceptionMethods.ThePageFaultHandler = HandlePageFault;
             
             ActiveQueue.Name = "Active Queue";
             InactiveQueue.Name = "Inactive Queue";
@@ -106,7 +109,11 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine(" > Setting current thread state...");
 #endif
             ProcessManager.CurrentThread_State = ProcessManager.CurrentThread.State;
-                        
+#if SCHEDULER_TRACE
+            BasicConsole.WriteLine(" > Setting current exception state...");
+#endif
+            ExceptionMethods.state = ProcessManager.CurrentThread_State->ExState;
+
             //Init TSS
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Getting TSS pointer...");
@@ -167,15 +174,20 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.NoGC]
         public static void HandlePageFault(uint eip, uint errorCode, uint address)
         {
-            Hardware.VirtMem.MemoryLayout memLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
+            /*Hardware.VirtMem.MemoryLayout memLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
             BasicConsole.WriteLine("Code pages:");
-            string TempDisplayString = "0x        ";
+            FOS_System.String TempDisplayString = "0x        ";
 
+            BasicConsole.WriteLine("Get iterator");
             UInt32Dictionary.Iterator iterator = memLayout.CodePages.GetIterator();
+            BasicConsole.WriteLine("Check for next");
             while(iterator.HasNext())
             {
+                BasicConsole.WriteLine("Get pair");
                 UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                BasicConsole.WriteLine("Get key");
                 uint vAddr = pair.Key;
+                BasicConsole.WriteLine("Setup string");
                 WriteNumber(TempDisplayString, vAddr);
                 BasicConsole.WriteLine(TempDisplayString);
             }
@@ -187,8 +199,13 @@ namespace Kernel.Hardware.Processes
                 uint vAddr = pair.Key;
                 WriteNumber(TempDisplayString, vAddr);
                 BasicConsole.WriteLine(TempDisplayString);
-            }
-            BasicConsole.DelayOutput(100);
+            }*/
+
+            BasicConsole.WriteLine(ProcessManager.CurrentProcess.Name);
+            BasicConsole.WriteLine(ProcessManager.CurrentThread.Name);
+
+            BasicConsole.WriteLine("Suspending current thread.");
+            ProcessManager.CurrentThread.Suspend = true;
         }
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -276,6 +293,11 @@ namespace Kernel.Hardware.Processes
             //    Enable();
             //}
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 3");
+            //}
+
             if (!Enabled || !Initialised)
             {
                 //BasicConsole.Write("D");
@@ -293,6 +315,12 @@ namespace Kernel.Hardware.Processes
             //if (UpdateCountdown <= 0)
             //{
             //    UpdateCountdown = UpdatePeriod;
+            
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 4");
+            //}
+
                 UpdateCurrentState();
             //}
         }
@@ -314,9 +342,24 @@ namespace Kernel.Hardware.Processes
                 return;
             }
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 5");
+            //}
+
             UpdateInactiveThreads();
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 6");
+            //}
+
             UpdateActiveThreads();
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 7");
+            //}
 
             while (ActiveQueue.Count == 0)
             {
@@ -326,6 +369,11 @@ namespace Kernel.Hardware.Processes
                 UpdateInactiveThreads();
             }
 
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 8");
+            //}
+
             Thread nextThread = (Thread)ActiveQueue.PeekMin();
 #if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
             BasicConsole.Write("Active: ");
@@ -333,12 +381,32 @@ namespace Kernel.Hardware.Processes
             BasicConsole.Write(" - ");
             BasicConsole.WriteLine(nextThread.Name);
 #endif
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9");
+            //}
+
             ProcessManager.SwitchProcess(nextThread.Owner.Id, (int)nextThread.Id);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 10");
+            //}
 
             if (!ProcessManager.CurrentThread_State->Started)
             {
+                //if (Processes.Scheduler.OutputMessages)
+                //{
+                //    BasicConsole.WriteLine("Debug Point 11");
+                //}
+
                 SetupThreadForStart();
             }
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 12");
+            //}
 
 #if SCHEDULER_HANDLER_TRACE
             if (Processes.ProcessManager.Processes.Count > 1)

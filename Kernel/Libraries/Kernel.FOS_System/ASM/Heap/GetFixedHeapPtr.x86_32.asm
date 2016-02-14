@@ -34,8 +34,8 @@ ret
 
 SECTION .bss
 
-; (524288 * 20) bytes = 10MiB
-KernelFixedHeap_Start: resb (524288 * 20)
+; (524288 * 2) bytes = 0.5MiB * 2 = 1MiB
+KernelFixedHeap_Start: resb (524288 * 2)
 KernelFixedHeap_End:
 
 GLOBAL StaticFields_Start:data

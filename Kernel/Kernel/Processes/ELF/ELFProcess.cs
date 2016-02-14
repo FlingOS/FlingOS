@@ -75,7 +75,7 @@ namespace Kernel.Processes.ELF
                 theProcess = Hardware.Processes.ProcessManager.CreateProcess(
                     mainMethod, theFile.TheFile.Name, UserMode);
 
-                uint threadStackVirtAddr = (uint)((Hardware.Processes.Thread)theProcess.Threads[0]).State->ThreadStackTop - 4092;
+                uint threadStackVirtAddr = (uint)((Hardware.Processes.Thread)theProcess.Threads[0]).State->ThreadStackTop - Hardware.Processes.Thread.ThreadStackTopOffset;
                 uint threadStackPhysAddr = (uint)Hardware.VirtMemManager.GetPhysicalAddress(threadStackVirtAddr);
                 Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
                 

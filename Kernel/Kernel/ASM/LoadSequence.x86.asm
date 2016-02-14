@@ -544,9 +544,6 @@ EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowE
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_InvalidOpCodeException_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND__System_UInt32_
 EXTERN staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State
-EXTERN staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State
-EXTERN staticfield_Kernel_ExceptionState__Kernel_Hardware_Interrupts_Interrupts_InterruptsExState
-EXTERN staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_DefaultState
 
 %define KERNEL_MODE_DPL 0
 %define USER_MODE_DPL 3
@@ -678,10 +675,6 @@ add esp, 64
 
 INTERRUPTS_STORE_STATE_SKIP_%1:
 
-; Put in interrupts ex state
-mov dword ebx, [staticfield_Kernel_ExceptionState__Kernel_Hardware_Interrupts_Interrupts_InterruptsExState]
-mov dword [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State], ebx
-
 %endmacro
 
 
@@ -703,17 +696,9 @@ mov dword ebx, [eax+7]
 ; Update TSS with kernel stack pointer for next task switch
 mov dword [TSS_Contents+4], ebx
 
-; Put in thread ex state
-mov dword ebx, [eax+21]
-mov dword [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State], ebx
-
 jmp INTERRUPTS_RESTORE_STATE_SKIP_END_%1
 
 INTERRUPTS_RESTORE_STATE_SKIP_%1:
-
-; Put in default ex state
-mov dword ebx, [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_DefaultState]
-mov dword [staticfield_Kernel_ExceptionState__Kernel_ExceptionMethods_State], ebx
 
 INTERRUPTS_RESTORE_STATE_SKIP_END_%1:
 

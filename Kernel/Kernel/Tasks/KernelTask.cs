@@ -25,7 +25,6 @@
 #endregion
 
 //DSC: Deferred System Calls
-
 //#define DSC_TRACE
 //#define SYSCALLS_TRACE
 
@@ -50,11 +49,16 @@ namespace Kernel.Tasks
             public uint ProcessId;
             public uint ThreadId;
         }
-
+        
         public static bool Terminating = false;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Queue DeferredSyscallsInfo_Unqueued;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Queue DeferredSyscallsInfo_Queued;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static bool DeferredSyscalls_Ready = false;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Thread DeferredSyscallsThread;
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
@@ -244,12 +248,21 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SignalSemaphore);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
+                
+                BasicConsole.WriteLine(" > Forcing initial GC cleanup...");
+                FOS_System.GC.Cleanup();
 
                 BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
                 ProcessManager.CurrentProcess.CreateThread(Tasks.GCCleanupTask.Main, "GC Cleanup");
 
                 BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
                 DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main, "Deferred Sys Calls");
+
+                while (!DeferredSyscalls_Ready)
+                {
+                    BasicConsole.WriteLine("Waiting on deferred syscalls thread...");
+                    SystemCalls.SleepThread(50);
+                }
 
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle", false);
@@ -259,7 +272,7 @@ namespace Kernel.Tasks
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
                 //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
-
+                
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false);
                 WindowManagerTask_ProcessId = WindowManagerProcess.Id;
@@ -273,13 +286,21 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(1000);
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
-
+                
                 BasicConsole.WriteLine(" > Starting Device Manager...");
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false);
                 //DeviceManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine("Started.");
+
+                //bool OK = true;
+                //while (OK)
+                //{
+                //    BasicConsole.WriteLine("Ping");
+                //    FOS_System.Object obj = new FOS_System.Object();
+                //    //SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+                //}
 
                 BasicConsole.PrimaryOutputEnabled = false;
                 //BasicConsole.SecondaryOutputEnabled = false;
@@ -305,11 +326,11 @@ namespace Kernel.Tasks
                     {
                         try
                         {
-                            //FOS_System.String msg = "KT > Hello, world! (" + (FOS_System.String)loops++ + ")";
-                            //console.WriteLine(msg);
-                            //BasicConsole.WriteLine(msg);
-                            //SystemCalls.SleepThread(1000);
-                            shell.Execute();
+                            FOS_System.String msg = "KT > Hello, world! (" + (FOS_System.String)loops++ + ")";
+                            console.WriteLine(msg);
+                            BasicConsole.WriteLine(msg);
+                            SystemCalls.SleepThread(1000);
+                            //shell.Execute();
                         }
                         catch
                         {
@@ -342,6 +363,8 @@ namespace Kernel.Tasks
         {
             while (!Terminating)
             {
+                DeferredSyscalls_Ready = true;
+
                 if (DeferredSyscallsInfo_Queued.Count == 0)
                 {
                     SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
@@ -443,13 +466,13 @@ namespace Kernel.Tasks
             switch (syscallNumber)
             {
                 case SystemCallNumbers.StartThread:
-#if DSC_TRACE
+//#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread");
-#endif
+//#endif
                     Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1), "[From sys call]").Id;
-#if DSC_TRACE
+//#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread - done.");
-#endif
+//#endif
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:
@@ -870,6 +893,11 @@ namespace Kernel.Tasks
         {
             if (IRQNum == 0)
             {
+                //if (Scheduler.OutputMessages)
+                //{
+                //    BasicConsole.WriteLine("Debug Point 1");
+                //}
+
                 Hardware.Timers.PIT.ThePIT.InterruptHandler();
                 return 0;
             }

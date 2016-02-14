@@ -30,6 +30,8 @@ namespace Kernel.Shells
                 //DeviceManager.AddDevice(Serial.COM2);
                 //DeviceManager.AddDevice(Serial.COM3);
 
+                SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+
                 Hardware.Timers.RTC rtc = (Hardware.Timers.RTC)DeviceManager.FindDevice((FOS_System.Type)typeof(Hardware.Timers.RTC));
                 if (rtc == null)
                 {

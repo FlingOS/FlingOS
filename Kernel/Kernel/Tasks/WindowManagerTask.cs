@@ -81,6 +81,7 @@ namespace Kernel.Tasks
             // Initialise heap & GC
             BasicConsole.WriteLine("WM > Creating heap...");
             FOS_System.Heap.InitForProcess();
+
             BasicConsole.WriteLine("WM > Starting GC thread...");
             // Start thread for calling GC Cleanup method
             if (SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
@@ -407,7 +408,7 @@ namespace Kernel.Tasks
         {
             if (IRQNum == 1)
             {
-                BasicConsole.WriteLine("Keyoard interrupt");
+                BasicConsole.WriteLine("Keyboard interrupt");
                 ((Hardware.Keyboards.PS2)Keyboard.Default).InterruptHandler();
                 return 0;
             }
