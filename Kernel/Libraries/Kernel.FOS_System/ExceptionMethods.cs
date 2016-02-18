@@ -1224,42 +1224,44 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         public static void PrintExceptionState()
         {
-            if (State != null)
+            if (state != null)
             {
                 FOS_System.String valStr = "0x        ";
 
                 BasicConsole.WriteLine("Exception state:");
 
                 BasicConsole.Write("    > Current handler pointer : ");
-                FillString((uint)State->CurrentHandlerPtr, 9, valStr);
+                FillString((uint)state->CurrentHandlerPtr, 9, valStr);
                 BasicConsole.WriteLine(valStr);
 
                 BasicConsole.Write("    > Depth : ");
-                FillString((uint)State->depth, 9, valStr);
+                FillString((uint)state->depth, 9, valStr);
                 BasicConsole.WriteLine(valStr);
 
                 BasicConsole.Write("    > History position : ");
-                FillString((uint)State->history_pos, 9, valStr);
+                FillString((uint)state->history_pos, 9, valStr);
                 BasicConsole.WriteLine(valStr);
 
-                int startI = State->history_pos - 1;
-                bool once = false;
-                for (int i = startI, counter = 0; i != startI || !once; i--, counter++)
+                int pos = State->history_pos;
+                int counter = 0;
+                do
                 {
-                    once = true;
-
-                    if (i < 0)
-                    {
-                        i = 31;
-                    }
-
                     BasicConsole.Write("        [");
                     FillString((uint)counter, 9, valStr);
                     BasicConsole.Write(valStr);
                     BasicConsole.Write("] = ");
-                    FillString(State->history[i], 9, valStr);
+                    FillString(state->history[pos], 9, valStr);
                     BasicConsole.WriteLine(valStr);
+
+                    pos--;
+                    if (pos == -1)
+                    {
+                        pos = 31;
+                    }
+
+                    counter++;
                 }
+                while (pos != State->history_pos);
             }
             else
             {

@@ -51,7 +51,7 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("DM > Creating heap...");
             FOS_System.Heap.InitForProcess();
 
-            Hardware.Processes.Scheduler.OutputMessages = true;
+            //Hardware.Processes.Scheduler.OutputMessages = true;
 
             BasicConsole.WriteLine("DM > Starting GC thread...");
             SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
@@ -95,6 +95,19 @@ namespace Kernel.Tasks
                 
                 BasicConsole.WriteLine("Start time:");
                 BasicConsole.WriteLine(new FOS_System.DateTime(StartTime).ToString());
+
+                while (!Terminating)
+                {
+                    try
+                    {
+                        SystemCalls.SleepThread(1000);
+                    }
+                    catch
+                    {
+                        BasicConsole.WriteLine("DM > Error executing sleep loop!");
+                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    }
+                }
 
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetTime);
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetUpTime);
@@ -195,10 +208,11 @@ namespace Kernel.Tasks
 
         public static int IRQHandler(uint irqNumber)
         {
-            Hardware.ATA.PATAPI.IRQHandler(irqNumber);
-            Hardware.USB.USBManager.IRQHandler();
+            return -1;
+            //Hardware.ATA.PATAPI.IRQHandler(irqNumber);
+            //Hardware.USB.USBManager.IRQHandler();
             
-            return 0;
+            //return 0;
         }
 
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,

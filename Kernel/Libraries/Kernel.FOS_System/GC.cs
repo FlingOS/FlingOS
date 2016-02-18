@@ -24,8 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define GC_TRACE
-//#undef GC_TRACE
+//#define GC_TRACE
 
 using System;
 using System.Collections.Generic;
@@ -343,11 +342,15 @@ namespace Kernel.FOS_System
             Heap.AccessLock = new SpinLock();
             Heap.AccessLockInitialised = true;
 
-            GCState newState = new GCState();
-            kernel_state = newState;
-            state = newState;
-            newState.AccessLock = new SpinLock();
-            newState.AccessLockInitialised = true;
+            GCState newState1 = new GCState();
+            kernel_state = newState1;
+            newState1.AccessLock = new SpinLock();
+            newState1.AccessLockInitialised = true;
+
+            GCState newState2 = new GCState();
+            state = newState2;
+            newState2.AccessLock = new SpinLock();
+            newState2.AccessLockInitialised = true;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
@@ -867,10 +870,23 @@ namespace Kernel.FOS_System
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
-            
+
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("GC-DP: 1");
+            }
             GCHeader* gcHeaderPtr = (GCHeader*)(objPtr - sizeof(GCHeader));
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("GC-DP: 2");
+            }
             if (CheckSignature(gcHeaderPtr))
             {
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine("GC-DP: 3");
+                }
+
                 gcHeaderPtr->RefCount--;
 
                 //If the ref count goes below 0 then there was a circular reference somewhere.
@@ -940,6 +956,10 @@ namespace Kernel.FOS_System
 #endif
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
                 }
+            }
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("GC-DP: 4");
             }
         }
 

@@ -1179,7 +1179,7 @@ namespace Kernel.Hardware.USB
 #if USB_TRACE
                     BasicConsole.WriteLine("USBManager:IRQHandler:Calling handler");
 #endif
-                    ((HCI)HCIDevices[i]).IRQHandler();
+                    //((HCI)HCIDevices[i]).IRQHandler();
 #if USB_TRACE
                     BasicConsole.WriteLine("USBManager:IRQHandler:Done.");
 #endif

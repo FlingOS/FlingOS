@@ -24,17 +24,14 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
     public static unsafe class IdleTask
     {
         private static bool Terminating = false;
+        private static uint GCThreadId;
 
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
@@ -43,11 +40,22 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("IDLE > Creating heap...");
             FOS_System.Heap.InitForProcess();
 
+            BasicConsole.WriteLine("IDLE > Starting GC thread...");
+            // Start thread for calling GC Cleanup method
+            if (SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Idle Task: GC thread failed to create!");
+            }
+            
             //TODO: Use some kind of factory for creating the correct CPU class
             Hardware.Devices.CPU TheCPU = new Hardware.CPUs.CPUx86_32();
 
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
             //      is to be the only thread left awake when all others are slept.
+
+            FOS_System.GC.OutputTrace = true;
+                
+            int i = 0;
             while (!Terminating)
             {
                 *((ushort*)0xB809E) = (0x1F00 | '1');
@@ -55,6 +63,17 @@ namespace Kernel.Tasks
 
                 *((ushort*)0xB809E) = (0x3F00 | '2');
                 TheCPU.Halt();
+
+                if (i < 100)
+                {
+                    i++;
+                }
+                else if (i == 100)
+                {
+                    i = 100001;
+                    BasicConsole.WriteLine(GCThreadId);
+                    SystemCalls.SleepThread(1000);
+                }
             }
         }
     }

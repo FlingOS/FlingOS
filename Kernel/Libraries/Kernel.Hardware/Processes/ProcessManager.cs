@@ -63,9 +63,15 @@ namespace Kernel.Hardware.Processes
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process object...");
 #endif
+            BasicConsole.WriteLine("CreateProcess.A");
+            
             Scheduler.Disable();
 
+            BasicConsole.WriteLine("CreateProcess.B");
+
             Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+
+            BasicConsole.WriteLine("CreateProcess.C");
 
             uint[] newDataVAddrs = VirtMemManager.GetBuiltInProcessVAddrs();
             for (int i = 0; i < newDataVAddrs.Length; i++)
@@ -91,6 +97,8 @@ namespace Kernel.Hardware.Processes
                 }
                 //CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
             }
+
+            BasicConsole.WriteLine("CreateProcess.D");
 
             Scheduler.Enable();
 

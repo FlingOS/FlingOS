@@ -207,8 +207,6 @@ namespace Kernel
                 //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
                 //    bpm);
 
-                //FOS_System.GC.OutputTrace = true;
-                
                 BasicConsole.WriteLine("Initialising scheduler...");
                 Scheduler.Init();
 

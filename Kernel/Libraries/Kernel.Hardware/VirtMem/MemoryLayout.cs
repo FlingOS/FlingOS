@@ -73,6 +73,10 @@ namespace Kernel.Hardware.VirtMem
                 //BasicConsole.WriteLine("Adding data page...");
                 if (!DataPages.ContainsKey(vAddr))
                 {
+                    FOS_System.String str = "Adding data page: 0x         => 0x        ";
+                    ExceptionMethods.FillString(vAddr, 27, str);
+                    ExceptionMethods.FillString(pAddr, 41, str);
+                    BasicConsole.WriteLine(str);
                     DataPages.Add(vAddr, pAddr);
                 }
 #if DEBUG
@@ -101,6 +105,10 @@ namespace Kernel.Hardware.VirtMem
             //BasicConsole.WriteLine("Adding kernel page...");
             if (!KernelPages.ContainsKey(vAddr))
             {
+                FOS_System.String str = "Adding kernel page: 0x         => 0x        ";
+                ExceptionMethods.FillString(vAddr, 29, str);
+                ExceptionMethods.FillString(pAddr, 43, str);
+                BasicConsole.WriteLine(str);
                 KernelPages.Add(vAddr, pAddr);
             }
 #if DEBUG

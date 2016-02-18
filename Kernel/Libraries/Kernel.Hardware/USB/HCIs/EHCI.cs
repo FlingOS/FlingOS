@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
-//#define EHCI_TRACE
+#define EHCI_TRACE
 
 #if EHCI_TRACE
     //#define EHCI_TESTS //Note: Also uncomment the undef in EHCITesting.cs
