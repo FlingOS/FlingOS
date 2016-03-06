@@ -211,9 +211,9 @@ namespace Kernel.Hardware.Processes
 #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating kernel stack...");
 #endif
-            State->KernelStackTop = (byte*)/*FOS_System.Heap.Alloc(0x1000, 4)*/Hardware.VirtMemManager.MapFreePage(
+            State->KernelStackTop = (byte*)FOS_System.Heap.AllocZeroed(0x1000, 4, "Thread : Thread() (2)")/*Hardware.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly) + KernelStackTopOffset; //4KiB, 4-byte aligned
+                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly)*/ + KernelStackTopOffset; //4KiB, 4-byte aligned
             
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
