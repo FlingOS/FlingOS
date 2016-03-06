@@ -41,16 +41,16 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         /// The configuration address port.
         /// </summary>
-        internal static IO.IOPort ConfigAddressPort = new IO.IOPort(0xCF8);
+        internal static IO.IOPort ConfigAddressPort;// = new IO.IOPort(0xCF8);
         /// <summary>
         /// The configuration data port.
         /// </summary>
-        internal static IO.IOPort ConfigDataPort = new IO.IOPort(0xCFC);
+        internal static IO.IOPort ConfigDataPort;// = new IO.IOPort(0xCFC);
 
         /// <summary>
         /// List of all the PCI devices found.
         /// </summary>
-        public static List Devices = new List();
+        public static List Devices;// = new List();
 
         /// <summary>
         /// Initialises the PCI bus by enumerating all connected devices.

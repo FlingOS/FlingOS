@@ -50,7 +50,7 @@ namespace Kernel.Tasks
 
 #if GCTASK_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                    BasicConsole.Write("GC cleaning...");
+                    BasicConsole.Write("GC cleaning: ");
                     BasicConsole.WriteLine(Hardware.Processes.ProcessManager.CurrentProcess.Name);
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif

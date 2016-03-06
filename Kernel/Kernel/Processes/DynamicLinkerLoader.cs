@@ -65,7 +65,7 @@ namespace Kernel.Processes
                 (uint)destMemPtr);
             // We could have been "scheduler interrupted" just after the map but just before the 
             //  add data page...
-            Hardware.Processes.ProcessManager.CurrentProcess.LoadMemLayout();
+            //TODO: Hardware.Processes.ProcessManager.CurrentProcess.LoadMemLayout();
 
             //BasicConsole.WriteLine("Reading file...");
             int bytesRead = 0;

@@ -693,7 +693,7 @@ namespace Kernel.FOS_System
             ulong y = x;
             while (y > 0)
             {
-                ulong rem = y & 0xFu;
+                uint rem = (uint)(y & 0xFu);
                 switch (rem)
                 {
                     case 0:

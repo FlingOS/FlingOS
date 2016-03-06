@@ -161,16 +161,7 @@ namespace Kernel.Hardware.Processes
                 ProcessManager.DisableKernelAccessToProcessMemory(this);
             }
         }
-
-        public virtual void LoadMemLayout()
-        {
-            TheMemoryLayout.Load(UserMode);
-        }
-        public virtual void UnloadMemLayout()
-        {
-            //BasicConsole.WriteLine("Process Unload calling MemoryLayout unload");
-            TheMemoryLayout.Unload();
-        }
+        
         public virtual void SwitchFromLayout(MemoryLayout old)
         {
             TheMemoryLayout.SwitchFrom(UserMode, old);

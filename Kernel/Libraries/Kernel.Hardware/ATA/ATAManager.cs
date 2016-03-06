@@ -40,11 +40,11 @@ namespace Kernel.Hardware.ATA
         /// <summary>
         /// ATA primary IO device.
         /// </summary>
-        private static readonly ATAIOPorts ATAIO1 = new ATAIOPorts(false);
+        private static readonly ATAIOPorts ATAIO1;// = new ATAIOPorts(false);
         /// <summary>
         /// ATA secondary IO device.
         /// </summary>
-        private static readonly ATAIOPorts ATAIO2 = new ATAIOPorts(true);
+        private static readonly ATAIOPorts ATAIO2;// = new ATAIOPorts(true);
 
         /// <summary>
         /// Initialises all available ATA devices on the primary bus.

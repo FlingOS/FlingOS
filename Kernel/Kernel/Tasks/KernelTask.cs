@@ -264,26 +264,10 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(50);
                 }
 
-                BasicConsole.WriteLine(" > Starting Idle process 1...");
+                BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle 1", false);
-                ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.Low);
-
-                BasicConsole.WriteLine(" > Starting Idle process 2...");
-                Process IdleProcess2 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle 2", false);
-                ProcessManager.RegisterProcess(IdleProcess2, Scheduler.Priority.Low);
-
-                BasicConsole.WriteLine(" > Starting Idle process 3...");
-                Process IdleProcess3 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle 3", false);
-                ProcessManager.RegisterProcess(IdleProcess3, Scheduler.Priority.Low);
-
-                FOS_System.GC.OutputTrace = true;
+                ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
                 
-                while (!Terminating)
-                {
-                    BasicConsole.WriteLine("Ping");
-                    SystemCalls.SleepThread(1000);
-                }
-
 #if DEBUG
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
                 //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");

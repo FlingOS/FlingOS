@@ -53,8 +53,8 @@ namespace Kernel.Tasks
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
             //      is to be the only thread left awake when all others are slept.
 
-            FOS_System.GC.OutputTrace = true;
-                
+            FOS_System.GC.OutputTrace = false;
+
             int i = 0;
             while (!Terminating)
             {
@@ -64,13 +64,13 @@ namespace Kernel.Tasks
                 *((ushort*)0xB809E) = (0x3F00 | '2');
                 TheCPU.Halt();
 
-                if (i < 100)
+                if (i < 10000)
                 {
                     i++;
                 }
-                else if (i == 100)
+                else if (i == 10000)
                 {
-                    i = 100001;
+                    i = 0;
                     BasicConsole.WriteLine(GCThreadId);
                     SystemCalls.SleepThread(1000);
                 }
