@@ -34,6 +34,9 @@ using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
+    /// <summary>
+    /// See base class documentation.
+    /// </summary>
     public class MethodEnd : IL.ILOps.MethodEnd
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
@@ -47,6 +50,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
         }
 
+        /// <summary>
+        /// See base class documentation.
+        /// </summary>
+        /// <param name="theOp">See base class documentation.</param>
+        /// <param name="conversionState">See base class documentation.</param>
+        /// <returns>See base class documentation.</returns>
+        /// <exception cref="System.NotSupportedException">
+        /// Thrown when the return value is a float or the size on the stack
+        /// in bytes is not 4 or 8 bytes.
+        /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Store the return value

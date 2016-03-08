@@ -25,25 +25,23 @@
 #endregion
     
 using System;
-using Kernel.Hardware.Processes;
-using Kernel.Hardware.VirtMem;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Kernel.Processes
+namespace Drivers.Compiler.IL.ILOps
 {
-    public static class SystemCallsHelpers
+    /// <summary>
+    /// Handles the 
+    /// <see cref="System.Reflection.Emit.OpCodes.Stobj"/> IL op.
+    /// </summary>
+    /// <remarks>
+    /// See MSDN for details of these ops.
+    /// </remarks>
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Stobj"/>
+    [ILOpTarget(Target = ILOp.OpCodes.Stobj)]
+    public abstract class Stobj : ILOp
     {
-        public static MemoryLayout EnableAccessToMemoryOfProcess(Process ProcessToAccess)
-        {
-            MemoryLayout OriginalMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
-            MemoryLayout NewMemoryLayout = ProcessManager.CurrentProcess.TheMemoryLayout.Merge(ProcessToAccess.TheMemoryLayout);
-            ProcessManager.CurrentProcess.TheMemoryLayout = NewMemoryLayout;
-            NewMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
-            return OriginalMemoryLayout;
-        }
-        public static void DisableAccessToMemoryOfProcess(MemoryLayout OriginalMemoryLayout)
-        {
-            ProcessManager.CurrentProcess.TheMemoryLayout = OriginalMemoryLayout;
-            OriginalMemoryLayout.Load(ProcessManager.CurrentProcess.UserMode);
-        }
     }
 }

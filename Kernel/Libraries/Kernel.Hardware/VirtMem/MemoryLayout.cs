@@ -24,68 +24,52 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define MEMLAYOUT_TRACE
-#undef MEMLAYOUT_TRACE
+//#define MEMLAYOUT_TRACE
 
-using System;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.VirtMem
 {
     public class MemoryLayout : FOS_System.Object
     {
-        public UInt32Dictionary CodePages;
-        public UInt32Dictionary DataPages;
-
-        public MemoryLayout()
-            : this(16, 64)
-        {
-        }
-        public MemoryLayout(int InitialCodeCapacity, int InitialDataCapacity)
-        {
-            CodePages = new UInt32Dictionary(InitialCodeCapacity);
-            DataPages = new UInt32Dictionary(InitialDataCapacity);
-        }
-
+        public bool NoUnload = false;
+        
+        public UInt32Dictionary CodePages = new UInt32Dictionary();
+        public UInt32Dictionary DataPages = new UInt32Dictionary();
+        
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
-            //bool reenable = Processes.Scheduler.Enabled;
-            //if(reenable)
-            //{
-            //    Processes.Scheduler.Disable();
-            //}
-
             //BasicConsole.WriteLine("Adding code page...");
             if (!CodePages.Contains(vAddr))
             {
                 CodePages.Add(vAddr, pAddr);
             }
-
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Enable();
-            //}
+#if DEBUG
+            else
+            {
+                BasicConsole.WriteLine("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout.");
+                //ExceptionMethods.PrintStackTrace();
+                //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout."));
+            }
+#endif
         }
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
-            //bool reenable = Processes.Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Disable();
-            //}
-
             //BasicConsole.WriteLine("Adding data page...");
             if (!DataPages.Contains(vAddr))
             {
                 DataPages.Add(vAddr, pAddr);
             }
-
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Enable();
-            //}
+#if DEBUG
+            else
+            {
+                BasicConsole.WriteLine("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout.");
+                //ExceptionMethods.PrintStackTrace();
+                //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
+            }
+#endif
         }
         public void AddDataPages(uint vAddrStart, uint[] pAddrs)
         {
@@ -94,157 +78,127 @@ namespace Kernel.Hardware.VirtMem
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
         {
-            //bool reenable = Processes.Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Disable();
-            //}
-
             //BasicConsole.WriteLine("Removing page...");
             CodePages.Remove(vAddr);
             DataPages.Remove(vAddr);
-
-            //if (reenable)
-            //{
-            //    Processes.Scheduler.Enable();
-            //}
         }
         public void RemovePages(uint vAddrStart, uint numPages)
         {
+            //BasicConsole.WriteLine("Removing pages...");
             CodePages.RemoveRange(vAddrStart, 4096, numPages);
             DataPages.RemoveRange(vAddrStart, 4096, numPages);
         }
-
-        //bool loadPrint = true;
-        public bool unloadPrint = false;
+        
         [Drivers.Compiler.Attributes.NoDebug]
         public void Load(bool ProcessIsUM)
         {
             VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
-            for (int i = 0; i < CodePages.Keys.Count; i++)
+
+            UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = CodePages.Keys[i];
-                uint pAddr = CodePages[vAddr];
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
 
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading code page...");
 #endif
-                //if (loadPrint)
-                //{
-                //    BasicConsole.WriteLine(((FOS_System.String)"Loading code page v->p: ") + vAddr + " -> " + pAddr);
-                //}
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
             }
+            iterator.RestoreState();
 
             flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
-            for (int i = 0; i < DataPages.Keys.Count; i++)
+            iterator = DataPages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = DataPages.Keys[i];
-                uint pAddr = DataPages[vAddr];
-                
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
+
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Loading data page...");
 #endif
-
-                //if (loadPrint)
-                //{
-                //    BasicConsole.WriteLine(((FOS_System.String)"Loading data page v->p: ") + vAddr + " -> " + pAddr);
-                //}
-
                 VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
             }
-
-            //if (loadPrint)
-            //{
-            //    //BasicConsole.DelayOutput(1);
-            //    loadPrint = false;
-            //}
+            iterator.RestoreState();
         }
         [Drivers.Compiler.Attributes.NoDebug]
         public void Unload()
         {
-            //x86.Unmap_Print = unloadPrint;
-
-            for (int i = 0; i < CodePages.Keys.Count && i < CodePages.Values.Count; i++)
+            if (NoUnload)
             {
+                return;
+            }
+
+            UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
+            while (iterator.HasNext())
+            {
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Unloading code page...");
 #endif
-
-                //if (unloadPrint)
-                //{
-                //    BasicConsole.WriteLine("Unloading code page");
-                //}
-
-                //TODO: Revert to the following line of code and then work out why it results in so many page faults
-                //          VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.Virtual);
-                //      Also see the similar line further down
-                VirtMemManager.Unmap(CodePages.Keys[i], UpdateUsedPagesFlags.None);
+                VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
             }
-            for (int i = 0; i < DataPages.Keys.Count && i < DataPages.Values.Count; i++)
+            iterator.RestoreState();
+
+            iterator = DataPages.GetIterator();
+            while (iterator.HasNext())
             {
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+
 #if MEMLAYOUT_TRACE
                 BasicConsole.WriteLine("Unloading data page...");
 #endif
-
-                //if (unloadPrint)
-                //{
-                //    FOS_System.String str = "Unloading data page 0x--------";
-                //    ExceptionMethods.FillString(DataPages.Keys[i], 29, str);
-                //    BasicConsole.WriteLine(str);
-                //}
-
-                //TODO: Revert line - see above
-                VirtMemManager.Unmap(DataPages.Keys[i], UpdateUsedPagesFlags.None);
-
-                //if (unloadPrint)
-                //{
-                //    BasicConsole.WriteLine(" > Done.");
-                //}
+                VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
             }
-            
-            //if (unloadPrint)
-            //{
-            //    BasicConsole.WriteLine("Unload complete.");
-            //}
-
-            //x86.Unmap_Print = false;
+            iterator.RestoreState();
         }
 
-        public MemoryLayout Merge(MemoryLayout y)
+        public void Merge(MemoryLayout y)
         {
-            MemoryLayout result = new MemoryLayout(
-                CodePages.Keys.Count + y.CodePages.Keys.Count, 
-                DataPages.Keys.Count + y.DataPages.Keys.Count);
-            
+            UInt32Dictionary.Iterator iterator = y.CodePages.GetIterator();
+            while (iterator.HasNext())
+            {
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
 
-            for (int i = 0; i < CodePages.Keys.Count; i++)
-            {
-                uint vAddr = CodePages.Keys[i];
-                uint pAddr = CodePages[vAddr];
-                result.AddCodePage(pAddr, vAddr);
+                AddCodePage(pAddr, vAddr);
             }
-            for (int i = 0; i < DataPages.Keys.Count; i++)
+            iterator = y.DataPages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = DataPages.Keys[i];
-                uint pAddr = DataPages[vAddr];
-                result.AddDataPage(pAddr, vAddr);
-            }
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
 
-            for (int i = 0; i < y.CodePages.Keys.Count; i++)
-            {
-                uint vAddr = y.CodePages.Keys[i];
-                uint pAddr = y.CodePages[vAddr];
-                result.AddCodePage(pAddr, vAddr);
+                AddDataPage(pAddr, vAddr);
             }
-            for (int i = 0; i < y.DataPages.Keys.Count; i++)
+        }
+        public void Unmerge(MemoryLayout y)
+        {
+            UInt32Dictionary.Iterator iterator = y.CodePages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = y.DataPages.Keys[i];
-                uint pAddr = y.DataPages[vAddr];
-                result.AddDataPage(pAddr, vAddr);
-            }
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
 
-            return result;
+                RemovePage(vAddr);
+            }
+            iterator = y.DataPages.GetIterator();
+            while (iterator.HasNext())
+            {
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
+
+                RemovePage(vAddr);
+            }
         }
 
         public FOS_System.String ToString()
@@ -252,10 +206,12 @@ namespace Kernel.Hardware.VirtMem
             FOS_System.String result = "";
 
             result = result + "Code pages:\r\n";
-            for (int i = 0; i < CodePages.Keys.Count; i++)
+            UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = CodePages.Keys[i];
-                uint pAddr = CodePages[vAddr];
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
 
                 result = result + vAddr + " -> " + pAddr + "\r\n";
             }
@@ -263,10 +219,12 @@ namespace Kernel.Hardware.VirtMem
             result = result + "\r\n";
 
             result = result + "Data pages:\r\n";
-            for (int i = 0; i < DataPages.Keys.Count; i++)
+            iterator = DataPages.GetIterator();
+            while (iterator.HasNext())
             {
-                uint vAddr = DataPages.Keys[i];
-                uint pAddr = DataPages[vAddr];
+                UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                uint vAddr = pair.Key;
+                uint pAddr = pair.Value;
 
                 result = result + vAddr + " -> " + pAddr + "\r\n";
             }

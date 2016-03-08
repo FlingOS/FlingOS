@@ -70,7 +70,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
 
@@ -85,10 +86,10 @@ namespace Drivers.Compiler.Architectures.x86
             //Load indirect
             //Pop address
             //Push [address]
-
+            
             StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
             int bytesToLoad = 0;
-
+            
             switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
@@ -148,7 +149,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
     }

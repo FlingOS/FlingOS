@@ -211,7 +211,8 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public FOS_System.String Trim()
         {
-            FOS_System.String TrimChars = "\n\r ";
+            // All characters in the Zs, Zp and Zl Unicode categories, plus U+0009 CHARACTER TABULATION, U+000A LINE FEED, U+000B LINE TABULATION, U+000C FORM FEED, U+000D CARRIAGE RETURN and U+0085 NEXT LINE
+            FOS_System.String TrimChars = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000";
 
             int removeStart = 0;
             int removeEnd = 0;
@@ -260,10 +261,21 @@ namespace Kernel.FOS_System
         [Drivers.Compiler.Attributes.NoDebug]
         public FOS_System.String TrimEnd()
         {
+            // All characters in the Zs, Zp and Zl Unicode categories, plus U+0009 CHARACTER TABULATION, U+000A LINE FEED, U+000B LINE TABULATION, U+000C FORM FEED, U+000D CARRIAGE RETURN and U+0085 NEXT LINE
+            FOS_System.String TrimChars = "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000";
+
             int removeEnd = 0;
             for (int i = this.length - 1; i > -1; removeEnd++, i--)
             {
-                if (this[i] != ' ')
+                bool ShouldBreak = true;
+                for (int j = 0; j < TrimChars.length; j++)
+                {
+                    if (this[i] == TrimChars[j])
+                    {
+                        ShouldBreak = false;
+                    }
+                }
+                if (ShouldBreak)
                 {
                     break;
                 }

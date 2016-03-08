@@ -45,7 +45,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = false // Null is a null reference
             });
         }
 
@@ -62,7 +63,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
-                isGCManaged = false
+                isGCManaged = false,
+                isValue = false // Null is a null reference
             });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
         }

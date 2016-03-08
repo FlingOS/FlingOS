@@ -56,7 +56,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
 
                     
@@ -85,7 +86,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
                     
                     int bytesToAdd = 0;
@@ -163,7 +165,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
                     //We do not push the return value onto the stack unless it has size > 0
                     //We do not push the return value onto our stack at this point - it is pushed after the call is done
@@ -175,18 +178,12 @@ namespace Drivers.Compiler.Architectures.x86
                             //SUPPORT - floats
                             throw new NotSupportedException("Cannot handle float return values!");
                         }
-                        else if (returnItem.sizeOnStackInBytes == 4)
-                        {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                        }
-                        else if (returnItem.sizeOnStackInBytes == 8)
-                        {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                        }
                         else
                         {
-                            throw new NotSupportedException("Invalid return stack operand size!");
+                            for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
+                            {
+                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+                            }
                         }
                     }
 
@@ -225,37 +222,18 @@ namespace Drivers.Compiler.Architectures.x86
 
                         //SUPPORT - floats (with above)
 
-                        //Pop the return value into the eax register
-                        //We will push it back on after params are skipped over.
-                        if (returnItem.sizeOnStackInBytes == 4)
+                        //Pop the return value, shift it into final position                        
+                        for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
                         {
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                        }
-                        else if (returnItem.sizeOnStackInBytes == 8)
-                        {
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                            int srcOffset = returnItem.sizeOnStackInBytes - i - 4;
+                            int destOffset = bytesToAdd + srcOffset;
+
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EAX", Src = "[ESP+" + srcOffset + "]" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[ESP+" + destOffset + "]", Src = "EAX" });
                         }
                     }
                     //Skip over the params
                     conversionState.Append(new ASMOps.Add() { Src = bytesToAdd.ToString(), Dest = "ESP" });
-                    //If necessary, push the return value onto the stack.
-                    if (returnItem.sizeOnStackInBytes != 0)
-                    {
-                        //SUPPORT - floats (with above)
-
-                        //The return value was stored in eax
-                        //So push it back onto the stack
-                        if (returnItem.sizeOnStackInBytes == 4)
-                        {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                        }
-                        else if (returnItem.sizeOnStackInBytes == 8)
-                        {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                        }
-                    }
                 }
                 else
                 {
@@ -337,7 +315,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
-                        isGCManaged = retTypeInfo.IsGCManaged
+                        isGCManaged = retTypeInfo.IsGCManaged,
+                        isValue = retTypeInfo.IsValueType
                     };
                     //We do not push the return value onto the stack unless it has size > 0
                     //We do not push the return value onto our stack at this point - it is pushed after the call is done
@@ -349,18 +328,12 @@ namespace Drivers.Compiler.Architectures.x86
                             //SUPPORT - floats
                             throw new NotSupportedException("Cannot handle float return values!");
                         }
-                        else if (returnItem.sizeOnStackInBytes == 4)
-                        {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                        }
-                        else if (returnItem.sizeOnStackInBytes == 8)
-                        {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-                        }
                         else
                         {
-                            throw new NotSupportedException("Invalid return stack operand size!");
+                            for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
+                            {
+                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+                            }
                         }
                     }
 
@@ -406,37 +379,18 @@ namespace Drivers.Compiler.Architectures.x86
 
                             //SUPPORT - floats (with above)
 
-                            //Pop the return value into the eax register
-                            //We will push it back on after params are skipped over.
-                            if (returnItem.sizeOnStackInBytes == 4)
+                            //Pop the return value, shift it into final position                        
+                            for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
                             {
-                                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                            }
-                            else if (returnItem.sizeOnStackInBytes == 8)
-                            {
-                                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                                int srcOffset = returnItem.sizeOnStackInBytes - i - 4;
+                                int destOffset = bytesToAdd + srcOffset;
+
+                                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EAX", Src = "[ESP+" + srcOffset + "]" });
+                                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[ESP+" + destOffset + "]", Src = "EAX" });
                             }
                         }
                         //Skip over the params
                         conversionState.Append(new ASMOps.Add() { Src = bytesToAdd.ToString(), Dest = "ESP" });
-                        //If necessary, push the return value onto the stack.
-                        if (returnItem.sizeOnStackInBytes != 0)
-                        {
-                            //SUPPORT - floats (with above)
-
-                            //The return value was stored in eax
-                            //So push it back onto the stack
-                            if (returnItem.sizeOnStackInBytes == 4)
-                            {
-                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                            }
-                            else if (returnItem.sizeOnStackInBytes == 8)
-                            {
-                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
-                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-                            }
-                        }
                     }
                     //No params to skip over but we might still need to store return value
                     else if (returnItem.sizeOnStackInBytes != 0)

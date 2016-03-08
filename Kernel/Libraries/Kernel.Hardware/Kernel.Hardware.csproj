@@ -125,7 +125,6 @@
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Scheduler.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
-    <Compile Include="Processes\SystemCallsHelpers.cs" />
     <Compile Include="Processes\SystemCalls_Callers.cs" />
     <Compile Include="Processes\SystemCalls_Enums.cs" />
     <Compile Include="Processes\SystemCalls_Handlers.cs" />

@@ -201,5 +201,10 @@ namespace Drivers.Compiler.IL
         /// Whether the item is a reference to an object which has just been created by the GC.
         /// </summary>
         public bool isNewGCObject = false;
+
+        /// <summary>
+        /// Whether the item is of a value type or not.
+        /// </summary>
+        public bool isValue = false;
     }
 }

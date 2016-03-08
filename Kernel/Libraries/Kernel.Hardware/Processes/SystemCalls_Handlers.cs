@@ -24,12 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define SYSCALLS_TRACE
-#undef SYSCALLS_TRACE
+//#define SYSCALLS_TRACE
 
-using System;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
 
 namespace Kernel.Processes
@@ -112,7 +108,7 @@ namespace Kernel.Processes
                         if (tempResult == SystemCallResults.RequestAction_WakeThread)
                         {
 #if SYSCALLS_TRACE
-                            asicConsole.WriteLine("System calls : Performing action - wake thread");
+                            BasicConsole.WriteLine("System calls : Performing action - wake thread");
 #endif
                             ProcessManager.WakeThread(handlerProcess, TempReturn2);
                             tempResult = SystemCallResults.Unhandled;

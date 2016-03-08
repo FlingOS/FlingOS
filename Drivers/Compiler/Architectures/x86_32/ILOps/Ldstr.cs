@@ -44,7 +44,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 sizeOnStackInBytes = 4,
                 isFloat = false,
-                isGCManaged = true
+                isGCManaged = true,
+                isValue = false
             });
         }
 
@@ -73,7 +74,8 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 sizeOnStackInBytes = 4,
                 isFloat = false,
-                isGCManaged = true
+                isGCManaged = true,
+                isValue = false
             });
         }
     }

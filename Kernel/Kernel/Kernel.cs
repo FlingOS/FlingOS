@@ -79,6 +79,7 @@ namespace Kernel
                 
                 BasicConsole.WriteLine("Creating kernel process...");
                 Process KernelProcess = ProcessManager.CreateProcess(Tasks.KernelTask.Main, "Kernel Task", false);
+                KernelProcess.TheMemoryLayout.NoUnload = true;
                 ProcessManager.KernelProcess = KernelProcess;
 
                 BasicConsole.WriteLine("Getting kernel thread...");

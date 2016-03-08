@@ -50,13 +50,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// If either value is &lt; 4 bytes in length or
-        /// operands are not of the same size.
+        /// Thrown if either or both values to not are floating point values or
+        /// if the values are 8 bytes in size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop item to negate
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.Stack.Peek();
 
             if (itemA.isFloat)
             {
@@ -86,13 +86,6 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 throw new NotSupportedException("Stack item size not supported by neg op!");
             }
-
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
-            {
-                isFloat = itemA.isFloat,
-                sizeOnStackInBytes = itemA.sizeOnStackInBytes,
-                isGCManaged = itemA.isGCManaged
-            });
         }
     }
 }

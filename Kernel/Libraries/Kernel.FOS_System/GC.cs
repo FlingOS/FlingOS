@@ -231,25 +231,25 @@ namespace Kernel.FOS_System
         public static FOS_System.String lastDisabler
         {
             [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                if (StateInitialised)
-                {
-                    return state.lastDisabler;
-                }
-                else
-                {
-                    return "";
-                }
-            }
+            get;
+            //{
+            //    if (StateInitialised)
+            //    {
+            //        return state.lastDisabler;
+            //    }
+            //    else
+            //    {
+            //        return "";
+            //    }
+            //}
             [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                if (StateInitialised)
-                {
-                    state.lastDisabler = value;
-                }
-            }
+            set;
+            //{
+            //    if (StateInitialised)
+            //    {
+            //        state.lastDisabler = value;
+            //    }
+            //}
         }
         public static FOS_System.String lastLocker
         {
@@ -733,6 +733,23 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't increment ref count of an object in low memory.");
+
+                uint* basePtr = (uint*)ExceptionMethods.BasePointer;
+                // Go up the linked-list of stack frames to (hopefully) the outermost caller
+                basePtr = (uint*)*(basePtr);    // Frame of IncrementRefCount(x)
+                uint retAddr = *(basePtr + 1);  // Caller of IncrementRefCount(x)
+                basePtr = (uint*)*(basePtr);    // Frame of caller of IncrementRefCount(x)
+                uint ret2Addr = *(basePtr + 1); // Caller of caller of IncrementRefCount(x)
+                uint objAddr = (uint)objPtr;
+                String msgStr = "Caller: 0x        , Object: 0x        , PCaller: 0x        ";
+                // Object: 37
+                // Caller: 17
+                // PCaller: 58
+                ExceptionMethods.FillString(retAddr, 17, msgStr);
+                ExceptionMethods.FillString(objAddr, 37, msgStr);
+                ExceptionMethods.FillString(ret2Addr, 58, msgStr);
+                BasicConsole.WriteLine(msgStr);
+
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
@@ -812,6 +829,20 @@ namespace Kernel.FOS_System
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't decrement ref count of an object in low memory.");
+
+                uint* basePtr = (uint*)ExceptionMethods.BasePointer;
+                // Go up the linked-list of stack frames to (hopefully) the outermost caller
+                basePtr = (uint*)*(basePtr); // DecrementRefCount(x, y)
+                basePtr = (uint*)*(basePtr); // DecrementRefCount(x)
+                uint retAddr = *(basePtr + 1);
+                uint objAddr = (uint)objPtr;
+                String msgStr = "Caller: 0x        , Object: 0x        ";
+                // Object: 37
+                // Caller: 17
+                ExceptionMethods.FillString(retAddr, 17, msgStr);
+                ExceptionMethods.FillString(objAddr, 37, msgStr);
+                BasicConsole.WriteLine(msgStr);
+
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }

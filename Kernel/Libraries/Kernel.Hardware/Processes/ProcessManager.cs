@@ -23,9 +23,10 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 //#define PROCESSMANAGER_TRACE
 //#define PROCESSMANAGER_SWITCH_TRACE
+//#define PROCESSMANAGER_KERNEL_ACCESS_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -321,6 +322,39 @@ namespace Kernel.Hardware.Processes
                 return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) > -1;
             }
             return false;
+        }
+
+        public static void EnableKernelAccessToProcessMemory(uint TargetProcessId)
+        {
+            EnableKernelAccessToProcessMemory(GetProcessById(TargetProcessId));
+        }
+        public static void DisableKernelAccessToProcessMemory(uint TargetProcessId)
+        {
+            DisableKernelAccessToProcessMemory(GetProcessById(TargetProcessId));
+        }
+        public static void EnableKernelAccessToProcessMemory(Process TargetProcess)
+        {
+            if (KernelProcess != null && KernelProcess != TargetProcess)
+            {
+#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+                BasicConsole.WriteLine("~E~");
+#endif
+
+                KernelProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout);
+                KernelProcess.TheMemoryLayout.Load(KernelProcess.UserMode);
+            }
+        }
+        public static void DisableKernelAccessToProcessMemory(Process TargetProcess)
+        {
+            if (KernelProcess != null && KernelProcess != TargetProcess)
+            {
+#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+                BasicConsole.WriteLine("~D~");
+#endif
+
+                KernelProcess.TheMemoryLayout.Unmerge(TargetProcess.TheMemoryLayout);
+                TargetProcess.TheMemoryLayout.Unload();
+            }
         }
     }
 }

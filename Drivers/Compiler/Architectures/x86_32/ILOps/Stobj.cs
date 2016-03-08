@@ -37,10 +37,11 @@ namespace Drivers.Compiler.Architectures.x86
     /// <summary>
     /// See base class documentation.
     /// </summary>
-    public class Stsfld : IL.ILOps.Stsfld
+    public class Stobj : IL.ILOps.Stobj
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
+            conversionState.CurrentStackFrame.Stack.Pop();
             conversionState.CurrentStackFrame.Stack.Pop();
         }
 
@@ -51,38 +52,33 @@ namespace Drivers.Compiler.Architectures.x86
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if the value to store is floating point.
+        /// Thrown when loading a static float field.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
+            //Load the metadata token used to get the type info
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
-            FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
-            Types.FieldInfo theFieldInfo = conversionState.GetFieldInfo(theField.DeclaringType, theField.Name);
-            Types.TypeInfo theFieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theFieldInfo.FieldType);
+            //Get the type info for the object to load
+            Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
 
-            string fieldId = theFieldInfo.ID;
-            int size = theFieldTypeInfo.IsValueType ? theFieldTypeInfo.SizeOnHeapInBytes : theFieldTypeInfo.SizeOnStackInBytes;
-            bool isFloat = Utilities.IsFloat(theField.FieldType);
+            //Get the object size information
+            int size = theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes;
 
-            conversionState.AddExternalLabel(fieldId);
+            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.Stack.Pop();
 
-            StackItem value = conversionState.CurrentStackFrame.Stack.Pop();
-            
-            if (isFloat)
-            {
-                //SUPPORT - floats
-                throw new NotSupportedException("Storing static fields of type float not supported yet!");
-            }
-
+            //Load the object onto the stack
+            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "ECX", Src = "[ESP+" + theTypeInfo.SizeOnStackInBytes + "]" });
             if (size == 1)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "]" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[ECX]" });
             }
             else if (size == 2)
             {
                 conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "]" });
+                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[ECX]" });
             }
             else if (size >= 4)
             {
@@ -93,26 +89,28 @@ namespace Drivers.Compiler.Architectures.x86
                     switch (size - i)
                     {
                         case 1:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[ECX+" + i + "]" });
                             break;
                         case 2:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[ECX+" + i + "]" });
                             break;
                         case 3:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[ECX+" + i + "]" });
                             conversionState.Append(new ASMOps.Shr() { Src = "16", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "+" + (i+1) + "]" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[ECX+" + (i + 1) + "]" });
                             break;
                         default:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[ECX+" + i + "]" });
                             break;
                     }
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException("Storing static field with unsupported size! Size: " + size.ToString());
+                throw new ArgumentOutOfRangeException("Storing object with unsupported size! Size: " + size.ToString());
             }
+
+            conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = "4" });
         }
     }
 }

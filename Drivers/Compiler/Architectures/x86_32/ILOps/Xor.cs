@@ -50,7 +50,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 &&
@@ -60,7 +61,8 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
-                    isGCManaged = false
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
                 });
             }
         }
@@ -70,7 +72,7 @@ namespace Drivers.Compiler.Architectures.x86
             //Pop in reverse order to push
             StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
             StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
-            
+
             if (itemB.sizeOnStackInBytes < 4 ||
                 itemA.sizeOnStackInBytes < 4)
             {
@@ -97,7 +99,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
@@ -126,7 +129,8 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
-                        isGCManaged = false
+                        isGCManaged = false,
+                        isValue = itemA.isValue && itemB.isValue
                     });
                 }
             }

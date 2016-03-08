@@ -998,6 +998,8 @@ namespace Kernel
                 BasicConsole.WriteLine(HaltReason);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
+                PrintStackTrace();
+
                 Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
             }
         }
@@ -1021,6 +1023,8 @@ namespace Kernel
             BasicConsole.WriteLine(HaltReason);
             BasicConsole.DelayOutput(10);
             BasicConsole.PrimaryOutputEnabled = BCPOEnabled;
+
+            PrintStackTrace();
 
             FOS_System.Exception ex = new FOS_System.Exceptions.NullReferenceException();
             ex.InstructionAddress = address;
@@ -1056,6 +1060,29 @@ namespace Kernel
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\GetEIP")]
         public static void GetEIP()
         {
+        }
+
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        public static void PrintStackTrace()
+        {
+            uint* EBP = (uint*)BasePointer;
+            while((uint)EBP % 4096 != 0)
+            {
+                FOS_System.String msg = "EBP: 0x        , Return Address: 0x        , Prev EBP: 0x        ";
+                //EBP: 14
+                //Return address: 42
+                //Prev EBP: 64
+
+                uint ReturnAddress = *(EBP + 1);
+                uint PrevEBP = *(EBP);
+                FillString((uint)EBP, 14, msg);
+                FillString(ReturnAddress, 42, msg);
+                FillString(PrevEBP, 64, msg);
+                BasicConsole.WriteLine(msg);
+
+                EBP = (uint*)PrevEBP;
+            }
         }
 
         [Drivers.Compiler.Attributes.NoDebug]

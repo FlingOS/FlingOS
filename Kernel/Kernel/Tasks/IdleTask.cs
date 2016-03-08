@@ -37,7 +37,10 @@ namespace Kernel.Tasks
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {
-            //TODO: Use some kind of factory for creating the correct CPU class
+            // Initialise heap & GC
+            Hardware.Processes.ProcessManager.CurrentProcess.InitHeap();
+
+             //TODO: Use some kind of factory for creating the correct CPU class
             Hardware.Devices.CPU TheCPU = new Hardware.CPUs.CPUx86_32();
 
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
