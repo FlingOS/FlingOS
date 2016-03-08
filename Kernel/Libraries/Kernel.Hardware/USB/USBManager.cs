@@ -130,7 +130,7 @@ namespace Kernel.Hardware.USB
                         {
                             //xHCI detected
 #if USB_TRACE
-                                        BasicConsole.WriteLine("xHCI detected.");
+                            BasicConsole.WriteLine("xHCI detected.");
 #endif
 
                             //TODO: Add xHCI support
@@ -238,7 +238,7 @@ namespace Kernel.Hardware.USB
                         {
                             //OHCI detected
 #if USB_TRACE
-                                        BasicConsole.WriteLine("OHCI detected.");
+                            BasicConsole.WriteLine("OHCI detected.");
 #endif
 
                             //TODO: Add OHCI support
@@ -1166,28 +1166,13 @@ namespace Kernel.Hardware.USB
         /// </remarks>
         public static void IRQHandler()
         {
-#if USB_TRACE
-            BasicConsole.WriteLine("USBManager:IRQHandler");
-#endif
             if (HCIDevices != null)
             {
-#if USB_TRACE
-                BasicConsole.WriteLine("USBManager:IRQHandler:HCIDevices not null");
-#endif
                 for (int i = 0; i < HCIDevices.Count; i++)
                 {
-#if USB_TRACE
-                    BasicConsole.WriteLine("USBManager:IRQHandler:Calling handler");
-#endif
-                    //((HCI)HCIDevices[i]).IRQHandler();
-#if USB_TRACE
-                    BasicConsole.WriteLine("USBManager:IRQHandler:Done.");
-#endif
+                    ((HCI)HCIDevices[i]).IRQHandler();
                 }
             }
-#if USB_TRACE
-            BasicConsole.WriteLine("USBManager:IRQHandler:Done.");
-#endif
         }
 
 #if USB_TRACE

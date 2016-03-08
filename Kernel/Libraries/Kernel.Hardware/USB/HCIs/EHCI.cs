@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
-#define EHCI_TRACE
+//#define EHCI_TRACE
 
 #if EHCI_TRACE
     //#define EHCI_TESTS //Note: Also uncomment the undef in EHCITesting.cs
@@ -949,6 +949,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void InitHC()
         {
+#if EHCI_TRACE
+            DBGMSG("InitHC() : Start");
+#endif
+
             // Set the PCI command signal that the HC should:
             //  1) Enable the memory-mapped IO registers (Capabilities and Operational registers)
             //  2) Set the HC as the master HC for all ports.
@@ -967,6 +971,8 @@ namespace Kernel.Hardware.USB.HCIs
             }
 #if EHCI_TRACE
             DBGMSG("Hooked IRQ.");
+
+            DBGMSG("InitHC() : End");
 #endif
         }
         /// <summary>
@@ -974,6 +980,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void StartHC()
         {
+#if EHCI_TRACE
+            DBGMSG("StartHC() : Start");
+#endif
+
             // Deactive legacy support if it is available
             DeactivateLegacySupport();
 
@@ -1026,6 +1036,10 @@ namespace Kernel.Hardware.USB.HCIs
             //  This takes a moment so we want to wait for the HC to stabalise and for any new 
             //  interrupts to occur (if they are going to).
             SystemCalls.SleepThread(100);
+
+#if EHCI_TRACE
+            DBGMSG("StartHC() : End");
+#endif
         }
         /// <summary>
         /// Enables all the necessary interrupts for the EHCI driver. Does not add the Interrupts Handler.
@@ -1048,6 +1062,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void ResetHC()
         {
+#if EHCI_TRACE
+            DBGMSG("ResetHC() : Start");
+#endif
+
             // Clear the run/stop bit to halt the HC.
             // Section 2.3.1 of Intel EHCI Spec
             USBCMD &= ~EHCI_Consts.CMD_RunStopMask;
@@ -1098,6 +1116,10 @@ namespace Kernel.Hardware.USB.HCIs
                     break;
                 }
             }
+
+#if EHCI_TRACE
+            DBGMSG("ResetHC() : End");
+#endif
         }
         /// <summary>
         /// Deactivates legacy support mode if it is available.
@@ -1209,6 +1231,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void EnablePorts()
         {
+#if EHCI_TRACE
+            DBGMSG("EnablePorts() : Start");
+#endif
+
             // Enabling ports in this implementation just involves
             //  setting up virtual objects to represent each port.
             //  It then checks each port's status.
@@ -1243,6 +1269,8 @@ namespace Kernel.Hardware.USB.HCIs
             }
 #if EHCI_TRACE
             DBGMSG("Checked port line statuses.");
+
+            DBGMSG("EnablePorts() : End");
 #endif
         }
         /// <summary>
@@ -1508,6 +1536,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// <param name="portNum">The port to check.</param>
         protected void CheckPortLineStatus(byte portNum)
         {
+#if EHCI_TRACE
+            DBGMSG("CheckPortLineStatus() : Start");
+#endif
+
             // Make sure we only check ports for which a device is actually connected.
             //  Section 2.3.9 of Intel EHCI Spec
             if ((PORTSC[portNum] & EHCI_Consts.PSTS_Connected) == 0)
@@ -1553,6 +1585,10 @@ namespace Kernel.Hardware.USB.HCIs
                     DetectDevice(portNum);
                     break;
             }
+
+#if EHCI_TRACE
+            DBGMSG("CheckPortLineStatus() : End");
+#endif
         }
         /// <summary>
         /// Attempts to detect a device connected to the specified port.
@@ -1676,7 +1712,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD.qtd);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1722,7 +1758,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD.qtd);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1775,7 +1811,7 @@ namespace Kernel.Hardware.USB.HCIs
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(eTransaction.qTD.qtd);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1816,13 +1852,13 @@ namespace Kernel.Hardware.USB.HCIs
                 EHCITransaction transaction1 = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                 EHCITransaction transaction2 = (EHCITransaction)((USBTransaction)transfer.transactions[k + 1]).underlyingTz;
                 EHCI_qTD qtd1 = transaction1.qTD;
-                treeOK = treeOK && (qtd1.NextqTDPointer == VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd)) && !qtd1.NextqTDPointerTerminate;
+                treeOK = treeOK && (qtd1.NextqTDPointer == GetPhysicalAddress(transaction2.qTD.qtd)) && !qtd1.NextqTDPointerTerminate;
                 if (!treeOK)
                 {
                     BasicConsole.Write(((FOS_System.String)"Incorrect tansfer index: ") + k);
-                    if (qtd1.NextqTDPointer != VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd))
+                    if (qtd1.NextqTDPointer != GetPhysicalAddress(transaction2.qTD.qtd))
                     {
-                        BasicConsole.WriteLine(((FOS_System.String)"    > Pointers incorrect! QTD1.NextPtr=") + (uint)qtd1.NextqTDPointer + ", &QTD2=" + (uint)VirtMemManager.GetPhysicalAddress(transaction2.qTD.qtd));
+                        BasicConsole.WriteLine(((FOS_System.String)"    > Pointers incorrect! QTD1.NextPtr=") + (uint)qtd1.NextqTDPointer + ", &QTD2=" + (uint)GetPhysicalAddress(transaction2.qTD.qtd));
                     }
                     else if (qtd1.NextqTDPointerTerminate)
                     {
@@ -2022,6 +2058,10 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         protected void InitializeAsyncSchedule()
         {
+#if EHCI_TRACE
+            DBGMSG("InitializeAsyncSchedule() : Start");
+#endif
+
             // If there is no idle queue head:
             if (IdleQueueHead == null)
             {
@@ -2048,9 +2088,13 @@ namespace Kernel.Hardware.USB.HCIs
             // Set the Async List Address to point to the idle queue head.
             // Note: Physical address of queue head is required.
             // Section 2.3.7 of Intel EHCI Spec
-            ASYNCLISTADDR = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            ASYNCLISTADDR = (EHCI_QueueHead_Struct*)GetPhysicalAddress(IdleQueueHead);
             // Enable the async schedule.
             EnableAsyncSchedule();
+
+#if EHCI_TRACE
+            DBGMSG("InitializeAsyncSchedule() : End");
+#endif
         }
         /// <summary>
         /// Enables the async schedule.
@@ -2128,9 +2172,9 @@ namespace Kernel.Hardware.USB.HCIs
             EHCI_QueueHead idleQH = new EHCI_QueueHead(IdleQueueHead);
             EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
             // Create the ring. Link the new queue head with idleQH (which is always the head of the queue)
-            tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(IdleQueueHead);
             // Insert the queue head into the queue as an element behind old queue head
-            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(TailQueueHead);
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(TailQueueHead);
 
 #if EHCI_TRACE
             DBGMSG("EHCI: About to wait for transaction complete...");
@@ -2144,7 +2188,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
                 SystemCalls.SleepThread(50);
-                
+
 #if EHCI_TRACE
                 if (timeout % 10 == 0)
                 {
@@ -2165,7 +2209,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
             // Restore the link of the old tail queue head to the idle queue head
-            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(IdleQueueHead);
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(IdleQueueHead);
             // Queue head done. 
             // Because nothing else touches the async queue and this method is a synchronous method, 
             //  the idle queue head will now always be the end of the queue again.
@@ -2193,7 +2237,7 @@ namespace Kernel.Hardware.USB.HCIs
                                    byte endpoint, ushort maxPacketSize)
         {
             EHCI_QueueHead head = new EHCI_QueueHead(headPtr);
-            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)VirtMemManager.GetPhysicalAddress(horizPtr);
+            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(horizPtr);
             head.Type = 0x1;        // Types:  00b iTD,   01b QH,   10b siTD,   11b FSTN
             head.Terminate = false;
             head.DeviceAddress = deviceAddr;         // The device address
@@ -2217,7 +2261,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else
             {
-                head.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(firstQTD);
+                head.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(firstQTD);
                 head.NextqTDPointerTerminate = false;
             }
         }
@@ -2286,7 +2330,7 @@ namespace Kernel.Hardware.USB.HCIs
             if (next != null)
             {
                 newQTD.NextqTDPointerTerminate = false;
-                newQTD.NextqTDPointer = (EHCI_qTD_Struct*)VirtMemManager.GetPhysicalAddress(next);
+                newQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(next);
             }
             else
             {
@@ -2309,7 +2353,7 @@ namespace Kernel.Hardware.USB.HCIs
         protected static void* AllocQTDbuffer(EHCI_qTD td)
         {
             byte* result = (byte*)FOS_System.Heap.AllocZeroedAPB(0x1000u, 0x1000u, "EHCI : AllocQTDBuffer");
-            td.Buffer0 = (byte*)VirtMemManager.GetPhysicalAddress(result);
+            td.Buffer0 = (byte*)GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
             td.Buffer0VirtAddr = result;
@@ -2322,6 +2366,33 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.WriteLine(msg);
         }
 #endif
+
+        private static void* GetPhysicalAddress(void* vAddr)
+        {
+            return GetPhysicalAddress((uint)vAddr);
+        }
+        private static void* GetPhysicalAddress(uint vAddr)
+        {
+            uint address = 0xFFFFFFFF;
+#if EHCI_TRACE
+            DBGMSG("Getting physical address of: " + ((FOS_System.String)vAddr));
+#endif
+            SystemCallResults result = SystemCalls.GetPhysicalAddress(vAddr, out address);
+            if (result != SystemCallResults.OK)
+            {
+#if EHCI_TRACE
+                DBGMSG("Error! EHCI cannot get physical address.");
+#endif
+                ExceptionMethods.Throw(new FOS_System.Exception("EHCI cannot get physical address."));
+            }
+#if EHCI_TRACE
+            else
+            {
+                DBGMSG("Physical address is: " + ((FOS_System.String)address));
+            }
+#endif
+            return (void*)address;
+        }
 
 #if EHCI_TESTS
 #region EHCI Method Tests

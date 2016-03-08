@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define UHCI_TRACE
+//#define UHCI_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -426,7 +426,7 @@ namespace Kernel.Hardware.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            FRBASEADD.Write_UInt32((uint)VirtMemManager.GetPhysicalAddress(FrameList));
+            FRBASEADD.Write_UInt32((uint)GetPhysicalAddress(FrameList));
             FRNUM.Write_UInt16(0);
             
 #if UHCI_TRACE
@@ -779,7 +779,7 @@ namespace Kernel.Hardware.USB.HCIs
             if (transfer.transactions.Count > 0)
             {
                 UHCITransaction uLastTransaction = (UHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
-                uLastTransaction.qTD->next = (((uint)VirtMemManager.GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf); // build TD queue
+                uLastTransaction.qTD->next = (((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf); // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
         }
@@ -801,7 +801,7 @@ namespace Kernel.Hardware.USB.HCIs
             if (transfer.transactions.Count > 0)
             {
                 UHCITransaction uLastTransaction = (UHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
-                uLastTransaction.qTD->next = (((uint)VirtMemManager.GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf); // build TD queue
+                uLastTransaction.qTD->next = (((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf); // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
         }
@@ -828,7 +828,7 @@ namespace Kernel.Hardware.USB.HCIs
             if (transfer.transactions.Count > 0)
             {
                 UHCITransaction uLastTransaction = (UHCITransaction)((USBTransaction)(transfer.transactions[transfer.transactions.Count - 1])).underlyingTz;
-                uLastTransaction.qTD->next = (((uint)VirtMemManager.GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf); // build TD queue
+                uLastTransaction.qTD->next = (((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf); // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
         }
@@ -894,9 +894,9 @@ namespace Kernel.Hardware.USB.HCIs
                 }
 
                 // update scheduler
-                uint qhPhysAddr = ((uint)VirtMemManager.GetPhysicalAddress(transfer.underlyingTransferData) | UHCI_Consts.BIT_QH);
+                uint qhPhysAddr = ((uint)GetPhysicalAddress(transfer.underlyingTransferData) | UHCI_Consts.BIT_QH);
                 FrameList[0] = qhPhysAddr;
-                FRBASEADD.Write_UInt32((uint)VirtMemManager.GetPhysicalAddress(FrameList));
+                FRBASEADD.Write_UInt32((uint)GetPhysicalAddress(FrameList));
                 FRNUM.Write_UInt16(0);
                 // start scheduler
                 USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
@@ -1025,7 +1025,7 @@ namespace Kernel.Hardware.USB.HCIs
 
             if ((uint)next != Utils.BIT(0))
             {
-                td->next = ((uint)VirtMemManager.GetPhysicalAddress(next) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                td->next = ((uint)GetPhysicalAddress(next) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
                 td->q_next = (UHCI_qTD_Struct*)next;
             }
             else
@@ -1047,7 +1047,7 @@ namespace Kernel.Hardware.USB.HCIs
 #endif
 
             td->virtBuffer = FOS_System.Heap.AllocZeroedAPB(0x1000, 0x1000, "UHCI : AllocQTDBuffer");
-            td->buffer = (uint*)VirtMemManager.GetPhysicalAddress(td->virtBuffer);
+            td->buffer = (uint*)GetPhysicalAddress(td->virtBuffer);
 
             return td->virtBuffer;
         }
@@ -1125,7 +1125,7 @@ namespace Kernel.Hardware.USB.HCIs
             }
             else
             {
-                head->transfer = (UHCI_qTD_Struct*)((uint)VirtMemManager.GetPhysicalAddress(firstTD) & 0xFFFFFFF0);
+                head->transfer = (UHCI_qTD_Struct*)((uint)GetPhysicalAddress(firstTD) & 0xFFFFFFF0);
                 head->q_first = firstTD;
             }
         }
@@ -1150,6 +1150,27 @@ namespace Kernel.Hardware.USB.HCIs
                     AnalysePortStatus(j, val);
                 }
             }
+        }
+
+        private static void* GetPhysicalAddress(void* vAddr)
+        {
+            return GetPhysicalAddress((uint)vAddr);
+        }
+        private static void* GetPhysicalAddress(uint vAddr)
+        {
+            uint address = 0xFFFFFFFF;
+            BasicConsole.WriteLine("Getting physical address of: " + ((FOS_System.String)vAddr));
+            SystemCallResults result = SystemCalls.GetPhysicalAddress(vAddr, out address);
+            if (result != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Error! UHCI cannot get physical address.");
+                ExceptionMethods.Throw(new FOS_System.Exception("UHCI cannot get physical address."));
+            }
+            else
+            {
+                BasicConsole.WriteLine("Physical address is: " + ((FOS_System.String)address));
+            }
+            return (void*)address;
         }
     }
     

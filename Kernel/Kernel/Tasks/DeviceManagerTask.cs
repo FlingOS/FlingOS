@@ -70,9 +70,9 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("DM > Registering for Receive Message syscall...");
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.ReceiveMessage, SyscallHandler);
 
-                //BasicConsole.WriteLine("DM > Registering for IRQs...");
-                //SystemCalls.RegisterIRQHandler(14, IRQHandler);
-                //SystemCalls.RegisterIRQHandler(15);
+                BasicConsole.WriteLine("DM > Registering for IRQs...");
+                SystemCalls.RegisterIRQHandler(14, IRQHandler);
+                SystemCalls.RegisterIRQHandler(15);
 
                 BasicConsole.WriteLine("DM > Creating virtual console...");
                 console = new Consoles.VirtualConsole();
@@ -197,11 +197,10 @@ namespace Kernel.Tasks
 
         public static int IRQHandler(uint irqNumber)
         {
-            return -1;
-            //Hardware.ATA.PATAPI.IRQHandler(irqNumber);
-            //Hardware.USB.USBManager.IRQHandler();
+            Hardware.ATA.PATAPI.IRQHandler(irqNumber);
+            Hardware.USB.USBManager.IRQHandler();
             
-            //return 0;
+            return 0;
         }
 
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,

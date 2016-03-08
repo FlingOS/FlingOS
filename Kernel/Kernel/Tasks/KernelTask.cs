@@ -1131,9 +1131,9 @@ namespace Kernel.Tasks
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.GetPhysicalAddress:
-#if SYSCALLS_TRACE
+//#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get physical address");
-#endif
+//#endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
                     if (param1 < 0x100000)

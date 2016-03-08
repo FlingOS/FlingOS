@@ -24,8 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define HCI_TRACE
-#undef HCI_TRACE
+//#define HCI_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -112,7 +111,7 @@ namespace Kernel.Hardware.USB.HCIs
             transfer.endpoint = endpoint;
             transfer.type = type;
 #if HCI_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).mps);
+            BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
 #endif
             transfer.packetSize = FOS_System.Math.Min(maxLength, ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
 #if HCI_TRACE

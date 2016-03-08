@@ -253,7 +253,11 @@ namespace Kernel.Hardware.Interrupts
                         ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
                         switched = true;
                     }
-                    if (handlerProcess.ISRHandler(ISRNum) == 0)
+                    if (handlerProcess.ISRHandler == null)
+                    {
+                        BasicConsole.WriteLine("Error! handlerProcess.ISRHandler is null but is set to handle the ISR.");
+                    }
+                    else if (handlerProcess.ISRHandler(ISRNum) == 0)
                     {
                         break;
                     }
@@ -284,8 +288,12 @@ namespace Kernel.Hardware.Interrupts
                         ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
                         switched = true;
                     }
-
-                    if (handlerProcess.IRQHandler(IRQNum) == 0)
+                    
+                    if (handlerProcess.IRQHandler == null)
+                    {
+                        BasicConsole.WriteLine("Error! handlerProcess.IRQHandler is null but is set to handle the IRQ.");
+                    }
+                    else if (handlerProcess.IRQHandler(IRQNum) == 0)
                     {
                         break;
                     }
