@@ -55,6 +55,11 @@ namespace Drivers.Compiler.Types
         public int Offset;
 
         /// <summary>
+        /// Whether to skip the GC Cleanup step (inject by ILPreprocessor) for the variable or not.
+        /// </summary>
+        public bool SkipCleanup = false;
+
+        /// <summary>
         /// Gets a human-readable representation of the variable.
         /// </summary>
         /// <remarks>

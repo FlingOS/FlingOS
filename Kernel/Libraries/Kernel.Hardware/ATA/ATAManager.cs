@@ -40,17 +40,20 @@ namespace Kernel.Hardware.ATA
         /// <summary>
         /// ATA primary IO device.
         /// </summary>
-        private static readonly ATAIOPorts ATAIO1;// = new ATAIOPorts(false);
+        private static ATAIOPorts ATAIO1;
         /// <summary>
         /// ATA secondary IO device.
         /// </summary>
-        private static readonly ATAIOPorts ATAIO2;// = new ATAIOPorts(true);
+        private static ATAIOPorts ATAIO2;
 
         /// <summary>
         /// Initialises all available ATA devices on the primary bus.
         /// </summary>
         public static void Init()
         {
+            ATAIO1 = new ATAIOPorts(false);
+            ATAIO2 = new ATAIOPorts(true);
+
             FOS_System.Exception ex = null;
             int exCount = 0;
 

@@ -963,8 +963,25 @@ namespace Drivers.Compiler.IL
                                     UnderlyingType = returnType,
                                     TheTypeInfo = returnTypeInfo,
                                     Position = theMethodInfo.LocalInfos.Count,
-                                    Offset = lastLocalOffset - returnTypeInfo.SizeOnStackInBytes    // Local variable offsets are negative from EBP
+                                    Offset = lastLocalOffset - returnTypeInfo.SizeOnStackInBytes,    // Local variable offsets are negative from EBP
+                                    SkipCleanup = true
                                 });
+
+                                if (returnTypeInfo.IsGCManaged)
+                                {
+                                    // Add ops for incrementing ref count of return value, updare op offsets
+                                    theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Dup
+                                    });
+                                    lastOpIndex++;
+                                    theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                    {
+                                        opCode = System.Reflection.Emit.OpCodes.Call,
+                                        MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
+                                    });
+                                    lastOpIndex++;
+                                }
 
                                 // Add op for storing return value, update op offsets
                                 theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
@@ -1004,7 +1021,7 @@ namespace Drivers.Compiler.IL
                         // Add cleanup code for local variables (including the return value local)
                         foreach (Types.VariableInfo aLocInfo in theMethodInfo.LocalInfos)
                         {
-                            if (aLocInfo.TheTypeInfo.IsGCManaged)
+                            if (aLocInfo.TheTypeInfo.IsGCManaged && !aLocInfo.SkipCleanup)
                             {
                                 theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
                                 {
@@ -1033,7 +1050,7 @@ namespace Drivers.Compiler.IL
                         // Add cleanup code for arguments
                         foreach (Types.VariableInfo anArgInfo in theMethodInfo.ArgumentInfos)
                         {
-                            if (anArgInfo.TheTypeInfo.IsGCManaged)
+                            if (anArgInfo.TheTypeInfo.IsGCManaged && !anArgInfo.SkipCleanup)
                             {
                                 theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
                                 {
