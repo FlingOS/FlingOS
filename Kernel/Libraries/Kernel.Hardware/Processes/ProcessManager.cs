@@ -62,30 +62,40 @@ namespace Kernel.Hardware.Processes
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process object...");
-#endif
             BasicConsole.WriteLine("CreateProcess.A");
-            
+#endif
+
             Scheduler.Disable();
 
+#if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("CreateProcess.B");
+#endif
 
             Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
 
+#if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("CreateProcess.C");
+#endif
 
             uint[] newDataVAddrs = VirtMemManager.GetBuiltInProcessVAddrs();
             for (int i = 0; i < newDataVAddrs.Length; i++)
             {
                 uint vAddr = newDataVAddrs[i];
                 uint pAddr = VirtMemManager.GetPhysicalAddress(vAddr);
+#if PROCESSMANAGER_TRACE
                 BasicConsole.WriteLine("Mapping free pages...");
+#endif
                 //ExceptionMethods.PrintMessages = true;
                 void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, 1);
                 //ExceptionMethods.PrintMessages = false;
+#if PROCESSMANAGER_TRACE
                 BasicConsole.WriteLine("Mapped.");
+#endif
                 void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
 
+#if PROCESSMANAGER_TRACE
                 BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
+#endif
                 NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
 
                 //CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
@@ -98,10 +108,13 @@ namespace Kernel.Hardware.Processes
                 //CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
             }
 
+#if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("CreateProcess.D");
+#endif
 
             Scheduler.Enable();
 
+#if PROCESSMANAGER_TRACE
             {
                 BasicConsole.WriteLine("New process memory layout:");
                 UInt32Dictionary.Iterator iterator = NewProcess.TheMemoryLayout.CodePages.GetNewIterator();
@@ -123,6 +136,7 @@ namespace Kernel.Hardware.Processes
                     BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
                 }
             }
+#endif
 
             return NewProcess;
         }

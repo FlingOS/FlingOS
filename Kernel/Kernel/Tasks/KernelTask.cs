@@ -25,7 +25,7 @@
 #endregion
 
 //DSC: Deferred System Calls
-#define DSC_TRACE
+//#define DSC_TRACE
 //#define SYSCALLS_TRACE
 
 using Kernel.FOS_System.Collections;
@@ -466,13 +466,13 @@ namespace Kernel.Tasks
             switch (syscallNumber)
             {
                 case SystemCallNumbers.StartThread:
-//#if DSC_TRACE
+#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread");
-//#endif
+#endif
                     Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1), "[From sys call]").Id;
-//#if DSC_TRACE
+#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread - done.");
-//#endif
+#endif
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:

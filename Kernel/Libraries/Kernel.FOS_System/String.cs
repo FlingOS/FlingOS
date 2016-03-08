@@ -108,7 +108,7 @@ namespace Kernel.FOS_System
             get
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
-                thisPtr += 8; /*For fields inc. inherited*/
+                thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
                 return ((char*)thisPtr)[index];
             }
             [Drivers.Compiler.Attributes.NoDebug]
@@ -116,7 +116,7 @@ namespace Kernel.FOS_System
             set
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
-                thisPtr += 8; /*For fields inc. inherited*/
+                thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
                 ((char*)thisPtr)[index] = value;
             }
         }
@@ -132,7 +132,7 @@ namespace Kernel.FOS_System
             get
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
-                thisPtr += 8; /*For fields inc. inherited*/
+                thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
                 return ((char*)thisPtr)[index];
             }
             [Drivers.Compiler.Attributes.NoDebug]
@@ -140,7 +140,7 @@ namespace Kernel.FOS_System
             set
             {
                 byte* thisPtr = (byte*)Utilities.ObjectUtilities.GetHandle(this);
-                thisPtr += 8; /*For fields inc. inherited*/
+                thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
                 ((char*)thisPtr)[index] = value;
             }
         }
@@ -689,7 +689,7 @@ namespace Kernel.FOS_System
                 result[i] = '0';
             }
 
-            int index = 9;
+            int index = result.length - 1;
             ulong y = x;
             while (y > 0)
             {

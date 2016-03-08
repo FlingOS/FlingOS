@@ -60,6 +60,8 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Device Manager: GC thread failed to create!");
             }
 
+            Heap.name = "Device Manager";
+
             try
             {
                 BasicConsole.WriteLine("DM > Creating virtual keyboard...");
@@ -95,20 +97,7 @@ namespace Kernel.Tasks
                 
                 BasicConsole.WriteLine("Start time:");
                 BasicConsole.WriteLine(new FOS_System.DateTime(StartTime).ToString());
-
-                while (!Terminating)
-                {
-                    try
-                    {
-                        SystemCalls.SleepThread(1000);
-                    }
-                    catch
-                    {
-                        BasicConsole.WriteLine("DM > Error executing sleep loop!");
-                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                    }
-                }
-
+                
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetTime);
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.GetUpTime);
 
@@ -119,7 +108,7 @@ namespace Kernel.Tasks
                 {
                     try
                     {
-                        uint SharedPages_StartAddress;
+                        /*uint SharedPages_StartAddress;
                         SystemCallResults RequestPagesResult = SystemCalls.RequestPages(0xE0000000, 1, out SharedPages_StartAddress);
                         if (RequestPagesResult == SystemCallResults.OK)
                         {
@@ -185,8 +174,8 @@ namespace Kernel.Tasks
                         else
                         {
                             BasicConsole.WriteLine("DM > Couldn't allocate pages for sharing with WM.");
-                        }
-
+                        }*/
+                        
                         shell.Execute();
                         //TODO: DeviceManager.UpdateDevices();
                     }

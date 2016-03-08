@@ -26,8 +26,7 @@
     
 #if x86
    
-#define PAGING_TRACE
-#undef PAGING_TRACE
+//#define PAGING_TRACE
 
 using System;
 using Kernel.FOS_System.Collections;
@@ -316,7 +315,7 @@ namespace Kernel.Hardware.VirtMem
             uint* virtPTPtr = GetFixedPage(virtPDIdx);
 #if PAGING_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)virtPTPtr);
-#endif
+
             if (Processes.Scheduler.OutputMessages)
             {
                 if (vAddr == 0x00106000)
@@ -333,6 +332,7 @@ namespace Kernel.Hardware.VirtMem
                     BasicConsole.WriteLine(valStr);
                 }
             }
+#endif
 
             //Set the page table entry
             SetPageEntry(virtPTPtr, virtPTIdx, pAddr, flags);
@@ -629,7 +629,7 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"pageTablePtr=") + (uint)pageTablePtr);
             BasicConsole.WriteLine(((FOS_System.String)"entry=") + entry);
             BasicConsole.WriteLine(((FOS_System.String)"addr=") + addr);
-#endif 
+#endif
 
             pageTablePtr[entry] = addr | (uint)flags;
 
@@ -654,7 +654,7 @@ namespace Kernel.Hardware.VirtMem
             BasicConsole.WriteLine(((FOS_System.String)"dirPtr=") + (uint)dirPtr);
             BasicConsole.WriteLine(((FOS_System.String)"pageTablePhysPtr=") + (uint)pageTablePhysPtr);
             BasicConsole.WriteLine(((FOS_System.String)"pageNum=") + pageNum);
-#endif 
+#endif
 
             dirPtr[pageNum] = (uint)pageTablePhysPtr | 7;
 #if PAGING_TRACE

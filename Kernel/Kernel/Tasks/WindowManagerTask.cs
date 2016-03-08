@@ -24,7 +24,6 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
@@ -89,6 +88,8 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
             }
 
+            Heap.name = "Window Manager";
+
             // Initialise connected pipes list
             ConnectedPipes = new List();
 
@@ -101,13 +102,13 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine(InputProcessingThreadId);
             
             // Start thread for other testing
-            uint TestThreadId;
-            if (SystemCalls.StartThread(TestThread, out TestThreadId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
-            }
-            BasicConsole.Write("WM > Test thread id: ");
-            BasicConsole.WriteLine(TestThreadId);
+            //uint TestThreadId;
+            //if (SystemCalls.StartThread(TestThread, out TestThreadId) != SystemCallResults.OK)
+            //{
+            //    BasicConsole.WriteLine("Window Manager: Test thread failed to create!");
+            //}
+            //BasicConsole.Write("WM > Test thread id: ");
+            //BasicConsole.WriteLine(TestThreadId);
 
             BasicConsole.Write("WM > Register syscall handlers");
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
@@ -220,7 +221,7 @@ namespace Kernel.Tasks
                 }
                 InputProcessingThreadAwake = false;
 
-                BasicConsole.WriteLine("WM > InputProcessing thread running...");
+                //BasicConsole.WriteLine("WM > InputProcessing thread running...");
 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
@@ -359,16 +360,16 @@ namespace Kernel.Tasks
                     bool GotScancode = Keyboard.Default.GetScancode(out Scancode);
                     if (GotScancode)
                     {
-                        BasicConsole.WriteLine("WM > OP : (1)");
+                        //BasicConsole.WriteLine("WM > OP : (1)");
 
                         KeyboardKey Key;
                         if (Keyboard.Default.GetKeyValue(Scancode, out Key))
                         {
-                            BasicConsole.WriteLine("WM > OP : (2)");
+                            //BasicConsole.WriteLine("WM > OP : (2)");
 
                             if (AltPressed && Key == KeyboardKey.Tab)
                             {
-                                BasicConsole.WriteLine("WM > OP : (3)");
+                                //BasicConsole.WriteLine("WM > OP : (3)");
 
                                 CurrentPipeIdx++;
                                 if (CurrentPipeIdx >= ConnectedPipes.Count)
@@ -379,15 +380,15 @@ namespace Kernel.Tasks
                                 CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
                                 CurrentPipeIndex_Changed = true;
 
-                                BasicConsole.WriteLine("WM > OP : (4)");
+                                //BasicConsole.WriteLine("WM > OP : (4)");
                             }
                             else
                             {
-                                BasicConsole.WriteLine("WM > OP : (5)");
+                                //BasicConsole.WriteLine("WM > OP : (5)");
 
                                 SystemCalls.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
 
-                                BasicConsole.WriteLine("WM > OP : (6)");
+                                //BasicConsole.WriteLine("WM > OP : (6)");
                             }
                         }
                     }
@@ -408,7 +409,7 @@ namespace Kernel.Tasks
         {
             if (IRQNum == 1)
             {
-                BasicConsole.WriteLine("Keyboard interrupt");
+                //BasicConsole.WriteLine("Keyboard interrupt");
                 ((Hardware.Keyboards.PS2)Keyboard.Default).InterruptHandler();
                 return 0;
             }

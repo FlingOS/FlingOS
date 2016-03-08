@@ -24,8 +24,8 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define HEAP_TRACE
-#define PROCESS_TRACE
+//#define HEAP_TRACE
+//#define PROCESS_TRACE
 
 using System;
 using Kernel.FOS_System.Processes.Synchronisation;
@@ -432,12 +432,12 @@ namespace Kernel.FOS_System
 
             do
             {
-                HeapBlock* b;
-                byte* bm;
-                UInt32 bcnt;
-                UInt32 x, y, z;
-                UInt32 bneed;
-                byte nid;
+                HeapBlock* b = null;
+                byte* bm = null;
+                UInt32 bcnt = 0;
+                UInt32 x, y, z = 0;
+                UInt32 bneed = 0;
+                byte nid = 0;
 
                 if (boundary > 1)
                 {
@@ -512,8 +512,8 @@ namespace Kernel.FOS_System
 
                 BasicConsole.Write(name);
                 BasicConsole.WriteLine(" heap needs to expand!");
-
-                ExpandHeap(true);
+                
+                ExpandHeap(false);
                 
                 BasicConsole.WriteLine("Heap expansion complete.");
             }
@@ -609,6 +609,11 @@ namespace Kernel.FOS_System
         }
         public static void InitForProcess()
         {
+            // The next block will set references to `null`,
+            //  these increments ensure those assignments won't cause any objects to hit zero ref count
+            GC.IncrementRefCount(GC.State);
+            GC.IncrementRefCount(AccessLock);
+
             GC.State = null;
             AccessLockInitialised = false;
             AccessLock = null;
@@ -655,7 +660,7 @@ namespace Kernel.FOS_System
 #if PROCESS_TRACE
             BasicConsole.WriteLine(" >> Setting GC state...");
 #endif
-            FOS_System.GC.State = TheGCState;
+            GC.State = TheGCState;
 #if PROCESS_TRACE
             BasicConsole.WriteLine(" >> Done.");
 #endif

@@ -76,7 +76,6 @@ namespace Kernel.FOS_System
                 }
             }
             [Drivers.Compiler.Attributes.NoDebug]
-            [Drivers.Compiler.Attributes.NoGC]
             set
             {
                 if (UseCurrentState)
@@ -782,9 +781,15 @@ namespace Kernel.FOS_System
             GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
             {
+                if (gcHeaderPtr->CleanedUp)
+                {
+                    BasicConsole.WriteLine("Oops...Incrementing ref count of cleaned up object!");
+                    BasicConsole.WriteLine(((FOS_System.Object)Utilities.ObjectUtilities.GetObject(gcHeaderPtr + 1))._Type.Signature);
+                }
+
                 gcHeaderPtr->RefCount++;
 
-                if (gcHeaderPtr->RefCount > 0)
+                if (gcHeaderPtr->RefCount > 0 && gcHeaderPtr->OnCleanupList)
                 {
                     RemoveObjectToCleanup(gcHeaderPtr);
                 }
@@ -1041,6 +1046,8 @@ namespace Kernel.FOS_System
                     }
 
                     GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
+                    objHeaderPtr->CleanedUp = true;
+
                     void* objPtr = currObjToCleanupPtr->objPtr;
 
                     if (OutputTrace)
@@ -1087,6 +1094,7 @@ namespace Kernel.FOS_System
                             BasicConsole.WriteLine("   > About to free object...");
                         }
 
+                        objHeaderPtr->OnCleanupList = false;
                         Heap.Free(objHeaderPtr);
 
                         if (OutputTrace)
@@ -1166,6 +1174,8 @@ namespace Kernel.FOS_System
 
             try
             {
+                objHeaderPtr->OnCleanupList = true;
+
                 ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.AllocZeroed((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
                 newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
                 newObjToCleanupPtr->objPtr = objPtr;
@@ -1206,6 +1216,8 @@ namespace Kernel.FOS_System
                 {
                     if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
                     {
+                        objHeaderPtr->OnCleanupList = false;
+
                         RemoveObjectToCleanup(currObjToCleanupPtr);
                         return;
                     }
@@ -1305,6 +1317,9 @@ namespace Kernel.FOS_System
         /// The current reference count for the object associated with this header.
         /// </summary>
         public int RefCount;
+
+        public bool OnCleanupList;
+        public bool CleanedUp;
     }
     /// <summary>
     /// Represents an object to be garbage collected (i.e. freed from memory).

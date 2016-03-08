@@ -107,10 +107,12 @@ namespace Kernel.Hardware.Processes
                     Scheduler.Disable();
                 }
 
+#if PAGING_TRACE
                 BasicConsole.Write("Physical address of 0x00106000 is ");
                 FOS_System.String valStr = "0x        ";
                 ExceptionMethods.FillString(VirtMemManager.GetPhysicalAddress(0x00106000), 9, valStr);
                 BasicConsole.WriteLine(valStr);
+#endif
 
                 Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
@@ -135,6 +137,7 @@ namespace Kernel.Hardware.Processes
                     ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage(kernelStackPhysAddr, kernelStackVirtAddr);
                 }
 
+#if PROCESS_TRACE
                 if (Name != "Main")
                 {
                     BasicConsole.WriteLine("New thread info:");
@@ -143,8 +146,7 @@ namespace Kernel.Hardware.Processes
                     BasicConsole.WriteLine("Kernel stack : " + (FOS_System.String)kernelStackVirtAddr + " => " + kernelStackPhysAddr);
                 }
 
-#if PROCESS_TRACE
-            BasicConsole.WriteLine("Adding thread...");
+                BasicConsole.WriteLine("Adding thread...");
 #endif
 
                 Threads.Add(newThread);

@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define GCTASK_TRACE
+//#define GCTASK_TRACE
 
 using System;
 using Kernel.FOS_System.Processes;
