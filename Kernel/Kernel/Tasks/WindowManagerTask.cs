@@ -75,20 +75,7 @@ namespace Kernel.Tasks
 
         public static void Main()
         {
-            BasicConsole.WriteLine("Window Manager: Started.");
-
-            // Initialise heap & GC
-            BasicConsole.WriteLine("WM > Creating heap...");
-            FOS_System.Heap.InitForProcess();
-
-            BasicConsole.WriteLine("WM > Starting GC thread...");
-            // Start thread for calling GC Cleanup method
-            if (SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Window Manager: GC thread failed to create!");
-            }
-
-            Heap.name = "Window Manager";
+            Helpers.ProcessInit("Window Manager", out GCThreadId);
 
             // Initialise connected pipes list
             ConnectedPipes = new List();

@@ -8,6 +8,23 @@ namespace Kernel.Tasks
 {
     public static class Helpers
     {
+        public static void ProcessInit(FOS_System.String ProcessName, out uint GCThreadId)
+        {
+            BasicConsole.WriteLine(ProcessName + " started.");
+
+            BasicConsole.WriteLine(ProcessName + " > Creating heap...");
+            FOS_System.Heap.InitForProcess();
+
+            BasicConsole.WriteLine(ProcessName + " > Starting GC thread...");
+            SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
+            if (SysCallResult != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine(ProcessName + ": GC thread failed to create!");
+            }
+
+            FOS_System.Heap.name = ProcessName;
+        }
+
         public static unsafe bool StartBuiltInProcess(FOS_System.String CallerName, FOS_System.String NewProcName, ThreadStartPoint MainMethod)
         {
             bool result = false;

@@ -46,21 +46,7 @@ namespace Kernel.Tasks
 
         public static void Main()
         {
-            BasicConsole.WriteLine("Device Manager started.");
-
-            BasicConsole.WriteLine("DM > Creating heap...");
-            FOS_System.Heap.InitForProcess();
-
-            //Hardware.Processes.Scheduler.OutputMessages = true;
-
-            BasicConsole.WriteLine("DM > Starting GC thread...");
-            SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
-            if (SysCallResult != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Device Manager: GC thread failed to create!");
-            }
-
-            Heap.name = "Device Manager";
+            Helpers.ProcessInit("Device Manager", out GCThreadId);
 
             try
             {

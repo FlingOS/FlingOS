@@ -36,17 +36,8 @@ namespace Kernel.Tasks
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {
-            // Initialise heap & GC
-            BasicConsole.WriteLine("IDLE > Creating heap...");
-            FOS_System.Heap.InitForProcess();
+            Helpers.ProcessInit("Idle Task", out GCThreadId);
 
-            BasicConsole.WriteLine("IDLE > Starting GC thread...");
-            // Start thread for calling GC Cleanup method
-            if (SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Idle Task: GC thread failed to create!");
-            }
-            
             //TODO: Use some kind of factory for creating the correct CPU class
             Hardware.Devices.CPU TheCPU = new Hardware.CPUs.CPUx86_32();
 

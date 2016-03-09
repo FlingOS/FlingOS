@@ -13,19 +13,7 @@ namespace Kernel.Tasks.Driver
 
         public static void Main()
         {
-            BasicConsole.WriteLine("ATA Driver started.");
-
-            BasicConsole.WriteLine("ATA Driver > Creating heap...");
-            FOS_System.Heap.InitForProcess();
-            
-            BasicConsole.WriteLine("ATA Driver > Starting GC thread...");
-            SystemCallResults SysCallResult = SystemCalls.StartThread(GCCleanupTask.Main, out GCThreadId);
-            if (SysCallResult != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("ATA Driver: GC thread failed to create!");
-            }
-
-            Heap.name = "ATA Driver";
+            Helpers.ProcessInit("ATA Driver", out GCThreadId);
             
             try
             {
