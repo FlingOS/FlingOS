@@ -91,7 +91,10 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public void SignalOnBehalf()
         {
             ExclLock.Enter();
-            count++;
+            if (count < limit)
+            {
+                count++;
+            }
 
             if (WaitingThreads.Count > 0)
             {

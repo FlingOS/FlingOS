@@ -84,7 +84,7 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         /// <param name="scancode">The scancode to handle.</param>
         /// <param name="released">Whether the key has been released or not.</param>
-        private void HandleScancode(uint scancode)
+        public override void HandleScancode(uint scancode)
         {
             //Determine whether the key has been released or not
             bool released = (scancode & 0x80) == 0x80;

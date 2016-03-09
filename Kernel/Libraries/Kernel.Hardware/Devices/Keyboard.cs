@@ -56,6 +56,8 @@ namespace Kernel.Hardware.Devices
         /// </summary>
         protected List KeyMappings;
 
+        protected int ScancodeBufferSemaphoreId = -1;
+
         /// <summary>
         /// Whether the keyboard is enabled or not.
         /// </summary>
@@ -139,6 +141,20 @@ namespace Kernel.Hardware.Devices
                 CreateUKKeymap();
 #endif
             }
+
+            SystemCallResults result = SystemCalls.CreateSemaphore(0, out ScancodeBufferSemaphoreId);
+            if (result != SystemCallResults.OK)
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Couldn't create the necessary semaphore!"));
+            }
+        }
+
+        public void Destroy()
+        {
+            if (ScancodeBufferSemaphoreId != -1)
+            {
+                SystemCalls.ReleaseSemaphore(ScancodeBufferSemaphoreId);
+            }
         }
 
         /// <summary>
@@ -149,7 +165,9 @@ namespace Kernel.Hardware.Devices
         /// Disables the keyboard.
         /// </summary>
         public abstract void Disable();
-        
+
+        public abstract void HandleScancode(uint scancode);
+
         /// <summary>
         /// Adds a new keyboard mapping.
         /// </summary>
@@ -212,6 +230,8 @@ namespace Kernel.Hardware.Devices
             {
                 scancodeBuffer.Add(scancode);
             }
+
+            Processes.ProcessManager.Semaphore_Signal(ScancodeBufferSemaphoreId, Processes.ProcessManager.CurrentProcess);
         }
         /// <summary>
         /// Dequeues the oldest scancode from the scancode buffer.
@@ -337,7 +357,6 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised key mapping is found
             while (!GetKeyMapping(ReadScancode(), out xResult))
             {
-                //Processes.SystemCalls.SleepThread(50);
             }
             return xResult;
         }
@@ -352,7 +371,6 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised character is found
             while (!GetCharValue(ReadScancode(), out xResult))
             {
-                SystemCalls.SleepThread(5);
             }
             return xResult;
         }
@@ -367,7 +385,6 @@ namespace Kernel.Hardware.Devices
             //Wait until a recognised keyboard key is found
             while (!GetKeyValue(ReadScancode(), out xResult))
             {
-                SystemCalls.SleepThread(5);
             }
             return xResult;
         }
@@ -381,7 +398,7 @@ namespace Kernel.Hardware.Devices
             //Wait until we get a scancode
             while (scancodeBuffer.Count == 0)
             {
-                SystemCalls.SleepThread(5);
+                SystemCalls.WaitSemaphore(ScancodeBufferSemaphoreId);
             }
 
             return Dequeue();

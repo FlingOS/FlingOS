@@ -59,7 +59,7 @@ namespace Kernel.Hardware.Keyboards
             }
         }
 
-        public void HandleScancode(uint scancode)
+        public override void HandleScancode(uint scancode)
         {
             //Determine whether the key has been released or not
             bool released = (scancode & 0x80) == 0x80;
