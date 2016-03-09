@@ -103,6 +103,8 @@
     <Compile Include="Consoles\AdvancedConsole.cs" />
     <Compile Include="Consoles\VirtualConsole.cs" />
     <Compile Include="Debug\Debugger.cs" />
+    <Compile Include="Tasks\Driver\USBDriverTask.cs" />
+    <Compile Include="Tasks\Driver\PCIDriverTask.cs" />
     <Compile Include="Tasks\Driver\ATADriverTask.cs" />
     <Compile Include="PreReqs.cs" />
     <Compile Include="Kernel.cs" />

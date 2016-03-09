@@ -31,8 +31,9 @@ namespace Kernel.FOS_System.Processes
     /// <summary>
     /// The complete list of system calls.
     /// </summary>
-    public enum SystemCallNumbers : uint
+    public enum SystemCallNumbers : int
     {
+        None = -1,
         /// <summary>
         /// Indicates an invalid system call has been made.
         /// </summary>

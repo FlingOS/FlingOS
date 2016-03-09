@@ -25,7 +25,7 @@ namespace Kernel.Tasks
             FOS_System.Heap.name = ProcessName;
         }
 
-        public static unsafe bool StartBuiltInProcess(FOS_System.String CallerName, FOS_System.String NewProcName, ThreadStartPoint MainMethod)
+        public static unsafe bool StartBuiltInProcess(FOS_System.String CallerName, FOS_System.String NewProcName, ThreadStartPoint MainMethod, bool UserMode)
         {
             bool result = false;
 
@@ -40,7 +40,7 @@ namespace Kernel.Tasks
             
             uint ATADriverProcessId;
             uint ATADriverThreadId;
-            SystemCallResults SysCallResult = SystemCalls.StartProcess(StartRequest, false, out ATADriverProcessId, out ATADriverThreadId);
+            SystemCallResults SysCallResult = SystemCalls.StartProcess(StartRequest, UserMode, out ATADriverProcessId, out ATADriverThreadId);
             result = SysCallResult == SystemCallResults.OK;
 
 #if TASKHELPERS_TRACE

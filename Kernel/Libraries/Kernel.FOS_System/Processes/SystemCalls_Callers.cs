@@ -81,13 +81,13 @@ namespace Kernel.FOS_System.Processes
         /// <param name="ISRNum">The number of the ISR to register for.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterISRHandler(uint ISRNum)
+        public static SystemCallResults RegisterISRHandler(int ISRNum)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterISRHandler, ISRNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.RegisterISRHandler, (uint)ISRNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
         /// <summary>
@@ -97,13 +97,13 @@ namespace Kernel.FOS_System.Processes
         /// <param name="handler">The handler function to call for all handled ISR events.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterISRHandler(uint ISRNum, ISRHanderDelegate handler)
+        public static SystemCallResults RegisterISRHandler(int ISRNum, ISRHanderDelegate handler)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterISRHandler, ISRNum, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.RegisterISRHandler, (uint)ISRNum, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
         /// <summary>
@@ -127,13 +127,13 @@ namespace Kernel.FOS_System.Processes
         /// <param name="ISRNum">The number of the IRQ to register for.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterIRQHandler(uint IRQNum)
+        public static SystemCallResults RegisterIRQHandler(int IRQNum)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.RegisterIRQHandler, (uint)IRQNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
         /// <summary>
@@ -143,13 +143,13 @@ namespace Kernel.FOS_System.Processes
         /// <param name="handler">The handler function to call for all handled IRQ events.</param>
         /// <returns>OK if successfully registered.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults RegisterIRQHandler(uint IRQNum, IRQHanderDelegate handler)
+        public static SystemCallResults RegisterIRQHandler(int IRQNum, IRQHanderDelegate handler)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.RegisterIRQHandler, (uint)IRQNum, (uint)Utilities.ObjectUtilities.GetHandle(handler), 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
         /// <summary>
