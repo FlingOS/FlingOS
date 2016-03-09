@@ -84,14 +84,14 @@ namespace Kernel.Hardware
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static FOS_System.Processes.Synchronisation.SpinLock MapFreePagesLock = new FOS_System.Processes.Synchronisation.SpinLock(-1);
         
-        public static void* MapFreePage(VirtMemImpl.PageFlags flags)
+        public static void* MapFreePage(VirtMemImpl.PageFlags flags, out void* physAddr)
         {
-            return MapFreePages(flags, 1);
+            return MapFreePages(flags, 1, out physAddr);
         }
-        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages)
+        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages, out void* physAddrsStart)
         {
             uint virtAddrsStart = 0xDEADBEEF;
-            uint physAddrsStart = 0xDEADBEEF;
+            physAddrsStart = (void*)0xDEADBEEF;
 
             MapFreePagesLock.Enter();
 
@@ -108,9 +108,9 @@ namespace Kernel.Hardware
                     BasicConsole.WriteLine("!-!-!-!-!-!-!");
                 }
 
-                physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+                physAddrsStart = (void*)impl.FindFreePhysPageAddrs(numPages);
 
-                if (physAddrsStart == 0xDEADBEEF)
+                if ((uint)physAddrsStart == 0xDEADBEEF)
                 {
                     BasicConsole.WriteLine("!!! PANIC !!!");
                     BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
@@ -119,7 +119,7 @@ namespace Kernel.Hardware
 
                 for (uint i = 0; i < numPages; i++)
                 {
-                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                    Map((uint)physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
                 }
 
                 result = (void*)virtAddrsStart;
@@ -131,19 +131,18 @@ namespace Kernel.Hardware
 
             return result;
         }
-        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages, uint virtAddrsStart)
+        public static void* MapFreePages(VirtMemImpl.PageFlags flags, int numPages, uint virtAddrsStart, out void* physAddrsStart)
         {
-            uint physAddrsStart = 0xDEADBEEF;
-
-            MapFreePagesLock.Enter();
-
+            physAddrsStart = (void*)0xDEADBEEF;
             void* result = (void*)0xDEADBEEF;
 
+            MapFreePagesLock.Enter();
+            
             try
             {
-                physAddrsStart = impl.FindFreePhysPageAddrs(numPages);
+                physAddrsStart = (void*)impl.FindFreePhysPageAddrs(numPages);
 
-                if (physAddrsStart == 0xDEADBEEF)
+                if ((uint)physAddrsStart == 0xDEADBEEF)
                 {
                     BasicConsole.WriteLine("!!! PANIC !!!");
                     BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
@@ -152,7 +151,7 @@ namespace Kernel.Hardware
 
                 for (uint i = 0; i < numPages; i++)
                 {
-                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                    Map((uint)physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
                 }
 
                 result = (void*)virtAddrsStart;
@@ -413,7 +412,8 @@ namespace Kernel.Hardware
             {
                 impl.Test();
 
-                byte* ptr = (byte*)MapFreePage(VirtMemImpl.PageFlags.KernelOnly);
+                void* unusedPAddr;
+                byte* ptr = (byte*)MapFreePage(VirtMemImpl.PageFlags.KernelOnly, out unusedPAddr);
                 for (int i = 0; i < 4096; i++, ptr++)
                 {
                     *ptr = 5;

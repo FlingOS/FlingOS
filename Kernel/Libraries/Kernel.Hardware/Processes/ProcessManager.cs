@@ -24,13 +24,12 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
-//#define PROCESSMANAGER_TRACE
+#define PROCESSMANAGER_TRACE
 //#define PROCESSMANAGER_SWITCH_TRACE
 //#define PROCESSMANAGER_KERNEL_ACCESS_TRACE
 
-using System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes.Synchronisation;
+using Kernel.FOS_System.Processes.Requests.Processes;
 using Kernel.Hardware.Processes.Synchronisation;
 using Kernel.FOS_System.Processes;
 
@@ -58,77 +57,58 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static List Semaphores = new List(1024, 1024);
         
-        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode)
+        public static Process CreateProcess(ThreadStartPoint MainMethod, FOS_System.String Name, bool UserMode)
         {
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("Creating process object...");
-            BasicConsole.WriteLine("CreateProcess.A");
+            BasicConsole.WriteLine("Creating process...");
 #endif
-
-            Scheduler.Disable();
-
-#if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("CreateProcess.B");
-#endif
-
+            
             Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
-
-#if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("CreateProcess.C");
-#endif
-
-            uint[] newDataVAddrs = VirtMemManager.GetBuiltInProcessVAddrs();
-            for (int i = 0; i < newDataVAddrs.Length; i++)
+            
+            uint[] vAddrs = VirtMemManager.GetBuiltInProcessVAddrs();
+            uint startVAddr = 0xDEADBEEF;
+            uint vAddrCount = 0;
+            for (int i = 0; i < vAddrs.Length; i++)
             {
-                uint vAddr = newDataVAddrs[i];
-                uint pAddr = VirtMemManager.GetPhysicalAddress(vAddr);
-#if PROCESSMANAGER_TRACE
-                BasicConsole.WriteLine("Mapping free pages...");
-#endif
-                //ExceptionMethods.PrintMessages = true;
-                void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, 1);
-                //ExceptionMethods.PrintMessages = false;
-#if PROCESSMANAGER_TRACE
-                BasicConsole.WriteLine("Mapped.");
-#endif
-                void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
-
-#if PROCESSMANAGER_TRACE
-                BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
-#endif
-                NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
-
-                //CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
-                uint* srcPtr = (uint*)vAddr;
-                uint* dstPtr = (uint*)newVAddr;
-                for (uint j = 0; j < 1024; j++, srcPtr++, dstPtr++)
+                if (vAddrCount > 0)
                 {
-                    *dstPtr = *srcPtr;
+                    if (startVAddr + (0x1000 * vAddrCount) != vAddrs[i])
+                    {
+                        AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
+
+                        vAddrCount = 0;
+                    }
+                }                
+
+                if (vAddrCount == 0)
+                {
+                    startVAddr = vAddrs[i];
                 }
-                //CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
+                vAddrCount++;
             }
-
-#if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("CreateProcess.D");
-#endif
-
-            Scheduler.Enable();
+            if (vAddrCount > 0)
+            {
+                AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
+            }
 
 #if PROCESSMANAGER_TRACE
             {
                 BasicConsole.WriteLine("New process memory layout:");
+                BasicConsole.WriteLine(" - Code pages:");
                 UInt32Dictionary.Iterator iterator = NewProcess.TheMemoryLayout.CodePages.GetNewIterator();
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
                     BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
                 }
+                BasicConsole.WriteLine(" - Data pages:");
                 iterator = NewProcess.TheMemoryLayout.DataPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
                     BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
                 }
+                BasicConsole.WriteLine(" - Kenrel pages:");
                 iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
@@ -140,52 +120,170 @@ namespace Kernel.Hardware.Processes
 
             return NewProcess;
         }
-        public static Process CreateProcess(ThreadStartMethod MainMethod, FOS_System.String Name, bool UserMode, Process ProcessToFork)
+        public static Process CreateProcess(bool UserMode, Process ProcessToCopyFrom, StartProcessRequest* request)
         {
 #if PROCESSMANAGER_TRACE
-            BasicConsole.WriteLine("Creating process object...");
+            BasicConsole.WriteLine("Creating process...");
 #endif
-            Scheduler.Disable();
 
-            Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+            EnableKernelAccessToProcessMemory(ProcessToCopyFrom);
 
-            UInt32Dictionary.Iterator iterator = ProcessToFork.TheMemoryLayout.CodePages.GetNewIterator();
-            while (iterator.HasNext())
+            FOS_System.String Name = FOS_System.String.New(request->NameLength);
+            for (int i = 0; i < request->NameLength; i++)
             {
-                UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                NewProcess.TheMemoryLayout.AddCodePage(pair.Value & 0xFFFFF000, pair.Key);
+                Name[i] = request->Name[i];
             }
+            Process NewProcess = new Process((ThreadStartPoint)Utilities.ObjectUtilities.GetObject(request->MainMethod), ProcessIdGenerator++, Name, UserMode);
 
-            BasicConsole.WriteLine("Forking " + ProcessToFork.Name);
-
-            iterator = ProcessToFork.TheMemoryLayout.DataPages.GetNewIterator();
-            while (iterator.HasNext())
+            uint* vAddrs = request->CodePages;
+            uint startVAddr = 0xDEADBEEF;
+            uint vAddrCount = 0;
+            for (int i = 0; i < request->CodePagesCount; i++)
             {
-                UInt32Dictionary.KeyValuePair pair = iterator.Next();
-
-                uint vAddr = pair.Key;
-                uint pAddr = pair.Value & 0xFFFFF000;
-                void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, 1);
-                void* newPAddr = VirtMemManager.GetPhysicalAddress(newVAddr);
-
-                BasicConsole.WriteLine("vAddr=" + (FOS_System.String)vAddr + ", pAddr=" + pAddr + ", newVAddr=" + (uint)newVAddr + ", newPAddr=" + (uint)newPAddr);
-                //NewProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)vAddr);
-
-                //CurrentProcess.TheMemoryLayout.AddDataPage((uint)newPAddr, (uint)newVAddr);
-                uint* srcPtr = (uint*)vAddr;
-                uint* dstPtr = (uint*)newVAddr;
-                for (uint i = 0; i < 1024; i++, srcPtr++, dstPtr++)
+                if (vAddrCount > 0)
                 {
-                    *dstPtr = *srcPtr;
+                    if (startVAddr + (0x1000 * vAddrCount) != vAddrs[i])
+                    {
+                        AddCodePagesToProcess(NewProcess, startVAddr, vAddrCount);
+
+                        vAddrCount = 0;
+                    }
                 }
-                //CurrentProcess.TheMemoryLayout.RemovePage((uint)newVAddr);
-                VirtMemManager.Unmap(newVAddr, VirtMem.UpdateUsedPagesFlags.Virtual);
+
+                if (vAddrCount == 0)
+                {
+                    startVAddr = vAddrs[i];
+                }
+                vAddrCount++;
+            }
+            if (vAddrCount > 0)
+            {
+                AddCodePagesToProcess(NewProcess, startVAddr, vAddrCount);
             }
 
-            Scheduler.Enable();
+            vAddrs = request->DataPages;
+            startVAddr = 0xDEADBEEF;
+            vAddrCount = 0;
+            for (int i = 0; i < request->DataPagesCount; i++)
+            {
+                if (vAddrCount > 0)
+                {
+                    if (startVAddr + (0x1000 * vAddrCount) != vAddrs[i])
+                    {
+                        AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
+
+                        vAddrCount = 0;
+                    }
+                }
+
+                if (vAddrCount == 0)
+                {
+                    startVAddr = vAddrs[i];
+                }
+                vAddrCount++;
+            }
+            if (vAddrCount > 0)
+            {
+                AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
+            }
+            
+            DisableKernelAccessToProcessMemory(ProcessToCopyFrom);
+
+#if PROCESSMANAGER_TRACE
+            {
+                BasicConsole.WriteLine("New process memory layout:");
+                BasicConsole.WriteLine(" - Code pages:");
+                UInt32Dictionary.Iterator iterator = NewProcess.TheMemoryLayout.CodePages.GetNewIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                }
+                BasicConsole.WriteLine(" - Data pages:");
+                iterator = NewProcess.TheMemoryLayout.DataPages.GetNewIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                }
+                BasicConsole.WriteLine(" - Kenrel pages:");
+                iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
+                while (iterator.HasNext())
+                {
+                    UInt32Dictionary.KeyValuePair pair = iterator.Next();
+                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                }
+            }
+#endif
 
             return NewProcess;
         }
+
+        private static void AddCodePagesToProcess(Process NewProcess, uint startVAddr, uint vAddrCount)
+        {
+#if PROCESSMANAGER_TRACE
+            BasicConsole.Write("Mapping free pages... Count=");
+            BasicConsole.WriteLine(vAddrCount);
+#endif
+
+            void* newPAddr;
+            void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Mapped.");
+#endif
+
+            NewProcess.TheMemoryLayout.AddCodePages(startVAddr, (uint)newPAddr, vAddrCount);
+
+            CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
+            uint* srcPtr = (uint*)startVAddr;
+            uint* dstPtr = (uint*)newVAddr;
+            for (uint j = 0; j < (1024 * vAddrCount); j++, srcPtr++, dstPtr++)
+            {
+                if (j % 1024 == 0)
+                {
+#if PROCESSMANAGER_TRACE
+                    BasicConsole.WriteLine("vAddr=" + (FOS_System.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
+#endif
+                }
+
+                *dstPtr = *srcPtr;
+            }
+            CurrentProcess.TheMemoryLayout.RemovePages((uint)newVAddr, vAddrCount);
+        }
+        private static void AddDataPagesToProcess(Process NewProcess, uint startVAddr, uint vAddrCount)
+        {
+#if PROCESSMANAGER_TRACE
+            BasicConsole.Write("Mapping free pages... Count=");
+            BasicConsole.WriteLine(vAddrCount);
+#endif
+
+            void* newPAddr;
+            void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+
+#if PROCESSMANAGER_TRACE
+            BasicConsole.WriteLine("Mapped.");
+#endif
+            
+            NewProcess.TheMemoryLayout.AddDataPages(startVAddr, (uint)newPAddr, vAddrCount);
+
+            CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
+            uint* srcPtr = (uint*)startVAddr;
+            uint* dstPtr = (uint*)newVAddr;
+            for (uint j = 0; j < (1024 * vAddrCount); j++, srcPtr++, dstPtr++)
+            {
+                if (j % 1024 == 0)
+                {
+#if PROCESSMANAGER_TRACE
+                    BasicConsole.WriteLine("vAddr=" + (FOS_System.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
+#endif
+                }
+
+                *dstPtr = *srcPtr;
+            }
+            CurrentProcess.TheMemoryLayout.RemovePages((uint)newVAddr, vAddrCount);
+        }
+        
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
 #if PROCESSMANAGER_TRACE

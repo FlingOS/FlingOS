@@ -26,10 +26,11 @@
     
 using System;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.FOS_System.Processes.Requests.Processes;
 
 namespace Kernel.FOS_System.Processes
 {
-    public delegate void ThreadStartMethod();
+    public delegate void ThreadStartPoint();
 
     public delegate int ISRHanderDelegate(uint isrNumber);
     public delegate int IRQHanderDelegate(uint irqNumber);
@@ -215,9 +216,28 @@ namespace Kernel.FOS_System.Processes
 
         #endregion
 
-        #region Processes - Full TODO
+        #region Processes - Partial TODO
 
-        //TODO: Start Process syscall
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="request">The request structure for the new process.</param>
+        /// <param name="NewProcessId">The Id of the new process.</param>
+        /// <param name="NewThreadId">The Id of the main thread of the new process.</param>
+        /// <returns>OK if the new thread was started.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults StartProcess(StartProcessRequest* request, bool UserMode, out uint NewProcessId, out uint NewThreadId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.StartProcess, (uint)request, UserMode ? 1u : 0u, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NewProcessId = Return2;
+            NewThreadId = Return3;
+            return (SystemCallResults)Return1;
+        }
+        
         //TODO: End Process syscall
         //TODO: Set Process Attributes syscall
         //TODO: Get Process List syscall
@@ -239,14 +259,14 @@ namespace Kernel.FOS_System.Processes
         /// <param name="NewThreadId">OUT: The Id of the new thread.</param>
         /// <returns>OK if the new thread was started.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults StartThread(ThreadStartMethod startMethod, out uint NewThreadId)
+        public static SystemCallResults StartThread(ThreadStartPoint startMethod, out uint NewThreadId)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.StartThread, (uint)Utilities.ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            NewThreadId = (uint)Return2;
+            NewThreadId = Return2;
             return (SystemCallResults)Return1;
         }
         /// <summary>

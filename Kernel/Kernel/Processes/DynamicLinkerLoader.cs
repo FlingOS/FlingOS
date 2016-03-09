@@ -49,8 +49,9 @@ namespace Kernel.Processes
             //          - Need to map contiguous (virtual) pages.
             
             BasicConsole.WriteLine("Mapping free page for process...");
+            void* unusedPAddr;
             byte* destMemPtr = (byte*)Hardware.VirtMemManager.MapFreePage(
-                UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
+                UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out unusedPAddr);
             BasicConsole.WriteLine(((FOS_System.String)"Physical address = ") + (uint)Hardware.VirtMemManager.GetPhysicalAddress(destMemPtr));
             BasicConsole.WriteLine(((FOS_System.String)"Virtual address = ") + (uint)destMemPtr);
 
@@ -75,7 +76,7 @@ namespace Kernel.Processes
             Utilities.MemoryUtils.MemCpy_32(destMemPtr, ((byte*)Utilities.ObjectUtilities.GetHandle(readBuffer)) + FOS_System.Array.FieldsBytesSize, (uint)bytesRead);
 
             //BasicConsole.WriteLine("Converting destMemPtr...");
-            ThreadStartMethod mainMethod = (ThreadStartMethod)Utilities.ObjectUtilities.GetObject(destMemPtr);
+            ThreadStartPoint mainMethod = (ThreadStartPoint)Utilities.ObjectUtilities.GetObject(destMemPtr);
 
             //BasicConsole.WriteLine("Getting process name...");
             FOS_System.String name = RawExeFile.Name;

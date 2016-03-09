@@ -5,6 +5,7 @@ using Kernel.Hardware.PCI;
 using Kernel.Hardware.USB;
 using Kernel.Hardware.IO.Serial;
 using Kernel.FOS_System.Processes;
+using Kernel.FOS_System.Processes.Requests.Processes;
 
 namespace Kernel.Shells
 {
@@ -36,8 +37,15 @@ namespace Kernel.Shells
                     BasicConsole.WriteLine("RTC is null!");
                 }
 
-                BasicConsole.WriteLine("DM > Initialising ATA Manager...");
-                ATAManager.Init();
+                if (Tasks.Helpers.StartBuiltInProcess("DM", "ATA Driver", Tasks.Driver.ATADriverTask.Main))
+                {
+                    BasicConsole.WriteLine("DM > Couldn't start the ATA Driver!");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("DM > ATA Driver started.");
+                }
+
                 BasicConsole.WriteLine("DM > Initialising PCI Manager...");
                 PCIManager.Init();
                 BasicConsole.WriteLine("DM > Initialising USB Manager...");
@@ -54,9 +62,6 @@ namespace Kernel.Shells
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)
                         {
-                            case KeyboardKey.A:
-                                OutputATA();
-                                break;  
                             case KeyboardKey.P:
                                 OutputPCI();
                                 break;
@@ -64,7 +69,7 @@ namespace Kernel.Shells
                                 OutputUSB();
                                 break;
                             default:
-                                console.WriteLine("Unrecognised. Options are (A):ATA, (P):PCI, (U):USB");
+                                console.WriteLine("Unrecognised. Options are (P):PCI, (U):USB");
                                 break;
                         }
                     }
@@ -85,7 +90,7 @@ namespace Kernel.Shells
             }
             console.WriteLine("Device shell exited.");
         }
-
+        
         /// <summary>
         /// Outputs the USB system information.
         /// </summary>
@@ -218,75 +223,6 @@ namespace Kernel.Shells
                     SystemCalls.SleepThread(1000);
                 }
             }
-        }
-        /// <summary>
-        /// Outputs the ATA system information.
-        /// </summary>
-        private void OutputATA()
-        {
-            int numDrives = 0;
-            for (int i = 0; i < DeviceManager.Devices.Count; i++)
-            {
-                Device aDevice = (Device)DeviceManager.Devices[i];
-                if (aDevice is PATA)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: PATA");
-
-                    PATA theATA = (PATA)aDevice;
-                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
-
-                    numDrives++;
-                }
-                else if (aDevice is PATAPI)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: PATAPI");
-                    console.WriteLine("Warning: Read-only support.");
-
-                    PATAPI theATA = (PATAPI)aDevice;
-                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
-                }
-                else if (aDevice is SATA)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: SATA");
-                    console.WriteLine("Warning: This disk device type is not supported.");
-                }
-                else if (aDevice is SATAPI)
-                {
-                    console.WriteLine();
-                    console.Write("--------------------- Device ");
-                    console.Write_AsDecimal(i);
-                    console.WriteLine(" ---------------------");
-                    console.WriteLine("Type: SATAPI");
-                    console.WriteLine("Warning: This disk device type is not supported.");
-                }
-            }
-
-            console.Write("Total # of drives: ");
-            console.WriteLine_AsDecimal(numDrives);
         }
         /// <summary>
         /// Outputs the PCI system information.

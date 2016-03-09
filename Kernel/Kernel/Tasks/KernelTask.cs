@@ -25,20 +25,20 @@
 #endregion
 
 //DSC: Deferred System Calls
-//#define DSC_TRACE
+#define DSC_TRACE
 //#define SYSCALLS_TRACE
 
 using Kernel.FOS_System.Collections;
-using Kernel.Processes;
 using Kernel.Hardware.Processes;
 using SystemCalls = Kernel.FOS_System.Processes.SystemCalls;
 using SystemCallNumbers = Kernel.FOS_System.Processes.SystemCallNumbers;
 using SystemCallResults = Kernel.FOS_System.Processes.SystemCallResults;
-using ThreadStartMethod = Kernel.FOS_System.Processes.ThreadStartMethod;
+using ThreadStartPoint = Kernel.FOS_System.Processes.ThreadStartPoint;
 using SyscallHanderDelegate = Kernel.FOS_System.Processes.SyscallHanderDelegate;
 using ISRHanderDelegate = Kernel.FOS_System.Processes.ISRHanderDelegate;
 using IRQHanderDelegate = Kernel.FOS_System.Processes.IRQHanderDelegate;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.FOS_System.Processes.Requests.Processes;
 
 namespace Kernel.Tasks
 {
@@ -222,6 +222,7 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterIRQHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartProcess);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WakeThread);
@@ -465,11 +466,26 @@ namespace Kernel.Tasks
 
             switch (syscallNumber)
             {
+                case SystemCallNumbers.StartProcess:
+//#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Start Process");
+//#endif
+
+                    Process NewProcess = ProcessManager.CreateProcess(Param2 == 1 || CallerProcess.UserMode, CallerProcess, (StartProcessRequest*)Param1);
+                    ProcessManager.RegisterProcess(NewProcess, Scheduler.Priority.Normal);
+
+                    Return2 = NewProcess.Id;
+                    Return3 = ((Thread)NewProcess.Threads[0]).Id;
+                    
+//#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Start Process - done.");
+//#endif
+                    break;
                 case SystemCallNumbers.StartThread:
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread");
 #endif
-                    Return2 = CallerProcess.CreateThread((ThreadStartMethod)Utilities.ObjectUtilities.GetObject((void*)Param1), "[From sys call]").Id;
+                    Return2 = CallerProcess.CreateThread((ThreadStartPoint)Utilities.ObjectUtilities.GetObject((void*)Param1), "[From sys call]").Id;
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread - done.");
 #endif
@@ -668,9 +684,10 @@ namespace Kernel.Tasks
                                 BasicConsole.WriteLine("DSC: Request pages : Any physical, Any virtual");
                                 BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
+                                void* unusedPAddr;
                                 ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count);
+                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
                             }
                             else
                             {
@@ -686,9 +703,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
+                                    void* unusedPAddr;
                                     ptr = (uint)Hardware.VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2);
+                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, out unusedPAddr);
                                 }
 #if DSC_TRACE
                                 else
@@ -1030,6 +1048,12 @@ namespace Kernel.Tasks
                     SysCall_DeregisterSyscallHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
                     break;
+                case SystemCallNumbers.StartProcess:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Start Process");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
                 case SystemCallNumbers.StartThread:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Start Thread");
@@ -1131,9 +1155,9 @@ namespace Kernel.Tasks
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.GetPhysicalAddress:
-//#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get physical address");
-//#endif
+#endif
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
                     if (param1 < 0x100000)

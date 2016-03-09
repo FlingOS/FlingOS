@@ -71,7 +71,7 @@ namespace Kernel.Processes.ELF
             {
                 bool DynamicLinkingRequired = false;
 
-                ThreadStartMethod mainMethod = (ThreadStartMethod)Utilities.ObjectUtilities.GetObject(theFile.Header.EntryPoint);
+                ThreadStartPoint mainMethod = (ThreadStartPoint)Utilities.ObjectUtilities.GetObject(theFile.Header.EntryPoint);
                 theProcess = Hardware.Processes.ProcessManager.CreateProcess(
                     mainMethod, theFile.TheFile.Name, UserMode);
 

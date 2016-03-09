@@ -72,7 +72,6 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine("DM > Registering for IRQs...");
                 SystemCalls.RegisterIRQHandler(14, IRQHandler);
-                SystemCalls.RegisterIRQHandler(15);
 
                 BasicConsole.WriteLine("DM > Creating virtual console...");
                 console = new Consoles.VirtualConsole();
@@ -197,7 +196,6 @@ namespace Kernel.Tasks
 
         public static int IRQHandler(uint irqNumber)
         {
-            Hardware.ATA.PATAPI.IRQHandler(irqNumber);
             Hardware.USB.USBManager.IRQHandler();
             
             return 0;

@@ -63,7 +63,7 @@ namespace Kernel.Hardware.Processes
 
         public bool Registered = false;
 
-        public Process(ThreadStartMethod MainMethod, uint AnId, FOS_System.String AName, bool userMode)
+        public Process(ThreadStartPoint StartPoint, uint AnId, FOS_System.String AName, bool userMode)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Constructing process object...");
@@ -87,10 +87,10 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: ctor: Creating thread...");
 #endif
-            CreateThread(MainMethod, "Main");
+            CreateThread(StartPoint, "Main");
         }
 
-        public virtual Thread CreateThread(ThreadStartMethod MainMethod, FOS_System.String Name)
+        public virtual Thread CreateThread(ThreadStartPoint StartPoint, FOS_System.String Name)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
@@ -114,7 +114,7 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.WriteLine(valStr);
 #endif
 
-                Thread newThread = new Thread(this, MainMethod, ThreadIdGenerator++, UserMode, Name);
+                Thread newThread = new Thread(this, StartPoint, ThreadIdGenerator++, UserMode, Name);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif

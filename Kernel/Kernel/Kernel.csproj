@@ -103,6 +103,7 @@
     <Compile Include="Consoles\AdvancedConsole.cs" />
     <Compile Include="Consoles\VirtualConsole.cs" />
     <Compile Include="Debug\Debugger.cs" />
+    <Compile Include="Tasks\Driver\ATADriverTask.cs" />
     <Compile Include="PreReqs.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="Processes\DynamicLinkerLoader.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Tasks\DeviceManagerTask.cs" />
     <Compile Include="Tasks\EasterTask.cs" />
     <Compile Include="Tasks\GCCleanupTask.cs" />
+    <Compile Include="Tasks\Helpers.cs" />
     <Compile Include="Tasks\IdleTask.cs" />
     <Compile Include="Tasks\KernelTask.cs" />
     <Compile Include="Tasks\SampleTask.cs" />

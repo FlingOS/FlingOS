@@ -185,6 +185,21 @@ namespace Kernel.FOS_System.Collections
                 keyVal += keyStep;
             }
         }
+        public void AddRange(UInt32 keyStart, UInt32 keyStep, UInt32 startValue, UInt32 valueStep, uint count)
+        {
+            if (ContainsAnyKeyInRange(keyStart, keyStart + (count * keyStep)))
+            {
+                ExceptionMethods.Throw(new FOS_System.Exception("Cannot add duplicate key to the dictionary!"));
+            }
+
+            UInt32 keyVal = keyStart;
+            for (uint i = 0; i < count; i++)
+            {
+                Add(keyVal, startValue + (valueStep * i), true);
+
+                keyVal += keyStep;
+            }
+        }
         public void Remove(UInt32 key)
         {
             KeyValuePair* cPair = list;

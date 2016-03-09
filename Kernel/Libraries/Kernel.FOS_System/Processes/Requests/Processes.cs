@@ -28,4 +28,14 @@ using System;
 
 namespace Kernel.FOS_System.Processes.Requests.Processes
 {
+    public unsafe struct StartProcessRequest
+    {
+        public int NameLength;
+        public char* Name;
+        public void* MainMethod;
+        public uint CodePagesCount;
+        public uint* CodePages;
+        public uint DataPagesCount;
+        public uint* DataPages;
+    }
 }

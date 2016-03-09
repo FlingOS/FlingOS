@@ -61,6 +61,14 @@ namespace Kernel.Hardware.VirtMem
             }
 #endif
         }
+        public void AddCodePages(uint vAddrStart, uint pAddrStart, uint count)
+        {
+            CodePages.AddRange(vAddrStart, 4096, pAddrStart, 0x1000, count);
+        }
+        public void AddCodePages(uint vAddrStart, uint[] pAddrs)
+        {
+            CodePages.AddRange(vAddrStart, 4096, pAddrs);
+        }
         [Drivers.Compiler.Attributes.NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
@@ -89,6 +97,17 @@ namespace Kernel.Hardware.VirtMem
                     //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
                 }
 #endif
+            }
+        }
+        public void AddDataPages(uint vAddrStart, uint pAddrStart, uint count)
+        {
+            if (AddAllDataToKernel)
+            {
+                AddKernelPages(vAddrStart, pAddrStart, count);
+            }
+            else
+            {
+                DataPages.AddRange(vAddrStart, 4096, pAddrStart, 0x1000, count);
             }
         }
         public void AddDataPages(uint vAddrStart, uint[] pAddrs)
@@ -127,6 +146,10 @@ namespace Kernel.Hardware.VirtMem
         public void AddKernelPages(uint vAddrStart, uint[] pAddrs)
         {
             KernelPages.AddRange(vAddrStart, 4096, pAddrs);
+        }
+        public void AddKernelPages(uint vAddrStart, uint pAddrStart, uint count)
+        {
+            KernelPages.AddRange(vAddrStart, 4096, pAddrStart, 0x1000, count);
         }
         [Drivers.Compiler.Attributes.NoDebug]
         public void RemovePage(uint vAddr)
