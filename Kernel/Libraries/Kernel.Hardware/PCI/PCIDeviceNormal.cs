@@ -82,7 +82,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="function">The PCI device's Function number.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         public PCIDeviceNormal(uint bus, uint slot, uint function)
-            : base(bus, slot, function)
+            : base(bus, slot, function, "Normal PCI Device")
         {
             BaseAddresses = new PCIBaseAddress[6];
             BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));

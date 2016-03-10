@@ -130,7 +130,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="slot">The PCI device's Slot number.</param>
         /// <param name="function">The PCI device's Function number.</param>
         public PCIDeviceBridge(uint bus, uint slot, uint function)
-            : base(bus, slot, function)
+            : base(bus, slot, function, "PCI Device Bridge")
         {
             BaseAddresses = new PCIBaseAddress[2];
             BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));

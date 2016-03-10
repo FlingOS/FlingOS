@@ -30,9 +30,6 @@ namespace Kernel.Tasks.Driver
 
                 try
                 {
-                    BasicConsole.WriteLine("USB Driver > Initialising Device Manager...");
-                    DeviceManager.Init();
-
                     BasicConsole.WriteLine("USB Driver > Initialising USB Manager...");
                     USBManager.Init();
 
@@ -69,9 +66,9 @@ namespace Kernel.Tasks.Driver
             console.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.Devices.Count);
 
             int numDrives = 0;
-            for (int i = 0; i < DeviceManager.Devices.Count; i++)
+            for (int i = 0; i < USBManager.Devices.Count; i++)
             {
-                Device aDevice = (Device)DeviceManager.Devices[i];
+                Device aDevice = (Device)USBManager.Devices[i];
 
                 if (aDevice is Hardware.USB.HCIs.HCI)
                 {
@@ -117,7 +114,7 @@ namespace Kernel.Tasks.Driver
                         Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
 
                         console.Write("Disk device num: ");
-                        console.WriteLine_AsDecimal(DeviceManager.Devices.IndexOf(theMSDDisk));
+                        console.WriteLine_AsDecimal(USBManager.Devices.IndexOf(theMSDDisk));
                         console.WriteLine(((FOS_System.String)"Block Size: ") + theMSDDisk.BlockSize + " bytes");
                         console.WriteLine(((FOS_System.String)"Block Count: ") + theMSDDisk.BlockCount);
                         console.WriteLine(((FOS_System.String)"Size: ") + ((theMSDDisk.BlockCount * theMSDDisk.BlockSize) >> 20) + " MB");

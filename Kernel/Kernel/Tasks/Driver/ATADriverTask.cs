@@ -31,9 +31,6 @@ namespace Kernel.Tasks.Driver
 
                 try
                 {
-                    BasicConsole.WriteLine("ATA Driver > Initialising Device Manager...");
-                    DeviceManager.Init();
-
                     BasicConsole.WriteLine("ATA Driver > Initialising ATA Manager...");
                     ATAManager.Init();
 
@@ -63,9 +60,9 @@ namespace Kernel.Tasks.Driver
         private static void OutputATA()
         {
             int numDrives = 0;
-            for (int i = 0; i < DeviceManager.Devices.Count; i++)
+            for (int i = 0; i < ATAManager.Devices.Count; i++)
             {
-                Device aDevice = (Device)DeviceManager.Devices[i];
+                Device aDevice = (Device)ATAManager.Devices[i];
                 if (aDevice is PATA)
                 {
                     console.WriteLine();

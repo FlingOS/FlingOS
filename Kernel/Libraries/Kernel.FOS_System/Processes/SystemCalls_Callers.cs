@@ -281,6 +281,7 @@ namespace Kernel.FOS_System.Processes
 
         #region Threads - Partial TODO
 
+        //TODO: Get current thread Id syscall
         //TODO: End Thread syscall
         //TODO: Set Thread Attributes syscall
         //TODO: Get Thread List syscall

@@ -127,7 +127,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="slot">The PCI device's Slot number.</param>
         /// <param name="function">The PCI device's Function number.</param>
         public PCIDeviceCardbus(uint bus, uint slot, uint function)
-            : base(bus, slot, function)
+            : base(bus, slot, function, "PCI Cardbus")
         {
             CardbusBaseAddress = ReadRegister32(0x10);
 

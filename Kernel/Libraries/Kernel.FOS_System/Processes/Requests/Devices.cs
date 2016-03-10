@@ -9,7 +9,8 @@
         Sensors,
         Serial,
         Network,
-        USB
+        USB,
+        Unkown
     }
     public enum DeviceClass
     {

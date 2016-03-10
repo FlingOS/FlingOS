@@ -1,5 +1,6 @@
 ﻿//#define TASKHELPERS_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;
 using Kernel.Hardware;
@@ -25,11 +26,11 @@ namespace Kernel.Tasks
             FOS_System.Heap.name = ProcessName;
         }
 
-        public static unsafe bool StartBuiltInProcess(FOS_System.String CallerName, FOS_System.String NewProcName, ThreadStartPoint MainMethod, bool UserMode)
+        public static unsafe bool StartBuiltInProcess(String CallerName, String NewProcName, ThreadStartPoint MainMethod, bool UserMode)
         {
             bool result = false;
 
-            StartProcessRequest* StartRequest = (StartProcessRequest*)FOS_System.Heap.AllocZeroed((uint)sizeof(StartProcessRequest), "DeviceShell.Execute");
+            StartProcessRequest* StartRequest = (StartProcessRequest*)Heap.AllocZeroed((uint)sizeof(StartProcessRequest), "DeviceShell.Execute");
             StartRequest->Name = NewProcName.GetCharPointer();
             StartRequest->NameLength = NewProcName.length;
             StartRequest->CodePagesCount = 0;
@@ -42,6 +43,8 @@ namespace Kernel.Tasks
             uint ATADriverThreadId;
             SystemCallResults SysCallResult = SystemCalls.StartProcess(StartRequest, UserMode, out ATADriverProcessId, out ATADriverThreadId);
             result = SysCallResult == SystemCallResults.OK;
+
+            Heap.Free(StartRequest);
 
 #if TASKHELPERS_TRACE
             if (SysCallResult != SystemCallResults.OK)

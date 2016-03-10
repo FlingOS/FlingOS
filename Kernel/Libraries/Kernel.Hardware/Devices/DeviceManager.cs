@@ -24,6 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
@@ -39,7 +40,7 @@ namespace Kernel.Hardware.Devices
         private static ulong IdGenerator;
 
         /// <summary>
-        /// The list of all the devices detected.
+        /// The list of all the devices registered in the OS.
         /// </summary>
         /// <remarks>
         /// Some items may be more specific instances of a device so duplicate references to one physical device may 
@@ -53,9 +54,26 @@ namespace Kernel.Hardware.Devices
             Devices = new List(20);
         }
 
+        public static SystemCallResults RegisterDevice(Device TheDevice)
+        {
+            DeviceDescriptor* descriptor = (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : Register Device");
+
+            TheDevice.FillDeviceDescriptor(descriptor, true);
+
+            ulong DeviceId;
+            SystemCallResults result = SystemCalls.RegisterDevice(descriptor, out DeviceId);
+            TheDevice.Id = DeviceId;
+
+            Heap.Free(descriptor);
+
+            return result;
+        }
+
         public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId, Process CallerProcess)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+            BasicConsole.WriteLine("Registering new device:");
 
             Device NewDevice = new Device();
             NewDevice.Id = DeviceId = IdGenerator++;
@@ -72,7 +90,7 @@ namespace Kernel.Hardware.Devices
                     break;
                 }
             }
-            FOS_System.String Name = FOS_System.String.New(NameLength);
+            String Name = String.New(NameLength);
             for (int i = 0; i < NameLength; i++)
             {
                 Name[i] = TheDescriptor->Name[i];
@@ -89,6 +107,24 @@ namespace Kernel.Hardware.Devices
             NewDevice.OwnerProcessId = NewDevice.Claimed ? CallerProcess.Id : 0;
 
             Devices.Add(NewDevice);
+
+            BasicConsole.WriteLine(NewDevice.Id);
+            BasicConsole.WriteLine((uint)NewDevice.Group);
+            BasicConsole.WriteLine((uint)NewDevice.Class);
+            BasicConsole.WriteLine((uint)NewDevice.SubClass);
+            BasicConsole.WriteLine(NewDevice.Name);
+            for (int i = 0; i < NewDevice.Info.Length; i++)
+            {
+                BasicConsole.Write(NewDevice.Info[i]);
+                if (i < NewDevice.Info.Length - 1)
+                {
+                    BasicConsole.Write(", ");
+                }
+            }
+            BasicConsole.WriteLine();
+            BasicConsole.WriteLine(NewDevice.Claimed);
+            BasicConsole.WriteLine(NewDevice.OwnerProcessId);
+            BasicConsole.WriteLine("------------------------");
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 

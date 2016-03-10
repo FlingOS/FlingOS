@@ -25,10 +25,7 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System.Processes.Requests.Devices;
 using PCI_IO = Kernel.Hardware.PCI.PCIManager;
 
 namespace Kernel.Hardware.PCI
@@ -303,11 +300,12 @@ namespace Kernel.Hardware.PCI
         /// <param name="slot">The PCI slot number.</param>
         /// <param name="function">The PCI function number.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        public PCIDevice(uint bus, uint slot, uint function)
+        public PCIDevice(uint bus, uint slot, uint function, FOS_System.String AName)
+            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, AName, new uint[3], false)
         {
-            this.bus = bus;
-            this.slot = slot;
-            this.function = function;
+            Info[0] = this.bus = bus;
+            Info[1] = this.slot = slot;
+            Info[2] = this.function = function;
 
 #if PCI_TRACE || COMPILER_TRACE
             ushort vendorID = ReadRegister16(0x00);

@@ -27,9 +27,6 @@ namespace Kernel.Tasks.Driver
 
                 try
                 {
-                    BasicConsole.WriteLine("PCI Driver > Initialising Device Manager...");
-                    DeviceManager.Init();
-
                     BasicConsole.WriteLine("PCI Driver > Initialising PCI Manager...");
                     PCIManager.Init();
 

@@ -66,9 +66,7 @@ namespace Kernel.Tasks
                 Shells.DeviceShell shell = new Shells.DeviceShell(console, keyboard);
 
                 BasicConsole.WriteLine("DI > Executing.");
-
-                DeviceManager.Init();
-
+                
                 #region Real Time Clock initialisation
                 
                 //TODO: This is x86 specific

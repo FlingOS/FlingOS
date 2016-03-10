@@ -38,12 +38,25 @@ namespace Kernel.Hardware
         public DeviceClass Class;
         public DeviceSubClass SubClass;
 
-        public FOS_System.String Name;
-        public uint[] Info;
+        public FOS_System.String Name = null;
+        public uint[] Info = null;
 
         public bool Claimed;
         public uint OwnerProcessId;
 
+        public Device()
+        {
+        }
+        public Device(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, FOS_System.String AName, uint[] SomeInfo, bool IsClaimed)
+        {
+            Group = AGroup;
+            Class = AClass;
+            SubClass = ASubClass;
+            Name = AName;
+            Info = SomeInfo;
+            Claimed = IsClaimed;
+            OwnerProcessId = 0;
+        }
 
         public unsafe void FillDeviceDescriptor(DeviceDescriptor* TheDescriptor, bool IncludeInfo)
         {
@@ -53,28 +66,32 @@ namespace Kernel.Hardware
             TheDescriptor->SubClass = SubClass;
 
             int j = 0;
-            for (; j < Name.length; j++)
+            if (Name != null)
             {
-                TheDescriptor->Name[j] = Name[j];
+                for (; j < Name.length; j++)
+                {
+                    TheDescriptor->Name[j] = Name[j];
+                }
             }
             for (; j < 64; j++)
             {
                 TheDescriptor->Name[j] = '\0';
             }
 
-            if (IncludeInfo)
+            if (IncludeInfo && Info != null)
             {
-                for (j = 0; j < 16; j++)
+                for (j = 0; j < 16 && j < Info.Length; j++)
                 {
                     TheDescriptor->Info[j] = Info[j];
                 }
             }
             else
             {
-                for (j = 0; j < 16; j++)
-                {
-                    TheDescriptor->Info[j] = 0xFFFFFFFF;
-                }
+                j = 0;
+            }
+            for (; j < 16; j++)
+            {
+                TheDescriptor->Info[j] = 0xFFFFFFFF;
             }
 
             TheDescriptor->Claimed = Claimed;

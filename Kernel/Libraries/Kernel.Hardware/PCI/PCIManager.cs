@@ -83,14 +83,14 @@ namespace Kernel.Hardware.PCI
         {
             for (uint device = 0; device < 32; device++)
             {
-                PCIDevice zeroFuncDevice = new PCIDevice(bus, device, 0x00);
+                PCIDevice zeroFuncDevice = new PCIDevice(bus, device, 0x00, "Generic PCI Device");
                 if (zeroFuncDevice.DeviceExists)
                 {
                     uint max = ((uint)zeroFuncDevice.HeaderType & 0x80) != 0 ? 8u : 1u;
 
                     for (uint function = 0; function < max; function++)
                     {
-                        PCIDevice pciDevice = new PCIDevice(bus, device, function);
+                        PCIDevice pciDevice = new PCIDevice(bus, device, function, "Generic PCI Device");
                         if (pciDevice.DeviceExists)
                         {
                             if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Bridge)
@@ -120,7 +120,7 @@ namespace Kernel.Hardware.PCI
         private static void AddDevice(PCIDevice device, uint step)
         {
             Devices.Add(device);
-            //TODO: Register device system call
+            Hardware.Devices.DeviceManager.RegisterDevice(device);
 
             if (device is PCIDeviceBridge)
             {
