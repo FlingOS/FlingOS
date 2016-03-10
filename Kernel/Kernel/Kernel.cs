@@ -96,14 +96,7 @@ namespace Kernel
                 {
                     *exStateBytePtr++ = 0;
                 }
-
-                BasicConsole.WriteLine("Initialising kernel process heap...");
-                KernelProcess.HeapLock = Heap.AccessLock;
-                KernelProcess.HeapPtr = Heap.FBlock;
-
-                BasicConsole.WriteLine("Initialising kernel process GC...");
-                KernelProcess.TheGCState = FOS_System.GC.State;
-
+                
                 BasicConsole.WriteLine("Registering kernel process...");
                 ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
                 

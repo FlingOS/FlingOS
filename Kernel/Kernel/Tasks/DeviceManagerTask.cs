@@ -85,7 +85,7 @@ namespace Kernel.Tasks
 
                 #endregion
 
-                uint loops = 0;
+                //uint loops = 0;
                 while (!Terminating)
                 {
                     try

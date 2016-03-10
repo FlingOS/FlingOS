@@ -55,12 +55,7 @@ namespace Kernel.Hardware.Processes
         public IRQHanderDelegate IRQHandler = null;
         public Bitmap SyscallsToHandle = new Bitmap(256);
         public SyscallHanderDelegate SyscallHandler = null;
-
-        public FOS_System.HeapBlock* HeapPtr = null;
-        public SpinLock HeapLock = null;
-        public FOS_System.GCState TheGCState = null;
-        public bool OutputMemTrace = false;
-
+        
         public bool Registered = false;
 
         public Process(ThreadStartPoint StartPoint, uint AnId, FOS_System.String AName, bool userMode)
@@ -104,6 +99,7 @@ namespace Kernel.Hardware.Processes
                 bool reenable = Scheduler.Enabled;
                 if (reenable)
                 {
+                    //TODO: Not ideal
                     Scheduler.Disable();
                 }
 
@@ -126,6 +122,7 @@ namespace Kernel.Hardware.Processes
 
                 if (reenable)
                 {
+                    //TODO: Not ideal
                     Scheduler.Enable();
                 }
 

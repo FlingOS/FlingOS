@@ -237,10 +237,43 @@ namespace Kernel.FOS_System.Processes
             NewThreadId = Return3;
             return (SystemCallResults)Return1;
         }
-        
+
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="NumProcesses">The number of processes in the process list.</param>
+        /// <returns>OK if the new thread was started.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetNumProcesses(out int NumProcesses)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetNumProcesses, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NumProcesses = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+
+        /// <summary>
+        /// Performs the named system call.
+        /// </summary>
+        /// <param name="NumProcesses">The number of processes in the process list.</param>
+        /// <returns>OK if the new thread was started.</returns>
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetProcessList(ProcessDescriptor* ProcessList, int MaxDescriptors)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetProcessList, (uint)ProcessList, (uint)MaxDescriptors, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+
         //TODO: End Process syscall
+        //TODO: Get Process Attributes syscall
         //TODO: Set Process Attributes syscall
-        //TODO: Get Process List syscall
         //TODO: Wait On Process syscall
 
         #endregion

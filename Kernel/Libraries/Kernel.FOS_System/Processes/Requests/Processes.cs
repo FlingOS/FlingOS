@@ -38,4 +38,12 @@ namespace Kernel.FOS_System.Processes.Requests.Processes
         public uint DataPagesCount;
         public uint* DataPages;
     }
+
+    public unsafe struct ProcessDescriptor
+    {
+        public uint Id;
+        public int NumThreads;
+        public int Priority;
+        public bool UserMode;
+    }
 }

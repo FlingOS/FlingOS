@@ -1674,7 +1674,7 @@ which should have been provided with the executable.");
                     FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
                     
                     byte[] DataBuffer = aFile.TheFileSystem.ThePartition.NewBlockArray(1);
-                    Tasks.SystemStatusTask.MainConsole.Write("[");
+                    //Tasks.SystemStatusTask.MainConsole.Write("[");
                     ulong percentile = FOS_System.Math.Divide(aFile.Size, 53u);
                     ulong pos = 0;
                     while ((ulong)fileStream.Position < aFile.Size)
@@ -1687,7 +1687,7 @@ which should have been provided with the executable.");
                         if (pos >= percentile)
                         {
                             pos -= percentile;
-                            Tasks.SystemStatusTask.MainConsole.Write(".");
+                            //Tasks.SystemStatusTask.MainConsole.Write(".");
                         }
 
                         if (actuallyRead == 0)
@@ -1695,7 +1695,7 @@ which should have been provided with the executable.");
                             break;
                         }
                     }
-                    Tasks.SystemStatusTask.MainConsole.WriteLine("]");
+                    //Tasks.SystemStatusTask.MainConsole.WriteLine("]");
                 }
                 else
                 {

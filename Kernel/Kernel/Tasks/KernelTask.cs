@@ -223,6 +223,8 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartProcess);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumProcesses);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetProcessList);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WakeThread);
@@ -266,14 +268,14 @@ namespace Kernel.Tasks
                 }
 
                 BasicConsole.WriteLine(" > Starting Idle process...");
-                Process IdleProcess1 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle 1", false);
+                Process IdleProcess1 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle Task", false);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
-                
+
 #if DEBUG
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
                 //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
-                
+
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false);
                 WindowManagerTask_ProcessId = WindowManagerProcess.Id;
@@ -287,13 +289,16 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(1000);
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
-                
+
                 BasicConsole.WriteLine(" > Starting Device Manager...");
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false);
-                //DeviceManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
 
-                BasicConsole.WriteLine("Started.");
+                BasicConsole.WriteLine(" > Starting System Status App...");
+                Process SystemStatusProcess = ProcessManager.CreateProcess(Tasks.App.SystemStatusTask.Main, "System Status App", false);
+                ProcessManager.RegisterProcess(SystemStatusProcess, Scheduler.Priority.Normal);
+
+                BasicConsole.WriteLine("Kernel Started.");
 
                 //bool OK = true;
                 //while (OK)
@@ -322,7 +327,7 @@ namespace Kernel.Tasks
                     
                     BasicConsole.WriteLine("KT > Running...");
 
-                    uint loops = 0;
+                    //uint loops = 0;
                     while (!Terminating)
                     {
                         try
@@ -479,6 +484,48 @@ namespace Kernel.Tasks
                     
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Process - done.");
+#endif
+                    break;
+                case SystemCallNumbers.GetNumProcesses:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get Num Processes");
+#endif
+
+                    Return2 = (uint)ProcessManager.Processes.Count;
+                    result = SystemCallResults.OK;
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get Num Processes - done.");
+#endif
+                    break;
+                case SystemCallNumbers.GetProcessList:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get Num Processes");
+#endif
+                    {
+                        // Need access to the request structure
+                        ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+                        ProcessDescriptor* ProcessList = (ProcessDescriptor*)Param1;
+                        int MaxDescriptors = (int)Param2;
+
+                        for (int i = 0; i < MaxDescriptors && i < ProcessManager.Processes.Count; i++)
+                        {
+                            Process AProcess = (Process)ProcessManager.Processes[i];
+                            ProcessDescriptor* ADescriptor = ProcessList + i;
+                            ADescriptor->Id = AProcess.Id;
+                            ADescriptor->NumThreads = AProcess.Threads.Count;
+                            ADescriptor->Priority = (int)AProcess.Priority;
+                            ADescriptor->UserMode = AProcess.UserMode;
+                        }
+
+                        result = SystemCallResults.OK;
+
+                        ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+                    }
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get Num Processes - done.");
 #endif
                     break;
                 case SystemCallNumbers.StartThread:
@@ -974,20 +1021,6 @@ namespace Kernel.Tasks
 
             switch ((SystemCallNumbers)syscallNumber)
             {
-                case SystemCallNumbers.SleepThread:
-#if SYSCALLS_TRACE
-                    //BasicConsole.WriteLine("System call : Sleep Thread");
-#endif
-                    SysCall_Sleep((int)param1, callerProcessId, callerThreadId);
-                    result = SystemCallResults.OK;
-                    break;
-                case SystemCallNumbers.WakeThread:
-#if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("System call : Wake Thread");
-#endif
-                    SysCall_Wake(callerProcessId, param1);
-                    result = SystemCallResults.OK;
-                    break;
                 case SystemCallNumbers.RegisterISRHandler:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register ISR Handler");
@@ -1054,11 +1087,37 @@ namespace Kernel.Tasks
 #endif
                     result = SystemCallResults.Deferred;
                     break;
+                case SystemCallNumbers.GetNumProcesses:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get Num Processes");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetProcessList:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get Process List");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
                 case SystemCallNumbers.StartThread:
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Start Thread");
 #endif
                     result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.SleepThread:
+#if SYSCALLS_TRACE
+                    //BasicConsole.WriteLine("System call : Sleep Thread");
+#endif
+                    SysCall_Sleep((int)param1, callerProcessId, callerThreadId);
+                    result = SystemCallResults.OK;
+                    break;
+                case SystemCallNumbers.WakeThread:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Wake Thread");
+#endif
+                    SysCall_Wake(callerProcessId, param1);
+                    result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:
 #if SYSCALLS_TRACE
