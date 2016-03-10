@@ -715,7 +715,9 @@ namespace Kernel.FOS_System.Processes
 
         //TODO: Register Device syscall
         //TODO: Deregister Device syscall
-        //TODO: Assign Device syscall
+        //TODO: Get Num Devices
+        //TODO: Get Device List
+        //TODO: Claim Device syscall
         //TODO: Release Device syscall
 
         #endregion
