@@ -1,8 +1,6 @@
 # [FlingOS™](http://www.flingos.co.uk)
 
-***FlingOS launched on September 17th, in Bristol, UK. [Find out more here](http://www.flingos.co.uk/Launch).***
-
-Welcome! This is the main repository for the FlingOS™ project. We used to be over on BitBucket but have recently shifted across. 
+Welcome! This is the main repository for the FlingOS™ project. We used to be over on BitBucket but have shifted across to GitHub in the latter half of 2015. 
 The FlingOS project is an educational operating system aiming to provide high-quality resources for learning OS and low-level development. You can find out more on our website over at [www.flingos.co.uk](http://www.flingos.co.uk). There you'll also find our [documentation](http://www.flingos.co.uk/docs/) and links to our tutorial videos. If you're wondering why we use C#, take a look at [this article](http://www.flingos.co.uk/docs/reference/Why-CSharp).
 
 The FlingOS project is a three part approach to teaching OS and low-level development. You're currently looking at just one part - the code itself. The code acts as a sample codebase for people to learn from and compare to. The second part is our [conceptual articles](http://www.flingos.co.uk/docs), which explain all the OS and low-level technology in detail. The third part is our tutorials which are free, ~20min videos with complete resources, [available on YouTube](https://www.youtube.com/playlist?list=PLKbvCgwMcH7BX6Z8Bk1EuFwDa0WGkMnrz). You can find all these links and more on our [main website](http://www.flingos.co.uk).
@@ -22,6 +20,10 @@ The FlingOS source code is here for you to look at, read and compare to. By read
 ### Interested in our ahead-of-time compiler?
 
 If you'd just like to use our ahead-of-time compiler to write your own C#, VB.Net or F# operating system, please take a look at our [stable releases](http://www.flingos.co.uk/releases).
+
+## Current progress
+
+Hopefully you'll be able to see from our codebase (structure is described below) that FlingOS has reached a reasonably advanced state. However, since October 2015, we've been working hard to transform FlingOS from a single-tasking OS to a multi-tasking OS. We're nearing the final stages of the transformation, with all the significant system calls now working and stable. However, most of the changes are still contained in the `develop` branch. We'll let you know via [our blog](http://blog.flingos.co.uk) when the changes are merged and details of the improvements. We'll also be adding more articles on multi-tasking and blog articles about some of the challenges we've had to overcome during the transformation work.
 
 ## Structure
 
