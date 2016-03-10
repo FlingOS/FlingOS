@@ -250,18 +250,18 @@ namespace Kernel.Shells
                                 {
                                     int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
 
-                                    if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
-                                    {
-                                        console.Write("Checking disk ");
-                                        console.Write_AsDecimal(diskNum);
-                                        console.WriteLine("...");
+                                    //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
+                                    //{
+                                    //    console.Write("Checking disk ");
+                                    //    console.Write_AsDecimal(diskNum);
+                                    //    console.WriteLine("...");
 
-                                        CheckDiskFormatting((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("Cancelled - Specified device is not a disk device.");
-                                    }
+                                    //    CheckDiskFormatting((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
+                                    //}
+                                    //else
+                                    //{
+                                    //    console.WriteLine("Cancelled - Specified device is not a disk device.");
+                                    //}
                                 }
                                 else
                                 {
@@ -285,27 +285,27 @@ namespace Kernel.Shells
                                 {
                                     int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
 
-                                    if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
-                                    {
-                                        console.Write("Are you sure you wish to continue? (Y/N) : ");
-                                        FOS_System.String str = ReadLine().ToLower();
-                                        if (str == "y")
-                                        {
-                                            console.Write("Formatting disk ");
-                                            console.Write_AsDecimal(diskNum);
-                                            console.WriteLine("...");
+                                    //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
+                                    //{
+                                    //    console.Write("Are you sure you wish to continue? (Y/N) : ");
+                                    //    FOS_System.String str = ReadLine().ToLower();
+                                    //    if (str == "y")
+                                    //    {
+                                    //        console.Write("Formatting disk ");
+                                    //        console.Write_AsDecimal(diskNum);
+                                    //        console.WriteLine("...");
 
-                                            FormatDisk((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
-                                        }
-                                        else
-                                        {
-                                            console.WriteLine("Cancelled.");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        console.WriteLine("Cancelled - Specified device is not a disk device.");
-                                    }
+                                    //        FormatDisk((Hardware.Devices.DiskDevice)Hardware.DeviceManager.Devices[diskNum]);
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        console.WriteLine("Cancelled.");
+                                    //    }
+                                    //}
+                                    //else
+                                    //{
+                                    //    console.WriteLine("Cancelled - Specified device is not a disk device.");
+                                    //}
                                 }
                                 else
                                 {
@@ -1248,15 +1248,15 @@ which should have been provided with the executable.");
         private void CleanDiskCaches()
         {
             //Loop through all devices looking for Disk devices.
-            for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
-            {
-                Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
-                if (aDevice is Hardware.Devices.DiskDevice)
-                {
-                    //Clean caches of the device.
-                    ((Hardware.Devices.DiskDevice)aDevice).CleanCaches();
-                }
-            }
+            //for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
+            //{
+            //    Hardware.Device aDevice = (Hardware.Device)Hardware.DeviceManager.Devices[i];
+            //    if (aDevice is Hardware.Devices.DiskDevice)
+            //    {
+            //        //Clean caches of the device.
+            //        ((Hardware.Devices.DiskDevice)aDevice).CleanCaches();
+            //    }
+            //}
         }
         /// <summary>
         /// Ejects the specified mass storage device.
@@ -1271,11 +1271,10 @@ which should have been provided with the executable.");
             console.WriteLine("...");
 
             //Get the device
-            Hardware.USB.Devices.MassStorageDevice msd = (Hardware.USB.Devices.MassStorageDevice)
-                Hardware.DeviceManager.Devices[deviceNum];
+            //Hardware.USB.Devices.MassStorageDevice msd = (Hardware.USB.Devices.MassStorageDevice)Hardware.DeviceManager.Devices[deviceNum];
             
             //Eject the MSD
-            msd.Eject();
+            //msd.Eject();
 
             //Output info to the user
             console.WriteLine("Ejected.");

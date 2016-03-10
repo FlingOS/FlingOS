@@ -52,7 +52,8 @@ namespace Kernel.Hardware.USB.Devices
         {
             DeviceInfo = aDeviceInfo;
 
-            DeviceManager.AddDevice(this);
+            //TODO: Register device system call
+            //DeviceManager.AddDevice(this);
             USBManager.Devices.Add(this);
         }
 

@@ -249,9 +249,16 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseSemaphore);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitSemaphore);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SignalSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumDevices);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetDeviceList);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetDeviceInfo);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ClaimDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseDevice);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
-                
+
                 BasicConsole.WriteLine(" > Forcing initial GC cleanup...");
                 FOS_System.GC.Cleanup();
 
@@ -270,6 +277,9 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle Task", false);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
+
+                BasicConsole.WriteLine(" > Initialising device manager...");
+                Hardware.Devices.DeviceManager.Init();
 
 #if DEBUG
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
@@ -290,8 +300,8 @@ namespace Kernel.Tasks
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 
-                BasicConsole.WriteLine(" > Starting Device Manager...");
-                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceManagerTask.Main, "Device Manager", false);
+                BasicConsole.WriteLine(" > Starting Device Info task...");
+                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceInfoTask.Main, "Device Info", false);
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine(" > Starting System Status App...");
@@ -920,6 +930,83 @@ namespace Kernel.Tasks
                         result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
                     }
                     break;
+                case SystemCallNumbers.RegisterDevice:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Register device");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Register device - end");
+#endif
+                    break;
+                case SystemCallNumbers.DeregisterDevice:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Deregister device");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Deregister device - end");
+#endif
+                    break;
+                case SystemCallNumbers.GetNumDevices:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get num devices");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get num devices - end");
+#endif
+                    break;
+                case SystemCallNumbers.GetDeviceList:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get device list");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get device list - end");
+#endif
+                    break;
+                case SystemCallNumbers.GetDeviceInfo:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get device info");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Get device info - end");
+#endif
+                    break;
+                case SystemCallNumbers.ClaimDevice:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Claim device");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Claim device - end");
+#endif
+                    break;
+                case SystemCallNumbers.ReleaseDevice:
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Release device");
+#endif
+
+
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Release device - end");
+#endif
+                    break;
                 default:
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
@@ -1340,7 +1427,49 @@ namespace Kernel.Tasks
 #endif
                     result = SystemCallResults.Deferred;
                     break;
-                    
+                case SystemCallNumbers.RegisterDevice:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register device");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.DeregisterDevice:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister device");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetNumDevices:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get num devices");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetDeviceList:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get device list");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.GetDeviceInfo:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Get device info");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.ClaimDevice:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Claim device");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.ReleaseDevice:
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Release device");
+#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+
                 //TODO: Implement handlers for remaining sys calls
                 //#if SYSCALLS_TRACE
                 default:

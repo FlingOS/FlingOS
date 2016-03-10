@@ -23,12 +23,8 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.ATA
 {
@@ -46,11 +42,15 @@ namespace Kernel.Hardware.ATA
         /// </summary>
         private static ATAIOPorts ATAIO2;
 
+        public static List Devices;
+
         /// <summary>
         /// Initialises all available ATA devices on the primary bus.
         /// </summary>
         public static void Init()
         {
+            Devices = new List(4);
+
             ATAIO1 = new ATAIOPorts(false);
             ATAIO2 = new ATAIOPorts(true);
 
@@ -161,7 +161,7 @@ namespace Kernel.Hardware.ATA
                         //Add it to the list of devices.
                         try
                         {
-                            DeviceManager.AddDevice(new PATA(ThePATABase));
+                            Devices.Add(new PATA(ThePATABase));
                         }
                         catch
                         {
@@ -173,7 +173,7 @@ namespace Kernel.Hardware.ATA
                         // Add a PATAPI device
                         try
                         {
-                            DeviceManager.AddDevice(new PATAPI(ThePATABase));
+                            Devices.Add(new PATAPI(ThePATABase));
                         }
                         catch
                         {
@@ -187,7 +187,7 @@ namespace Kernel.Hardware.ATA
                         // Add a SATA device
                         try
                         {
-                            DeviceManager.AddDevice(new SATA());
+                            Devices.Add(new SATA());
                         }
                         catch
                         {
@@ -199,7 +199,7 @@ namespace Kernel.Hardware.ATA
                         // Add a SATAPI device
                         try
                         {
-                            DeviceManager.AddDevice(new SATAPI());
+                            Devices.Add(new SATAPI());
                         }
                         catch
                         {

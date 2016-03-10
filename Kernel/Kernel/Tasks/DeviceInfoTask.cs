@@ -32,7 +32,7 @@ using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
-    public static unsafe class DeviceManagerTask
+    public static unsafe class DeviceInfoTask
     {
         public static bool Terminating = false;
 
@@ -46,26 +46,26 @@ namespace Kernel.Tasks
 
         public static void Main()
         {
-            Helpers.ProcessInit("Device Manager", out GCThreadId);
+            Helpers.ProcessInit("Device Info", out GCThreadId);
 
             try
             {
-                BasicConsole.WriteLine("DM > Creating virtual keyboard...");
+                BasicConsole.WriteLine("DI > Creating virtual keyboard...");
                 keyboard = new Hardware.Keyboards.VirtualKeyboard();
 
-                BasicConsole.WriteLine("DM > Registering for Receive Message syscall...");
+                BasicConsole.WriteLine("DI > Registering for Receive Message syscall...");
                 SystemCalls.RegisterSyscallHandler(SystemCallNumbers.ReceiveMessage, SyscallHandler);
                 
-                BasicConsole.WriteLine("DM > Creating virtual console...");
+                BasicConsole.WriteLine("DI > Creating virtual console...");
                 console = new Consoles.VirtualConsole();
 
-                BasicConsole.WriteLine("DM > Connecting virtual console...");
+                BasicConsole.WriteLine("DI > Connecting virtual console...");
                 console.Connect();
 
-                BasicConsole.WriteLine("DM > Creating device shell...");
+                BasicConsole.WriteLine("DI > Creating device shell...");
                 Shells.DeviceShell shell = new Shells.DeviceShell(console, keyboard);
 
-                BasicConsole.WriteLine("DM > Executing.");
+                BasicConsole.WriteLine("DI > Executing.");
 
                 DeviceManager.Init();
 
@@ -73,7 +73,7 @@ namespace Kernel.Tasks
                 
                 //TODO: This is x86 specific
                 RTC = new Hardware.Timers.RTC();
-                DeviceManager.AddDevice(RTC);
+                //TODO: DeviceManager.AddDevice(RTC);
 
                 StartTime = RTC.GetUTCTime();
                 
@@ -94,7 +94,7 @@ namespace Kernel.Tasks
                         SystemCallResults RequestPagesResult = SystemCalls.RequestPages(0xE0000000, 1, out SharedPages_StartAddress);
                         if (RequestPagesResult == SystemCallResults.OK)
                         {
-                            BasicConsole.WriteLine("DM > Allocated pages for sharing with WM.");
+                            BasicConsole.WriteLine("DI > Allocated pages for sharing with WM.");
 
                             char* TextPtr = (char*)SharedPages_StartAddress;
                             TextPtr[0] = '\0';
@@ -150,12 +150,12 @@ namespace Kernel.Tasks
                             }
                             else
                             {
-                                BasicConsole.WriteLine("DM > Couldn't share pages with WM.");
+                                BasicConsole.WriteLine("DI > Couldn't share pages with WM.");
                             }
                         }
                         else
                         {
-                            BasicConsole.WriteLine("DM > Couldn't allocate pages for sharing with WM.");
+                            BasicConsole.WriteLine("DI > Couldn't allocate pages for sharing with WM.");
                         }*/
                         
                         shell.Execute();
@@ -163,7 +163,7 @@ namespace Kernel.Tasks
                     }
                     catch
                     {
-                        BasicConsole.WriteLine("DM > Error executing shell!");
+                        BasicConsole.WriteLine("DI > Error executing shell!");
                         BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                     }
 
@@ -172,7 +172,7 @@ namespace Kernel.Tasks
             }
             catch
             {
-                BasicConsole.WriteLine("DM > Error initialising!");
+                BasicConsole.WriteLine("DI > Error initialising!");
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
             }
         }
@@ -216,14 +216,14 @@ namespace Kernel.Tasks
             {
                 case SystemCallNumbers.ReceiveMessage:
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("DM > Syscall: Receive message");
+                    BasicConsole.WriteLine("DI > Syscall: Receive message");
 #endif
                     ReceiveMessage(callerProcessId, param1, param2);
                     break;
                 case SystemCallNumbers.GetTime:
                     {
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("DM > Syscall: Get time");
+                    BasicConsole.WriteLine("DI > Syscall: Get time");
 #endif
                         UInt64 CurrentUTCTime = RTC.GetUTCTime();
                         Return2 = (UInt32)(CurrentUTCTime);
@@ -234,7 +234,7 @@ namespace Kernel.Tasks
                 case SystemCallNumbers.GetUpTime:
                     {
 #if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("DM > Syscall: Get time");
+                    BasicConsole.WriteLine("DI > Syscall: Get time");
 #endif
                         UInt64 CurrentUTCTime = RTC.GetUTCTime();
                         UInt64 UpTime = CurrentUTCTime - StartTime;
@@ -244,7 +244,7 @@ namespace Kernel.Tasks
                     }
                     break;
                 default:
-                    BasicConsole.WriteLine("System call unrecognised/unhandled by Device Manager Task.");
+                    BasicConsole.WriteLine("System call unrecognised/unhandled by Device Info Task.");
                     break;
             }
 

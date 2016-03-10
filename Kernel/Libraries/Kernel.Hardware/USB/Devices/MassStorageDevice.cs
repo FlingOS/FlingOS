@@ -1519,7 +1519,8 @@ namespace Kernel.Hardware.USB.Devices
                 FOS_System.Heap.Free(capacityBuffer);
             }
 
-            DeviceManager.AddDevice(this);
+            //TODO: Register device system call
+            //DeviceManager.AddDevice(this);
         }
 
         /// <summary>

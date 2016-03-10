@@ -44,9 +44,9 @@ namespace Kernel.Hardware.Testing
 
             // Search for USB device
             OutputMessage("USBTests : Test_LongRead", "Searching for USB device...");
-            for (int i = 0; i < DeviceManager.Devices.Count; i++)
+            for (int i = 0; i < USB.USBManager.Devices.Count; i++)
             {
-                Device ADevice = (Device)DeviceManager.Devices[i];
+                Device ADevice = (Device)USB.USBManager.Devices[i];
                 if (ADevice is USB.Devices.MassStorageDevice_DiskDevice)
                 {
                     TestDevice = (USB.Devices.MassStorageDevice_DiskDevice)ADevice;

@@ -683,7 +683,7 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if (value)
                 {
-                    USBManager.NotifyDevicesNeedUpdate();
+                    //TODO: USBManager.NotifyDevicesNeedUpdate();
                 }
             }
         }
@@ -728,7 +728,7 @@ namespace Kernel.Hardware.USB.HCIs
                 if (value != 0)
                 {
                     Status = HCIStatus.Dead;
-                    USBManager.NotifyDevicesNeedUpdate();
+                    //TODO: USBManager.NotifyDevicesNeedUpdate();
                 }
             }
         }

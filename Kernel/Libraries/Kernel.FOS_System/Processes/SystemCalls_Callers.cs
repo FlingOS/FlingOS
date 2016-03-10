@@ -27,6 +27,7 @@
 using System;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.FOS_System.Processes
 {
@@ -711,14 +712,84 @@ namespace Kernel.FOS_System.Processes
 
         #endregion
 
-        #region Devices - Full TODO
+        #region Devices
 
-        //TODO: Register Device syscall
-        //TODO: Deregister Device syscall
-        //TODO: Get Num Devices
-        //TODO: Get Device List
-        //TODO: Claim Device syscall
-        //TODO: Release Device syscall
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults RegisterDevice(DeviceDescriptor* Descriptor, out ulong DeviceId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RegisterDevice, (uint)Descriptor, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            DeviceId = ((ulong)Return3 << 32) | Return2;
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults DeregisterDevice(ulong DeviceId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.DeregisterDevice, (uint)DeviceId, (uint)(DeviceId >> 32), 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetNumDevices(out int NumDevices)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetNumDevices, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NumDevices = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetDeviceList(DeviceDescriptor* DeviceList, int MaxDescriptors)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetDeviceList, (uint)DeviceList, (uint)MaxDescriptors, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults GetDeviceInfo(ulong DeviceId, DeviceDescriptor* Descriptor)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.GetDeviceInfo, (uint)DeviceId, (uint)(DeviceId >> 32), (uint)Descriptor, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults ClaimDevice(ulong DeviceId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.ClaimDevice, (uint)DeviceId, (uint)(DeviceId >> 32), 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults ReleaseDevice(ulong DeviceId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.ReleaseDevice, (uint)DeviceId, (uint)(DeviceId >> 32), 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+
+        #endregion
+
+        #region File Systems - Full TODO
 
         #endregion
     }

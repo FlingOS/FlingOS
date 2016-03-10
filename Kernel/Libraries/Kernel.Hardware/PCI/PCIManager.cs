@@ -120,7 +120,7 @@ namespace Kernel.Hardware.PCI
         private static void AddDevice(PCIDevice device, uint step)
         {
             Devices.Add(device);
-            DeviceManager.AddDevice(device);
+            //TODO: Register device system call
 
             if (device is PCIDeviceBridge)
             {

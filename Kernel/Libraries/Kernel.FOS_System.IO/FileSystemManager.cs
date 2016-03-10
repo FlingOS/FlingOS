@@ -64,23 +64,24 @@ namespace Kernel.FOS_System.IO
             Partitions.Empty();
             FileSystemMappings.Empty();
 
-            for (int i = 0; i < DeviceManager.Devices.Count; i++)
-            {
-                Device aDevice = (Device)DeviceManager.Devices[i];
-                if (aDevice is DiskDevice)
-                {
-                    try
-                    {
-                        InitDisk((DiskDevice)aDevice);
-                    }
-                    catch
-                    {
-                        BasicConsole.WriteLine("Error initializing disk: " + (FOS_System.String)i);
-                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                        //BasicConsole.DelayOutput(20);
-                    }
-                }
-            }
+            //TODO: Get devices system call
+            //for (int i = 0; i < DeviceManager.Devices.Count; i++)
+            //{
+            //    Device aDevice = (Device)DeviceManager.Devices[i];
+            //    if (aDevice is DiskDevice)
+            //    {
+            //        try
+            //        {
+            //            InitDisk((DiskDevice)aDevice);
+            //        }
+            //        catch
+            //        {
+            //            BasicConsole.WriteLine("Error initializing disk: " + (FOS_System.String)i);
+            //            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+            //            //BasicConsole.DelayOutput(20);
+            //        }
+            //    }
+            //}
             
             InitPartitions();
         }

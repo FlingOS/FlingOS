@@ -24,12 +24,6 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HardwareATA = Kernel.Hardware.ATA;
 
 namespace Kernel.Hardware.Testing
 {
@@ -44,9 +38,9 @@ namespace Kernel.Hardware.Testing
 
             // Search for PATA device
             OutputMessage("ATATests : Test_LongRead", "Searching for PATA device...");
-            for (int i = 0; i < DeviceManager.Devices.Count; i++)
+            for (int i = 0; i < ATA.ATAManager.Devices.Count; i++)
             {
-                Device ADevice = (Device)DeviceManager.Devices[i];
+                Device ADevice = (Device)ATA.ATAManager.Devices[i];
                 if (ADevice is ATA.PATA)
                 {
                     TestDevice = (ATA.PATA)ADevice;
@@ -63,8 +57,8 @@ namespace Kernel.Hardware.Testing
             else
             {
                 OutputMessage("ATATests : Test_LongRead", ((FOS_System.String)"Device found. Controller ID: ") + 
-                        (TestDevice.ControllerID == HardwareATA.ATA.ControllerID.Primary ? "Primary" : "Secondary") + " , Position: " + 
-                        (TestDevice.BusPosition == HardwareATA.ATA.BusPosition.Master ? "Master" : "Slave"));
+                        (TestDevice.ControllerID == ATA.ATA.ControllerID.Primary ? "Primary" : "Secondary") + " , Position: " + 
+                        (TestDevice.BusPosition == ATA.ATA.BusPosition.Master ? "Master" : "Slave"));
             }
 
             // Create a buffer for storing up to 16 blocks of data

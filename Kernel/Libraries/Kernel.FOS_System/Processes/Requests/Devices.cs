@@ -4,8 +4,8 @@
     {
         System,
         Storage,
-        HID,
-        Time,
+        HIDs,
+        Timers,
         Sensors,
         Serial,
         Network,
@@ -25,15 +25,23 @@
         ATA,
         USB,
         PCI,
-        Virtual
+        Virtual,
+        Timer,
+        Clock
     }
 
-    public unsafe struct RegisterDeviceRequest
+    public unsafe struct DeviceDescriptor
     {
         public ulong Id;
         public DeviceGroup Group;
         public DeviceClass Class;
         public DeviceSubClass SubClass;
-        public bool AutoClaim;
+        
+        public fixed char Name[64];
+        public fixed uint Info[16];
+
+        public bool Claimed;
+        public uint OwnerProcessId;
     }
+    
 }

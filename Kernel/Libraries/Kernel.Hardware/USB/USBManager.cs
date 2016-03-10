@@ -181,7 +181,8 @@ namespace Kernel.Hardware.USB
                                 //BasicConsole.SetTextColour(BasicConsole.default_colour);
                                 EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                                 HCIDevices.Add(newEHCI);
-                                DeviceManager.AddDevice(newEHCI);
+                                //TODO: Register device system call
+                                //DeviceManager.AddDevice(newEHCI);
                                 newEHCI.Start();
                             }
 #if USB_TRACE
@@ -221,7 +222,8 @@ namespace Kernel.Hardware.USB
 
                                 UHCI newUHCI = new UHCI(UHCI_PCIDevice);
                                 HCIDevices.Add(newUHCI);
-                                DeviceManager.AddDevice(newUHCI);
+                                //TODO: Register device system call
+                                //DeviceManager.AddDevice(newUHCI);
                                 newUHCI.Start();
                             }
 #if USB_TRACE
@@ -311,7 +313,8 @@ namespace Kernel.Hardware.USB
 
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                             HCIDevices.Add(newEHCI);
-                            DeviceManager.AddDevice(newEHCI);
+                            //TODO: Register device system call
+                            //DeviceManager.AddDevice(newEHCI);
                             newEHCI.Start();
                         }
 #if USB_TRACE
@@ -339,7 +342,8 @@ namespace Kernel.Hardware.USB
 
                             UHCI newUHCI = new UHCI(UHCI_PCIDevice);
                             HCIDevices.Add(newUHCI);
-                            DeviceManager.AddDevice(newUHCI);
+                            //TODO: Register device system call
+                            //DeviceManager.AddDevice(newUHCI);
                             newUHCI.Start();
                         }
 #if USB_TRACE
@@ -390,12 +394,6 @@ namespace Kernel.Hardware.USB
             }
         }
         
-        public static void NotifyDevicesNeedUpdate()
-        {
-            DeviceManager.NotifyDevicesNeedUpdate();
-        }
-
-
         /// <summary>
         /// Creates new device info for the specified port.
         /// </summary>

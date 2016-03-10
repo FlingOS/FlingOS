@@ -23,12 +23,8 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware
 {
@@ -37,6 +33,15 @@ namespace Kernel.Hardware
     /// </summary>
     public class Device : FOS_System.Object
     {
-        public bool IsNew = true;
+        public ulong Id;
+        public DeviceGroup Group;
+        public DeviceClass Class;
+        public DeviceSubClass SubClass;
+
+        public FOS_System.String Name;
+        public uint[] Info;
+
+        public bool Claimed;
+        public uint OwnerProcessId;
     }
 }

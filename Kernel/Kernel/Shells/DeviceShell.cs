@@ -74,6 +74,7 @@ namespace Kernel.Shells
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)
                         {
+                            //TODO: Get devices system call
                             default:
                                 console.WriteLine("No input options available.");
                                 break;

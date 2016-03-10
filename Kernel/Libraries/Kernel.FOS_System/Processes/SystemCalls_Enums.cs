@@ -165,7 +165,15 @@ namespace Kernel.FOS_System.Processes
         /// by handler functions. You cannot invoke a "Receive Message" system call 
         /// directly.
         /// </remarks>
-        ReceiveMessage
+        ReceiveMessage,
+
+        RegisterDevice,
+        DeregisterDevice,
+        GetNumDevices,
+        GetDeviceList,
+        GetDeviceInfo,
+        ClaimDevice,
+        ReleaseDevice
     }
     /// <summary>
     /// Results of system calls.

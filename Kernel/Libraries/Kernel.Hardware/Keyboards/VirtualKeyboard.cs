@@ -41,7 +41,6 @@ namespace Kernel.Hardware.Keyboards
         {
             if (!enabled)
             {
-                DeviceManager.AddDevice(this);
                 enabled = true;
             }
         }
