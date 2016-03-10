@@ -43,5 +43,42 @@ namespace Kernel.Hardware
 
         public bool Claimed;
         public uint OwnerProcessId;
+
+
+        public unsafe void FillDeviceDescriptor(DeviceDescriptor* TheDescriptor, bool IncludeInfo)
+        {
+            TheDescriptor->Id = Id;
+            TheDescriptor->Group = Group;
+            TheDescriptor->Class = Class;
+            TheDescriptor->SubClass = SubClass;
+
+            int j = 0;
+            for (; j < Name.length; j++)
+            {
+                TheDescriptor->Name[j] = Name[j];
+            }
+            for (; j < 64; j++)
+            {
+                TheDescriptor->Name[j] = '\0';
+            }
+
+            if (IncludeInfo)
+            {
+                for (j = 0; j < 16; j++)
+                {
+                    TheDescriptor->Info[j] = Info[j];
+                }
+            }
+            else
+            {
+                for (j = 0; j < 16; j++)
+                {
+                    TheDescriptor->Info[j] = 0xFFFFFFFF;
+                }
+            }
+
+            TheDescriptor->Claimed = Claimed;
+            TheDescriptor->OwnerProcessId = OwnerProcessId;
+        }
     }
 }

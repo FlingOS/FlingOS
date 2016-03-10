@@ -121,7 +121,7 @@
     <Compile Include="Shell.cs" />
     <Compile Include="Shells\DeviceShell.cs" />
     <Compile Include="Shells\MainShell.cs" />
-    <Compile Include="Tasks\DeviceManagerTask.cs" />
+    <Compile Include="Tasks\DeviceInfoTask.cs" />
     <Compile Include="Tasks\EasterTask.cs" />
     <Compile Include="Tasks\GCCleanupTask.cs" />
     <Compile Include="Tasks\Helpers.cs" />

@@ -53,38 +53,184 @@ namespace Kernel.Hardware.Devices
             Devices = new List(20);
         }
 
-        public static SystemCallResults RegisterDevice(DeviceDescriptor* DeviceDescriptor, out ulong DeviceId, Process CallerProcess)
+        public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId, Process CallerProcess)
         {
-            DeviceId = IdGenerator++;
-            return SystemCallResults.Fail;
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+            Device NewDevice = new Device();
+            NewDevice.Id = DeviceId = IdGenerator++;
+            NewDevice.Group = TheDescriptor->Group;
+            NewDevice.Class = TheDescriptor->Class;
+            NewDevice.SubClass = TheDescriptor->SubClass;
+
+            int NameLength = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if (TheDescriptor->Name[i] == '\0')
+                {
+                    NameLength = i;
+                    break;
+                }
+            }
+            FOS_System.String Name = FOS_System.String.New(NameLength);
+            for (int i = 0; i < NameLength; i++)
+            {
+                Name[i] = TheDescriptor->Name[i];
+            }
+            NewDevice.Name = Name;
+
+            NewDevice.Info = new uint[16];
+            for (int i = 0; i < 16; i++)
+            {
+                NewDevice.Info[i] = TheDescriptor->Info[i];
+            }
+
+            NewDevice.Claimed = TheDescriptor->Claimed;
+            NewDevice.OwnerProcessId = NewDevice.Claimed ? CallerProcess.Id : 0;
+
+            Devices.Add(NewDevice);
+
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
+            return SystemCallResults.OK;
         }
         public static SystemCallResults DeregisterDevice(ulong DeviceId, Process CallerProcess)
         {
-            return SystemCallResults.Fail;
+            Device TheDevice = GetDevice(DeviceId);
+
+            if (TheDevice == null)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (!TheDevice.Claimed)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (TheDevice.OwnerProcessId != CallerProcess.Id)
+            {
+                return SystemCallResults.Fail;
+            }
+
+            Devices.Remove(TheDevice);
+
+            return SystemCallResults.OK;
         }
 
         public static SystemCallResults GetNumDevices(out int NumDevices, Process CallerProcess)
         {
-            NumDevices = 0;
-            return SystemCallResults.Fail;
+            int result = 0;
+
+            for (int i = 0; i < Devices.Count; i++)
+            {
+                Device aDevice = (Device)Devices[i];
+                if (!aDevice.Claimed || aDevice.OwnerProcessId == CallerProcess.Id)
+                {
+                    result++;
+                }
+            }
+
+            NumDevices = result;
+            return SystemCallResults.OK;
         }
         public static SystemCallResults GetDeviceList(DeviceDescriptor* DeviceList, int MaxDescriptors, Process CallerProcess)
         {
-            return SystemCallResults.Fail;
-        }
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
-        public static SystemCallResults GetDeviceInfo(ulong DeviceId, DeviceDescriptor* DeviceDescriptor, Process CallerProcess)
+            int pos = 0;
+            for (int i = 0; i < Devices.Count && pos < MaxDescriptors; i++)
+            {
+                Device aDevice = (Device)Devices[i];
+                bool OwnedByCaller = aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id;
+                if (!aDevice.Claimed || OwnedByCaller)
+                {
+                    DeviceDescriptor* TheDescriptor = DeviceList + (pos++);
+                    aDevice.FillDeviceDescriptor(TheDescriptor, OwnedByCaller);
+                }
+            }
+
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
+            return SystemCallResults.OK;
+        }
+        
+        public static SystemCallResults GetDeviceInfo(ulong DeviceId, DeviceDescriptor* TheDescriptor, Process CallerProcess)
         {
-            return SystemCallResults.Fail;
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+            Device TheDevice = GetDevice(DeviceId);
+
+            if (TheDevice == null)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (!TheDevice.Claimed)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (TheDevice.OwnerProcessId != CallerProcess.Id)
+            {
+                return SystemCallResults.Fail;
+            }
+
+            TheDevice.FillDeviceDescriptor(TheDescriptor, true);
+
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
+            return SystemCallResults.OK;
         }
         
         public static SystemCallResults ClaimDevice(ulong DeviceId, Process CallerProcess)
         {
-            return SystemCallResults.Fail;
+            Device TheDevice = GetDevice(DeviceId);
+
+            if (TheDevice == null)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (TheDevice.Claimed)
+            {
+                return SystemCallResults.Fail;
+            }
+
+            TheDevice.Claimed = true;
+            TheDevice.OwnerProcessId = CallerProcess.Id;
+
+            return SystemCallResults.OK;
         }
         public static SystemCallResults ReleaseDevice(ulong DeviceId, Process CallerProcess)
         {
-            return SystemCallResults.Fail;
+            Device TheDevice = GetDevice(DeviceId);
+
+            if (TheDevice == null)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (!TheDevice.Claimed)
+            {
+                return SystemCallResults.Fail;
+            }
+            else if (TheDevice.OwnerProcessId != CallerProcess.Id)
+            {
+                return SystemCallResults.Fail;
+            }
+
+            TheDevice.OwnerProcessId = 0;
+            TheDevice.Claimed = false;
+
+            return SystemCallResults.OK;
+        }
+
+        public static Device GetDevice(ulong Id)
+        {
+            for (int i = 0; i < Devices.Count; i++)
+            {
+                Device aDevice = (Device)Devices[i];
+                if (aDevice.Id == Id)
+                {
+                    return aDevice;
+                }
+            }
+            return null;
         }
 
         //public static Device FindDevice(FOS_System.Type DeviceType)

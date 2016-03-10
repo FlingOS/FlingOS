@@ -39,6 +39,7 @@ using ISRHanderDelegate = Kernel.FOS_System.Processes.ISRHanderDelegate;
 using IRQHanderDelegate = Kernel.FOS_System.Processes.IRQHanderDelegate;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Tasks
 {
@@ -206,6 +207,13 @@ namespace Kernel.Tasks
             {
                 DeferredSyscallsInfo_Unqueued.Push(new DeferredSyscallInfo());
             }
+
+            //TODO: These need registering via system calls and message or pipe interfaces created
+            //      Really they shouldn't be initialised by Kernel Task nor used by Kernel/Debugger Tasks directly.
+            //      But they are needed for from-startup/first-instance/fail-proof debugging.
+            //DeviceManager.AddDevice(Serial.COM1);
+            //DeviceManager.AddDevice(Serial.COM2);
+            //DeviceManager.AddDevice(Serial.COM3);
 
             try
             {
@@ -935,7 +943,12 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Register device");
 #endif
 
-
+                    {
+                        ulong DeviceId;
+                        result = Hardware.Devices.DeviceManager.RegisterDevice((DeviceDescriptor*)Param1, out DeviceId, CallerProcess);
+                        Return2 = (uint)DeviceId;
+                        Return3 = (uint)(DeviceId >> 32);
+                    }
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Register device - end");
@@ -945,8 +958,8 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Deregister device");
 #endif
-
-
+                    
+                    result = Hardware.Devices.DeviceManager.DeregisterDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Deregister device - end");
@@ -957,7 +970,11 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Get num devices");
 #endif
 
-
+                    {
+                        int num;
+                        result = Hardware.Devices.DeviceManager.GetNumDevices(out num, CallerProcess);
+                        Return3 = (uint)num;
+                    }
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get num devices - end");
@@ -968,7 +985,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Get device list");
 #endif
 
-
+                    result = Hardware.Devices.DeviceManager.GetDeviceList((DeviceDescriptor*)Param1, (int)Param2, CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device list - end");
@@ -979,7 +996,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Get device info");
 #endif
 
-
+                    result = Hardware.Devices.DeviceManager.GetDeviceInfo(Param1 | ((ulong)Param2 << 32), (DeviceDescriptor*)Param3, CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device info - end");
@@ -990,7 +1007,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Claim device");
 #endif
 
-
+                    result = Hardware.Devices.DeviceManager.ClaimDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Claim device - end");
@@ -1001,7 +1018,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Release device");
 #endif
 
-
+                    result = Hardware.Devices.DeviceManager.ReleaseDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Release device - end");

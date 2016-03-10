@@ -23,20 +23,7 @@ namespace Kernel.Shells
         public override void Execute()
         {
             try
-            {
-                //TODO: These need transferring from KernelTask memory (somehow) before we can add them to device manager
-                //      Really they shouldn't be initialised by Kernel Task nor used by Kernel/Debugger Tasks directly.
-                //      But they are needed for from-startup/first-instance/fail-proof debugging.
-                //DeviceManager.AddDevice(Serial.COM1);
-                //DeviceManager.AddDevice(Serial.COM2);
-                //DeviceManager.AddDevice(Serial.COM3);
-                
-                Hardware.Timers.RTC rtc = (Hardware.Timers.RTC)DeviceManager.FindDevice((FOS_System.Type)typeof(Hardware.Timers.RTC));
-                if (rtc == null)
-                {
-                    BasicConsole.WriteLine("RTC is null!");
-                }
-
+            {                
                 if (Tasks.Helpers.StartBuiltInProcess("DM", "ATA Driver", Tasks.Driver.ATADriverTask.Main, false))
                 {
                     BasicConsole.WriteLine("DM > Couldn't start the ATA Driver!");
@@ -69,7 +56,7 @@ namespace Kernel.Shells
                     try
                     {
                         console.WriteLine();
-                        console.WriteLine(rtc.GetDateTime().ToString());
+                        //TODO: Use GetTime system call console.WriteLine(rtc.GetDateTime().ToString());
                         console.WriteLine("--------------------------");
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)

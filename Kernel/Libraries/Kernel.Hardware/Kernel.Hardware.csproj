@@ -99,8 +99,8 @@
     <Compile Include="BlockDevice.cs" />
     <Compile Include="CPUs\CPUx86_32.cs" />
     <Compile Include="Device.cs" />
-    <Compile Include="DeviceManager.cs" />
     <Compile Include="Devices\CPU.cs" />
+    <Compile Include="Devices\DeviceManager.cs" />
     <Compile Include="Devices\DiskDevice.cs" />
     <Compile Include="Devices\Key Maps\UKKeymap.cs" />
     <Compile Include="Devices\Key Maps\SPKeymap.cs" />
