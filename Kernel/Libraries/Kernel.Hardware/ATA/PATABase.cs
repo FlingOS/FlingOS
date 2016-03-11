@@ -334,10 +334,11 @@ namespace Kernel.Hardware.ATA
         }
 
         public PATABase(ATAIOPorts anIO, ATA.ControllerID aControllerId, ATA.BusPosition aBusPosition)
+            : base("PATA Base Device")
         {
             IO = anIO;
-            controllerId = aControllerId;
-            busPosition = aBusPosition;
+            Info[0] = (uint)(controllerId = aControllerId);
+            Info[1] = (uint)(busPosition = aBusPosition);
 
             // Disable IRQs, we use polling currently
             SelectDrive(0, false);

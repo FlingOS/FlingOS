@@ -48,7 +48,7 @@ namespace Kernel.Hardware
         public Device()
         {
         }
-        public Device(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, FOS_System.String AName, uint[] SomeInfo, bool IsClaimed)
+        public Device(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, uint[] SomeInfo, bool IsClaimed)
         {
             Group = AGroup;
             Class = AClass;

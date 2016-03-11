@@ -24,14 +24,12 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define MSD_TRACE
-#undef MSD_TRACE
-
-#define DEVICE_INFO
-#undef DEVICE_INFO
+//#define MSD_TRACE
+//#define DEVICE_INFO
 
 using System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.MemoryUtils;
@@ -1496,6 +1494,7 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         /// <param name="anMSD">The MSD to create an interface for.</param>
         public MassStorageDevice_DiskDevice(MassStorageDevice anMSD)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true)
         {
             msd = anMSD;
 

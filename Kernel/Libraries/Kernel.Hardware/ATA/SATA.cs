@@ -23,18 +23,16 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.ATA
 {
     public class SATA : Devices.DiskDevice
     {
         public SATA()
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "SATA Disk", new uint[0], true)
         {
         }
 

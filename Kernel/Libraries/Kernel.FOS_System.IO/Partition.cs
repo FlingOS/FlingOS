@@ -25,11 +25,8 @@
 #endregion
     
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
 
 namespace Kernel.FOS_System.IO
@@ -77,6 +74,7 @@ namespace Kernel.FOS_System.IO
         /// <param name="aStartingSector">The sector number at which the partition starts.</param>
         /// <param name="aSectorCount">The number of sectors in the partition.</param>
         public Partition(DiskDevice aDiskDevice, UInt64 aStartingSector, UInt64 aSectorCount)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.Virtual, "Partition", new uint[0], true)
         {
             TheDiskDevice = aDiskDevice;
             StartingSector = aStartingSector;

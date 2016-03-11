@@ -23,12 +23,10 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.ATA
 {
@@ -96,10 +94,11 @@ namespace Kernel.Hardware.ATA
         /// Initialises a new ATA pio device.
         /// </summary>
         public PATA(PATABase baseDevice)
+            : base (DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATA Disk", baseDevice.Info, true)
         {
             BaseDevice = baseDevice;
         }
-                
+        
         /// <summary>
         /// Selects the specified contiguous sectors on the drive.
         /// </summary>

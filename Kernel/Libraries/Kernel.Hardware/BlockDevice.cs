@@ -23,12 +23,10 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware
 {
@@ -37,6 +35,11 @@ namespace Kernel.Hardware
     /// </summary>
     public abstract class BlockDevice : Device
     {
+        public BlockDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, FOS_System.String AName, uint[] SomeInfo, bool IsClaimed)
+            : base(AGroup, AClass, ASubClass, AName, SomeInfo, IsClaimed)
+        {
+        }
+
         /// <summary>
         /// The number of logical blocks in the device.
         /// </summary>

@@ -23,12 +23,9 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.ATA
 {
@@ -78,7 +75,8 @@ namespace Kernel.Hardware.ATA
         /// <summary>
         /// Initialises a new ATA device with block size 512.
         /// </summary>
-        internal ATA()
+        internal ATA(String AName)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, AName, new uint[2], true)
         {
             blockSize = 512;
         }

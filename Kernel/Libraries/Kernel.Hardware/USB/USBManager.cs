@@ -116,6 +116,12 @@ namespace Kernel.Hardware.USB
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
 
+            //TODO: Use GetDeviceList to list devices
+            //TODO: Search device list for correct class/subclass
+            //TODO: Use Claim to obtain handle to PCI devices
+            //TODO: Use GetDeviceInfo to get claimed device's full info
+            //TODO: Create PCIDeviceNormal (or whatever) instances to access extended PCI info
+            //TODO: Init USB HCIs from PCIDeviceNormal instances
             for (int i = 0; i < PCI.PCIManager.Devices.Count; i++)
             {
                 PCIDevice aDevice = (PCIDevice)(PCI.PCIManager.Devices[i]);

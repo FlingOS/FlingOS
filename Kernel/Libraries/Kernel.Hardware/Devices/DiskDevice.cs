@@ -23,12 +23,9 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.Devices
 {
@@ -37,6 +34,11 @@ namespace Kernel.Hardware.Devices
     /// </summary>
     public abstract class DiskDevice : BlockDevice
     {
+        public DiskDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, uint[] SomeInfo, bool IsClaimed)
+            : base(AGroup, AClass, ASubClass, AName, SomeInfo, IsClaimed)
+        {
+        }
+
         /// <summary>
         /// Cleans the software and hardware caches (if any) by writing necessary data
         /// to disk before wiping the caches.

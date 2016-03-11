@@ -24,14 +24,11 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define PATAPI_TRACE
-#undef PATAPI_TRACE
+//#define PATAPI_TRACE
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.ATA
@@ -98,6 +95,7 @@ namespace Kernel.Hardware.ATA
         }
 
         public PATAPI(PATABase baseDevice)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATAPI Disk", baseDevice.Info, true)
         {
             BaseDevice = baseDevice;
 

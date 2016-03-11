@@ -136,7 +136,7 @@ namespace Kernel.Hardware.ATA
                 ExceptionMethods.Throw(ex);
             }
 
-            //TODO: Init SATA/SATAPI devices by enumerating the PCI bus.
+            //TODO: Init SATA/SATAPI devices by enumerating PCI devices.
         }
 
         /// <summary>
@@ -161,7 +161,9 @@ namespace Kernel.Hardware.ATA
                         //Add it to the list of devices.
                         try
                         {
-                            Devices.Add(new PATA(ThePATABase));
+                            PATA device = new PATA(ThePATABase);
+                            Devices.Add(device);
+                            Hardware.Devices.DeviceManager.RegisterDevice(device);
                         }
                         catch
                         {
@@ -173,7 +175,9 @@ namespace Kernel.Hardware.ATA
                         // Add a PATAPI device
                         try
                         {
-                            Devices.Add(new PATAPI(ThePATABase));
+                            PATAPI device = new PATAPI(ThePATABase);
+                            Devices.Add(device);
+                            Hardware.Devices.DeviceManager.RegisterDevice(device);
                         }
                         catch
                         {
@@ -187,7 +191,9 @@ namespace Kernel.Hardware.ATA
                         // Add a SATA device
                         try
                         {
-                            Devices.Add(new SATA());
+                            SATA device = new SATA();
+                            Devices.Add(device);
+                            Hardware.Devices.DeviceManager.RegisterDevice(device);
                         }
                         catch
                         {
@@ -199,7 +205,9 @@ namespace Kernel.Hardware.ATA
                         // Add a SATAPI device
                         try
                         {
-                            Devices.Add(new SATAPI());
+                            SATAPI device = new SATAPI();
+                            Devices.Add(device);
+                            Hardware.Devices.DeviceManager.RegisterDevice(device);
                         }
                         catch
                         {
