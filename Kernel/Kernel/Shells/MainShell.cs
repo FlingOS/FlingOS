@@ -1797,9 +1797,9 @@ which should have been provided with the executable.");
         /// </summary>
         private void InitFS()
         {
-            console.Write("Initialising file systems...");
-            FileSystemManager.Init();
-            console.WriteLine("done.");
+            //console.Write("Initialising file systems...");
+            //FileSystemManager.Init();
+            //console.WriteLine("done.");
         }
 
         private static void DeviceManager_DeviceAdded(FOS_System.Object state, Hardware.Device device)

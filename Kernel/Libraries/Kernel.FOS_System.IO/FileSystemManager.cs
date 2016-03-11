@@ -29,6 +29,7 @@
 
 using System;
 
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware;
 using Kernel.Hardware.Devices;
@@ -49,11 +50,11 @@ namespace Kernel.FOS_System.IO
         /// <summary>
         /// The list of initialized partitions.
         /// </summary>
-        public static List Partitions = new List(3);
+        public static List Partitions;
         /// <summary>
         /// The list of file system mappings.
         /// </summary>
-        public static List FileSystemMappings = new List(3);
+        public static List FileSystemMappings;
 
         /// <summary>
         /// Initializes all available file systems by searching for 
@@ -61,28 +62,29 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         public static void Init()
         {
-            Partitions.Empty();
-            FileSystemMappings.Empty();
+            Partitions = new List(3);
+            FileSystemMappings = new List(3);
 
-            //TODO: Get devices system call
-            //for (int i = 0; i < DeviceManager.Devices.Count; i++)
-            //{
-            //    Device aDevice = (Device)DeviceManager.Devices[i];
-            //    if (aDevice is DiskDevice)
-            //    {
-            //        try
-            //        {
-            //            InitDisk((DiskDevice)aDevice);
-            //        }
-            //        catch
-            //        {
-            //            BasicConsole.WriteLine("Error initializing disk: " + (FOS_System.String)i);
-            //            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-            //            //BasicConsole.DelayOutput(20);
-            //        }
-            //    }
-            //}
-            
+            List Devices = DeviceManager.GetDeviceList();
+            for (int i = 0; i < Devices.Count; i++)
+            {
+                Device aDevice = (Device)Devices[i];
+                if (aDevice.Class == DeviceClass.Storage)
+                {
+                    BasicConsole.WriteLine("Storage device detected!");
+                    //try
+                    //{
+                    //    InitDisk((DiskDevice)aDevice);
+                    //}
+                    //catch
+                    //{
+                    //    BasicConsole.WriteLine("Error initializing disk: " + (FOS_System.String)i);
+                    //    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    //    //BasicConsole.DelayOutput(20);
+                    //}
+                }
+            }
+
             InitPartitions();
         }
 

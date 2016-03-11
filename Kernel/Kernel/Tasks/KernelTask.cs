@@ -315,6 +315,10 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine(" > Starting System Status App...");
                 Process SystemStatusProcess = ProcessManager.CreateProcess(Tasks.App.SystemStatusTask.Main, "System Status App", false);
                 ProcessManager.RegisterProcess(SystemStatusProcess, Scheduler.Priority.Normal);
+                
+                BasicConsole.WriteLine(" > Starting File Systems driver...");
+                Process FileSystemsProcess = ProcessManager.CreateProcess(Tasks.Driver.FileSystemsDriverTask.Main, "File Systems Driver", false);
+                ProcessManager.RegisterProcess(FileSystemsProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine("Kernel Started.");
 
