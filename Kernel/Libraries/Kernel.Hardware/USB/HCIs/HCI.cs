@@ -24,9 +24,10 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-//#define HCI_TRACE
+#define HCI_TRACE
 
 using System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.USB.HCIs
@@ -78,12 +79,15 @@ namespace Kernel.Hardware.USB.HCIs
         /// Initializes a new generic host controller interface using the specified PCI device.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
-        public HCI(PCI.PCIDeviceNormal aPCIDevice)
-            : base()
+        public HCI(PCI.PCIDeviceNormal aPCIDevice, String AName)
+            : base(DeviceGroup.USB, DeviceClass.Controller, DeviceSubClass.USB, AName, new uint[3], true)
         {
             Status = HCIStatus.Unset;
 
             pciDevice = aPCIDevice;
+            Info[0] = pciDevice.Info[0];
+            Info[1] = pciDevice.Info[1];
+            Info[2] = pciDevice.Info[2];
 
             for (byte i = 0; i < RootPortCount; i++)
             {

@@ -1831,7 +1831,7 @@ which should have been provided with the executable.");
             {
                 try
                 {
-                    Hardware.USB.USBManager.CheckDeviceForHCI((Hardware.PCI.PCIDeviceNormal)device);
+                    //TODO:? Hardware.USB.USBManager.CheckDeviceForHCI((Hardware.PCI.PCIDeviceNormal)device);
                 }
                 catch
                 {

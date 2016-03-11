@@ -136,7 +136,7 @@ namespace Kernel.Hardware.USB.HCIs
         protected int IRQHandlerID = 0;
 
         public UHCI(PCI.PCIDeviceNormal aPCIDevice)
-            : base(aPCIDevice)
+            : base(aPCIDevice, "UHCI USB Controller")
         {
 #if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Constructor");

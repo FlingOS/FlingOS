@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
-//#define EHCI_TRACE
+#define EHCI_TRACE
 
 #if EHCI_TRACE
     //#define EHCI_TESTS //Note: Also uncomment the undef in EHCITesting.cs
@@ -683,7 +683,7 @@ namespace Kernel.Hardware.USB.HCIs
 
                 if (value)
                 {
-                    //TODO: USBManager.NotifyDevicesNeedUpdate();
+                    USBManager.NotifyDevicesNeedUpdate();
                 }
             }
         }
@@ -728,7 +728,7 @@ namespace Kernel.Hardware.USB.HCIs
                 if (value != 0)
                 {
                     Status = HCIStatus.Dead;
-                    //TODO: USBManager.NotifyDevicesNeedUpdate();
+                    USBManager.NotifyDevicesNeedUpdate();
                 }
             }
         }
@@ -748,7 +748,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the physical EHCI device.</param>
         public EHCI(PCI.PCIDeviceNormal aPCIDevice)
-            : base(aPCIDevice)
+            : base(aPCIDevice, "EHCI USB Controller")
         {
 #if EHCI_TESTS
             try

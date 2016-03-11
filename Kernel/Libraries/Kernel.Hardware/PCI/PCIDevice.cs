@@ -274,12 +274,7 @@ namespace Kernel.Hardware.PCI
         /// The device's DeviceExists.
         /// </summary>
         public bool DeviceExists { get; private set; }
-
-        /// <summary>
-        /// Has this device been claimed by a driver
-        /// </summary>
-        public bool Claimed { get; set; }
-
+        
         /// <summary>
         /// The device's bus number.
         /// </summary>

@@ -145,7 +145,7 @@ namespace Kernel.Hardware.USB.Devices
         /// The USB device information that specifies the physical mass storage device.
         /// </param>
         public MassStorageDevice(USBDeviceInfo aDeviceInfo)
-            : base(aDeviceInfo)
+            : base(aDeviceInfo, DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage", true)
         {
 #if MSD_TRACE
             DBGMSG("------------------------------ Mass Storage Device -----------------------------");
@@ -154,8 +154,6 @@ namespace Kernel.Hardware.USB.Devices
 #endif
             //Immediately set up the MSD.
             Setup();
-
-            //TODO: Register the device
         }
 
         /// <summary>
@@ -194,6 +192,7 @@ namespace Kernel.Hardware.USB.Devices
 
             // Create the paired disk device for this MSD.
             diskDevice = new MassStorageDevice_DiskDevice(this);
+            DeviceManager.RegisterDevice(diskDevice);
 
             // Tell the MSD device to "load" the medium
             Load();
@@ -1519,8 +1518,6 @@ namespace Kernel.Hardware.USB.Devices
             {
                 FOS_System.Heap.Free(capacityBuffer);
             }
-
-            DeviceManager.RegisterDevice(this);
         }
 
         /// <summary>

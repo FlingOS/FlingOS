@@ -56,15 +56,21 @@ namespace Kernel.Hardware.Devices
 
         public static SystemCallResults RegisterDevice(Device TheDevice)
         {
-            DeviceDescriptor* descriptor = (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : Register Device");
+            SystemCallResults result = SystemCallResults.Fail;
+            DeviceDescriptor * descriptor = (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : Register Device");
 
-            TheDevice.FillDeviceDescriptor(descriptor, true);
+            try
+            {
+                TheDevice.FillDeviceDescriptor(descriptor, true);
 
-            ulong DeviceId;
-            SystemCallResults result = SystemCalls.RegisterDevice(descriptor, out DeviceId);
-            TheDevice.Id = DeviceId;
-
-            Heap.Free(descriptor);
+                ulong DeviceId;
+                result = SystemCalls.RegisterDevice(descriptor, out DeviceId);
+                TheDevice.Id = DeviceId;
+            }
+            finally
+            {
+                Heap.Free(descriptor);
+            }
 
             return result;
         }
@@ -91,21 +97,26 @@ namespace Kernel.Hardware.Devices
                 {
                     DeviceDescriptor* DeviceList = (DeviceDescriptor*)Heap.AllocZeroed((uint)(sizeof(DeviceDescriptor) * NumDevices), "DeviceManager : GetDeviceList");
 
-                    if (SystemCalls.GetDeviceList(DeviceList, NumDevices) == SystemCallResults.OK)
+                    try
                     {
-                        for (int i = 0; i < NumDevices; i++)
+                        if (SystemCalls.GetDeviceList(DeviceList, NumDevices) == SystemCallResults.OK)
                         {
-                            DeviceDescriptor* descriptor = DeviceList + i;
-                            result.Add(new Device(descriptor));
+                            for (int i = 0; i < NumDevices; i++)
+                            {
+                                DeviceDescriptor* descriptor = DeviceList + i;
+                                result.Add(new Device(descriptor));
+                            }
+                        }
+                        else
+                        {
+                            BasicConsole.WriteLine("GetDeviceList failed!");
+                            result = null;
                         }
                     }
-                    else
+                    finally
                     {
-                        BasicConsole.WriteLine("GetDeviceList failed!");
-                        result = null;
+                        Heap.Free(DeviceList);
                     }
-
-                    Heap.Free(DeviceList);
                 }
                 else
                 {
@@ -120,6 +131,39 @@ namespace Kernel.Hardware.Devices
             return result;
         }
 
+        public static bool FillDeviceInfo(Device TheDevice)
+        {
+            bool result = false;
+            DeviceDescriptor* descriptor = (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : FillDeviceInfo");
+
+            try
+            {
+                if (SystemCalls.GetDeviceInfo(TheDevice.Id, descriptor) == SystemCallResults.OK)
+                {
+                    TheDevice.FillDevice(descriptor);
+                    result = true;
+                }
+                else
+                {
+                    BasicConsole.WriteLine("FillDeviceInfo failed!");
+                    result = false;
+                }
+            }
+            finally
+            {
+                Heap.Free(descriptor);
+            }
+            return result;
+        }
+
+        public static bool ClaimDevice(Device TheDevice)
+        {
+            return SystemCalls.ClaimDevice(TheDevice.Id) == SystemCallResults.OK;
+        }
+        public static bool ReleaseDevice(Device TheDevice)
+        {
+            return SystemCalls.ReleaseDevice(TheDevice.Id) == SystemCallResults.OK;
+        }
 
 
         public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId, Process CallerProcess)

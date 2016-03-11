@@ -60,15 +60,13 @@ namespace Kernel.Hardware.PCI
             ConfigAddressPort = new IO.IOPort(0xCF8);
             ConfigDataPort = new IO.IOPort(0xCFC);
             Devices = new List();
-
-            EnumerateDevices();
         }
         
         /// <summary>
         /// Enumerates all connected PCI devices.
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
-        private static void EnumerateDevices()
+        public static void EnumerateDevices()
         {
             EnumerateBus(0, 0);
         }

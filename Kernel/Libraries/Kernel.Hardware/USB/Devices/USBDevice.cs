@@ -23,8 +23,9 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;    
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.USB.Devices
@@ -48,12 +49,16 @@ namespace Kernel.Hardware.USB.Devices
         /// device manager and USB manager.
         /// </summary>
         /// <param name="aDeviceInfo">The device info of the physical device.</param>
-        public USBDevice(USBDeviceInfo aDeviceInfo)
+        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, bool IsClaimed)
+            : base(AGroup, AClass, ASubClass, AName, new uint[5], IsClaimed)
         {
             DeviceInfo = aDeviceInfo;
-            
-            Hardware.Devices.DeviceManager.RegisterDevice(this);
-            USBManager.Devices.Add(this);
+
+            Info[0] = aDeviceInfo.hc.Info[0];
+            Info[1] = aDeviceInfo.hc.Info[1];
+            Info[2] = aDeviceInfo.hc.Info[2];
+            Info[3] = aDeviceInfo.portNum;
+            Info[4] = aDeviceInfo.address;
         }
 
         /// <summary>
@@ -85,10 +90,16 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public HCIs.HCI hc;
 
+        /// <summary>
+        /// The list of Configurations that have been detected on the USB device.
+        /// </summary>
         public List Configurations;
+        /// <summary>
+        /// The list of Interfaces that have been detected on the USB device.
+        /// </summary>
         public List Interfaces;
         /// <summary>
-        /// The list of "Endpoint"s that has been detected on the USB device.
+        /// The list of Endpoints that have been detected on the USB device.
         /// </summary>
         public List Endpoints;
 

@@ -10,6 +10,9 @@ namespace Kernel.Tasks.Driver
         private static Consoles.VirtualConsole console;
 
         private static uint GCThreadId;
+        private static uint USBUpdateThreadId;
+
+        public static bool Terminating = false;
 
         public static void Main()
         {
@@ -30,11 +33,29 @@ namespace Kernel.Tasks.Driver
 
                 try
                 {
+                    BasicConsole.WriteLine("USB Driver > Initialising PCI Manager...");
+                    Hardware.PCI.PCIManager.Init();
+
                     BasicConsole.WriteLine("USB Driver > Initialising USB Manager...");
                     USBManager.Init();
 
-                    BasicConsole.WriteLine("USB Driver > Outputing USB info...");
-                    OutputUSB();
+                    BasicConsole.WriteLine("USB Driver > Starting update thread...");
+                    SystemCallResults SysCallResult = SystemCalls.StartThread(USBUpdateThreadMain, out USBUpdateThreadId);
+                    if (SysCallResult != SystemCallResults.OK)
+                    {
+                        BasicConsole.WriteLine("USB Driver > Failed to create update thread!");
+                    }
+
+                    while (!Terminating)
+                    {
+                        BasicConsole.WriteLine("USB Driver > Initialising USB HCIs...");
+                        USBManager.InitHCIs();
+
+                        BasicConsole.WriteLine("USB Driver > Outputing USB info...");
+                        OutputUSB();
+
+                        SystemCalls.SleepThread(10000);
+                    }
                 }
                 catch
                 {
@@ -51,6 +72,23 @@ namespace Kernel.Tasks.Driver
             }
 
             BasicConsole.WriteLine("USB Driver > Exiting...");
+        }
+
+        private static void USBUpdateThreadMain()
+        {
+            while(!Terminating)
+            {
+                if (!USBManager.UpdateRequired)
+                {
+                    if (SystemCalls.WaitSemaphore(USBManager.UpdateSemaphoreId) != SystemCallResults.OK)
+                    {
+                        BasicConsole.WriteLine("USB Driver > Failed to wait on update semaphore!");
+                        SystemCalls.SleepThread(5000);
+                    }
+                }
+
+                USBManager.Update();
+            }
         }
         
         /// <summary>

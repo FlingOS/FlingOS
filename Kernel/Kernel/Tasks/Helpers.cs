@@ -31,20 +31,25 @@ namespace Kernel.Tasks
             bool result = false;
 
             StartProcessRequest* StartRequest = (StartProcessRequest*)Heap.AllocZeroed((uint)sizeof(StartProcessRequest), "DeviceShell.Execute");
-            StartRequest->Name = NewProcName.GetCharPointer();
-            StartRequest->NameLength = NewProcName.length;
-            StartRequest->CodePagesCount = 0;
-            uint[] DataPages = VirtMemManager.GetBuiltInProcessVAddrs();
-            StartRequest->DataPages = (uint*)((byte*)Utilities.ObjectUtilities.GetHandle(DataPages) + FOS_System.Array.FieldsBytesSize);
-            StartRequest->DataPagesCount = (uint)DataPages.Length;
-            StartRequest->MainMethod = (void*)Utilities.ObjectUtilities.GetHandle(MainMethod);
-            
-            uint ATADriverProcessId;
-            uint ATADriverThreadId;
-            SystemCallResults SysCallResult = SystemCalls.StartProcess(StartRequest, UserMode, out ATADriverProcessId, out ATADriverThreadId);
-            result = SysCallResult == SystemCallResults.OK;
+            try
+            {
+                StartRequest->Name = NewProcName.GetCharPointer();
+                StartRequest->NameLength = NewProcName.length;
+                StartRequest->CodePagesCount = 0;
+                uint[] DataPages = VirtMemManager.GetBuiltInProcessVAddrs();
+                StartRequest->DataPages = (uint*)((byte*)Utilities.ObjectUtilities.GetHandle(DataPages) + FOS_System.Array.FieldsBytesSize);
+                StartRequest->DataPagesCount = (uint)DataPages.Length;
+                StartRequest->MainMethod = (void*)Utilities.ObjectUtilities.GetHandle(MainMethod);
 
-            Heap.Free(StartRequest);
+                uint ATADriverProcessId;
+                uint ATADriverThreadId;
+                SystemCallResults SysCallResult = SystemCalls.StartProcess(StartRequest, UserMode, out ATADriverProcessId, out ATADriverThreadId);
+                result = SysCallResult == SystemCallResults.OK;
+            }
+            finally
+            {
+                Heap.Free(StartRequest);
+            }
 
 #if TASKHELPERS_TRACE
             if (SysCallResult != SystemCallResults.OK)

@@ -60,11 +60,16 @@ namespace Kernel.Hardware
         }
         public unsafe Device(DeviceDescriptor* descriptor)
         {
+            FillDevice(descriptor);
+        }
+
+        public unsafe void FillDevice(DeviceDescriptor* descriptor)
+        {
             Id = descriptor->Id;
             Group = descriptor->Group;
             Class = descriptor->Class;
             SubClass = descriptor->SubClass;
-            
+
             int NameLength = 0;
             for (; NameLength < 64; NameLength++)
             {
@@ -88,7 +93,6 @@ namespace Kernel.Hardware
             Claimed = descriptor->Claimed;
             OwnerProcessId = descriptor->OwnerProcessId;
         }
-
         public unsafe void FillDeviceDescriptor(DeviceDescriptor* TheDescriptor, bool IncludeInfo)
         {
             TheDescriptor->Id = Id;

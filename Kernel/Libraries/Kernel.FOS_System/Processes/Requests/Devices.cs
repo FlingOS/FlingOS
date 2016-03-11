@@ -19,7 +19,8 @@
         IO,
         Keyboard,
         Storage,
-        Timer
+        Timer,
+        Controller
     }
     public enum DeviceSubClass
     {

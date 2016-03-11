@@ -30,6 +30,9 @@ namespace Kernel.Tasks.Driver
                     BasicConsole.WriteLine("PCI Driver > Initialising PCI Manager...");
                     PCIManager.Init();
 
+                    BasicConsole.WriteLine("PCI Driver > Enumerating PCI devices...");
+                    PCIManager.EnumerateDevices();
+
                     BasicConsole.WriteLine("PCI Driver > Outputing PCI info...");
                     OutputPCI();
                 }
