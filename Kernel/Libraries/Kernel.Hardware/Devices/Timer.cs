@@ -25,6 +25,8 @@
 #endregion
     
 using System;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.Devices
 {
@@ -70,6 +72,11 @@ namespace Kernel.Hardware.Devices
         /// </summary>
         /// <param name="ns">The number of nanoseconds to block.</param>
         public abstract void WaitNS(long ns);
+
+        public Timer(DeviceGroup AGroup, DeviceSubClass ASubClass, FOS_System.String AName, uint[] SomeInfo, bool IsClaimed)
+            : base(AGroup, DeviceClass.Timer, ASubClass, AName, SomeInfo, IsClaimed)
+        {
+        }
 
         [Drivers.Compiler.Attributes.NoDebug]
         public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.Object state);

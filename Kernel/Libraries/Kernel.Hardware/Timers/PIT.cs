@@ -23,8 +23,8 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
+
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.Hardware.Timers
@@ -408,10 +408,7 @@ namespace Kernel.Hardware.Timers
                 //Ignore the process state for timer interrupts. Timer interrupts occur so frequently
                 //  that to continually switch state would be massively inefficient. Also, switching
                 //  state isn't necessary for the handlers queued in the timer.
-
-                //TODO: Should PIT be registered as a system device? (Using System call)
-                //DeviceManager.AddDevice(this);
-
+                
                 enabled = true;
                 
                 T0RateGen = true;
@@ -439,6 +436,11 @@ namespace Kernel.Hardware.Timers
             }
         }
 
+        public PIT()
+            : base(DeviceGroup.System, DeviceSubClass.Timer, "Programmable Interval Timer", new uint[0], true)
+        {
+        }
+
         /// <summary>
         /// The (only) PIT device instance.
         /// </summary>
@@ -452,6 +454,7 @@ namespace Kernel.Hardware.Timers
             if(ThePIT == null)
             {
                 ThePIT = new PIT();
+                Devices.DeviceManager.RegisterDevice(ThePIT);
             }
             ThePIT.Enable();
         }

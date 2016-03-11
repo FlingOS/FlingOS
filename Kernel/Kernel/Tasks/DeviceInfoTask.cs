@@ -71,7 +71,7 @@ namespace Kernel.Tasks
                 
                 //TODO: This is x86 specific
                 RTC = new Hardware.Timers.RTC();
-                //TODO: DeviceManager.AddDevice(RTC);
+                DeviceManager.RegisterDevice(RTC);
 
                 StartTime = RTC.GetUTCTime();
                 

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.Timers
 {
@@ -51,6 +52,7 @@ namespace Kernel.Hardware.Timers
         private IO.IOPort DataPort = new IO.IOPort(0x71);
 
         public RTC()
+            : base(DeviceGroup.System, DeviceClass.Timer, DeviceSubClass.Clock, "Real Time Clock", new uint[0], true)
         {
         }
 

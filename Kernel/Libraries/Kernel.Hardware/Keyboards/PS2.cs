@@ -165,6 +165,7 @@ namespace Kernel.Hardware.Keyboards
             if (ThePS2 == null)
             {
                 ThePS2 = new PS2();
+                Devices.DeviceManager.RegisterDevice(ThePS2);
             }
             ThePS2.Enable();
         }
