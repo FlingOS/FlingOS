@@ -97,6 +97,7 @@
     <Compile Include="ATA\SATA.cs" />
     <Compile Include="ATA\PATAPI.cs" />
     <Compile Include="BlockDevice.cs" />
+    <Compile Include="Controllers\StorageController.cs" />
     <Compile Include="CPUs\CPUx86_32.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="Devices\CPU.cs" />

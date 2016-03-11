@@ -193,11 +193,15 @@ namespace Kernel.Hardware.USB.Devices
             // Create the paired disk device for this MSD.
             diskDevice = new MassStorageDevice_DiskDevice(this);
             DeviceManager.RegisterDevice(diskDevice);
-
+            
             // Tell the MSD device to "load" the medium
             Load();
             // Then force the code to put the MSD into the Idle power state
             Idle(true);
+
+            // Initialise a thread to control the interface to the disk
+            Controllers.StorageController.Init();
+            Controllers.StorageController.AddDisk(diskDevice);
         }
 
         /// <summary>

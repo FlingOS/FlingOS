@@ -164,6 +164,10 @@ namespace Kernel.Hardware.ATA
                             PATA device = new PATA(ThePATABase);
                             Devices.Add(device);
                             Hardware.Devices.DeviceManager.RegisterDevice(device);
+
+                            // Initialise a thread to control the interface to the disk
+                            Controllers.StorageController.Init();
+                            Controllers.StorageController.AddDisk(device);
                         }
                         catch
                         {
@@ -178,6 +182,10 @@ namespace Kernel.Hardware.ATA
                             PATAPI device = new PATAPI(ThePATABase);
                             Devices.Add(device);
                             Hardware.Devices.DeviceManager.RegisterDevice(device);
+
+                            // Initialise a thread to control the interface to the disk
+                            Controllers.StorageController.Init();
+                            Controllers.StorageController.AddDisk(device);
                         }
                         catch
                         {
@@ -194,6 +202,10 @@ namespace Kernel.Hardware.ATA
                             SATA device = new SATA();
                             Devices.Add(device);
                             Hardware.Devices.DeviceManager.RegisterDevice(device);
+
+                            // TODO: Initialise a thread to control the interface to the disk (SATA)
+                            //Controllers.StorageController.Init();
+                            //Controllers.StorageController.AddDisk(device);
                         }
                         catch
                         {
@@ -208,6 +220,10 @@ namespace Kernel.Hardware.ATA
                             SATAPI device = new SATAPI();
                             Devices.Add(device);
                             Hardware.Devices.DeviceManager.RegisterDevice(device);
+
+                            // TODO: Initialise a thread to control the interface to the disk (SATAPI)
+                            //Controllers.StorageController.Init();
+                            //Controllers.StorageController.AddDisk(device);
                         }
                         catch
                         {
