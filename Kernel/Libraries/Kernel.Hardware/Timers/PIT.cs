@@ -409,9 +409,8 @@ namespace Kernel.Hardware.Timers
                 //  that to continually switch state would be massively inefficient. Also, switching
                 //  state isn't necessary for the handlers queued in the timer.
 
-                //TODO: Should PIT remain as part of KernelTask or be transferred to DeviceManagerTask?
+                //TODO: Should PIT be registered as a system device? (Using System call)
                 //DeviceManager.AddDevice(this);
-
 
                 enabled = true;
                 
@@ -428,7 +427,7 @@ namespace Kernel.Hardware.Timers
         {
             if (enabled)
             {
-                //TODO: This should be done through a DeviceManager.Remove function.
+                //TODO: This should be done through a DeviceManager.Deregister system call.
                 //TODO: This needs un-commenting and fixing
                 //DeviceManager.Devices.Remove(this);
                 //As per requirements, set temp sote store of id to 0 to prevent

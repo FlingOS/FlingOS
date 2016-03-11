@@ -63,7 +63,7 @@ namespace Kernel.Hardware.Keyboards
         {
             if (enabled)
             {
-                //TODO: This should be done through a DeviceManager.Remove function.
+                //TODO: This should be done through a DeviceManager.Deregister system call.
                 //TODO: This needs un-commenting and fixing
                 //DeviceManager.Devices.Remove(this);
                 enabled = false;

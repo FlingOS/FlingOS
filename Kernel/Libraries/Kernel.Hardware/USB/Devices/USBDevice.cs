@@ -51,9 +51,8 @@ namespace Kernel.Hardware.USB.Devices
         public USBDevice(USBDeviceInfo aDeviceInfo)
         {
             DeviceInfo = aDeviceInfo;
-
-            //TODO: Register device system call
-            //DeviceManager.AddDevice(this);
+            
+            Hardware.Devices.DeviceManager.RegisterDevice(this);
             USBManager.Devices.Add(this);
         }
 
@@ -62,7 +61,7 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public virtual void Destroy()
         {
-            //TODO: This should be done through a DeviceManager.Remove function.
+            //TODO: This should be done through a DeviceManager.Deregister system call.
             //TODO: This needs un-commenting and fixing
             //DeviceManager.Devices.Remove(this);
             USBManager.Devices.Remove(this);

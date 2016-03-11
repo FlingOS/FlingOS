@@ -107,7 +107,7 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
             
-            //TODO: PS2 Keyboard device should be handled by Device Manager Task
+            //TODO: PS2 Keyboard device should be registered
             BasicConsole.WriteLine("WM > Init keyboard");
             Keyboard.InitDefault();
             BasicConsole.WriteLine("WM > Register IRQ 1 handler");

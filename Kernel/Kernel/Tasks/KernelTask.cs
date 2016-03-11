@@ -973,7 +973,7 @@ namespace Kernel.Tasks
                     {
                         int num;
                         result = Hardware.Devices.DeviceManager.GetNumDevices(out num, CallerProcess);
-                        Return3 = (uint)num;
+                        Return2 = (uint)num;
                     }
 
 #if DSC_TRACE

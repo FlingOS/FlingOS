@@ -1,4 +1,6 @@
-﻿using Kernel.Hardware;
+﻿using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
+using Kernel.Hardware;
 using Kernel.Hardware.ATA;
 using Kernel.Hardware.Devices;
 using Kernel.Hardware.PCI;
@@ -61,9 +63,11 @@ namespace Kernel.Shells
                         KeyboardKey k = keyboard.ReadKey();
                         switch (k)
                         {
-                            //TODO: Get devices system call
+                            case KeyboardKey.A:
+                                OutputDeviceList(DeviceManager.GetDeviceList());
+                                break;
                             default:
-                                console.WriteLine("No input options available.");
+                                console.WriteLine("Use the following keys:\nA: All");
                                 break;
                         }
                     }
@@ -83,6 +87,52 @@ namespace Kernel.Shells
                 SystemCalls.SleepThread(1000);
             }
             console.WriteLine("Device shell exited.");
+        }
+
+        private void OutputDeviceList(List DeviceList)
+        {
+            if (DeviceList == null)
+            {
+                console.WriteLine("Failed to get device list!");
+            }
+            else
+            {
+                if (DeviceList.Count == 0)
+                {
+                    console.WriteLine("No devices in list.");
+                }
+                else
+                {
+                    for (int i = 0; i < DeviceList.Count; i++)
+                    {
+                        Device ADevice = (Device)DeviceList[i];
+                        console.WriteLine("Id: " + (String)ADevice.Id);
+                        console.Write("Group: ");
+                        console.WriteLine_AsDecimal((int)ADevice.Group);
+                        console.Write("Class: ");
+                        console.WriteLine_AsDecimal((int)ADevice.Class);
+                        console.Write("Subclass: ");
+                        console.WriteLine_AsDecimal((int)ADevice.SubClass);
+                        console.Write("Name: ");
+                        console.WriteLine(ADevice.Name);
+                        console.Write("Info: ");
+                        for (int j = 0; j < ADevice.Info.Length; j++)
+                        {
+                            console.Write(ADevice.Info[j]);
+                            if (j < ADevice.Info.Length - 1)
+                            {
+                                console.Write(", ");
+                            }
+                        }
+                        console.WriteLine();
+                        console.Write("Claimed: ");
+                        console.WriteLine(ADevice.Claimed);
+                        console.Write("Owner Id: ");
+                        console.WriteLine(ADevice.OwnerProcessId);
+                        console.WriteLine("------------------------");
+                    }
+                }
+            }
         }
     }
 }

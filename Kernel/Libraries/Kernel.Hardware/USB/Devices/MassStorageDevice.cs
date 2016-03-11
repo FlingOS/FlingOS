@@ -156,6 +156,8 @@ namespace Kernel.Hardware.USB.Devices
 #endif
             //Immediately set up the MSD.
             Setup();
+
+            //TODO: Register the device
         }
 
         /// <summary>
@@ -1519,8 +1521,7 @@ namespace Kernel.Hardware.USB.Devices
                 FOS_System.Heap.Free(capacityBuffer);
             }
 
-            //TODO: Register device system call
-            //DeviceManager.AddDevice(this);
+            DeviceManager.RegisterDevice(this);
         }
 
         /// <summary>
@@ -1667,7 +1668,7 @@ namespace Kernel.Hardware.USB.Devices
         /// </summary>
         public void Destroy()
         {
-            //TODO: This should be done through a DeviceManager.Remove function.
+            //TODO: This should be done through a DeviceManager.Deregister system call.
             //TODO: This needs un-commenting and fixing
             //DeviceManager.Devices.Remove(this);
             msd = null;

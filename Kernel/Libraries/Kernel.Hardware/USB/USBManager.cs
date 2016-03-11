@@ -181,8 +181,8 @@ namespace Kernel.Hardware.USB
                                 //BasicConsole.SetTextColour(BasicConsole.default_colour);
                                 EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                                 HCIDevices.Add(newEHCI);
-                                //TODO: Register device system call
-                                //DeviceManager.AddDevice(newEHCI);
+
+                                Hardware.Devices.DeviceManager.RegisterDevice(newEHCI);
                                 newEHCI.Start();
                             }
 #if USB_TRACE
@@ -222,8 +222,8 @@ namespace Kernel.Hardware.USB
 
                                 UHCI newUHCI = new UHCI(UHCI_PCIDevice);
                                 HCIDevices.Add(newUHCI);
-                                //TODO: Register device system call
-                                //DeviceManager.AddDevice(newUHCI);
+
+                                Hardware.Devices.DeviceManager.RegisterDevice(newUHCI);
                                 newUHCI.Start();
                             }
 #if USB_TRACE
@@ -313,8 +313,8 @@ namespace Kernel.Hardware.USB
 
                             EHCI newEHCI = new EHCI(EHCI_PCIDevice);
                             HCIDevices.Add(newEHCI);
-                            //TODO: Register device system call
-                            //DeviceManager.AddDevice(newEHCI);
+
+                            Hardware.Devices.DeviceManager.RegisterDevice(newEHCI);
                             newEHCI.Start();
                         }
 #if USB_TRACE
@@ -342,8 +342,8 @@ namespace Kernel.Hardware.USB
 
                             UHCI newUHCI = new UHCI(UHCI_PCIDevice);
                             HCIDevices.Add(newUHCI);
-                            //TODO: Register device system call
-                            //DeviceManager.AddDevice(newUHCI);
+
+                            Hardware.Devices.DeviceManager.RegisterDevice(newUHCI);
                             newUHCI.Start();
                         }
 #if USB_TRACE

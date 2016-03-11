@@ -24,6 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware
@@ -38,7 +39,7 @@ namespace Kernel.Hardware
         public DeviceClass Class;
         public DeviceSubClass SubClass;
 
-        public FOS_System.String Name = null;
+        public String Name = null;
         public uint[] Info = null;
 
         public bool Claimed;
@@ -56,6 +57,36 @@ namespace Kernel.Hardware
             Info = SomeInfo;
             Claimed = IsClaimed;
             OwnerProcessId = 0;
+        }
+        public unsafe Device(DeviceDescriptor* descriptor)
+        {
+            Id = descriptor->Id;
+            Group = descriptor->Group;
+            Class = descriptor->Class;
+            SubClass = descriptor->SubClass;
+            
+            int NameLength = 0;
+            for (; NameLength < 64; NameLength++)
+            {
+                if (descriptor->Name[NameLength] == '\0')
+                {
+                    break;
+                }
+            }
+            Name = String.New(NameLength);
+            for (int i = 0; i < NameLength; i++)
+            {
+                Name[i] = descriptor->Name[i];
+            }
+
+            Info = new uint[16];
+            for (int i = 0; i < 16; i++)
+            {
+                Info[i] = descriptor->Info[i];
+            }
+
+            Claimed = descriptor->Claimed;
+            OwnerProcessId = descriptor->OwnerProcessId;
         }
 
         public unsafe void FillDeviceDescriptor(DeviceDescriptor* TheDescriptor, bool IncludeInfo)

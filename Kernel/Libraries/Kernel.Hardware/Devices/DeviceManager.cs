@@ -46,7 +46,7 @@ namespace Kernel.Hardware.Devices
         /// Some items may be more specific instances of a device so duplicate references to one physical device may 
         /// exist. For example, a PCIDevice instance and a EHCI instance would both exist for one physical EHCI device.
         /// </remarks>
-        public static List Devices;
+        private static List Devices;
         
         public static void Init()
         {
@@ -68,6 +68,59 @@ namespace Kernel.Hardware.Devices
 
             return result;
         }
+
+        public static int GetNumDevices()
+        {
+            int result;
+            if (SystemCalls.GetNumDevices(out result) != SystemCallResults.OK)
+            {
+                result = -1;
+            }
+            return result;
+        }
+        public static List GetDeviceList()
+        {
+            List result = null;
+
+            int NumDevices = GetNumDevices();
+            if (NumDevices > -1)
+            {
+                result = new List(NumDevices);
+
+                if (NumDevices > 0)
+                {
+                    DeviceDescriptor* DeviceList = (DeviceDescriptor*)Heap.AllocZeroed((uint)(sizeof(DeviceDescriptor) * NumDevices), "DeviceManager : GetDeviceList");
+
+                    if (SystemCalls.GetDeviceList(DeviceList, NumDevices) == SystemCallResults.OK)
+                    {
+                        for (int i = 0; i < NumDevices; i++)
+                        {
+                            DeviceDescriptor* descriptor = DeviceList + i;
+                            result.Add(new Device(descriptor));
+                        }
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("GetDeviceList failed!");
+                        result = null;
+                    }
+
+                    Heap.Free(DeviceList);
+                }
+                else
+                {
+                    BasicConsole.WriteLine("GetNumDevices returned 0!");
+                }
+            }
+            else
+            {
+                BasicConsole.WriteLine("GetNumDevices returned -1!");
+            }
+
+            return result;
+        }
+
+
 
         public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId, Process CallerProcess)
         {
@@ -154,18 +207,7 @@ namespace Kernel.Hardware.Devices
 
         public static SystemCallResults GetNumDevices(out int NumDevices, Process CallerProcess)
         {
-            int result = 0;
-
-            for (int i = 0; i < Devices.Count; i++)
-            {
-                Device aDevice = (Device)Devices[i];
-                if (!aDevice.Claimed || aDevice.OwnerProcessId == CallerProcess.Id)
-                {
-                    result++;
-                }
-            }
-
-            NumDevices = result;
+            NumDevices = Devices.Count;
             return SystemCallResults.OK;
         }
         public static SystemCallResults GetDeviceList(DeviceDescriptor* DeviceList, int MaxDescriptors, Process CallerProcess)
@@ -176,12 +218,8 @@ namespace Kernel.Hardware.Devices
             for (int i = 0; i < Devices.Count && pos < MaxDescriptors; i++)
             {
                 Device aDevice = (Device)Devices[i];
-                bool OwnedByCaller = aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id;
-                if (!aDevice.Claimed || OwnedByCaller)
-                {
-                    DeviceDescriptor* TheDescriptor = DeviceList + (pos++);
-                    aDevice.FillDeviceDescriptor(TheDescriptor, OwnedByCaller);
-                }
+                DeviceDescriptor* TheDescriptor = DeviceList + (pos++);
+                aDevice.FillDeviceDescriptor(TheDescriptor, aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id);
             }
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
