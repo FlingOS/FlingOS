@@ -67,7 +67,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public Semaphore(int anId, int aLimit)
         {
             id = anId;
-            count = limit = aLimit;
+            count = (limit = aLimit) == -1 ? 0 : limit;
         }
 
         public bool WaitOnBehalf(Process aProcess, Thread aThread)
@@ -91,11 +91,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
         public void SignalOnBehalf()
         {
             ExclLock.Enter();
-            if (count < limit)
-            {
-                count++;
-            }
-
+            
             if (WaitingThreads.Count > 0)
             {
                 //BasicConsole.WriteLine("Waiting threads > 0");
@@ -109,6 +105,11 @@ namespace Kernel.Hardware.Processes.Synchronisation
                 }
                 while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier) && WaitingThreads.Count > 0);
             }
+            else if (count < limit || limit == -1)
+            {
+                count++;
+            }
+
             ExclLock.Exit();
         }
     }
