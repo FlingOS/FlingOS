@@ -142,7 +142,7 @@ namespace Kernel.Hardware.Devices
 #endif
             }
 
-            SystemCallResults result = SystemCalls.CreateSemaphore(0, out ScancodeBufferSemaphoreId);
+            SystemCallResults result = SystemCalls.CreateSemaphore(-1, out ScancodeBufferSemaphoreId);
             if (result != SystemCallResults.OK)
             {
                 ExceptionMethods.Throw(new FOS_System.Exception("Couldn't create the necessary semaphore!"));
@@ -395,12 +395,8 @@ namespace Kernel.Hardware.Devices
         /// <returns>The dequeued scancode.</returns>
         public uint ReadScancode()
         {
-            //Wait until we get a scancode
-            while (scancodeBuffer.Count == 0)
-            {
-                SystemCalls.WaitSemaphore(ScancodeBufferSemaphoreId);
-            }
-
+            SystemCalls.WaitSemaphore(ScancodeBufferSemaphoreId);
+            
             return Dequeue();
         }
 

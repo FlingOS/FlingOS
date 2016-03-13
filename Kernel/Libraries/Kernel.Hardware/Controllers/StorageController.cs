@@ -12,7 +12,7 @@ namespace Kernel.Hardware.Controllers
         private class ClientInfo : FOS_System.Object
         {
             public uint InProcessId;
-            public int PipeId;
+            public int DataOutPipeId;
             public uint ManagementThreadId;
         }
         private class DiskInfo : Object
@@ -26,11 +26,16 @@ namespace Kernel.Hardware.Controllers
         private enum DiskCommands
         {
             Invalid = -1,
-            None = 0
+            None = 0,
+            Read
         }
         private class DiskCommand : Object
         {
             public DiskCommands Command;
+            public ulong BlockNo;
+            public uint BlockCount;
+            public int CompletedSemaphoreId;
+            public int OutputDataPipeId;
         }
 
         private static List DiskList;
@@ -89,7 +94,7 @@ namespace Kernel.Hardware.Controllers
                     ClientInfo NewInfo = new ClientInfo()
                     {
                         InProcessId = InProcessId,
-                        PipeId = PipeId
+                        DataOutPipeId = PipeId
                     };
 
                     Clients.Add(NewInfo);
@@ -150,7 +155,7 @@ namespace Kernel.Hardware.Controllers
                                     StoragePipeCommand* CommandPtr = CmdInpoint.Read();
                                     BasicConsole.WriteLine("Storage Controller > Command received from client: " + (String)CommandPtr->Command);
 
-                                    switch((StorageCommands)CommandPtr->Command)
+                                    switch ((StorageCommands)CommandPtr->Command)
                                     {
                                         case StorageCommands.DiskList:
                                             {
@@ -165,7 +170,91 @@ namespace Kernel.Hardware.Controllers
 
                                                     SystemCalls.SignalSemaphore(DiskListSemaphoreId);
 
-                                                    DataOutpoint.WriteDiskInfos(TheClient.PipeId, DiskIds);
+                                                    DataOutpoint.WriteDiskInfos(TheClient.DataOutPipeId, DiskIds);
+                                                }
+                                            }
+                                            break;
+                                        case StorageCommands.Read:
+                                            {
+                                                if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
+                                                {
+                                                    DiskInfo TheDiskInfo = null;
+
+                                                    for (int i = 0; i < DiskList.Count; i++)
+                                                    {
+                                                        DiskInfo ADiskInfo = (DiskInfo)DiskList[i];
+                                                        if (ADiskInfo.TheDevice.Id == CommandPtr->DiskId)
+                                                        {
+                                                            TheDiskInfo = ADiskInfo;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    SystemCalls.SignalSemaphore(DiskListSemaphoreId);
+
+                                                    if (TheDiskInfo != null)
+                                                    {
+                                                        DiskCommand NewCommand = new DiskCommand()
+                                                        {
+                                                            Command = DiskCommands.Read,
+                                                            BlockCount = CommandPtr->BlockCount,
+                                                            BlockNo = CommandPtr->BlockNo,
+                                                            OutputDataPipeId = TheClient.DataOutPipeId
+                                                        };
+
+                                                        int NewSemaphoreId;
+                                                        if (SystemCalls.CreateSemaphore(-1, out NewSemaphoreId) != SystemCallResults.OK)
+                                                        {
+                                                            BasicConsole.WriteLine("Storage Controller > Failed to create a semaphore for read command!");
+                                                            ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                                                        }
+                                                        NewCommand.CompletedSemaphoreId = NewSemaphoreId;
+
+                                                        if (SystemCalls.WaitSemaphore(TheDiskInfo.CommandQueueAccessSemaphoreId) == SystemCallResults.OK)
+                                                        {
+                                                            TheDiskInfo.CommandQueue.Push(NewCommand);
+
+                                                            SystemCalls.SignalSemaphore(TheDiskInfo.CommandQueueAccessSemaphoreId);
+                                                            SystemCalls.SignalSemaphore(TheDiskInfo.CommandQueuedSemaphoreId);
+
+                                                            SystemCalls.WaitSemaphore(NewCommand.CompletedSemaphoreId);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            break;
+                                        case StorageCommands.BlockSize:
+                                            {
+                                                if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
+                                                {
+                                                    DiskInfo TheDiskInfo = null;
+
+                                                    for (int i = 0; i < DiskList.Count; i++)
+                                                    {
+                                                        DiskInfo ADiskInfo = (DiskInfo)DiskList[i];
+                                                        if (ADiskInfo.TheDevice.Id == CommandPtr->DiskId)
+                                                        {
+                                                            TheDiskInfo = ADiskInfo;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    SystemCalls.SignalSemaphore(DiskListSemaphoreId);
+
+                                                    if (TheDiskInfo != null)
+                                                    {
+                                                        byte[] data = new byte[8];
+                                                        ulong BlockSize = TheDiskInfo.TheDevice.BlockSize;
+                                                        data[0] = (byte)(BlockSize >> 0);
+                                                        data[1] = (byte)(BlockSize >> 8);
+                                                        data[2] = (byte)(BlockSize >> 16);
+                                                        data[3] = (byte)(BlockSize >> 24);
+                                                        data[4] = (byte)(BlockSize >> 32);
+                                                        data[5] = (byte)(BlockSize >> 40);
+                                                        data[6] = (byte)(BlockSize >> 48);
+                                                        data[7] = (byte)(BlockSize >> 56);
+                                                        DataOutpoint.Write(TheClient.DataOutPipeId, data, 0, 8, true);
+                                                    }
                                                 }
                                             }
                                             break;
@@ -234,7 +323,7 @@ namespace Kernel.Hardware.Controllers
                 }
                 NewInfo.CommandQueueAccessSemaphoreId = NewSemaphoreId;
                 
-                if (SystemCalls.CreateSemaphore(0, out NewSemaphoreId) != SystemCallResults.OK)
+                if (SystemCalls.CreateSemaphore(-1, out NewSemaphoreId) != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Storage Controller > Failed to create a semaphore! (AD 2)");
                     ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
@@ -297,9 +386,30 @@ namespace Kernel.Hardware.Controllers
                             {
                                 ACommand = (DiskCommand)TheInfo.CommandQueue.Pop();
                                 SystemCalls.SignalSemaphore(TheInfo.CommandQueueAccessSemaphoreId);
-                            }
 
-                            BasicConsole.WriteLine("Storage controller > Disk command received: " + (String)(uint)ACommand.Command);
+                                BasicConsole.WriteLine("Storage controller > Disk command received: " + (String)(uint)ACommand.Command);
+
+                                switch(ACommand.Command)
+                                {
+                                    case DiskCommands.Read:
+                                        BasicConsole.WriteLine("Storage controller > Reading " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
+                                        byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
+                                        TheInfo.TheDevice.ReadBlock(ACommand.BlockNo, ACommand.BlockCount, data);
+                                        //BasicConsole.WriteLine("Data read (non-zero only): ");
+                                        //for (int i = 0; i < data.Length; i++)
+                                        //{
+                                        //    if (data[i] != 0)
+                                        //    {
+                                        //        BasicConsole.Write(data[i]);
+                                        //    }
+                                        //}
+                                        //BasicConsole.WriteLine("---------------------------------------------");
+                                        DataOutpoint.Write(ACommand.OutputDataPipeId, data, 0, data.Length, true);
+                                        break;
+                                }
+
+                                SystemCalls.SignalSemaphore(ACommand.CompletedSemaphoreId);
+                            }
                         }
 
                     }

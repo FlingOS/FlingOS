@@ -6,10 +6,14 @@
         None = 0,
         DiskList,
         Read,
-        Write
+        Write,
+        BlockSize
     }
     public struct StoragePipeCommand
     {
         public int Command;
+        public ulong DiskId;
+        public ulong BlockNo;
+        public uint BlockCount;
     }
 }

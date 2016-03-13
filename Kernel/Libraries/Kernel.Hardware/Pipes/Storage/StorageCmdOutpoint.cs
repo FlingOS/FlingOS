@@ -45,12 +45,27 @@ namespace Kernel.Pipes.Storage
         {
         }
 
-        public unsafe void Write(int PipeId, StorageCommands Command)
+        private unsafe void WriteCommand(int PipeId, StorageCommands Command, ulong DiskId, ulong BlockNo, uint BlockCount)
         {
             byte[] buffer = new byte[sizeof(StoragePipeCommand)];
             StoragePipeCommand* CmdPtr = (StoragePipeCommand*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize);
             CmdPtr->Command = (int)Command;
+            CmdPtr->DiskId = DiskId;
+            CmdPtr->BlockNo = BlockNo;
+            CmdPtr->BlockCount = BlockCount;
             base.Write(PipeId, buffer, 0, buffer.Length, true);
+        }
+        public unsafe void Send_DiskList(int PipeId)
+        {
+            WriteCommand(PipeId, StorageCommands.DiskList, 0, 0, 0);
+        }
+        public unsafe void Send_Read(int PipeId, ulong DiskId, ulong BlockNo, uint BlockCount)
+        {
+            WriteCommand(PipeId, StorageCommands.Read, DiskId, BlockNo, BlockCount);
+        }
+        public unsafe void Send_BlockSize(int PipeId, ulong DiskId)
+        {
+            WriteCommand(PipeId, StorageCommands.BlockSize, DiskId, 0, 0);
         }
     }
 }
