@@ -63,9 +63,17 @@ namespace Kernel.Pipes.Storage
         {
             WriteCommand(PipeId, StorageCommands.Read, DiskId, BlockNo, BlockCount);
         }
+        public unsafe void Send_Write(int PipeId, ulong DiskId, ulong BlockNo, uint BlockCount)
+        {
+            WriteCommand(PipeId, StorageCommands.Write, DiskId, BlockNo, BlockCount);
+        }
         public unsafe void Send_BlockSize(int PipeId, ulong DiskId)
         {
             WriteCommand(PipeId, StorageCommands.BlockSize, DiskId, 0, 0);
+        }
+        public unsafe void Send_CleanCaches(int PipeId, ulong DiskId)
+        {
+            WriteCommand(PipeId, StorageCommands.CleanCaches, DiskId, 0, 0);
         }
     }
 }

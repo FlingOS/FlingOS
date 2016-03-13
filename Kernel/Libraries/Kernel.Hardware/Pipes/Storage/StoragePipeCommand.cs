@@ -7,7 +7,8 @@
         DiskList,
         Read,
         Write,
-        BlockSize
+        BlockSize,
+        CleanCaches
     }
     public struct StoragePipeCommand
     {

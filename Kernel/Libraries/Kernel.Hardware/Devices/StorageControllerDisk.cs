@@ -42,16 +42,17 @@ namespace Kernel.Hardware.Devices
             //TODO: Wrap in a loop so we don't hit buffer overflow
             CmdPipe.Send_Read(CmdPipeId, Id, aBlockNo, aBlockCount);
             DataInPipe.Read(aData, 0, (int)(aBlockCount * BlockSize), true);
-
-            //BasicConsole.WriteLine("Data read: ");
-            //for (int i = 0; i < aData.Length; i++)
-            //{
-            //    BasicConsole.Write(aData[i]);
-            //}
         }
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            //TODO
+            if (aBlockCount * BlockSize > (ulong)DataInPipe.BufferSize)
+            {
+                BasicConsole.WriteLine("WARNING! StorageControllerDisk.Write might be about to cause a buffer overflow.");
+            }
+
+            //TODO: Wrap in a loop so we don't hit buffer overflow
+            CmdPipe.Send_Write(CmdPipeId, Id, aBlockNo, aBlockCount);
+            DataOutPipe.Write(DataOutPipeId, aData, 0, (int)(aBlockCount * BlockSize), true);
         }
 
         public override void CleanCaches()
