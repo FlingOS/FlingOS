@@ -1602,7 +1602,7 @@ which should have been provided with the executable.");
             FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitionInfos);
             
             console.WriteLine("Done. Initialising disk...");
-            FileSystemManager.InitDisk(disk);
+            //FileSystemManager.InitDisk(disk);
             
             console.WriteLine("Done. Finding partition...");
             Partition thePart = null;
@@ -1812,8 +1812,8 @@ which should have been provided with the executable.");
             {
                 try
                 {
-                    FileSystemManager.InitDisk((Hardware.Devices.DiskDevice)device);
-                    FileSystemManager.InitPartitions();
+                    //FileSystemManager.InitDisk((Hardware.Devices.DiskDevice)device);
+                    //FileSystemManager.InitPartitions();
                 }
                 catch
                 {

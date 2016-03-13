@@ -11,6 +11,8 @@ namespace Kernel.Tasks.Driver
 
         private static uint GCThreadId;
 
+        public static bool Terminating = false;
+
         public static void Main()
         {
             Helpers.ProcessInit("File Systems Driver", out GCThreadId);
@@ -29,6 +31,14 @@ namespace Kernel.Tasks.Driver
                 {
                     BasicConsole.WriteLine("File Systems Driver > Initialising file systems...");
                     FileSystemManager.Init();
+
+                    while (!Terminating)
+                    {
+                        BasicConsole.WriteLine("File Systems Driver > Searching for storage...");
+                        FileSystemManager.CheckForStoragePipes();
+
+                        SystemCalls.SleepThread(10000);
+                    }
                 }
                 catch
                 {

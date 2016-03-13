@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
     
-#define HCI_TRACE
+//#define HCI_TRACE
 
 using System;
 using Kernel.FOS_System.Processes.Requests.Devices;

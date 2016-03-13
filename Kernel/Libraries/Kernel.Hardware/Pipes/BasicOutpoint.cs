@@ -91,30 +91,49 @@ namespace Kernel.Pipes
         /// Waits for a pipe to connect to the outpoint.
         /// </summary>
         /// <returns>The Id of the newly connected pipe.</returns>
-        public int WaitForConnect()
+        public int WaitForConnect(out uint InProcessId)
         {
-            int aPipeId;
-            SystemCallResults SysCallResult = SystemCalls.WaitOnPipeCreate(Class, Subclass, out aPipeId);
-            switch (SysCallResult)
+            int aPipeId = 0;
+            InProcessId = 0;
+
+            WaitOnPipeCreateRequest* request = (WaitOnPipeCreateRequest*)Heap.AllocZeroed((uint)sizeof(WaitOnPipeCreateRequest), "BasicOutPipe : WaitForConnect");
+            try
             {
-                case SystemCallResults.Unhandled:
-                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unhandled!");
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unhandled!"));
-                    break;
-                case SystemCallResults.Fail:
-                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Failed!");
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create failed!"));
-                    break;
-                case SystemCallResults.OK:
-                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Succeeded.");
-                    //BasicConsole.Write("BasicOutPipe > New pipe id: ");
-                    //BasicConsole.WriteLine(aPipeId);
-                    break;
-                default:
-                    //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unexpected result!"));
-                    break;
+                request->Class = Class;
+                request->Subclass = Subclass;
+
+                SystemCallResults SysCallResult = SystemCalls.WaitOnPipeCreate(request);
+                switch (SysCallResult)
+                {
+                    case SystemCallResults.Unhandled:
+                        //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unhandled!");
+                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unhandled!"));
+                        break;
+                    case SystemCallResults.Fail:
+                        //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Failed!");
+                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create failed!"));
+                        break;
+                    case SystemCallResults.OK:
+                        //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Succeeded.");
+                        //BasicConsole.Write("BasicOutPipe > New pipe id: ");
+                        //BasicConsole.WriteLine(aPipeId);
+                        aPipeId = request->Result.Id;
+                        InProcessId = request->Result.InpointProcessId;
+                        break;
+                    default:
+                        //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");
+                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unexpected result!"));
+                        break;
+                }
             }
+            finally
+            {
+                if (request != null)
+                {
+                    Heap.Free(request);
+                }
+            }
+
             return aPipeId;
         }
 

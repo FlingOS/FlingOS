@@ -90,6 +90,14 @@ namespace Kernel.Pipes
         /// </summary>
         private UInt32Queue ThreadsWaitingToRead;
 
+        public int BufferSize
+        {
+            get
+            {
+                return Buffer.Length;
+            }
+        }
+
         /// <summary>
         /// Creates a new pipe.
         /// </summary>

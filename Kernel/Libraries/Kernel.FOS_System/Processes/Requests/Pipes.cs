@@ -46,7 +46,8 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         /// <summary>
         /// Standard pipe used for sending and receiving string data.
         /// </summary>
-        Standard
+        Standard,
+        Storage
     }
     /// <summary>
     /// The available pipe subclasses.
@@ -60,7 +61,9 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         /// <summary>
         /// Standard in pipe for receiving input data into a process (e.g. key chars from the Window Manager).
         /// </summary>
-        Standard_In
+        Standard_In,
+        Storage_Command,
+        Storage_Data
     }
 
     /// <summary>
@@ -82,6 +85,24 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         public PipeSubclasses Subclass;
         /// <summary>
         /// The result of the create request.
+        /// </summary>
+        public PipeDescriptor Result;
+    }
+    /// <summary>
+    /// Represents a Wait on Pipe Create request (used in a system call).
+    /// </summary>
+    public struct WaitOnPipeCreateRequest
+    {
+        /// <summary>
+        /// The class of pipe to wait for.
+        /// </summary>
+        public PipeClasses Class;
+        /// <summary>
+        /// The subclass of pipe to wait for.
+        /// </summary>
+        public PipeSubclasses Subclass;
+        /// <summary>
+        /// The result of the wait request.
         /// </summary>
         public PipeDescriptor Result;
     }
@@ -146,6 +167,14 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         /// The Id of the pipe.
         /// </summary>
         public int Id;
+
+        public PipeClasses Class;
+        public PipeSubclasses Subclass;
+
+        public int BufferSize;
+
+        public uint InpointProcessId;
+        public uint OutpointProcessId;
     }
 
 

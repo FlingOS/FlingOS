@@ -298,7 +298,7 @@ namespace Kernel.Pipes
                     ProcessManager.DisableKernelAccessToProcessMemory(InProcessId);
                     
                     // Wake any threads (/processes) which were waiting on a pipe to be created
-                    WakeWaitingThreads(outpoint, pipe.Id);
+                    WakeWaitingThreads(outpoint, inpoint, pipe);
                 }
             }
 
@@ -314,7 +314,7 @@ namespace Kernel.Pipes
         /// </summary>
         /// <param name="outpoint">The outpoint to wake waiting threads of.</param>
         /// <param name="newPipeId">The Id of the newly created pipe.</param>
-        private static void WakeWaitingThreads(PipeOutpoint outpoint, int newPipeId)
+        private static void WakeWaitingThreads(PipeOutpoint outpoint, PipeInpoint inpoint, Pipe NewPipe)
         {
             while (outpoint.WaitingThreads.Count > 0)
             {
@@ -328,8 +328,17 @@ namespace Kernel.Pipes
                 Thread thread = ProcessManager.GetThreadById(threadId, process);
 
                 ProcessManager.EnableKernelAccessToProcessMemory(process);
+
+                WaitOnPipeCreateRequest* request = (WaitOnPipeCreateRequest*)thread.Param1;
+                request->Result.Id = NewPipe.Id;
+                request->Result.BufferSize = NewPipe.BufferSize;
+                request->Result.Class = outpoint.Class;
+                request->Result.Subclass = outpoint.Subclass;
+                request->Result.InpointProcessId = inpoint.ProcessId;
+                request->Result.OutpointProcessId = outpoint.ProcessId;
+
                 thread.Return1 = (uint)SystemCallResults.OK;
-                thread.Return2 = (uint)newPipeId;
+                thread.Return2 = 0;
                 thread.Return3 = 0;
                 thread.Return4 = 0;
                 ProcessManager.DisableKernelAccessToProcessMemory(process);
@@ -341,10 +350,9 @@ namespace Kernel.Pipes
         /// </summary>
         /// <param name="OutProcessId">The Id of the process which owns the outpoint and the thread to block.</param>
         /// <param name="OutThreadId">The Id of the thread to block.</param>
-        /// <param name="Class">The class of the outpoint.</param>
-        /// <param name="Subclass">The subclass of the outpoint.</param>
+        /// <param name="request">The wait request.</param>
         /// <returns>True if the request was successful. Otherwise, false.</returns>
-        public static bool WaitOnPipeCreate(uint OutProcessId, uint OutThreadId, PipeClasses Class, PipeSubclasses Subclass)
+        public static bool WaitOnPipeCreate(uint OutProcessId, uint OutThreadId, WaitOnPipeCreateRequest* request)
         {
             // Validate inputs
             //   - Check the process exists
@@ -359,9 +367,11 @@ namespace Kernel.Pipes
             {
                 return false;
             }
-            
+
+            ProcessManager.EnableKernelAccessToProcessMemory(OutProcess);
+
             // Find the outpoint
-            PipeOutpoint outpoint = GetOutpoint(OutProcessId, Class, Subclass);
+            PipeOutpoint outpoint = GetOutpoint(OutProcessId, request->Class, request->Subclass);
 
             // Check that we actually found the outpoint
             if (outpoint == null)
@@ -371,6 +381,8 @@ namespace Kernel.Pipes
 
             // Mark the outpoint as being waited on by the specified process/thread
             outpoint.WaitingThreads.Add(((UInt64)OutProcessId << 32) | OutThreadId);
+
+            ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
 
             return true;
         }

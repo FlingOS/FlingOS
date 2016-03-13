@@ -48,7 +48,10 @@ namespace Kernel.Tasks
             }
             finally
             {
-                Heap.Free(StartRequest);
+                if (StartRequest != null)
+                {
+                    Heap.Free(StartRequest);
+                }
             }
 
 #if TASKHELPERS_TRACE

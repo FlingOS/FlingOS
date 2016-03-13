@@ -69,7 +69,10 @@ namespace Kernel.Hardware.Devices
             }
             finally
             {
-                Heap.Free(descriptor);
+                if (descriptor != null)
+                {
+                    Heap.Free(descriptor);
+                }
             }
 
             return result;
@@ -115,7 +118,10 @@ namespace Kernel.Hardware.Devices
                     }
                     finally
                     {
-                        Heap.Free(DeviceList);
+                        if (DeviceList != null)
+                        {
+                            Heap.Free(DeviceList);
+                        }
                     }
                 }
                 else
@@ -151,7 +157,10 @@ namespace Kernel.Hardware.Devices
             }
             finally
             {
-                Heap.Free(descriptor);
+                if (descriptor != null)
+                {
+                    Heap.Free(descriptor);
+                }
             }
             return result;
         }

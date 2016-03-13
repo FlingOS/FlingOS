@@ -649,7 +649,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Wait On Pipe Create");
 #endif
 
-                        bool waiting = Pipes.PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id, (PipeClasses)Param1, (PipeSubclasses)Param2);
+                        bool waiting = Pipes.PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id, (WaitOnPipeCreateRequest*)Param1);
                         if (waiting)
                         {
                             result = SystemCallResults.Deferred;

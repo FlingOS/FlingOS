@@ -420,14 +420,13 @@ namespace Kernel.FOS_System.Processes
         /// <param name="NewPipeId">The Id of the newly created pipe.</param>
         /// <returns>OK if the system call was successful.</returns>
         [Drivers.Compiler.Attributes.NoGC]
-        public static SystemCallResults WaitOnPipeCreate(PipeClasses Class, PipeSubclasses Subclass, out int NewPipeId)
+        public static SystemCallResults WaitOnPipeCreate(WaitOnPipeCreateRequest* RequestPtr)
         {
             uint Return1 = 0;
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.WaitOnPipeCreate, (uint)Class, (uint)Subclass, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            NewPipeId = (int)Return2;
+            Call(SystemCallNumbers.WaitOnPipeCreate, (uint)RequestPtr, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             return (SystemCallResults)Return1;
         }
         /// <summary>

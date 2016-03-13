@@ -46,13 +46,15 @@ namespace Kernel.Consoles
         /// </summary>
         protected int StdOutPipeId;
 
+        protected uint StdOutRemoteProcessId;
+
         /// <summary>
         /// Creates the output pipe and waits for the Window Manager to connect.
         /// </summary>
         public void Connect()
         {
             StdOut = new Pipes.Standard.StandardOutpoint(true);
-            StdOutPipeId = StdOut.WaitForConnect();
+            StdOutPipeId = StdOut.WaitForConnect(out StdOutRemoteProcessId);
         }
 
         /// <summary>

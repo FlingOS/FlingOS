@@ -28,12 +28,12 @@
 #undef FSM_TRACE
 
 using System;
-
-using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.FOS_System.Collections;
-using Kernel.Hardware;
-using Kernel.Hardware.Devices;
+using Kernel.FOS_System;
 using Kernel.FOS_System.IO.Disk;
+using Kernel.FOS_System.Processes;
+using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.FOS_System.Collections;
+using Kernel.Pipes.Storage;
 
 namespace Kernel.FOS_System.IO
 {
@@ -56,6 +56,12 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         public static List FileSystemMappings;
 
+        private static StorageCmdOutpoint CmdOutpoint;
+        private static StorageDataOutpoint DataOutpoint;
+        private static List DataInpoints;
+
+        public static bool Terminating;
+
         /// <summary>
         /// Initializes all available file systems by searching for 
         /// valid partitions on the available disk devices.
@@ -65,39 +71,121 @@ namespace Kernel.FOS_System.IO
             Partitions = new List(3);
             FileSystemMappings = new List(3);
 
-            List Devices = DeviceManager.GetDeviceList();
-            for (int i = 0; i < Devices.Count; i++)
+            DataInpoints = new List();
+            CmdOutpoint = new StorageCmdOutpoint(PipeConstants.UnlimitedConnections);
+            DataOutpoint = new StorageDataOutpoint(PipeConstants.UnlimitedConnections);
+
+            Terminating = false;
+
+            //TODO: Separate threads for wait for connects
+            uint NewThreadId;
+            if (SystemCalls.StartThread(WaitForCmdPipes, out NewThreadId) == SystemCallResults.OK)
             {
-                Device aDevice = (Device)Devices[i];
-                if (aDevice.Class == DeviceClass.Storage)
+                //TODO: Store thread ids
+            }
+            else
+            {
+                BasicConsole.WriteLine("File System Manager failed to create command pipe listener thread!");
+            }
+        }
+        
+        private static void WaitForCmdPipes()
+        {
+            while(!Terminating)
+            {
+                uint InProcessId;
+                int PipeId = CmdOutpoint.WaitForConnect(out InProcessId);
+                //TODO: Proper handling
+                BasicConsole.WriteLine("File System Manager > Command Output connected. Sending command...");
+                CmdOutpoint.Write(PipeId, StorageCommands.Write);
+            }
+        }
+
+        public static void CheckForStoragePipes()
+        {
+            int numOutpoints;
+            SystemCallResults SysCallResult;
+            Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Storage, PipeSubclasses.Storage_Data);
+            
+            if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
+            {
+                PipeOutpointDescriptor[] OutpointDescriptors;
+                Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Storage, PipeSubclasses.Storage_Data);
+                
+                if (SysCallResult == SystemCallResults.OK)
                 {
-                    BasicConsole.WriteLine("Storage device detected!");
-                    //try
-                    //{
-                    //    InitDisk((DiskDevice)aDevice);
-                    //}
-                    //catch
-                    //{
-                    //    BasicConsole.WriteLine("Error initializing disk: " + (FOS_System.String)i);
-                    //    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                    //    //BasicConsole.DelayOutput(20);
-                    //}
+                    int NewDataInpoints = 0;
+
+                    for (int i = 0; i < OutpointDescriptors.Length; i++)
+                    {
+                        PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
+                        bool PipeExists = false;
+
+                        for (int j = 0; j < DataInpoints.Count; j++)
+                        {
+                            StorageDataInpoint ExistingPipeInfo = (StorageDataInpoint)DataInpoints[j];
+                            if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
+                            {
+                                PipeExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!PipeExists)
+                        {
+                            try
+                            {
+                                BasicConsole.WriteLine("File System Manager > Connecting to: " + (String)Descriptor.ProcessId);
+                                StorageDataInpoint DataIn = new StorageDataInpoint(Descriptor.ProcessId);
+                                DataInpoints.Add(DataIn);
+                                NewDataInpoints++;
+
+                                //TODO: Semaphores for getting outpoint pipe ids
+
+                                try
+                                {
+                                    InitDisk(DataIn);
+                                }
+                                catch
+                                {
+                                    BasicConsole.WriteLine("File System Manager > Error initialising storage!");
+                                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                                }
+                            }
+                            catch
+                            {
+                                BasicConsole.WriteLine("File System Manager > Error creating new pipe!");
+                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                            }
+                        }
+                    }
+
+                    if (NewDataInpoints > 0)
+                    {
+                        InitPartitions();
+                    }
+                }
+                else
+                {
+                    BasicConsole.WriteLine("File System Manager > Couldn't get outpoint descriptors!");
                 }
             }
-
-            InitPartitions();
+            else
+            {
+                BasicConsole.WriteLine("File System Manager > Cannot get outpoints!");
+            }
         }
 
         /// <summary>
         /// Initializes the specified disk device.
         /// </summary>
         /// <param name="aDiskDevice">The disk device to initialize.</param>
-        public static void InitDisk(DiskDevice aDiskDevice)
+        public static void InitDisk(StorageDataInpoint DataIn)
         {
             //TODO: Add more partitioning schemes.
 
 
-            if (InitAsISO9660(aDiskDevice))
+            if (InitAsISO9660(DataIn))
             {
 #if FSM_TRACE
                 BasicConsole.WriteLine("ISO9660 CD/DVD disc detected!");
@@ -106,14 +194,14 @@ namespace Kernel.FOS_System.IO
             }
             //Must check for GPT before MBR because GPT uses a protective
             //  MBR entry so will be seen as valid MBR.
-            else if (InitAsGPT(aDiskDevice))
+            else if (InitAsGPT(DataIn))
             {
 #if FSM_TRACE
                 BasicConsole.WriteLine("GPT formatted disk detected!");
                 BasicConsole.DelayOutput(3);
 #endif
             }
-            else if (!InitAsMBR(aDiskDevice))
+            else if (!InitAsMBR(DataIn))
             {
                 ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT/ISO9660 formatted disks not supported."));
             }
@@ -168,20 +256,22 @@ namespace Kernel.FOS_System.IO
             }
         }
 
-        private static bool InitAsISO9660(DiskDevice aDiskDevice)
+        private static bool InitAsISO9660(StorageDataInpoint DataIn)
         {
             // Must check for ISO9660 only on CD/DVD drives
-            if (aDiskDevice is Hardware.ATA.PATAPI)
-            {
-                Disk.ISO9660 TheISO9660 = new Disk.ISO9660(aDiskDevice);
 
-#if FSM_TRACE
-                TheISO9660.Print();
-#endif
-                ProcessISO9660(TheISO9660, aDiskDevice);
+            //TODO
+//            if (aDiskDevice is Hardware.ATA.PATAPI)
+//            {
+//                Disk.ISO9660 TheISO9660 = new Disk.ISO9660(aDiskDevice);
 
-                return true;
-            }
+//#if FSM_TRACE
+//                TheISO9660.Print();
+//#endif
+//                ProcessISO9660(TheISO9660, aDiskDevice);
+
+//                return true;
+//            }
 
             return false;
         }
@@ -190,51 +280,58 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         /// <param name="aDiskDevice">The disk to initialise.</param>
         /// <returns>True if a valid GPT was detected and the disk was successfully initialised. Otherwise, false.</returns>
-        private static bool InitAsGPT(DiskDevice aDiskDevice)
+        private static bool InitAsGPT(StorageDataInpoint DataIn)
         {
-            GPT TheGPT = new GPT(aDiskDevice);
-            if (!TheGPT.IsValid)
-            {
-                return false;
-            }
-            else
-            {
-                ProcessGPT(TheGPT, aDiskDevice);
-                return true;
-            }
+            //TODO
+            //GPT TheGPT = new GPT(aDiskDevice);
+            //if (!TheGPT.IsValid)
+            //{
+            //    return false;
+            //}
+            //else
+            //{
+            //    ProcessGPT(TheGPT, aDiskDevice);
+            //    return true;
+            //}
+
+            return false;
         }
         /// <summary>
         /// Attempts to initialise a disk treating it as MBR formatted.
         /// </summary>
         /// <param name="aDiskDevice">The disk to initialise.</param>
         /// <returns>True if a valid MBR was detected and the disk was successfully initialised. Otherwise, false.</returns>
-        private static bool InitAsMBR(DiskDevice aDiskDevice)
+        private static bool InitAsMBR(StorageDataInpoint DataIn)
         {
-#if FSM_TRACE
-            BasicConsole.WriteLine("Attempting to read MBR...");
-#endif
-            byte[] MBRData = new byte[512];
-            aDiskDevice.ReadBlock(0UL, 1U, MBRData);
-#if FSM_TRACE
-            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
-#endif
-            MBR TheMBR = new MBR(MBRData);
+            //TODO
 
-            if (!TheMBR.IsValid)
-            {
-                return false;
-            }
-            else
-            {
-#if FSM_TRACE
-                BasicConsole.WriteLine("Valid MBR found.");
-#endif
-                ProcessMBR(TheMBR, aDiskDevice);
+            //#if FSM_TRACE
+            //            BasicConsole.WriteLine("Attempting to read MBR...");
+            //#endif
+            //            byte[] MBRData = new byte[512];
+            //            aDiskDevice.ReadBlock(0UL, 1U, MBRData);
+            //#if FSM_TRACE
+            //            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
+            //#endif
+            //            MBR TheMBR = new MBR(MBRData);
 
-                return true;
-            }
+            //            if (!TheMBR.IsValid)
+            //            {
+            //                return false;
+            //            }
+            //            else
+            //            {
+            //#if FSM_TRACE
+            //                BasicConsole.WriteLine("Valid MBR found.");
+            //#endif
+            //                ProcessMBR(TheMBR, aDiskDevice);
+
+            //                return true;
+            //            }
+
+            return false;
         }
-        private static void ProcessISO9660(Disk.ISO9660 aISO9660, DiskDevice aDiskDevice)
+        private static void ProcessISO9660(Disk.ISO9660 aISO9660, StorageDataInpoint DataIn)
         {
             for (int i = 0; i < aISO9660.VolumeDescriptors.Count; i++)
             {
@@ -250,36 +347,40 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         /// <param name="aGPT">The GPT to process.</param>
         /// <param name="aDiskDevice">The disk device from which the GPT was read.</param>
-        private static void ProcessGPT(GPT aGPT, DiskDevice aDiskDevice)
+        private static void ProcessGPT(GPT aGPT, StorageDataInpoint DataIn)
         {
-            for (int i = 0; i < aGPT.Partitions.Count; i++)
-            {
-                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
-                Partitions.Add(new Partition(aDiskDevice, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
-            }
+            //TODO
+
+            //for (int i = 0; i < aGPT.Partitions.Count; i++)
+            //{
+            //    GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
+            //    Partitions.Add(new Partition(aDiskDevice, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
+            //}
         }
         /// <summary>
         /// Processes a valid master boot record to initialize its partitions.
         /// </summary>
         /// <param name="anMBR">The MBR to process.</param>
         /// <param name="aDiskDevice">The disk device from which the MBR was read.</param>
-        private static void ProcessMBR(MBR anMBR, DiskDevice aDiskDevice)
+        private static void ProcessMBR(MBR anMBR, StorageDataInpoint DataIn)
         {
-            for (int i = 0; i < anMBR.NumPartitions; i++)
-            {
-                MBR.PartitionInfo aPartInfo = anMBR.Partitions[i];
-                if (aPartInfo.EBRLocation != 0)
-                {
-                    byte[] EBRData = new byte[512];
-                    aDiskDevice.ReadBlock(aPartInfo.EBRLocation, 1U, EBRData);
-                    EBR newEBR = new EBR(EBRData);
-                    ProcessMBR(newEBR, aDiskDevice);
-                }
-                else
-                {
-                    Partitions.Add(new Partition(aDiskDevice, aPartInfo.StartSector, aPartInfo.SectorCount));
-                }
-            }
+            //TODO
+
+            //for (int i = 0; i < anMBR.NumPartitions; i++)
+            //{
+            //    MBR.PartitionInfo aPartInfo = anMBR.Partitions[i];
+            //    if (aPartInfo.EBRLocation != 0)
+            //    {
+            //        byte[] EBRData = new byte[512];
+            //        aDiskDevice.ReadBlock(aPartInfo.EBRLocation, 1U, EBRData);
+            //        EBR newEBR = new EBR(EBRData);
+            //        ProcessMBR(newEBR, aDiskDevice);
+            //    }
+            //    else
+            //    {
+            //        Partitions.Add(new Partition(aDiskDevice, aPartInfo.StartSector, aPartInfo.SectorCount));
+            //    }
+            //}
         }
 
         /// <summary>
