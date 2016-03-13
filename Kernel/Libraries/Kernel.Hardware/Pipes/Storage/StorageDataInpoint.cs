@@ -46,29 +46,45 @@ namespace Kernel.Pipes.Storage
         /// Creates and connects a new standard pipe to the target process as either a Standard In or Standard Out pipe.
         /// </summary>
         /// <param name="aOutProcessId">The target process Id.</param>
-        public StorageDataInpoint(uint aOutProcessId)
-            : base(aOutProcessId, PipeClasses.Storage, PipeSubclasses.Storage_Data, 8192)
+        public StorageDataInpoint(uint aOutProcessId, bool OutputPipe)
+            : base(aOutProcessId, PipeClasses.Storage, (OutputPipe ? PipeSubclasses.Storage_Data_Out : PipeSubclasses.Storage_Data_In), 8192)
         {
             ReadBuffer = new byte[BufferSize];
         }
 
         //TODO: Appropriate functions
-
-        /// <summary>
-        /// Reads as much available data from the pipe as possible and interprets it as an ASCII string.
-        /// </summary>
-        /// <param name="blocking">Whether the read call should be blocking or not.</param>
-        /// <returns>The string or empty string if the number of bytes read was zero.</returns>
-        public unsafe FOS_System.String Read(bool blocking)
+        
+        public unsafe ulong[] ReadDiskInfos(bool blocking)
         {
-            int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, blocking);
+            int bytesRead = base.Read(ReadBuffer, 0, sizeof(StoragePipeDataHeader), blocking);
             if (bytesRead > 0)
             {
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
+                int Count;
+                {
+                    StoragePipeDataHeader* HdrPtr = (StoragePipeDataHeader*)((byte*)Utilities.ObjectUtilities.GetHandle(ReadBuffer) + FOS_System.Array.FieldsBytesSize);
+                    Count = HdrPtr->Count;
+                }
+
+                StoragePipeDataDiskInfo* DataPtr = (StoragePipeDataDiskInfo*)((byte*)Utilities.ObjectUtilities.GetHandle(ReadBuffer) + FOS_System.Array.FieldsBytesSize);
+
+                ulong[] result = new ulong[Count];                
+                for (int i = 0; i < Count; i++)
+                {
+                    bytesRead = base.Read(ReadBuffer, 0, sizeof(StoragePipeDataDiskInfo), blocking);
+                    if (bytesRead <= 0)
+                    {
+                        BasicConsole.WriteLine("StorageDataInpoint : Error reading disk infos! Reading disk info data returned zero (or negative) byte count.");
+                    }
+                    else
+                    {
+                        result[i] = DataPtr->Id;
+                    }
+                }
+                return result;
             }
             else
             {
-                return "";
+                return new ulong[0];
             }
         }
     }

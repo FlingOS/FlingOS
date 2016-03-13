@@ -27,7 +27,6 @@
 #define FSM_TRACE
 #undef FSM_TRACE
 
-using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.IO.Disk;
 using Kernel.FOS_System.Processes;
@@ -42,6 +41,14 @@ namespace Kernel.FOS_System.IO
     /// </summary>
     public static class FileSystemManager
     {
+        private class StorageControllerInfo : Object
+        {
+            public uint RemoteProcessId;
+            public int CmdPipeId;
+            public int DataOutPipeId;
+            public StorageDataInpoint DataInPipe;
+        }
+
         /// <summary>
         /// The delimiter that separates mapping prefixes and directory/file names in a path.
         /// </summary>
@@ -58,7 +65,15 @@ namespace Kernel.FOS_System.IO
 
         private static StorageCmdOutpoint CmdOutpoint;
         private static StorageDataOutpoint DataOutpoint;
+
+        private static int ConnectSemaphoreId;
+        private static int CmdOutPipesSemaphoreId;
+        private static int DataOutPipesSemaphoreId;
+        private static UInt32List CmdOutPipes;
+        private static UInt32List DataOutPipes;
         private static List DataInpoints;
+
+        private static List StorageControllers;
 
         public static bool Terminating;
 
@@ -72,20 +87,49 @@ namespace Kernel.FOS_System.IO
             FileSystemMappings = new List(3);
 
             DataInpoints = new List();
+            CmdOutPipes = new UInt32List();
+            DataOutPipes = new UInt32List();
             CmdOutpoint = new StorageCmdOutpoint(PipeConstants.UnlimitedConnections);
-            DataOutpoint = new StorageDataOutpoint(PipeConstants.UnlimitedConnections);
+            DataOutpoint = new StorageDataOutpoint(PipeConstants.UnlimitedConnections, false);
+
+            StorageControllers = new List();
 
             Terminating = false;
-
-            //TODO: Separate threads for wait for connects
+            
             uint NewThreadId;
             if (SystemCalls.StartThread(WaitForCmdPipes, out NewThreadId) == SystemCallResults.OK)
             {
-                //TODO: Store thread ids
+                //TODO: Store thread id
             }
             else
             {
-                BasicConsole.WriteLine("File System Manager failed to create command pipe listener thread!");
+                BasicConsole.WriteLine("File System Manager > Failed to create command pipe listener thread!");
+            }
+            if (SystemCalls.StartThread(WaitForDataPipes, out NewThreadId) == SystemCallResults.OK)
+            {
+                //TODO: Store thread id
+            }
+            else
+            {
+                BasicConsole.WriteLine("File System Manager > Failed to create data pipe listener thread!");
+            }
+
+            if (SystemCalls.CreateSemaphore(1, out ConnectSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (1)");
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+            }
+
+            if (SystemCalls.CreateSemaphore(-1, out CmdOutPipesSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (2)");
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+            }
+
+            if (SystemCalls.CreateSemaphore(-1, out DataOutPipesSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (3)");
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
             }
         }
         
@@ -95,9 +139,20 @@ namespace Kernel.FOS_System.IO
             {
                 uint InProcessId;
                 int PipeId = CmdOutpoint.WaitForConnect(out InProcessId);
-                //TODO: Proper handling
-                BasicConsole.WriteLine("File System Manager > Command Output connected. Sending command...");
-                CmdOutpoint.Write(PipeId, StorageCommands.Write);
+                BasicConsole.WriteLine("File System Manager > Command output connected.");
+                CmdOutPipes.Add((uint)PipeId);
+                SystemCalls.SignalSemaphore(CmdOutPipesSemaphoreId);
+            }
+        }
+        private static void WaitForDataPipes()
+        {
+            while (!Terminating)
+            {
+                uint InProcessId;
+                int PipeId = DataOutpoint.WaitForConnect(out InProcessId);
+                BasicConsole.WriteLine("File System Manager > Data output connected.");
+                DataOutPipes.Add((uint)PipeId);
+                SystemCalls.SignalSemaphore(DataOutPipesSemaphoreId);
             }
         }
 
@@ -105,17 +160,15 @@ namespace Kernel.FOS_System.IO
         {
             int numOutpoints;
             SystemCallResults SysCallResult;
-            Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Storage, PipeSubclasses.Storage_Data);
+            Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
             
             if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
             {
                 PipeOutpointDescriptor[] OutpointDescriptors;
-                Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Storage, PipeSubclasses.Storage_Data);
+                Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
                 
                 if (SysCallResult == SystemCallResults.OK)
                 {
-                    int NewDataInpoints = 0;
-
                     for (int i = 0; i < OutpointDescriptors.Length; i++)
                     {
                         PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
@@ -135,21 +188,45 @@ namespace Kernel.FOS_System.IO
                         {
                             try
                             {
-                                BasicConsole.WriteLine("File System Manager > Connecting to: " + (String)Descriptor.ProcessId);
-                                StorageDataInpoint DataIn = new StorageDataInpoint(Descriptor.ProcessId);
-                                DataInpoints.Add(DataIn);
-                                NewDataInpoints++;
-
-                                //TODO: Semaphores for getting outpoint pipe ids
-
-                                try
+                                if (SystemCalls.WaitSemaphore(ConnectSemaphoreId) == SystemCallResults.OK)
                                 {
-                                    InitDisk(DataIn);
-                                }
-                                catch
-                                {
-                                    BasicConsole.WriteLine("File System Manager > Error initialising storage!");
-                                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                                    BasicConsole.WriteLine("File System Manager > Connecting to: " + (String)Descriptor.ProcessId);
+                                    StorageDataInpoint DataIn = new StorageDataInpoint(Descriptor.ProcessId, true);
+                                    DataInpoints.Add(DataIn);
+
+                                    BasicConsole.WriteLine("File System Manager > Connected.");
+
+                                    try
+                                    {
+                                        if (SystemCalls.WaitSemaphore(CmdOutPipesSemaphoreId) == SystemCallResults.OK)
+                                        {
+                                            int CmdPipeId = (int)CmdOutPipes[CmdOutPipes.Count - 1];
+
+                                            BasicConsole.WriteLine("File System Manager > Got command output pipe id.");
+
+                                            if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
+                                            {
+                                                int DataPipeId = (int)DataOutPipes[DataOutPipes.Count - 1];
+
+                                                BasicConsole.WriteLine("File System Manager > Got data output pipe id.");
+                                                
+                                                StorageControllers.Add(new StorageControllerInfo()
+                                                {
+                                                    RemoteProcessId = Descriptor.ProcessId,
+                                                    CmdPipeId = CmdPipeId,
+                                                    DataOutPipeId = DataPipeId,
+                                                    DataInPipe = DataIn
+                                                });
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        BasicConsole.WriteLine("File System Manager > Error probing storage controller!");
+                                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                                    }
+
+                                    SystemCalls.SignalSemaphore(ConnectSemaphoreId);
                                 }
                             }
                             catch
@@ -160,10 +237,6 @@ namespace Kernel.FOS_System.IO
                         }
                     }
 
-                    if (NewDataInpoints > 0)
-                    {
-                        InitPartitions();
-                    }
                 }
                 else
                 {
@@ -174,6 +247,41 @@ namespace Kernel.FOS_System.IO
             {
                 BasicConsole.WriteLine("File System Manager > Cannot get outpoints!");
             }
+
+            for (int i = 0; i < StorageControllers.Count; i++)
+            {
+                StorageControllerInfo st = (StorageControllerInfo)StorageControllers[i];
+
+                CmdOutpoint.Write(st.CmdPipeId, StorageCommands.DiskList);
+                ulong[] DiskIds = st.DataInPipe.ReadDiskInfos(true);
+                if (DiskIds.Length == 0)
+                {
+                    BasicConsole.WriteLine("File System Manager > Storage controller is not managing any disks!");
+                }
+                else
+                {
+                    for (int j = 0; j < DiskIds.Length; j++)
+                    {
+                        BasicConsole.WriteLine("File System Manager > Storage controller is managing disk device: " + (String)DiskIds[j]);
+
+                        //try
+                        //{
+                        //    InitDisk(DataIn);
+                        //}
+                        //catch
+                        //{
+                        //    BasicConsole.WriteLine("File System Manager > Error initialising storage!");
+                        //    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                        //}
+                    }
+                }
+            }
+
+            //TODO
+            //if (NewDataInpoints > 0)
+            //{
+            //    InitPartitions();
+            //}
         }
 
         /// <summary>

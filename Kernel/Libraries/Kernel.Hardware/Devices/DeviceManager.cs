@@ -179,8 +179,6 @@ namespace Kernel.Hardware.Devices
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
-            BasicConsole.WriteLine("Registering new device:");
-
             Device NewDevice = new Device();
             NewDevice.Id = DeviceId = IdGenerator++;
             NewDevice.Group = TheDescriptor->Group;
@@ -214,23 +212,24 @@ namespace Kernel.Hardware.Devices
 
             Devices.Add(NewDevice);
 
+            BasicConsole.Write("Registering new device:");
             BasicConsole.WriteLine(NewDevice.Id);
-            BasicConsole.WriteLine((uint)NewDevice.Group);
-            BasicConsole.WriteLine((uint)NewDevice.Class);
-            BasicConsole.WriteLine((uint)NewDevice.SubClass);
-            BasicConsole.WriteLine(NewDevice.Name);
-            for (int i = 0; i < NewDevice.Info.Length; i++)
-            {
-                BasicConsole.Write(NewDevice.Info[i]);
-                if (i < NewDevice.Info.Length - 1)
-                {
-                    BasicConsole.Write(", ");
-                }
-            }
-            BasicConsole.WriteLine();
-            BasicConsole.WriteLine(NewDevice.Claimed);
-            BasicConsole.WriteLine(NewDevice.OwnerProcessId);
-            BasicConsole.WriteLine("------------------------");
+            //BasicConsole.WriteLine((uint)NewDevice.Group);
+            //BasicConsole.WriteLine((uint)NewDevice.Class);
+            //BasicConsole.WriteLine((uint)NewDevice.SubClass);
+            //BasicConsole.WriteLine(NewDevice.Name);
+            //for (int i = 0; i < NewDevice.Info.Length; i++)
+            //{
+            //    BasicConsole.Write(NewDevice.Info[i]);
+            //    if (i < NewDevice.Info.Length - 1)
+            //    {
+            //        BasicConsole.Write(", ");
+            //    }
+            //}
+            //BasicConsole.WriteLine();
+            //BasicConsole.WriteLine(NewDevice.Claimed);
+            //BasicConsole.WriteLine(NewDevice.OwnerProcessId);
+            //BasicConsole.WriteLine("------------------------");
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 

@@ -4,8 +4,9 @@
     {
         Invalid = -1,
         None = 0,
-        Read = 1,
-        Write = 2
+        DiskList,
+        Read,
+        Write
     }
     public struct StoragePipeCommand
     {

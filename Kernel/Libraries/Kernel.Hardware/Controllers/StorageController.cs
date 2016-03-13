@@ -52,7 +52,7 @@ namespace Kernel.Hardware.Controllers
                 DiskList = new List(5);
                 Terminating = false;
                 Clients = new List(5);
-                DataOutpoint = new StorageDataOutpoint(PipeConstants.UnlimitedConnections);
+                DataOutpoint = new StorageDataOutpoint(PipeConstants.UnlimitedConnections, true);
 
                 if (SystemCalls.CreateSemaphore(1, out DiskListSemaphoreId) != SystemCallResults.OK)
                 {
@@ -68,7 +68,7 @@ namespace Kernel.Hardware.Controllers
 
                 if (SystemCalls.StartThread(WaitForClients, out WaitForClientsThreadId) != SystemCallResults.OK)
                 {
-                    BasicConsole.WriteLine("Storage Controller > Failed to create data pipe listener thread!");
+                    BasicConsole.WriteLine("Storage Controller > Failed to create client listener thread!");
                 }
             }
         }
@@ -137,7 +137,7 @@ namespace Kernel.Hardware.Controllers
                     try
                     {
                         BasicConsole.WriteLine("Storage Controller > Connecting data pipe...");
-                        StorageDataInpoint DataInpoint = new StorageDataInpoint(TheClient.InProcessId);
+                        StorageDataInpoint DataInpoint = new StorageDataInpoint(TheClient.InProcessId, false);
                         BasicConsole.WriteLine("Storage Controller > Data pipe connected.");
                         while (!Terminating)
                         {
@@ -149,24 +149,45 @@ namespace Kernel.Hardware.Controllers
                                     BasicConsole.WriteLine("Storage Controller > Wait for command from client...");
                                     StoragePipeCommand* CommandPtr = CmdInpoint.Read();
                                     BasicConsole.WriteLine("Storage Controller > Command received from client: " + (String)CommandPtr->Command);
-                                }
 
-
-                                if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
-                                {
-                                    DiskInfo TheInfo = (DiskInfo)DiskList[0];
-
-                                    SystemCalls.SignalSemaphore(DiskListSemaphoreId);
-
-                                    if (SystemCalls.WaitSemaphore(TheInfo.CommandQueueAccessSemaphoreId) == SystemCallResults.OK)
+                                    switch((StorageCommands)CommandPtr->Command)
                                     {
-                                        TheInfo.CommandQueue.Push(new DiskCommand()
-                                        {
-                                            Command = DiskCommands.Invalid
-                                        });
+                                        case StorageCommands.DiskList:
+                                            {
+                                                if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
+                                                {
+                                                    ulong[] DiskIds = new ulong[DiskList.Count];
 
-                                        SystemCalls.SignalSemaphore(TheInfo.CommandQueueAccessSemaphoreId);
-                                        SystemCalls.SignalSemaphore(TheInfo.CommandQueuedSemaphoreId);
+                                                    for (int i = 0; i < DiskList.Count; i++)
+                                                    {
+                                                        DiskIds[i] = ((DiskInfo)DiskList[i]).TheDevice.Id;
+                                                    }
+
+                                                    SystemCalls.SignalSemaphore(DiskListSemaphoreId);
+
+                                                    DataOutpoint.WriteDiskInfos(TheClient.PipeId, DiskIds);
+                                                }
+                                            }
+                                            break;
+                                        default:
+                                            if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
+                                            {
+                                                DiskInfo TheInfo = (DiskInfo)DiskList[0];
+
+                                                SystemCalls.SignalSemaphore(DiskListSemaphoreId);
+
+                                                if (SystemCalls.WaitSemaphore(TheInfo.CommandQueueAccessSemaphoreId) == SystemCallResults.OK)
+                                                {
+                                                    TheInfo.CommandQueue.Push(new DiskCommand()
+                                                    {
+                                                        Command = DiskCommands.Invalid
+                                                    });
+
+                                                    SystemCalls.SignalSemaphore(TheInfo.CommandQueueAccessSemaphoreId);
+                                                    SystemCalls.SignalSemaphore(TheInfo.CommandQueuedSemaphoreId);
+                                                }
+                                            }
+                                            break;
                                     }
                                 }
                             }

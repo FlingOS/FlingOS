@@ -63,7 +63,8 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         /// </summary>
         Standard_In,
         Storage_Command,
-        Storage_Data
+        Storage_Data_In,
+        Storage_Data_Out
     }
 
     /// <summary>

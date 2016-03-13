@@ -40,72 +40,24 @@ namespace Kernel.Pipes.Storage
         /// <summary>
         /// Creates and registers an outpoint as either a Standard In or Standard Out pipe outpoint.
         /// </summary>
-        public StorageDataOutpoint(int MaxConnections)
-            : base(PipeClasses.Storage, PipeSubclasses.Storage_Data, MaxConnections)
+        public StorageDataOutpoint(int MaxConnections, bool OutputPipe)
+            : base(PipeClasses.Storage, (OutputPipe ? PipeSubclasses.Storage_Data_Out : PipeSubclasses.Storage_Data_In), MaxConnections)
         {
         }
 
         //TODO: Appropriate functions
-        
-        /// <summary>
-        /// Writes a character to the pipe.
-        /// </summary>
-        /// <param name="PipeId">The Id of the pipe to write to.</param>
-        /// <param name="Character">The character to write.</param>
-        /// <param name="Blocking">Whether the write call should be blocking or not.</param>
-        /// <remarks>
-        /// <para>
-        /// Id required since an outpoint can be connected to multiple pipes.
-        /// </para>
-        /// <para>
-        /// Treats the character as a single ASCII byte. In future, may want to make this UTF16 (two bytes, Unicode).
-        /// </para>
-        /// </remarks>
-        public unsafe void Write(int PipeId, char Character, bool Blocking)
-        {
-            byte[] data = new byte[1] { (byte)Character };
-            base.Write(PipeId, data, 0, data.Length, Blocking);
-        }
-        /// <summary>
-        /// Writes a message to the pipe.
-        /// </summary>
-        /// <param name="PipeId">The Id of the pipe to write to.</param>
-        /// <param name="Message">The message to write.</param>
-        /// <param name="Blocking">Whether the write call should be blocking or not.</param>
-        /// <remarks>
-        /// <para>
-        /// Id required since an outpoint can be connected to multiple pipes.
-        /// </para>
-        /// <para>
-        /// Treats the message as ASCII. In future, may want to make this UTF16 (two bytes, Unicode).
-        /// </para>
-        /// </remarks>
-        public unsafe void Write(int PipeId, FOS_System.String Message, bool Blocking)
-        {
-            byte[] data = ByteConverter.GetASCIIBytes(Message);
-            base.Write(PipeId, data, 0, data.Length, Blocking);
-        }
 
-        /// <summary>
-        /// Writes a message to the pipe followed by a new line character.
-        /// </summary>
-        /// <param name="PipeId">The Id of the pipe to write to.</param>
-        /// <param name="Message">The message to write.</param>
-        /// <param name="Blocking">Whether the write call should be blocking or not.</param>
-        /// <remarks>
-        /// <para>
-        /// Id required since an outpoint can be connected to multiple pipes.
-        /// </para>
-        /// <para>
-        /// Treats the message as ASCII. In future, may want to make this UTF16 (two bytes, Unicode).
-        /// </para>
-        /// </remarks>
-        public unsafe void WriteLine(int PipeId, FOS_System.String Message, bool Blocking)
+        public unsafe void WriteDiskInfos(int PipeId, ulong[] DiskIds)
         {
-            byte[] data = ByteConverter.GetASCIIBytes(Message);
-            base.Write(PipeId, data, 0, data.Length, Blocking);
-            data[0] = (byte)'\n';
-            base.Write(PipeId, data, 0, 1, Blocking);
+            byte[] buffer = new byte[sizeof(StoragePipeDataHeader) + (sizeof(StoragePipeDataDiskInfo) * DiskIds.Length)];
+            StoragePipeDataHeader* HdrPtr = (StoragePipeDataHeader*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize);
+            HdrPtr->Count = DiskIds.Length;
+            StoragePipeDataDiskInfo* DataPtr = (StoragePipeDataDiskInfo*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize + sizeof(StoragePipeDataHeader));
+            for (int i = 0; i < DiskIds.Length; i++)
+            {
+                DataPtr[i].Id = DiskIds[i];
+            }
+            base.Write(PipeId, buffer, 0, buffer.Length, true);
         }
     }
 }

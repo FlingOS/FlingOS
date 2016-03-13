@@ -126,6 +126,7 @@
     <Compile Include="Pipes\Storage\StorageDataOutpoint.cs" />
     <Compile Include="Pipes\Storage\StorageCmdOutpoint.cs" />
     <Compile Include="Pipes\Storage\StoragePipeCommand.cs" />
+    <Compile Include="Pipes\Storage\StoragePipeDataHeader.cs" />
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Scheduler.cs" />
