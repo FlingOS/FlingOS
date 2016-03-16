@@ -236,14 +236,6 @@ Safely reboots the computer."
             });
             #endregion
 
-            #region ListDevices
-            CommandDescriptions.Add(new CommandDescription()
-            {
-                CommandName = "ListDevices",
-                CommandNameLower = "listdevices",
-                Description = @"Lists all the Devices found attatched to the computer."
-            });
-            #endregion
         }
         
         /// <summary>
