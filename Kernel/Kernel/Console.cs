@@ -46,10 +46,12 @@ namespace Kernel
         /// The buffer of lines of text.
         /// </summary>
         protected List Buffer = new List(100);
+  
         /// <summary>
         /// The current line where the cursor is in the buffer.
         /// </summary>
         protected Int32 CurrentLine = 0;
+      
         /// <summary>
         /// The current character in the current line where the cursor is.
         /// </summary>
@@ -59,10 +61,12 @@ namespace Kernel
         /// The maximum length of a line.
         /// </summary>
         public Int32 LineLength = 80;
+    
         /// <summary>
         /// The maximum size of the buffer (in lines).
         /// </summary>
         protected Int32 MaxBufferSize = 200;
+ 
         /// <summary>
         /// The current character attribute.
         /// </summary>
@@ -72,14 +76,17 @@ namespace Kernel
         /// Screen-relative 0-based index of the character in a line the console starts on.
         /// </summary>
         public int ScreenStartLineOffset = 0;
+    
         /// <summary>
         /// Screen-relative width of the console (in number of characters).
         /// </summary>
         public int ScreenLineWidth = 80;
+     
         /// <summary>
         /// Screen-relative 0-based index of the line the console starts on.
         /// </summary>
         public int ScreenStartLine = 0;
+    
         /// <summary>
         /// Screen-relative height of the console (in number of lines).
         /// </summary>
@@ -128,12 +135,14 @@ namespace Kernel
         /// When overridden in a derived class, updates the display output.
         /// </summary>
         public abstract void Update();
+   
         /// <summary>
         /// When overridden in a derived class, gets the offset from the current line to the actual line position of
         /// the cursor.
         /// </summary>
         /// <returns>The offset to be subtracted from the current line.</returns>
         protected abstract int GetDisplayOffset_Line();
+    
         /// <summary>
         /// When overridden in a derived class, gets the offset from the current character to the actual character 
         /// position of the cursor.
@@ -218,6 +227,7 @@ namespace Kernel
             SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                               (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
+   
         /// <summary>
         /// Writes the specified number as an unsigned decimal string.
         /// </summary>
@@ -281,6 +291,7 @@ namespace Kernel
             //Write the resulting number
             Write(result);
         }
+      
         /// <summary>
         /// Writes the specified number as an signed decimal string.
         /// </summary>
@@ -391,6 +402,7 @@ namespace Kernel
             SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
                               (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
+   
         /// <summary>
         /// Writes the specified string followed by a new line.
         /// </summary>
@@ -401,6 +413,7 @@ namespace Kernel
             Write(str);
             WriteLine();
         }
+     
         /// <summary>
         /// Writes the specified number as an unsigned decimal followed by a new line.
         /// </summary>
@@ -411,6 +424,7 @@ namespace Kernel
             Write_AsDecimal(num);
             WriteLine();
         }
+  
         /// <summary>
         /// Writes the specified number as an ssigned decimal followed by a new line.
         /// </summary>
@@ -445,6 +459,7 @@ namespace Kernel
             //Default beep - 245Hz for 0.5s
             Beep(245, 500);
         }
+    
         /// <summary>
         /// Plsy the PC speaker for the specified length of time (in milliseconds) at (approx.) the specified 
         /// integer frequency.
@@ -503,6 +518,7 @@ namespace Kernel
                 str[i] = (char)((str[i] & 0x00FF) | CurrentAttr);
             }
         }
+  
         /// <summary>
         /// Sets the text colour to the default colour (white).
         /// </summary>
@@ -510,6 +526,7 @@ namespace Kernel
         {
             Colour(0x0F);
         }
+ 
         /// <summary>
         /// Sets the text colour to the warning colour (yellow).
         /// </summary>
@@ -517,6 +534,7 @@ namespace Kernel
         {
             Colour(0x0E);
         }
+ 
         /// <summary>
         /// Sets the text colour to the error colour (red).
         /// </summary>
@@ -529,6 +547,7 @@ namespace Kernel
         /// The default console for the core kernel.
         /// </summary>
         public static Console Default;
+   
         /// <summary>
         /// Initialises the default console.
         /// </summary>
@@ -539,6 +558,7 @@ namespace Kernel
                 Default = new Consoles.AdvancedConsole();
             }
         }
+  
         /// <summary>
         /// Cleans up the default console.
         /// </summary>
