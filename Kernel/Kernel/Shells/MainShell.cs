@@ -1447,6 +1447,7 @@ which should have been provided with the executable.");
             console.WriteLine("]");
             console.WriteLine("Copied successfully.");
         }
+  
         /// <summary>
         /// Deletes the specified file.
         /// </summary>
@@ -1465,6 +1466,7 @@ which should have been provided with the executable.");
                 console.WriteLine("File not found: " + fileName);
             }
         }
+  
         /// <summary>
         /// Copies the specified directory.
         /// </summary>
@@ -1476,6 +1478,7 @@ which should have been provided with the executable.");
             //  and the CopyDirectory method will catch the failure.
             CopyDirectory(Directory.Find(src), dst);
         }
+ 
         /// <summary>
         /// Copies the specified directory.
         /// </summary>
@@ -1536,6 +1539,7 @@ which should have been provided with the executable.");
                 }
             }
         }
+   
         /// <summary>
         /// Deletes the specified directory.
         /// </summary>
@@ -1554,6 +1558,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Directory not found: " + path);
             }
         }
+ 
         /// <summary>
         /// Creates a new directory (and parent directories). Used recursively.
         /// </summary>
@@ -1667,6 +1672,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Format failed.");
             }
         }
+  
         /// <summary>
         /// Checks the specified disk's formatting.
         /// </summary>
@@ -1745,6 +1751,7 @@ which should have been provided with the executable.");
             }
             OutputDivider();
         }
+   
         /// <summary>
         /// Outputs the contents of the specified directory if it exists.
         /// </summary>
@@ -1786,6 +1793,7 @@ which should have been provided with the executable.");
             }
             OutputDivider();
         }
+  
         /// <summary>
         /// Outputs the current memory information.
         /// </summary>
@@ -1802,6 +1810,7 @@ which should have been provided with the executable.");
             console.Write(" / ");
             console.WriteLine_AsDecimal(Heap.FBlock->size);
         }
+  
         /// <summary>
         /// Outputs the file systems information.
         /// </summary>
@@ -1829,6 +1838,7 @@ which should have been provided with the executable.");
                 console.WriteLine("    - Prefix: " + fsMapping.Prefix);
             }
         }
+
         /// <summary>
         /// Outputs the USB system information.
         /// </summary>
@@ -1962,6 +1972,7 @@ which should have been provided with the executable.");
                 }
             }
         }
+ 
         /// <summary>
         /// Outputs the ATA system information.
         /// </summary>
@@ -2031,6 +2042,7 @@ which should have been provided with the executable.");
             console.Write("Total # of drives: ");
             console.WriteLine_AsDecimal(numDrives);
         }
+ 
         /// <summary>
         /// Outputs the PCI system information.
         /// </summary>
@@ -2064,6 +2076,7 @@ which should have been provided with the executable.");
             FileSystemManager.Init();
             console.WriteLine("done.");
         }
+  
         /// <summary>
         /// Initialises the USB system.
         /// </summary>
@@ -2073,6 +2086,7 @@ which should have been provided with the executable.");
             Hardware.USB.USBManager.Init();
             console.WriteLine("done.");
         }
+  
         /// <summary>
         /// Initialises the ATA system.
         /// </summary>
@@ -2082,6 +2096,7 @@ which should have been provided with the executable.");
             Hardware.ATA.ATAManager.Init();
             console.WriteLine("done.");
         }
+  
         /// <summary>
         /// Initialises the PCI system.
         /// </summary>
@@ -2096,6 +2111,7 @@ which should have been provided with the executable.");
         {
             ((MainShell)state)._DeviceManager_DeviceAdded(device);
         }
+
         private void _DeviceManager_DeviceAdded(Hardware.Device device)
         {
             if (device is Hardware.Devices.DiskDevice)
@@ -2182,6 +2198,7 @@ which should have been provided with the executable.");
             }
             console.WriteLine("Returning.");
         }
+
         private unsafe void GCTest()
         {
             try
@@ -2200,24 +2217,29 @@ which should have been provided with the executable.");
             }
             console.WriteLine("Returning.");
         }
+
         private void ATATest()
         {
             new Hardware.Testing.ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
+
         private void USBTest()
         {
             new Hardware.Testing.USBTests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
+
         private static void OutputMessageFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
             Console.Default.WriteLine(TestName + " : " + Message);
         }
+
         private static void OutputWarningFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
             Console.Default.WarningColour();
             OutputMessageFromTest(TestName, Message);
             Console.Default.DefaultColour();
         }
+
         private static void OutputErrorFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
             Console.Default.ErrorColour();
@@ -2237,6 +2259,7 @@ which should have been provided with the executable.");
                 Hardware.Interrupts.Interrupts.InvokeInterrupt(i);
             }
         }
+  
         /// <summary>
         /// Tests delegates.
         /// </summary>
@@ -2255,12 +2278,14 @@ which should have been provided with the executable.");
             }
             Hardware.Devices.Timer.Default.Wait(1000 * 10);
         }
+  
         /// <summary>
         /// Delegate used by delegates test.
         /// </summary>
         /// <param name="data">Test data to pass in.</param>
         /// <returns>A test value.</returns>
         private delegate int IntDelegate(object data);
+   
         /// <summary>
         /// Method called by delegates test.
         /// </summary>
@@ -2272,6 +2297,7 @@ which should have been provided with the executable.");
             Hardware.Devices.Timer.Default.Wait(1000 * 10);
             return -1;
         }
+    
         /// <summary>
         /// Runs a series of tests on the file system, currently:
         ///  - Finds or creates A:/ drive
@@ -2454,6 +2480,7 @@ which should have been provided with the executable.");
                 console.DefaultColour();
             }
         }
+  
         /// <summary>
         /// Tests unsigned less-than comparison of ulongs.
         /// </summary>
@@ -2480,6 +2507,7 @@ which should have been provided with the executable.");
             }
             Hardware.Devices.Timer.Default.Wait(1000 * 10);
         }
+    
         /// <summary>
         /// Tests multiplying two 64-bit numbers together
         /// </summary>
@@ -2520,6 +2548,7 @@ which should have been provided with the executable.");
                                                                 ", " + test5OK + ", " + test6OK);
             Hardware.Devices.Timer.Default.Wait(1000 * 10);
         }
+    
         /// <summary>
         /// Tests dynamic string creation and string concatentation.
         /// </summary>
@@ -2541,6 +2570,7 @@ which should have been provided with the executable.");
 
             console.WriteLine("End string concat test.");
         }
+  
         /// <summary>
         /// Tests creating arrays where elements are reference-type and Gc managed.
         /// </summary>
@@ -2567,6 +2597,7 @@ which should have been provided with the executable.");
 
             console.WriteLine("End object array test.");
         }
+  
         /// <summary>
         /// Tests creating an array of integers (element of type from MSCorLib type and value type)
         /// </summary>
@@ -2589,6 +2620,7 @@ which should have been provided with the executable.");
 
             console.WriteLine("Int array test.");
         }
+  
         /// <summary>
         /// Tests creating  GC-managed reference-type object and  setting properties and enums.
         /// </summary>
@@ -2627,6 +2659,7 @@ which should have been provided with the executable.");
             console.WriteLine("Dummy object test.");
             //console.WriteLine("Dummy object test disabled.");
         }
+   
         /// <summary>
         /// Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
         /// </summary>
@@ -2655,6 +2688,7 @@ which should have been provided with the executable.");
 
             console.WriteLine("Divide by zero test.");
         }
+  
         /// <summary>
         /// Tests the exception handling sub-system.
         /// </summary>
@@ -2677,6 +2711,7 @@ which should have been provided with the executable.");
         {
             ExceptionsTestP2();
         }
+  
         /// <summary>
         /// Secondary method used in testing the exception handling sub-system.
         /// </summary>
@@ -2694,6 +2729,7 @@ which should have been provided with the executable.");
                 ExceptionMethods.Throw(new FOS_System.Exception("An outer exception."));
             }
         }
+   
         /// <summary>
         /// Tests the PC speaker beep feature (part of the PIT).
         /// </summary>
@@ -2718,6 +2754,7 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended PC Beep test.");
         }
+  
         /// <summary>
         /// Tests the default timer device.
         /// </summary>
@@ -2751,6 +2788,7 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended PIT test.");
         }
+  
         /// <summary>
         /// Tests the default keyboard device.
         /// </summary>
@@ -2796,6 +2834,7 @@ which should have been provided with the executable.");
             console.WriteLine();
             console.WriteLine("Ended keyboard test.");
         }
+  
         /// <summary>
         /// Tests the advanced console class.
         /// </summary>
@@ -2849,6 +2888,7 @@ which should have been provided with the executable.");
             console.WriteLine("Ended advanced console test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
+  
         /// <summary>
         /// Tests the fields type table by outputting to the screen and 
         /// letting the user decide if the output is correct.
@@ -2913,6 +2953,7 @@ which should have been provided with the executable.");
             console.WriteLine("Ended fields table test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
+
         /// <summary>
         /// Tests the "is" operator (i.e. the IsInst IL op)
         /// </summary>
@@ -2956,6 +2997,7 @@ which should have been provided with the executable.");
             console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
+
         private void LongsTest()
         {
             console.WriteLine("Starting Longs test...");

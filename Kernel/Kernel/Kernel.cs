@@ -138,7 +138,9 @@ namespace Kernel
                 {
                     BasicConsole.Write(' ');
                 }
+
                 char num = '1';
+
                 for (int i = 0; i < 3; i++)
                 {
                     BasicConsole.Write(num++);
