@@ -63,6 +63,20 @@ namespace Kernel
         {
         }
 
+        /// <summary>
+        /// Gets or sets the last exception.
+        /// </summary>
+        /// <value>
+        /// The last exception that was thrown.
+        /// </value>
+        public static FOS_System.Exception LastException { get; set; }
+
+        /// <summary>
+        /// Gets the current exception.
+        /// </summary>
+        /// <value>
+        /// The current exception.
+        /// </value>        
         public static FOS_System.Exception CurrentException
         {
             [Drivers.Compiler.Attributes.NoGC]
@@ -72,6 +86,8 @@ namespace Kernel
                 if (State != null &&
                     State->CurrentHandlerPtr != null)
                 {
+                    LastException =
+                        (FOS_System.Exception) Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                     return (FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                 }
                 return null;
@@ -85,6 +101,7 @@ namespace Kernel
             public uint FilterPtr;
             public uint HandlerPtr;
         }
+   
         /// <summary>
         /// Adds a new Exception Handler Info structure to the stack and sets 
         /// it as the current handler.
@@ -198,6 +215,7 @@ namespace Kernel
             // Try to cause fault
             *((byte*)0x800000000) = 0;
         }
+  
         /// <summary>
         /// Throws the specified exception. Implementation used is exactly the 
         /// same as Throw (exact same plug used) just allows another way to 
@@ -270,6 +288,7 @@ namespace Kernel
             // Try to cause fault
             *((byte*)0x800000000) = 0;
         }
+  
         /// <summary>
         /// Handles cleanly leaving a critical section (i.e. try or catch block)
         /// </summary>
@@ -452,6 +471,7 @@ namespace Kernel
             }
 
         }
+   
         /// <summary>
         /// Handles cleanly leaving a "finally" critical section (i.e. finally block). 
         /// This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
@@ -538,6 +558,7 @@ namespace Kernel
             {
             }
         }
+
         public static unsafe byte* BasePointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
@@ -555,6 +576,7 @@ namespace Kernel
         private static void ShiftStack(byte* From_High, uint Dist)
         {
         }
+
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
         private static void ArbitaryReturn(uint EBP, uint ESP, byte* RetAddr)
         {
@@ -584,6 +606,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.DivideByZeroException());
         }
+ 
         /// <summary>
         /// Throws a divide by zero exception storing the specified exception address.
         /// </summary>
@@ -599,6 +622,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.DivideByZeroException(address));
         }
+ 
         /// <summary>
         /// Throws an overflow exception.
         /// </summary>
@@ -613,6 +637,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.OverflowException("Processor reported an overflow."));
         }
+   
         /// <summary>
         /// Throws an invalid op code exception.
         /// </summary>
@@ -627,6 +652,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.InvalidOpCodeException());
         }
+  
         /// <summary>
         /// Throws a double fault exception.
         /// </summary>
@@ -768,6 +794,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.DoubleFaultException(errorCode));
         }
+ 
         /// <summary>
         /// Throws a stack exception.
         /// </summary>
@@ -782,6 +809,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.default_colour);
             Throw(new FOS_System.Exceptions.StackException());
         }
+    
         /// <summary>
         /// Throws a page fault exception.
         /// </summary>
@@ -1030,6 +1058,7 @@ namespace Kernel
             ex.InstructionAddress = address;
             Throw(ex);
         }
+   
         /// <summary>
         /// Throws an Array Type Mismatch exception.
         /// </summary>
@@ -1042,6 +1071,7 @@ namespace Kernel
             HaltReason = "Array type mismatch exception.";
             Throw(new FOS_System.Exceptions.ArrayTypeMismatchException());
         }
+ 
         /// <summary>
         /// Throws a Index Out Of Range exception.
         /// </summary>
@@ -1158,6 +1188,7 @@ namespace Kernel
         public fixed uint history[32];
         public int history_pos;
     }
+ 
     /// <summary>
     /// Represents an Exception Handler Info.
     /// </summary>
