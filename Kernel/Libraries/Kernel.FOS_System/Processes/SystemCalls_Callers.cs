@@ -791,6 +791,31 @@ namespace Kernel.FOS_System.Processes
 
         #region File Systems - Full TODO
 
+        // Format
+        // Setup
+        // StatFS
+
+        // Open
+        // Close
+        // Delete
+
+        // Read
+        // Write
+        // Seek
+
+        // Stat
+        // Rename
+        // Sync
+        // Truncate
+
+        // MakeDir
+        // DeleteDir
+        // ListDir
+        // ReadDirEntry
+        
+        // GetWorkingDir        
+        // SetWorkingDir
+
         #endregion
     }
 }
