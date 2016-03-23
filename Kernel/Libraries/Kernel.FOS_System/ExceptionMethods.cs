@@ -32,6 +32,12 @@ using System.Threading.Tasks;
 
 namespace Kernel
 {
+    /// <summary>
+    /// Handler for Page Faults
+    /// </summary>
+    /// <param name="eip">The eip.</param>
+    /// <param name="errorCode">The error code.</param>
+    /// <param name="address">The address.</param>
     public delegate void PageFaultHandler(uint eip, uint errorCode, uint address);
 
     /// <summary>
@@ -39,6 +45,12 @@ namespace Kernel
     /// </summary>
     public static unsafe class ExceptionMethods
     {
+
+        /// <summary>
+        /// The page fault handler
+        /// </summary>
+        public static PageFaultHandler ThePageFaultHandler = null;
+
         /// <summary>
         /// The reason the kernel is halting. Useful for debugging purposes in case an exception causes
         /// an immediate halt.
@@ -49,14 +61,25 @@ namespace Kernel
         /// The message to display when the Throw method panics.
         /// </summary>
         public static string Throw_PanicMessage = "Throw Panicked!";
+
         /// <summary>
         /// The message to display when the kernel panics.
         /// </summary>
         public static string UnhandledException_PanicMessage = "Unhandled exception! Panic!";
 
+        /// <summary>
+        /// The state
+        /// </summary>
         public static ExceptionState* State;
+  
+        /// <summary>
+        /// The default state
+        /// </summary>
         public static ExceptionState* DefaultState;
 
+        /// <summary>
+        /// Initializes the <see cref="ExceptionMethods"/> class.
+        /// </summary>
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
         static ExceptionMethods()
@@ -98,11 +121,26 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        /// Add Exception Handler Info
+        /// </summary>
         private struct AddExceptionHandlerInfo_EntryStackState
         {
+            /// <summary>
+            /// The ebp
+            /// </summary>
             public uint EBP;
+            /// <summary>
+            /// The ret addr
+            /// </summary>
             public uint RetAddr;
+            /// <summary>
+            /// The filter PTR
+            /// </summary>
             public uint FilterPtr;
+            /// <summary>
+            /// The handler PTR
+            /// </summary>
             public uint HandlerPtr;
         }
    
@@ -549,7 +587,13 @@ namespace Kernel
                     retAddr);
             }
         }
-        
+
+        /// <summary>
+        /// Gets or sets the stack pointer.
+        /// </summary>
+        /// <value>
+        /// The stack pointer.
+        /// </value>
         public static unsafe byte* StackPointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Exceptions\StackPointer")]
@@ -563,6 +607,12 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        /// Gets or sets the base pointer.
+        /// </summary>
+        /// <value>
+        /// The base pointer.
+        /// </value>
         public static unsafe byte* BasePointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
@@ -576,11 +626,22 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        /// Shifts the stack.
+        /// </summary>
+        /// <param name="From_High">The from_ high.</param>
+        /// <param name="Dist">The dist.</param>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
         private static void ShiftStack(byte* From_High, uint Dist)
         {
         }
 
+        /// <summary>
+        /// Arbitaries the return.
+        /// </summary>
+        /// <param name="EBP">The ebp.</param>
+        /// <param name="ESP">The esp.</param>
+        /// <param name="RetAddr">The ret addr.</param>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
         private static void ArbitaryReturn(uint EBP, uint ESP, byte* RetAddr)
         {
@@ -1035,9 +1096,7 @@ namespace Kernel
                 Throw(new FOS_System.Exceptions.PageFaultException(errorCode, address));
             }
         }
-
-        public static PageFaultHandler ThePageFaultHandler = null;
-
+        
         /// <summary>
         /// Throws a Null Reference exception.
         /// </summary>
@@ -1091,11 +1150,17 @@ namespace Kernel
             Throw(ex);
         }
 
+        /// <summary>
+        /// Gets the eip.
+        /// </summary>
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\GetEIP")]
         public static void GetEIP()
         {
         }
 
+        /// <summary>
+        /// Prints the stack trace.
+        /// </summary>
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
         public static void PrintStackTrace()
@@ -1119,6 +1184,12 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        /// Fills the string.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="str">The string.</param>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void FillString(uint value, int offset, FOS_System.String str)
@@ -1184,12 +1255,27 @@ namespace Kernel
         }
     }
 
+    /// <summary>
+    /// The Exception State
+    /// </summary>
     [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ExceptionState
     {
+        /// <summary>
+        /// The current handler PTR
+        /// </summary>
         public ExceptionHandlerInfo* CurrentHandlerPtr;
+        /// <summary>
+        /// The depth
+        /// </summary>
         public int depth;
+        /// <summary>
+        /// The history
+        /// </summary>
         public fixed uint history[32];
+        /// <summary>
+        /// The history_pos
+        /// </summary>
         public int history_pos;
     }
  
@@ -1214,32 +1300,43 @@ namespace Kernel
         /// The ESP register is restored to this value when a handler is entered or re-entered.
         /// </summary>
         public UInt32 ESP;
+  
         /// <summary>
         /// The value of EBP when the handler info was created.
         /// The EBP register is restored to this value when a handler is entered or re-entered.
         /// </summary>
         public UInt32 EBP;
+   
         /// <summary>
         /// The address of the first op of the handler / a pointer to the first op of the handler.
         /// </summary>
         public byte* HandlerAddress;
+   
         /// <summary>
         /// 0x00000000 = indicates this is a finally handler. 
         /// 0xFFFFFFFF = indicates this is a catch handler with no filter.
         /// 0xXXXXXXXX = The address of the first op of the filter - has not actually been implemented! Behaviour for such values is undetermined.
         /// </summary>
         public byte* FilterAddress;
+  
         /// <summary>
         /// A pointer to the previous exception handler info (i.e. the address of the previous info).
         /// </summary>
         public ExceptionHandlerInfo* PrevHandlerPtr;
+  
         /// <summary>
         /// Whether execution is currently inside the try-section or the handler-section of this exception handler info.
         /// </summary>
         public UInt32 InHandler;
 
+        /// <summary>
+        /// The ex pending
+        /// </summary>
         public UInt32 ExPending;
-         
+
+        /// <summary>
+        /// The ex
+        /// </summary>
         public void* Ex;
     }
 }
