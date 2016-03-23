@@ -75,10 +75,13 @@ namespace Kernel
         /// Executes the shell.
         /// </summary>
         public abstract void Execute();
-        
+
         /// <summary>
-        /// Outputs informations about the current exception, if any.
+        /// Outputs exception information.
         /// </summary>
+        /// <param name="Ex">
+        /// The exception information to display
+        /// </param>
         [Drivers.Compiler.Attributes.NoDebug]
         protected void OutputExceptionInfo(FOS_System.Exception Ex)
         {

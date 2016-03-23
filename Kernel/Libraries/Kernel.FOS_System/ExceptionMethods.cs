@@ -76,7 +76,10 @@ namespace Kernel
         /// </summary>
         /// <value>
         /// The current exception.
-        /// </value>        
+        /// </value>      
+        /// <remarks>
+        /// Sets LastException Property
+        /// </remarks>  
         public static FOS_System.Exception CurrentException
         {
             [Drivers.Compiler.Attributes.NoGC]
@@ -86,8 +89,9 @@ namespace Kernel
                 if (State != null &&
                     State->CurrentHandlerPtr != null)
                 {
+                    ExceptionHandlerInfo ehi = new ExceptionHandlerInfo();
                     LastException =
-                        (FOS_System.Exception) Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                        (FOS_System.Exception) Utilities.ObjectUtilities.GetObject(ehi.PrevHandlerPtr);
                     return (FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                 }
                 return null;

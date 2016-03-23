@@ -105,6 +105,7 @@ namespace Kernel.Shells
                         /* Command { Req Arg } [Opt Arg] *Default val*:
                          *  - Halt
                          *  - ExInfo
+                         *  - LastError
                          *  - Init { ALL / PCI / ATA / USB / FS }
                          *  - Output { PCI / ATA / USB / FS / Memory }
                          *  - CheckDisk/ChkD  { Drive# }
@@ -132,9 +133,11 @@ namespace Kernel.Shells
 
                         //Get the current input line from the user
                         FOS_System.String line = ReadLine();
+                        
                         //Split the input into command, arguments and options
                         //  All parts are in lower case
                         List cmdParts = SplitCommand(line);
+                        
                         //Check the user didn't just press enter without any text
                         if (cmdParts.Count > 0)
                         {
@@ -156,9 +159,15 @@ namespace Kernel.Shells
                             {
                                 //Output information about the current exception, if any.
                                 //  TODO - This should be changed to Last exception. 
+                                //DG:  Implemented below But doesn't work properly
                                 //          Because of the try-catch block inside the loop, there
                                 //          will never be a current exception to output.
                                 OutputExceptionInfo(ExceptionMethods.CurrentException);
+                            }
+                            else if (cmd == "lasterror")
+                            {
+                                console.WriteLine("Displaying LastException");
+                                OutputExceptionInfo(ExceptionMethods.LastException);
                             }
                             else if (cmd == "init")
                             {
@@ -1022,16 +1031,22 @@ namespace Kernel.Shells
 
                                 #endregion
                             }
+                            else
+                            {
+                                console.WriteLine("Unknown Command");
+                            }
                         }
                     }
                     catch
                     {
+                        console.WriteLine("Main Shell Inner Exception");
                         OutputExceptionInfo(ExceptionMethods.CurrentException);
                     }
                 }
             }
             catch
             {
+                console.WriteLine("Main Shell Outer Exception");
                 OutputExceptionInfo(ExceptionMethods.CurrentException);
                 //Pause to give us the chance to read the output. 
                 //  We do not know what the code outside this shell may do.
