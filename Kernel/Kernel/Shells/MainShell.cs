@@ -43,11 +43,20 @@ namespace Kernel.Shells
         /// The current directory to prepend to relative paths.
         /// </summary>
         protected FOS_System.String CurrentDir = "";
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainShell"/> class.
+        /// </summary>
         public MainShell()
             : base()
         {
         }
+    
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainShell"/> class.
+        /// </summary>
+        /// <param name="AConsole">a console.</param>
+        /// <param name="AKeyboard">a keyboard.</param>
         public MainShell(Console AConsole, Keyboard AKeyboard)
             : base(AConsole, AKeyboard)
         {
@@ -1126,6 +1135,7 @@ namespace Kernel.Shells
         {
             ((MainShell)state).Reboot();
         }
+   
         /// <summary>
         /// Reboots the computer
         /// </summary>
@@ -1220,7 +1230,7 @@ which should have been provided with the executable.");
         /// </summary>
         /// <param name="input">The input to split.</param>
         /// <returns>The list of command parts.</returns>
-        private List SplitCommand(FOS_System.String input)
+        private static List SplitCommand(FOS_System.String input)
         {
             //This method splits the input into parts separated by spaces
             //  However, it must then also search for grouped parts which
@@ -1297,7 +1307,7 @@ which should have been provided with the executable.");
         /// <summary>
         /// Cleans the caches of all known disk devices.
         /// </summary>
-        private void CleanDiskCaches()
+        private static void CleanDiskCaches()
         {
             //Loop through all devices looking for Disk devices.
             for (int i = 0; i < Hardware.DeviceManager.Devices.Count; i++)
@@ -1310,11 +1320,11 @@ which should have been provided with the executable.");
                 }
             }
         }
+
         /// <summary>
-        /// Ejects the specified mass storage device.
+        /// Ejects the MSD.
         /// </summary>
-        /// <param name="deviceNum">The index of the MSD in the Hardware.DeviceManager.Devices list.</param>
-        /// <seealso cref="Kernel.Hardware.USB.Devices.MassStorageDevice.Eject"/>
+        /// <param name="deviceNum">The device number.</param>
         private void EjectMSD(int deviceNum)
         {
             //Output info to the user...
@@ -1344,6 +1354,7 @@ which should have been provided with the executable.");
             //  and the CopyFile method will catch the failure.
             CopyFile(File.Open(src), dst);
         }
+     
         /// <summary>
         /// Copies the specified file.
         /// </summary>
@@ -2122,11 +2133,20 @@ which should have been provided with the executable.");
             console.WriteLine("done.");
         }
 
+        /// <summary>
+        /// Devices the manager_ device added.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <param name="device">The device.</param>
         private static void DeviceManager_DeviceAdded(FOS_System.Object state, Hardware.Device device)
         {
             ((MainShell)state)._DeviceManager_DeviceAdded(device);
         }
 
+        /// <summary>
+        /// _s the device manager_ device added.
+        /// </summary>
+        /// <param name="device">The device.</param>
         private void _DeviceManager_DeviceAdded(Hardware.Device device)
         {
             if (device is Hardware.Devices.DiskDevice)
@@ -2177,6 +2197,9 @@ which should have been provided with the executable.");
             console.DefaultColour();
         }
 
+        /// <summary>
+        /// Tests the Heap.
+        /// </summary>
         private unsafe void HeapTest()
         {
             try
@@ -2214,6 +2237,9 @@ which should have been provided with the executable.");
             console.WriteLine("Returning.");
         }
 
+        /// <summary>
+        /// Test Garbage Collector.
+        /// </summary>
         private unsafe void GCTest()
         {
             try
@@ -2233,21 +2259,37 @@ which should have been provided with the executable.");
             console.WriteLine("Returning.");
         }
 
+        /// <summary>
+        /// Test ATA.
+        /// </summary>
         private void ATATest()
         {
             new Hardware.Testing.ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
 
+        /// <summary>
+        /// Test Usb
+        /// </summary>
         private void USBTest()
         {
             new Hardware.Testing.USBTests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
 
+        /// <summary>
+        /// Outputs the message from test.
+        /// </summary>
+        /// <param name="TestName">Name of the test.</param>
+        /// <param name="Message">The message.</param>
         private static void OutputMessageFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
             Console.Default.WriteLine(TestName + " : " + Message);
         }
 
+        /// <summary>
+        /// Outputs the warning from test.
+        /// </summary>
+        /// <param name="TestName">Name of the test.</param>
+        /// <param name="Message">The message.</param>
         private static void OutputWarningFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
             Console.Default.WarningColour();
@@ -2255,6 +2297,11 @@ which should have been provided with the executable.");
             Console.Default.DefaultColour();
         }
 
+        /// <summary>
+        /// Outputs the error from test.
+        /// </summary>
+        /// <param name="TestName">Name of the test.</param>
+        /// <param name="Message">The message.</param>
         private static void OutputErrorFromTest(FOS_System.String TestName, FOS_System.String Message)
         {
             Console.Default.ErrorColour();
@@ -3013,6 +3060,9 @@ which should have been provided with the executable.");
             Hardware.Devices.Timer.Default.Wait(5000);
         }
 
+        /// <summary>
+        /// Tests Longs
+        /// </summary>
         private void LongsTest()
         {
             console.WriteLine("Starting Longs test...");
@@ -3786,6 +3836,10 @@ which should have been provided with the executable.");
             }
             console.WriteLine("Finished Longs test.");
         }
+
+        /// <summary>
+        /// Tests Thread Sleep
+        /// </summary>
         private void ThreadSleepTest()
         {
             console.WriteLine("Running Thread Sleep test...");
@@ -3855,6 +3909,7 @@ which should have been provided with the executable.");
         /// Test field.
         /// </summary>
         public int x = 10;
+
         /// <summary>
         /// Test field.
         /// </summary>
