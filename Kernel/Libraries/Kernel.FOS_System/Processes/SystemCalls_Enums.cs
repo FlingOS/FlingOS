@@ -173,7 +173,26 @@ namespace Kernel.FOS_System.Processes
         GetDeviceList,
         GetDeviceInfo,
         ClaimDevice,
-        ReleaseDevice
+        ReleaseDevice,
+
+        StatFS,
+        InitFS,
+        Open,
+        Close,
+        Delete,
+        Read,
+        Write,
+        Seek,
+        Stat,
+        Rename,
+        Sync,
+        Truncate,
+        MakeDir,
+        DeleteDir,
+        ListDir,
+        ReadDirEntry,
+        GetWorkingDir,        
+        SetWorkingDir
     }
     /// <summary>
     /// Results of system calls.

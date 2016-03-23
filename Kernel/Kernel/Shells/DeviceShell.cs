@@ -35,23 +35,23 @@ namespace Kernel.Shells
                     BasicConsole.WriteLine("DM > ATA Driver started.");
                 }
 
-                if (Tasks.Helpers.StartBuiltInProcess("DM", "PCI Driver", Tasks.Driver.PCIDriverTask.Main, false))
-                {
-                    BasicConsole.WriteLine("DM > Couldn't start the PCI Driver!");
-                }
-                else
-                {
-                    BasicConsole.WriteLine("DM > ATA Driver started.");
-                }
+                //if (Tasks.Helpers.StartBuiltInProcess("DM", "PCI Driver", Tasks.Driver.PCIDriverTask.Main, false))
+                //{
+                //    BasicConsole.WriteLine("DM > Couldn't start the PCI Driver!");
+                //}
+                //else
+                //{
+                //    BasicConsole.WriteLine("DM > PCI Driver started.");
+                //}
 
-                if (Tasks.Helpers.StartBuiltInProcess("DM", "USB Driver", Tasks.Driver.USBDriverTask.Main, false))
-                {
-                    BasicConsole.WriteLine("DM > Couldn't start the USB Driver!");
-                }
-                else
-                {
-                    BasicConsole.WriteLine("DM > USB Driver started.");
-                }
+                //if (Tasks.Helpers.StartBuiltInProcess("DM", "USB Driver", Tasks.Driver.USBDriverTask.Main, false))
+                //{
+                //    BasicConsole.WriteLine("DM > Couldn't start the USB Driver!");
+                //}
+                //else
+                //{
+                //    BasicConsole.WriteLine("DM > USB Driver started.");
+                //}
                 
                 while (!terminating)
                 {

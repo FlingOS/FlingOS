@@ -1606,9 +1606,9 @@ which should have been provided with the executable.");
             
             console.WriteLine("Done. Finding partition...");
             Partition thePart = null;
-            for (int i = 0; i < FileSystemManager.Partitions.Count; i++)
+            for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                Partition aPart = (Partition)FileSystemManager.Partitions[i];
+                Partition aPart = (Partition)PartitionManager.Partitions[i];
                 if(aPart.TheDiskDevice == disk)
                 {
                     thePart = aPart;
@@ -1769,7 +1769,7 @@ which should have been provided with the executable.");
         /// </summary>
         private void OutputFS()
         {
-            console.WriteLine(((FOS_System.String)"Num partitions: ") + FOS_System.IO.FileSystemManager.Partitions.Count);
+            console.WriteLine(((FOS_System.String)"Num partitions: ") + PartitionManager.Partitions.Count);
 
             for (int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
             {

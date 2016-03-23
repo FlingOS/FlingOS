@@ -111,9 +111,9 @@ namespace Kernel.FOS_System.IO
         /// <returns>Whether the specified disk has had any valid partitions detected.</returns>
         public static bool HasPartitions(DiskDevice disk)
         {
-            for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)
+            for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                FOS_System.IO.Partition part = (FOS_System.IO.Partition)FOS_System.IO.FileSystemManager.Partitions[i];
+                FOS_System.IO.Partition part = (FOS_System.IO.Partition)PartitionManager.Partitions[i];
                 if (part.TheDiskDevice == disk)
                 {
                     return true;
@@ -128,9 +128,9 @@ namespace Kernel.FOS_System.IO
         /// <returns>The partition or null if none found.</returns>
         public static Partition GetFirstPartition(DiskDevice disk)
         {
-            for (int i = 0; i < FOS_System.IO.FileSystemManager.Partitions.Count; i++)
+            for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                FOS_System.IO.Partition part = (FOS_System.IO.Partition)FOS_System.IO.FileSystemManager.Partitions[i];
+                FOS_System.IO.Partition part = (FOS_System.IO.Partition)PartitionManager.Partitions[i];
                 if (part.TheDiskDevice == disk)
                 {
                     return part;

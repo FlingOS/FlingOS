@@ -122,6 +122,12 @@
     <Compile Include="Pipes\PipeOutpoint.cs" />
     <Compile Include="Pipes\Standard\StandardInpoint.cs" />
     <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
+    <Compile Include="Pipes\File\FileCmdInpoint.cs" />
+    <Compile Include="Pipes\File\FileCmdOutpoint.cs" />
+    <Compile Include="Pipes\File\FileDataInpoint.cs" />
+    <Compile Include="Pipes\File\FileDataOutpoint.cs" />
+    <Compile Include="Pipes\File\FilePipeCommand.cs" />
+    <Compile Include="Pipes\File\FilePipeDataHeader.cs" />
     <Compile Include="Pipes\Storage\StorageDataInpoint.cs" />
     <Compile Include="Pipes\Storage\StorageCmdInpoint.cs" />
     <Compile Include="Pipes\Storage\StorageDataOutpoint.cs" />

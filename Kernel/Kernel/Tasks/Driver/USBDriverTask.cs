@@ -51,7 +51,7 @@ namespace Kernel.Tasks.Driver
                         BasicConsole.WriteLine("USB Driver > Initialising USB HCIs...");
                         USBManager.InitHCIs();
 
-                        BasicConsole.WriteLine("USB Driver > Outputing USB info...");
+                        BasicConsole.WriteLine("USB Driver > Outputting USB info...");
                         OutputUSB();
 
                         SystemCalls.SleepThread(10000);

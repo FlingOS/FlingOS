@@ -93,7 +93,6 @@ namespace Kernel.Hardware.Controllers
 
                 uint InProcessId;
                 int PipeId = DataOutpoint.WaitForConnect(out InProcessId);
-                //TODO: Proper handling
                 BasicConsole.WriteLine("Storage Controller > Client connected.");
                 
                 if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
@@ -155,7 +154,6 @@ namespace Kernel.Hardware.Controllers
                         {
                             try
                             {
-                                //TODO: Receive & respond to commands
                                 unsafe
                                 {
                                     BasicConsole.WriteLine("Storage Controller > Wait for command from client...");
@@ -485,8 +483,6 @@ namespace Kernel.Hardware.Controllers
                 {
                     try
                     {
-                        //TODO: Receive & respond to commands
-
                         if (SystemCalls.WaitSemaphore(TheInfo.CommandQueuedSemaphoreId) == SystemCallResults.OK)
                         {
                             DiskCommand ACommand = null;

@@ -17,16 +17,16 @@ namespace Kernel.Tasks.Driver
             
             try
             {
-                BasicConsole.WriteLine("ATA Driver > Registering for IRQs...");
-                SystemCalls.RegisterIRQHandler(14, IRQHandler);
-                SystemCalls.RegisterIRQHandler(15);
-
                 BasicConsole.WriteLine("ATA Driver > Creating virtual console...");
                 console = new Consoles.VirtualConsole();
 
                 BasicConsole.WriteLine("ATA Driver > Connecting virtual console...");
                 console.Connect();
-                
+
+                BasicConsole.WriteLine("ATA Driver > Registering for IRQs...");
+                SystemCalls.RegisterIRQHandler(14, IRQHandler);
+                SystemCalls.RegisterIRQHandler(15);
+   
                 BasicConsole.WriteLine("ATA Driver > Executing.");
 
                 try
@@ -34,7 +34,7 @@ namespace Kernel.Tasks.Driver
                     BasicConsole.WriteLine("ATA Driver > Initialising ATA Manager...");
                     ATAManager.Init();
 
-                    BasicConsole.WriteLine("ATA Driver > Outputing ATA info...");
+                    BasicConsole.WriteLine("ATA Driver > Outputting ATA info...");
                     OutputATA();
                 }
                 catch

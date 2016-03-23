@@ -789,11 +789,20 @@ namespace Kernel.FOS_System.Processes
 
         #endregion
 
-        #region File Systems - Full TODO
+        #region File Systems - Partial TODO
 
-        // Format
-        // Setup
         // StatFS
+
+        [Drivers.Compiler.Attributes.NoGC]
+        public static SystemCallResults InitFS(/*TODO*/)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.InitFS, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
 
         // Open
         // Close

@@ -108,7 +108,7 @@ namespace Kernel.Hardware.Processes
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
                     BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
                 }
-                BasicConsole.WriteLine(" - Kenrel pages:");
+                BasicConsole.WriteLine(" - Kernel pages:");
                 iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
@@ -206,7 +206,7 @@ namespace Kernel.Hardware.Processes
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
                     BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
                 }
-                BasicConsole.WriteLine(" - Kenrel pages:");
+                BasicConsole.WriteLine(" - Kernel pages:");
                 iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
@@ -236,6 +236,10 @@ namespace Kernel.Hardware.Processes
             NewProcess.TheMemoryLayout.AddCodePages(startVAddr, (uint)newPAddr, vAddrCount);
 
             CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
+
+            // Guarantee memory layout cleanly loaded
+            Thread.Sleep(50);
+
             uint* srcPtr = (uint*)startVAddr;
             uint* dstPtr = (uint*)newVAddr;
             for (uint j = 0; j < (1024 * vAddrCount); j++, srcPtr++, dstPtr++)
@@ -268,6 +272,10 @@ namespace Kernel.Hardware.Processes
             NewProcess.TheMemoryLayout.AddDataPages(startVAddr, (uint)newPAddr, vAddrCount);
 
             CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
+
+            // Guarantee memory layout cleanly loaded
+            Thread.Sleep(50);
+
             uint* srcPtr = (uint*)startVAddr;
             uint* dstPtr = (uint*)newVAddr;
             for (uint j = 0; j < (1024 * vAddrCount); j++, srcPtr++, dstPtr++)

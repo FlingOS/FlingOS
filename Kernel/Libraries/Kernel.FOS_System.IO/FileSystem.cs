@@ -26,6 +26,7 @@
     
 using System;
 
+using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware;
 
@@ -36,6 +37,8 @@ namespace Kernel.FOS_System.IO
     /// </summary>
     public abstract class FileSystem : FOS_System.Object
     {
+        public int ActionSemaphoreId;
+
         /// <summary>
         /// The partition in which the file system resides.
         /// </summary>
@@ -82,6 +85,21 @@ namespace Kernel.FOS_System.IO
         public FileSystem(Partition aPartition)
         {
             thePartition = aPartition;
+
+            if (SystemCalls.CreateSemaphore(1, out ActionSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("File System > Failed to create a semaphore!");
+                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+            }
+        }
+
+        public bool Lock()
+        {
+            return SystemCalls.WaitSemaphore(ActionSemaphoreId) == SystemCallResults.OK;
+        }
+        public bool Unlock()
+        {
+            return SystemCalls.SignalSemaphore(ActionSemaphoreId) == SystemCallResults.OK;
         }
 
         /// <summary>

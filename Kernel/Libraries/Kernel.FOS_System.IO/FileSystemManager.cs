@@ -32,6 +32,7 @@ using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
 using Kernel.Pipes.Storage;
+using Kernel.Pipes.File;
 
 namespace Kernel.FOS_System.IO
 {
@@ -40,40 +41,21 @@ namespace Kernel.FOS_System.IO
     /// </summary>
     public static class FileSystemManager
     {
-        private class StorageControllerInfo : Object
-        {
-            public uint RemoteProcessId;
-            public int CmdPipeId;
-            public int DataOutPipeId;
-            public StorageDataInpoint DataInPipe;
-        }
-
         /// <summary>
         /// The delimiter that separates mapping prefixes and directory/file names in a path.
         /// </summary>
         public const char PathDelimiter = '/';
 
-        /// <summary>
-        /// The list of initialized partitions.
-        /// </summary>
-        public static List Partitions;
+        private static int MappingsListSemaphoreId;
         /// <summary>
         /// The list of file system mappings.
         /// </summary>
         public static List FileSystemMappings;
 
-        private static StorageCmdOutpoint CmdOutpoint;
-        private static StorageDataOutpoint DataOutpoint;
-
-        private static int ConnectSemaphoreId;
-        private static int CmdOutPipesSemaphoreId;
-        private static int DataOutPipesSemaphoreId;
-        private static UInt32List CmdOutPipes;
-        private static UInt32List DataOutPipes;
-        private static List DataInpoints;
-
-        private static UInt64List DisksBeingManaged;
-        private static List StorageControllers;
+        private static List Clients;
+        private static int ClientListSemaphoreId;
+        private static uint WaitForClientsThreadId;
+        private static FileDataOutpoint DataOutpoint;
 
         public static bool Terminating;
 
@@ -83,411 +65,48 @@ namespace Kernel.FOS_System.IO
         /// </summary>
         public static void Init()
         {
-            Partitions = new List(3);
+            Terminating = false;
+
             FileSystemMappings = new List(3);
 
-            DataInpoints = new List();
-            CmdOutPipes = new UInt32List();
-            DataOutPipes = new UInt32List();
-            CmdOutpoint = new StorageCmdOutpoint(PipeConstants.UnlimitedConnections);
-            DataOutpoint = new StorageDataOutpoint(PipeConstants.UnlimitedConnections, false);
+            Clients = new List(5);
+            DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, true);
 
-            DisksBeingManaged = new UInt64List();
-            StorageControllers = new List();
-
-            Terminating = false;
-            
-            uint NewThreadId;
-            if (SystemCalls.StartThread(WaitForCmdPipes, out NewThreadId) == SystemCallResults.OK)
-            {
-                //TODO: Store thread id
-            }
-            else
-            {
-                BasicConsole.WriteLine("File System Manager > Failed to create command pipe listener thread!");
-            }
-            if (SystemCalls.StartThread(WaitForDataPipes, out NewThreadId) == SystemCallResults.OK)
-            {
-                //TODO: Store thread id
-            }
-            else
-            {
-                BasicConsole.WriteLine("File System Manager > Failed to create data pipe listener thread!");
-            }
-
-            if (SystemCalls.CreateSemaphore(1, out ConnectSemaphoreId) != SystemCallResults.OK)
+            if (SystemCalls.CreateSemaphore(1, out MappingsListSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (1)");
                 ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
             }
 
-            if (SystemCalls.CreateSemaphore(-1, out CmdOutPipesSemaphoreId) != SystemCallResults.OK)
+            if (SystemCalls.CreateSemaphore(1, out ClientListSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (2)");
                 ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
             }
 
-            if (SystemCalls.CreateSemaphore(-1, out DataOutPipesSemaphoreId) != SystemCallResults.OK)
+            if (SystemCalls.StartThread(WaitForClients, out WaitForClientsThreadId) != SystemCallResults.OK)
             {
-                BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (3)");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                BasicConsole.WriteLine("File System Manager > Failed to create client listener thread!");
             }
         }
-        
-        private static void WaitForCmdPipes()
+
+        public static void InitFileSystem(Partition aPartition, FileSystem newFS)
         {
-            while(!Terminating)
-            {
-                uint InProcessId;
-                int PipeId = CmdOutpoint.WaitForConnect(out InProcessId);
-                BasicConsole.WriteLine("File System Manager > Command output connected.");
-                CmdOutPipes.Add((uint)PipeId);
-                SystemCalls.SignalSemaphore(CmdOutPipesSemaphoreId);
-            }
+            //TODO: Don't use the count to generate the drive letter
+            //  Because if we allowed detach/removal/eject in future, it could cause naming conflicts
+            String mappingPrefix = String.New(3);
+            mappingPrefix[0] = (char)((int)('A') + FileSystemMappings.Count);
+            mappingPrefix[1] = ':';
+            mappingPrefix[2] = FileSystemManager.PathDelimiter;
+            newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
+            aPartition.Mapped = true;
+
+            FileSystemMappings.Add(newFS.TheMapping);
+
+            //TODO
+            BasicConsole.WriteLine("Calling InitFS system call...");
+            SystemCalls.InitFS();
         }
-        private static void WaitForDataPipes()
-        {
-            while (!Terminating)
-            {
-                uint InProcessId;
-                int PipeId = DataOutpoint.WaitForConnect(out InProcessId);
-                BasicConsole.WriteLine("File System Manager > Data output connected.");
-                DataOutPipes.Add((uint)PipeId);
-                SystemCalls.SignalSemaphore(DataOutPipesSemaphoreId);
-            }
-        }
-
-        public static void CheckForStoragePipes()
-        {
-            int numOutpoints;
-            SystemCallResults SysCallResult;
-            Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
-            
-            if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
-            {
-                PipeOutpointDescriptor[] OutpointDescriptors;
-                Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
-                
-                if (SysCallResult == SystemCallResults.OK)
-                {
-                    for (int i = 0; i < OutpointDescriptors.Length; i++)
-                    {
-                        PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
-                        bool PipeExists = false;
-
-                        for (int j = 0; j < DataInpoints.Count; j++)
-                        {
-                            StorageDataInpoint ExistingPipeInfo = (StorageDataInpoint)DataInpoints[j];
-                            if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
-                            {
-                                PipeExists = true;
-                                break;
-                            }
-                        }
-
-                        if (!PipeExists)
-                        {
-                            try
-                            {
-                                if (SystemCalls.WaitSemaphore(ConnectSemaphoreId) == SystemCallResults.OK)
-                                {
-                                    BasicConsole.WriteLine("File System Manager > Connecting to: " + (String)Descriptor.ProcessId);
-                                    StorageDataInpoint DataIn = new StorageDataInpoint(Descriptor.ProcessId, true);
-                                    DataInpoints.Add(DataIn);
-
-                                    BasicConsole.WriteLine("File System Manager > Connected.");
-
-                                    try
-                                    {
-                                        if (SystemCalls.WaitSemaphore(CmdOutPipesSemaphoreId) == SystemCallResults.OK)
-                                        {
-                                            int CmdPipeId = (int)CmdOutPipes[CmdOutPipes.Count - 1];
-
-                                            BasicConsole.WriteLine("File System Manager > Got command output pipe id.");
-
-                                            if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
-                                            {
-                                                int DataPipeId = (int)DataOutPipes[DataOutPipes.Count - 1];
-
-                                                BasicConsole.WriteLine("File System Manager > Got data output pipe id.");
-                                                
-                                                StorageControllers.Add(new StorageControllerInfo()
-                                                {
-                                                    RemoteProcessId = Descriptor.ProcessId,
-                                                    CmdPipeId = CmdPipeId,
-                                                    DataOutPipeId = DataPipeId,
-                                                    DataInPipe = DataIn
-                                                });
-                                            }
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        BasicConsole.WriteLine("File System Manager > Error probing storage controller!");
-                                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                                    }
-
-                                    SystemCalls.SignalSemaphore(ConnectSemaphoreId);
-                                }
-                            }
-                            catch
-                            {
-                                BasicConsole.WriteLine("File System Manager > Error creating new pipe!");
-                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    BasicConsole.WriteLine("File System Manager > Couldn't get outpoint descriptors!");
-                }
-            }
-            else
-            {
-                BasicConsole.WriteLine("File System Manager > Cannot get outpoints!");
-            }
-
-            for (int i = 0; i < StorageControllers.Count; i++)
-            {
-                StorageControllerInfo st = (StorageControllerInfo)StorageControllers[i];
-
-                CmdOutpoint.Send_DiskList(st.CmdPipeId);
-                ulong[] DiskIds = st.DataInPipe.ReadDiskInfos(true);
-                if (DiskIds.Length == 0)
-                {
-                    BasicConsole.WriteLine("File System Manager > Storage controller is not managing any disks!");
-                }
-                else
-                {
-                    for (int j = 0; j < DiskIds.Length; j++)
-                    {
-                        if (!DisksBeingManaged.ContainsItemInRange(DiskIds[j], DiskIds[j] + 1))
-                        {
-                            BasicConsole.WriteLine("File System Manager > Storage controller is managing disk device: " + (String)DiskIds[j]);
-
-                            try
-                            {
-                                InitDisk(new StorageControllerDisk(DiskIds[j], st.RemoteProcessId, st.CmdPipeId, CmdOutpoint, st.DataOutPipeId, DataOutpoint, st.DataInPipe));
-
-                                DisksBeingManaged.Add(DiskIds[j]);
-                            }
-                            catch
-                            {
-                                BasicConsole.WriteLine("File System Manager > Error initialising storage!");
-                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                            }
-                        }
-                    }
-                }
-            }
-
-            InitPartitions();
-        }
-
-        /// <summary>
-        /// Initializes the specified disk device.
-        /// </summary>
-        /// <param name="aDiskDevice">The disk device to initialize.</param>
-        public static void InitDisk(DiskDevice TheDisk)
-        {
-            //TODO: Add more partitioning schemes.
-            
-            //Must check for GPT before MBR because GPT uses a protective
-            //  MBR entry so will be seen as valid MBR.
-            if (InitAsGPT(TheDisk))
-            {
-#if FSM_TRACE
-                BasicConsole.WriteLine("GPT formatted disk detected!");
-                BasicConsole.DelayOutput(3);
-#endif
-            }
-            else if (InitAsMBR(TheDisk))
-            {
-#if FSM_TRACE
-                BasicConsole.WriteLine("MBR formatted disk detected!");
-                BasicConsole.DelayOutput(3);
-#endif
-            }
-            else if(InitAsISO9660(TheDisk))
-            {
-#if FSM_TRACE
-                BasicConsole.WriteLine("ISO9660 CD/DVD disc detected!");
-                BasicConsole.DelayOutput(3);
-#endif
-            }
-            else
-            {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT/ISO9660 formatted disks not supported."));
-            }
-        }
-        /// <summary>
-        /// Initializes all available partitions looking for valid 
-        /// file systems.
-        /// </summary>
-        public static void InitPartitions()
-        {
-            for (int i = 0; i < Partitions.Count; i++)
-            {
-                try
-                {
-                    Partition aPartition = (Partition)Partitions[i];
-                    if (!aPartition.Mapped)
-                    {
-                        //BasicConsole.WriteLine("Attempting to create FAT File System...");
-                        FileSystem newFS = null;
-                        if (aPartition is Disk.ISO9660.PrimaryVolumeDescriptor)
-                        {
-                            newFS = new ISO9660.ISO9660FileSystem((Disk.ISO9660.PrimaryVolumeDescriptor)aPartition);
-                        }
-                        else
-                        {
-                            newFS = new FAT.FATFileSystem(aPartition);
-                        }
-
-                        if (newFS.IsValid)
-                        {
-                            String mappingPrefix = String.New(3);
-                            mappingPrefix[0] = (char)((int)('A') + i);
-                            mappingPrefix[1] = ':';
-                            mappingPrefix[2] = PathDelimiter;
-                            newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
-                            FileSystemMappings.Add(newFS.TheMapping);
-                            aPartition.Mapped = true;
-                        }
-                        else
-                        {
-                            BasicConsole.WriteLine("Partition not formatted as valid FAT or ISO9660 file-system.");
-                        }
-                    }
-                }
-                catch
-                {
-                    BasicConsole.Write("Error initialising partition: ");
-                    BasicConsole.WriteLine(i);
-                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                    //BasicConsole.DelayOutput(20);
-                }
-            }
-        }
-
-        private static bool InitAsISO9660(DiskDevice TheDisk)
-        {
-            // TODO: Should only check for ISO9660 only on CD/DVD drives
-            
-            Disk.ISO9660 TheISO9660 = new Disk.ISO9660(TheDisk);
-
-#if FSM_TRACE
-            TheISO9660.Print();
-#endif
-            ProcessISO9660(TheISO9660, TheDisk);
-
-            return true;
-
-            return false;
-        }
-        /// <summary>
-        /// Attempts to initialise a disk treating it as GPT formatted.
-        /// </summary>
-        /// <param name="aDiskDevice">The disk to initialise.</param>
-        /// <returns>True if a valid GPT was detected and the disk was successfully initialised. Otherwise, false.</returns>
-        private static bool InitAsGPT(DiskDevice TheDisk)
-        {
-            GPT TheGPT = new GPT(TheDisk);
-            if (!TheGPT.IsValid)
-            {
-                return false;
-            }
-            else
-            {
-                ProcessGPT(TheGPT, TheDisk);
-                return true;
-            }
-
-            return false;
-        }
-        /// <summary>
-        /// Attempts to initialise a disk treating it as MBR formatted.
-        /// </summary>
-        /// <param name="aDiskDevice">The disk to initialise.</param>
-        /// <returns>True if a valid MBR was detected and the disk was successfully initialised. Otherwise, false.</returns>
-        private static bool InitAsMBR(DiskDevice TheDisk)
-        {
-#if FSM_TRACE
-                        BasicConsole.WriteLine("Attempting to read MBR...");
-#endif
-            byte[] MBRData = new byte[512];
-            TheDisk.ReadBlock(0UL, 1U, MBRData);
-#if FSM_TRACE
-                        BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
-#endif
-            MBR TheMBR = new MBR(MBRData);
-
-            if (!TheMBR.IsValid)
-            {
-                return false;
-            }
-            else
-            {
-#if FSM_TRACE
-                            BasicConsole.WriteLine("Valid MBR found.");
-#endif
-                ProcessMBR(TheMBR, TheDisk);
-
-                return true;
-            }
-
-            return false;
-        }
-        private static void ProcessISO9660(Disk.ISO9660 aISO9660, DiskDevice TheDisk)
-        {
-            for (int i = 0; i < aISO9660.VolumeDescriptors.Count; i++)
-            {
-                Disk.ISO9660.VolumeDescriptor volDescrip = (Disk.ISO9660.VolumeDescriptor)aISO9660.VolumeDescriptors[i];
-                if (volDescrip is Disk.ISO9660.PrimaryVolumeDescriptor)
-                {
-                    Partitions.Add(volDescrip);
-                }
-            }
-        }
-        /// <summary>
-        /// Processes a valid GUID partition table to initialize its partitions.
-        /// </summary>
-        /// <param name="aGPT">The GPT to process.</param>
-        /// <param name="aDiskDevice">The disk device from which the GPT was read.</param>
-        private static void ProcessGPT(GPT aGPT, DiskDevice TheDisk)
-        {
-            for (int i = 0; i < aGPT.Partitions.Count; i++)
-            {
-                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
-                Partitions.Add(new Partition(TheDisk, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
-            }
-        }
-        /// <summary>
-        /// Processes a valid master boot record to initialize its partitions.
-        /// </summary>
-        /// <param name="anMBR">The MBR to process.</param>
-        /// <param name="TheDisk">The disk device from which the MBR was read.</param>
-        private static void ProcessMBR(MBR anMBR, DiskDevice TheDisk)
-        {
-            for (int i = 0; i < anMBR.NumPartitions; i++)
-            {
-                MBR.PartitionInfo aPartInfo = anMBR.Partitions[i];
-                if (aPartInfo.EBRLocation != 0)
-                {
-                    byte[] EBRData = new byte[512];
-                    TheDisk.ReadBlock(aPartInfo.EBRLocation, 1U, EBRData);
-                    EBR newEBR = new EBR(EBRData);
-                    ProcessMBR(newEBR, TheDisk);
-                }
-                else
-                {
-                    Partitions.Add(new Partition(TheDisk, aPartInfo.StartSector, aPartInfo.SectorCount));
-                }
-            }
-        }
-
         /// <summary>
         /// Gets the file system mapping for the specified path.
         /// </summary>
@@ -497,19 +116,26 @@ namespace Kernel.FOS_System.IO
         {
             FileSystemMapping result = null;
 
-            for (int i = 0; i < FileSystemMappings.Count; i++)
+            LockMappingsList();
+            try
             {
-                FileSystemMapping aMapping = (FileSystemMapping)FileSystemMappings[i];
-                if (aMapping.PathMatchesMapping(aPath))
+                for (int i = 0; i < FileSystemMappings.Count; i++)
                 {
-                    result = aMapping;
-                    break;
+                    FileSystemMapping aMapping = (FileSystemMapping)FileSystemMappings[i];
+                    if (aMapping.PathMatchesMapping(aPath))
+                    {
+                        result = aMapping;
+                        break;
+                    }
                 }
+            }
+            finally
+            {
+                UnlockMappingsList();
             }
 
             return result;
         }
-
         /// <summary>
         /// Determines whether the specified partition has any file system mappings associated with it.
         /// </summary>
@@ -526,6 +152,70 @@ namespace Kernel.FOS_System.IO
                 }
             }
             return false;
+        }
+        public static bool LockMappingsList()
+        {
+            return SystemCalls.WaitSemaphore(MappingsListSemaphoreId) == SystemCallResults.OK;
+        }
+        public static bool UnlockMappingsList()
+        {
+            return SystemCalls.SignalSemaphore(MappingsListSemaphoreId) == SystemCallResults.OK;
+        }
+
+        private static void WaitForClients()
+        {
+            while (!Terminating)
+            {
+                uint InProcessId;
+                int DataOutPipeId = DataOutpoint.WaitForConnect(out InProcessId);
+                BasicConsole.WriteLine("File System Manager > File data output connected.");
+                
+                FileCmdInpoint CmdInPipe = new FileCmdInpoint(InProcessId);
+                FileDataInpoint DataInPipe = new FileDataInpoint(InProcessId, false);
+
+                FileSystemClient NewInfo = new FileSystemClient()
+                {
+                    CmdInPipe = CmdInPipe,
+                    DataInPipe = DataInPipe,
+                    DataOutPipe = DataOutpoint,
+                    DataOutPipeId = DataOutPipeId,
+                    RemoteProcessId = InProcessId
+                };
+
+                if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
+                {
+                    Clients.Add(NewInfo);
+
+                    uint NewThreadId;
+                    if (SystemCalls.StartThread(ManageClient, out NewThreadId) == SystemCallResults.OK)
+                    {
+                        NewInfo.ManagementThreadId = NewThreadId;
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("File System Manager > Failed to create client management thread!");
+                    }
+
+                    SystemCalls.SignalSemaphore(ClientListSemaphoreId);
+                }
+            }
+        }
+        private static unsafe void ManageClient()
+        {
+            FileSystemClient TheClient = null;
+            if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
+            {
+                TheClient = (FileSystemClient)Clients[Clients.Count - 1];
+
+                if (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("File System Manager > Failed to signal a semaphore! (MC 1)");
+                }
+
+                BasicConsole.WriteLine("File System Manager > Client manager started.");
+
+                TheClient.Manage();
+            }
         }
     }
 }

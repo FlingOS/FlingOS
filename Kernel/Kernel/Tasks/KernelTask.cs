@@ -24,8 +24,9 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
-//DSC: Deferred System Calls
+//DFSC: Deferred System Calls
 //#define DSC_TRACE
+#define DFSC_TRACE
 //#define SYSCALLS_TRACE
 
 using Kernel.FOS_System.Collections;
@@ -40,11 +41,22 @@ using IRQHanderDelegate = Kernel.FOS_System.Processes.IRQHanderDelegate;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Processes.Requests.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Pipes;
+using Kernel.Pipes.File;
 
 namespace Kernel.Tasks
 {
     public unsafe static class KernelTask
     {
+        private class FileSystemManagerInfo : FOS_System.Object
+        {
+            public uint RemoteProcessId;
+            public int CmdPipeId;
+            public int DataOutPipeId;
+            public FileDataInpoint DataInPipe;
+            public FOS_System.String[] MappingPrefixes = null;
+        }
+
         private class DeferredSyscallInfo : FOS_System.Object
         {
             public uint ProcessId;
@@ -52,21 +64,49 @@ namespace Kernel.Tasks
         }
         
         public static bool Terminating = false;
+
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Queue DeferredSyscallsInfo_Unqueued;
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Queue DeferredSyscallsInfo_Queued;
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static bool DeferredSyscalls_Ready = false;
-
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Thread DeferredSyscallsThread;
+
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static Queue DeferredFileSyscallsInfo_Unqueued;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static Queue DeferredFileSyscallsInfo_Queued;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static bool DeferredFileSyscalls_Ready = false;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static Thread DeferredFileSyscallsThread;
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         public static uint WindowManagerTask_ProcessId;
 
         private static Hardware.Keyboards.VirtualKeyboard keyboard;
         private static Consoles.VirtualConsole console;
+
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static FileCmdOutpoint File_CmdOutpoint;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static FileDataOutpoint File_DataOutpoint;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static int File_ConnectSemaphoreId;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static int File_CmdOutPipesSemaphoreId;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static int File_DataOutPipesSemaphoreId;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static UInt32List File_CmdOutPipes;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static UInt32List File_DataOutPipes;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static List File_DataInpoints;
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        private static List FileSystemManagers;
 
         public static void Main()
         {
@@ -208,6 +248,13 @@ namespace Kernel.Tasks
                 DeferredSyscallsInfo_Unqueued.Push(new DeferredSyscallInfo());
             }
 
+            DeferredFileSyscallsInfo_Unqueued = new Queue(256, false);
+            DeferredFileSyscallsInfo_Queued = new Queue(DeferredFileSyscallsInfo_Unqueued.Capacity, false);
+            for (int i = 0; i < DeferredFileSyscallsInfo_Unqueued.Capacity; i++)
+            {
+                DeferredFileSyscallsInfo_Unqueued.Push(new DeferredSyscallInfo());
+            }
+
             //TODO: These need registering via system calls and message or pipe interfaces created
             //      Really they shouldn't be initialised by Kernel Task nor used by Kernel/Debugger Tasks directly.
             //      But they are needed for from-startup/first-instance/fail-proof debugging.
@@ -265,6 +312,25 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ClaimDevice);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseDevice);
 
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StatFS);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.InitFS);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Open);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Close);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Delete);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Read);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Write);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Seek);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Stat);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Rename);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Sync);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Truncate);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.MakeDir);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeleteDir);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ListDir);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadDirEntry);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetWorkingDir);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SetWorkingDir);
+
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
                 BasicConsole.WriteLine(" > Forcing initial GC cleanup...");
@@ -308,6 +374,34 @@ namespace Kernel.Tasks
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 
+                BasicConsole.PrimaryOutputEnabled = false;
+                //BasicConsole.SecondaryOutputEnabled = false;
+
+                BasicConsole.WriteLine(" > Starting deferred file syscalls thread...");
+                DeferredFileSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredFileSyscallsThread_Main, "Deferred File Sys Calls");
+
+                while (!DeferredFileSyscalls_Ready)
+                {
+                    BasicConsole.WriteLine("Waiting on deferred file syscalls thread...");
+                    SystemCalls.SleepThread(50);
+                }
+
+                BasicConsole.WriteLine(" > Starting deferred file syscalls helper threads...");
+                ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "Deferred File Sys Calls : Wait For File Cmd Pipes");
+                ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "Deferred File Sys Calls : Wait For File Data Pipes");
+
+                BasicConsole.WriteLine(" > Starting File Systems driver...");
+                Process FileSystemsProcess = ProcessManager.CreateProcess(Tasks.Driver.FileSystemsDriverTask.Main, "File Systems Driver", false);
+                ProcessManager.RegisterProcess(FileSystemsProcess, Scheduler.Priority.Normal);
+                
+                BasicConsole.WriteLine(" > Waiting for File System Manager to be ready...");
+                while (!Tasks.Driver.FileSystemsDriverTask.Ready)
+                {
+                    BasicConsole.WriteLine(" > [Wait pause]");
+                    SystemCalls.SleepThread(1000);
+                }
+                BasicConsole.WriteLine(" > File System Manager reported ready.");
+
                 BasicConsole.WriteLine(" > Starting Device Info task...");
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceInfoTask.Main, "Device Info", false);
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
@@ -316,23 +410,8 @@ namespace Kernel.Tasks
                 Process SystemStatusProcess = ProcessManager.CreateProcess(Tasks.App.SystemStatusTask.Main, "System Status App", false);
                 ProcessManager.RegisterProcess(SystemStatusProcess, Scheduler.Priority.Normal);
                 
-                BasicConsole.WriteLine(" > Starting File Systems driver...");
-                Process FileSystemsProcess = ProcessManager.CreateProcess(Tasks.Driver.FileSystemsDriverTask.Main, "File Systems Driver", false);
-                ProcessManager.RegisterProcess(FileSystemsProcess, Scheduler.Priority.Normal);
-
                 BasicConsole.WriteLine("Kernel Started.");
-
-                //bool OK = true;
-                //while (OK)
-                //{
-                //    BasicConsole.WriteLine("Ping");
-                //    FOS_System.Object obj = new FOS_System.Object();
-                //    //SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
-                //}
-
-                BasicConsole.PrimaryOutputEnabled = false;
-                //BasicConsole.SecondaryOutputEnabled = false;
-
+                
                 try
                 {
                     BasicConsole.WriteLine("KT > Creating virtual keyboard...");
@@ -1029,8 +1108,314 @@ namespace Kernel.Tasks
 #endif
                     break;
                 default:
-#if DSC_TRACE
+//#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
+                    BasicConsole.WriteLine((uint)syscallNumber);
+//#endif
+                    break;
+            }
+
+            return result;
+        }
+        public static void EndDeferredSystemCall(Process CallerProcess, Thread CallerThread, SystemCallResults result, uint Return2, uint Return3, uint Return4)
+        {
+            ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+            CallerThread.Return1 = (uint)(result == SystemCallResults.OK_NoWake ? SystemCallResults.OK : result);
+            CallerThread.Return2 = Return2;
+            CallerThread.Return3 = Return3;
+            CallerThread.Return4 = Return4;
+            ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
+            if (result != SystemCallResults.OK_NoWake)
+            {
+                CallerThread._Wake();
+            }
+        }
+
+        private static void InitFilePipes()
+        {
+            int numOutpoints;
+            SystemCallResults SysCallResult;
+            Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.File, PipeSubclasses.File_Data_Out);
+
+            if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
+            {
+                PipeOutpointDescriptor[] OutpointDescriptors;
+                Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.File, PipeSubclasses.File_Data_Out);
+
+                if (SysCallResult == SystemCallResults.OK)
+                {
+                    for (int i = 0; i < OutpointDescriptors.Length; i++)
+                    {
+                        PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
+                        bool PipeExists = false;
+
+                        for (int j = 0; j < File_DataInpoints.Count; j++)
+                        {
+                            FileDataInpoint ExistingPipeInfo = (FileDataInpoint)File_DataInpoints[j];
+                            if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
+                            {
+                                PipeExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!PipeExists)
+                        {
+                            try
+                            {
+                                if (SystemCalls.WaitSemaphore(File_ConnectSemaphoreId) == SystemCallResults.OK)
+                                {
+                                    BasicConsole.WriteLine("KT File Management > Connecting to: " + (FOS_System.String)Descriptor.ProcessId);
+                                    FileDataInpoint DataIn = new FileDataInpoint(Descriptor.ProcessId, true);
+                                    File_DataInpoints.Add(DataIn);
+
+                                    BasicConsole.WriteLine("KT File Management > Connected.");
+
+                                    try
+                                    {
+                                        //TODO: Ought to store InProcessId (see WaitForFileCmdPipes or WaitForFileDataPipes)
+                                        //  then check that against the Descriptor.ProcessId - wait until the correct process has connected
+                                        if (SystemCalls.WaitSemaphore(File_CmdOutPipesSemaphoreId) == SystemCallResults.OK)
+                                        {
+                                            int CmdPipeId = (int)File_CmdOutPipes[File_CmdOutPipes.Count - 1];
+
+                                            BasicConsole.WriteLine("KT File Management > Got command output pipe id.");
+
+                                            //TODO: As above w.r.t. process ids
+                                            if (SystemCalls.WaitSemaphore(File_DataOutPipesSemaphoreId) == SystemCallResults.OK)
+                                            {
+                                                int DataPipeId = (int)File_DataOutPipes[File_DataOutPipes.Count - 1];
+
+                                                BasicConsole.WriteLine("KT File Management > Got data output pipe id.");
+
+                                                FileSystemManagers.Add(new FileSystemManagerInfo()
+                                                {
+                                                    RemoteProcessId = Descriptor.ProcessId,
+                                                    CmdPipeId = CmdPipeId,
+                                                    DataOutPipeId = DataPipeId,
+                                                    DataInPipe = DataIn
+                                                });
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        BasicConsole.WriteLine("KT File Management > Error probing File controller!");
+                                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                                    }
+
+                                    SystemCalls.SignalSemaphore(File_ConnectSemaphoreId);
+                                }
+                            }
+                            catch
+                            {
+                                BasicConsole.WriteLine("KT File Management > Error creating new pipe!");
+                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    BasicConsole.WriteLine("KT File Management > Couldn't get outpoint descriptors!");
+                }
+            }
+            else
+            {
+                BasicConsole.WriteLine("KT File Management > Cannot get outpoints!");
+            }
+        }
+        private static void WaitForFileCmdPipes()
+        {
+            while (!Terminating)
+            {
+                uint InProcessId;
+                int PipeId = File_CmdOutpoint.WaitForConnect(out InProcessId);
+                BasicConsole.WriteLine("Kernel Task > File Access > Storage command output connected.");
+                File_CmdOutPipes.Add((uint)PipeId);
+                SystemCalls.SignalSemaphore(File_CmdOutPipesSemaphoreId);
+            }
+        }
+        private static void WaitForFileDataPipes()
+        {
+            while (!Terminating)
+            {
+                uint InProcessId;
+                int PipeId = File_DataOutpoint.WaitForConnect(out InProcessId);
+                BasicConsole.WriteLine("Kernel Task > File Access > Storage data output connected.");
+                File_DataOutPipes.Add((uint)PipeId);
+                SystemCalls.SignalSemaphore(File_DataOutPipesSemaphoreId);
+            }
+        }
+        private static void InitFileSystemManagers()
+        {
+            for (int i = 0; i < FileSystemManagers.Count; i++)
+            {
+                FileSystemManagerInfo info = (FileSystemManagerInfo)FileSystemManagers[i];
+                File_CmdOutpoint.Send_StatFS(info.CmdPipeId);
+                File_DataOutpoint.WriteString(info.DataOutPipeId, "");
+                info.MappingPrefixes = info.DataInPipe.ReadFSInfos(true);
+
+                BasicConsole.Write("KT > Got file system mappings: ");
+                for (int j = 0; j < info.MappingPrefixes.Length; i++)
+                {
+                    BasicConsole.Write(info.MappingPrefixes[i]);
+                    if (j < info.MappingPrefixes.Length - 1)
+                    {
+                        BasicConsole.Write(", ");
+                    }
+                }
+                BasicConsole.WriteLine();
+            }
+        }
+        public static void DeferredFileSyscallsThread_Main()
+        {
+            File_DataInpoints = new List();
+            File_CmdOutPipes = new UInt32List();
+            File_DataOutPipes = new UInt32List();
+            File_CmdOutpoint = new FileCmdOutpoint(PipeConstants.UnlimitedConnections);
+            File_DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, false);
+
+            FileSystemManagers = new List();
+
+            if (SystemCalls.CreateSemaphore(1, out File_ConnectSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (1)");
+            }
+
+            if (SystemCalls.CreateSemaphore(-1, out File_CmdOutPipesSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (2)");
+            }
+
+            if (SystemCalls.CreateSemaphore(-1, out File_DataOutPipesSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (3)");
+            }
+
+            DeferredFileSyscalls_Ready = true;
+
+//            while (FileSystemManagers.Count == 0)
+//            {
+//                InitFilePipes();
+//                Thread.Sleep(5000);
+//            }
+
+            while (!Terminating)
+            {
+//                DeferredFileSyscalls_Ready = true;
+
+//                if (DeferredFileSyscallsInfo_Queued.Count == 0)
+//                {
+                    SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+//                }
+
+//                while (DeferredFileSyscallsInfo_Queued.Count > 0)
+//                {
+//                    // Scheduler must be disabled during pop/push from circular buffer or we can
+//                    //  end up in an infinite lock. Consider what happens if a process invokes 
+//                    //  a deferred FileSystem call during the pop/push here and at the end of this loop.
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Pausing scheduler...");
+//#endif
+//                    Scheduler.Disable(/*"DFSC 1"*/);
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Popping queued info object...");
+//#endif
+//                    DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredFileSyscallsInfo_Queued.Pop();
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Resuming scheduler...");
+//#endif
+//                    Scheduler.Enable();
+
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Getting process & thread...");
+//#endif
+//                    Process CallerProcess = ProcessManager.GetProcessById(info.ProcessId);
+//                    Thread CallerThread = ProcessManager.GetThreadById(info.ThreadId, CallerProcess);
+
+//#if DFSC_TRACE
+//                    BasicConsole.Write("DFSC: Process: ");
+//                    BasicConsole.WriteLine(CallerProcess.Name);
+//                    BasicConsole.Write("DFSC: Thread: ");
+//                    BasicConsole.WriteLine(CallerThread.Name);
+//#endif
+
+//                    ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Getting data...");
+//#endif
+//                    SystemCallNumbers FileSysCallNumber = (SystemCallNumbers)CallerThread.SysCallNumber;
+//                    uint Param1 = CallerThread.Param1;
+//                    uint Param2 = CallerThread.Param2;
+//                    uint Param3 = CallerThread.Param3;
+//                    uint Return2 = CallerThread.Return2;
+//                    uint Return3 = CallerThread.Return3;
+//                    uint Return4 = CallerThread.Return4;
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Getting data done.");
+//#endif
+//                    ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Calling...");
+//#endif
+//                    SystemCallResults result = HandleDeferredFileSystemCall(
+//                        CallerProcess, CallerThread,
+//                        FileSysCallNumber, Param1, Param2, Param3,
+//                        ref Return2, ref Return3, ref Return4);
+
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Ending call...");
+//#endif
+//                    if (result != SystemCallResults.Deferred)
+//                    {
+//                        EndDeferredFileSystemCall(CallerProcess, CallerThread, result, Return2, Return3, Return4);
+//                    }
+
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Resetting info object...");
+//#endif
+//                    info.ProcessId = 0;
+//                    info.ThreadId = 0;
+
+//                    // See comment at top of loop for why this is necessary
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Pausing scheduler...");
+//#endif
+//                    Scheduler.Disable(/*"DFSC 2"*/);
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Queuing info object...");
+//#endif
+//                    DeferredFileSyscallsInfo_Unqueued.Push(info);
+//#if DFSC_TRACE
+//                    BasicConsole.WriteLine("DFSC: Resuming scheduler...");
+//#endif
+//                    Scheduler.Enable();
+//                }
+            }
+        }
+        public static unsafe SystemCallResults HandleDeferredFileSystemCall(
+            Process CallerProcess, Thread CallerThread,
+            SystemCallNumbers syscallNumber, uint Param1, uint Param2, uint Param3,
+            ref uint Return2, ref uint Return3, ref uint Return4)
+        {
+            SystemCallResults result = SystemCallResults.Unhandled;
+
+            switch (syscallNumber)
+            {
+                case SystemCallNumbers.InitFS:
+#if DFSC_TRACE
+                    BasicConsole.WriteLine("DFSC: Init FS");
+#endif
+                    InitFileSystemManagers();
+                    break;
+                default:
+#if DFSC_TRACE
+                    BasicConsole.WriteLine("DFSC: Unrecognised call number.");
                     BasicConsole.WriteLine((uint)syscallNumber);
 #endif
                     break;
@@ -1038,7 +1423,7 @@ namespace Kernel.Tasks
 
             return result;
         }
-        public static void EndDeferredSystemCall(Process CallerProcess, Thread CallerThread, SystemCallResults result, uint Return2, uint Return3, uint Return4)
+        public static void EndDeferredFileSystemCall(Process CallerProcess, Thread CallerThread, SystemCallResults result, uint Return2, uint Return3, uint Return4)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
             CallerThread.Return1 = (uint)(result == SystemCallResults.OK_NoWake ? SystemCallResults.OK : result);
@@ -1088,18 +1473,36 @@ namespace Kernel.Tasks
 
             if (result == SystemCallResults.Deferred || result == SystemCallResults.Deferred_PermitActions)
             {
-                //BasicConsole.WriteLine("Deferring syscall...");
-                //BasicConsole.WriteLine("Popping unqueued info object...");
-                DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
-                //BasicConsole.WriteLine("Setting info...");
-                info.ProcessId = callerProcessId;
-                info.ThreadId = callerThreadId;
+                if (syscallNumber >= (int)SystemCallNumbers.StatFS && syscallNumber <= (int)SystemCallNumbers.SetWorkingDir)
+                {
+                    BasicConsole.WriteLine("Deferring file syscall...");
+                    //BasicConsole.WriteLine("Popping unqueued info object...");
+                    DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredFileSyscallsInfo_Unqueued.Pop();
+                    //BasicConsole.WriteLine("Setting info...");
+                    info.ProcessId = callerProcessId;
+                    info.ThreadId = callerThreadId;
 
-                //BasicConsole.WriteLine("Queuing info object...");
-                DeferredSyscallsInfo_Queued.Push(info);
+                    //BasicConsole.WriteLine("Queuing info object...");
+                    DeferredFileSyscallsInfo_Queued.Push(info);
 
-                //BasicConsole.WriteLine("Waking deferred syscalls thread...");
-                DeferredSyscallsThread._Wake();
+                    //BasicConsole.WriteLine("Waking deferred file syscalls thread...");
+                    DeferredFileSyscallsThread._Wake();
+                }
+                else
+                {
+                    //BasicConsole.WriteLine("Deferring syscall...");
+                    //BasicConsole.WriteLine("Popping unqueued info object...");
+                    DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
+                    //BasicConsole.WriteLine("Setting info...");
+                    info.ProcessId = callerProcessId;
+                    info.ThreadId = callerThreadId;
+
+                    //BasicConsole.WriteLine("Queuing info object...");
+                    DeferredSyscallsInfo_Queued.Push(info);
+
+                    //BasicConsole.WriteLine("Waking deferred syscalls thread...");
+                    DeferredSyscallsThread._Wake();
+                }
             }
 
             return (int)result;
@@ -1488,6 +1891,19 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Release device");
 #endif
+                    result = SystemCallResults.Deferred;
+                    break;
+
+                case SystemCallNumbers.StatFS:
+//#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : File System Status (StatFS)");
+//#endif
+                    result = SystemCallResults.Deferred;
+                    break;
+                case SystemCallNumbers.InitFS:
+//#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : File System Initialise (InitFS)");
+//#endif
                     result = SystemCallResults.Deferred;
                     break;
 

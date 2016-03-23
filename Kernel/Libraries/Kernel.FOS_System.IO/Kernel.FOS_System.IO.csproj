@@ -100,6 +100,7 @@
     <Compile Include="Disk\MBR.cs" />
     <Compile Include="FAT\Listings\FATDirectory.cs" />
     <Compile Include="FAT\Listings\FATFile.cs" />
+    <Compile Include="FileSystemClient.cs" />
     <Compile Include="FileSystemMapping.cs" />
     <Compile Include="ISO9660\ISO9660FileSystem.cs" />
     <Compile Include="ISO9660\Listings\ISO9660Directory.cs" />
@@ -110,7 +111,9 @@
     <Compile Include="Listings\Base.cs" />
     <Compile Include="Listings\Directory.cs" />
     <Compile Include="Listings\File.cs" />
+    <Compile Include="PartitionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StorageManager.cs" />
     <Compile Include="Streams\CachedStream.cs" />
     <Compile Include="Streams\FAT\FATFileStream.cs" />
     <Compile Include="Streams\FileStream.cs" />

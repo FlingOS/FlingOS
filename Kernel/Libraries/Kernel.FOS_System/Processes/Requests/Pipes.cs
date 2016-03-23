@@ -47,7 +47,8 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         /// Standard pipe used for sending and receiving string data.
         /// </summary>
         Standard,
-        Storage
+        Storage,
+        File
     }
     /// <summary>
     /// The available pipe subclasses.
@@ -64,7 +65,10 @@ namespace Kernel.FOS_System.Processes.Requests.Pipes
         Standard_In,
         Storage_Command,
         Storage_Data_In,
-        Storage_Data_Out
+        Storage_Data_Out,
+        File_Command,
+        File_Data_In,
+        File_Data_Out
     }
 
     /// <summary>

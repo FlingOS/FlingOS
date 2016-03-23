@@ -13,8 +13,13 @@ namespace Kernel.Tasks.Driver
 
         public static bool Terminating = false;
 
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
+        public static bool Ready;
+
         public static void Main()
         {
+            Ready = false;
+
             Helpers.ProcessInit("File Systems Driver", out GCThreadId);
 
             try
@@ -29,13 +34,24 @@ namespace Kernel.Tasks.Driver
 
                 try
                 {
-                    BasicConsole.WriteLine("File Systems Driver > Initialising file systems...");
+                    BasicConsole.WriteLine("File Systems Driver > Initialising partition manager...");
+                    PartitionManager.Init();
+
+                    BasicConsole.WriteLine("File Systems Driver > Initialising storage manager...");
+                    StorageManager.Init();
+
+                    BasicConsole.WriteLine("File Systems Driver > Initialising file system manager...");
                     FileSystemManager.Init();
+
+                    BasicConsole.WriteLine("File Systems Driver > Reporting ready.");
+                    Ready = true;
 
                     while (!Terminating)
                     {
-                        BasicConsole.WriteLine("File Systems Driver > Searching for storage...");
-                        FileSystemManager.CheckForStoragePipes();
+                        BasicConsole.WriteLine("File Systems Driver > Searching for file systems...");
+
+                        StorageManager.InitStoragePipes();
+                        StorageManager.InitControllers();
 
                         SystemCalls.SleepThread(10000);
                     }

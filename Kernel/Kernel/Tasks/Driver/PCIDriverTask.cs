@@ -33,7 +33,7 @@ namespace Kernel.Tasks.Driver
                     BasicConsole.WriteLine("PCI Driver > Enumerating PCI devices...");
                     PCIManager.EnumerateDevices();
 
-                    BasicConsole.WriteLine("PCI Driver > Outputing PCI info...");
+                    BasicConsole.WriteLine("PCI Driver > Outputting PCI info...");
                     OutputPCI();
                 }
                 catch
