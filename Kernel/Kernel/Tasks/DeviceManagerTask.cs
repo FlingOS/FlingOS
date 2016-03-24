@@ -30,15 +30,30 @@ using Kernel.Processes;
 
 namespace Kernel.Tasks
 {
+    /// <summary>
+    /// The Device Manager Task 
+    /// </summary>
     public static unsafe class DeviceManagerTask
     {
+        /// <summary>
+        /// Task terminating
+        /// </summary>
         public static bool Terminating = false;
 
+        /// <summary>
+        /// The gc thread identifier
+        /// </summary>
         private static uint GCThreadId;
 
+        /// <summary>
+        /// The standard out
+        /// </summary>
         private static Pipes.Standard.StandardOutpoint StdOut;
         //private static Pipes.Standard.StandardInpoint StdIn;
 
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
         public static void Main()
         {
             BasicConsole.WriteLine("Device Manager started.");
