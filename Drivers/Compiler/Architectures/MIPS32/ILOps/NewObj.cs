@@ -46,9 +46,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
-                StackItem funcPtrItem = conversionState.CurrentStackFrame.Stack.Pop(); ;
-                conversionState.CurrentStackFrame.Stack.Pop();
-                conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
+                StackItem funcPtrItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop(); ;
+                conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(funcPtrItem);
                 return;
             }
 
@@ -57,10 +57,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             ParameterInfo[] allParams = constructorMethod.GetParameters();
             foreach (ParameterInfo aParam in allParams)
             {
-                conversionState.CurrentStackFrame.Stack.Pop();
+                conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -92,9 +92,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Comment("Ignore newobj calls for Delegates"));
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
-                StackItem funcPtrItem = conversionState.CurrentStackFrame.Stack.Pop(); ;
-                conversionState.CurrentStackFrame.Stack.Pop();
-                conversionState.CurrentStackFrame.Stack.Push(funcPtrItem);
+                StackItem funcPtrItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop(); ;
+                conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(funcPtrItem);
 
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                 conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = "4($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
@@ -168,7 +168,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             foreach (ParameterInfo aParam in allParams)
             {
                 sizeOfArgs += conversionState.TheILLibrary.GetTypeInfo(aParam.ParameterType).SizeOnStackInBytes;
-                conversionState.CurrentStackFrame.Stack.Pop();
+                conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$sp", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
             if (sizeOfArgs > 0)
@@ -195,7 +195,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Only remove args from stack - we want the object pointer to remain on the stack
             conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = sizeOfArgs.ToString(), Dest = "$sp" });
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,

@@ -48,11 +48,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
             Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
 
-            StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = valueisFloat,
                     sizeOnStackInBytes = stackSize,
@@ -100,7 +100,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int memSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : stackSize;
 
             //Pop the object pointer from our stack
-            StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             //If the value to load is a float, erm...abort...
             if (valueisFloat)
@@ -116,7 +116,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = offset.ToString(), Dest = "$t2" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t2" });
 
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -150,7 +150,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
                 }
 
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = valueisFloat,
                     sizeOnStackInBytes = stackSize,

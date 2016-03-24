@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             Types.VariableInfo localInfo = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
             
-            StackItem theItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem theItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             if (theItem.isFloat)
             {
                 //SUPPORT - floats

@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
 
             switch ((OpCodes)theOp.opCode.Value)
@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
@@ -87,7 +87,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Pop address
             //Push [address]
             
-            StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
             
             switch ((OpCodes)theOp.opCode.Value)
@@ -252,7 +252,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,

@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -112,7 +112,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Push new array pointer
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,

@@ -94,7 +94,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,
@@ -244,7 +244,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
 
             //Push the constant onto our stack
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,

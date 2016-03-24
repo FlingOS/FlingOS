@@ -56,7 +56,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop item to negate
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Peek();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Peek();
 
             if (itemA.isFloat)
             {

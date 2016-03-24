@@ -65,6 +65,7 @@ namespace Kernel.Hardware.Keyboards
             {
                 //TODO: This should be done through a DeviceManager.Deregister system call.
                 //TODO: This needs un-commenting and fixing
+                //TODO: Hmm.. perhaps this should actually be in the Clean function? To reflect what happens in Init
                 //DeviceManager.Devices.Remove(this);
                 enabled = false;
             }
@@ -174,10 +175,7 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         public static void Clean()
         {
-            if(ThePS2 != null)
-            {
-                ThePS2.Disable();
-            }
+            ThePS2?.Disable();
         }
     }
 }

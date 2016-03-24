@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86
             Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             int size = theTypeInfo.SizeOnStackInBytes;
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,
@@ -106,9 +106,9 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             // Pop address
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             // Push value
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = memSize,

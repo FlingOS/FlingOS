@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            rotateStackItems(conversionState, theOp.StackSwitch_Items, 1);
+            rotateStackItems(conversionState, theOp, theOp.StackSwitch_Items, 1);
         }
 
         /// <summary>
@@ -74,10 +74,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 bytesShift += 4;
             }
 
-            rotateStackItems(conversionState, theOp.StackSwitch_Items, 1);
+            rotateStackItems(conversionState, theOp, theOp.StackSwitch_Items, 1);
         }
 
-        private static void rotateStackItems(ILPreprocessState state, int items, int distance)
+        private static void rotateStackItems(ILPreprocessState state, ILOp theOp, int items, int distance)
         {
             if (distance >= items)
             {
@@ -86,18 +86,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
             List<StackItem> poppedItems = new List<StackItem>();
             for (int i = 0; i < items; i++)
             {
-                poppedItems.Add(state.CurrentStackFrame.Stack.Pop());
+                poppedItems.Add(state.CurrentStackFrame.GetStack(theOp).Pop());
             }
             for (int i = distance; i > -1; i--)
             {
-                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+                state.CurrentStackFrame.GetStack(theOp).Push(poppedItems[i]);
             }
             for (int i = items - 1; i > distance; i--)
             {
-                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+                state.CurrentStackFrame.GetStack(theOp).Push(poppedItems[i]);
             }
         }
-        private static void rotateStackItems(ILConversionState state, int items, int distance)
+        private static void rotateStackItems(ILConversionState state, ILOp theOp, int items, int distance)
         {
             if (distance >= items)
             {
@@ -106,15 +106,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
             List<StackItem> poppedItems = new List<StackItem>();
             for (int i = 0; i < items; i++)
             {
-                poppedItems.Add(state.CurrentStackFrame.Stack.Pop());
+                poppedItems.Add(state.CurrentStackFrame.GetStack(theOp).Pop());
             }
             for (int i = distance; i > -1; i--)
             {
-                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+                state.CurrentStackFrame.GetStack(theOp).Push(poppedItems[i]);
             }
             for (int i = items - 1; i > distance; i--)
             {
-                state.CurrentStackFrame.Stack.Push(poppedItems[i]);
+                state.CurrentStackFrame.GetStack(theOp).Push(poppedItems[i]);
             }
         }
     }

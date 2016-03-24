@@ -41,13 +41,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -58,7 +58,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else if ((itemA.sizeOnStackInBytes == 8 &&
                 itemB.sizeOnStackInBytes == 4))
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -69,7 +69,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else if (itemA.sizeOnStackInBytes == 8 &&
                 itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -96,8 +96,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             int currOpPosition = conversionState.PositionOf(theOp);
 
@@ -123,7 +123,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Sllv() { Src = "$t0", BitsReg = "$t2", Dest = "$t0",  });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -177,7 +177,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
@@ -238,7 +238,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End2" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,

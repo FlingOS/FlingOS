@@ -171,7 +171,32 @@ namespace Drivers.Compiler.IL
         /// <summary>
         /// The stack.
         /// </summary>
-        public Stack<StackItem> Stack = new Stack<StackItem>();
+        private Dictionary<int, Stack<StackItem>> Stacks = new Dictionary<int, Stack<StackItem>>();
+
+        public StackFrame()
+        {
+            Stacks.Add(-1, new Stack<StackItem>());
+        }
+
+        public Stack<StackItem> GetStack(ILOp op)
+        {
+            return GetStack(op.Offset);
+        }
+        public Stack<StackItem> GetStack(int ILOffset)
+        {
+            int NearestKey = Stacks.Keys.Where(x => x <= ILOffset).OrderBy(x => x).Last();
+            return Stacks[NearestKey];
+        }
+        public void ForkStack(ILOp CurrentOp, ILOp DestinationOp)
+        {
+            // Multiple branches to the same location, in which case, we just have to hope the stacks match up! :)
+            //  TODO: Find a way to verify the stack match properly.
+            if (Stacks.ContainsKey(DestinationOp.Offset)) return;
+
+            Stack<StackItem> CurrentStack = GetStack(CurrentOp.Offset);
+            Stack<StackItem> NewStack = new Stack<StackItem>(CurrentStack.Reverse());
+            Stacks.Add(DestinationOp.Offset, NewStack);
+        }
     }
     /// <summary>
     /// Represents an item on a stack.

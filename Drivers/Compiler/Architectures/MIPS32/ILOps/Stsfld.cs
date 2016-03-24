@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
         }
         
         /// <summary>
@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             conversionState.AddExternalLabel(fieldId);
 
-            StackItem value = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem value = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (isFloat)
             {

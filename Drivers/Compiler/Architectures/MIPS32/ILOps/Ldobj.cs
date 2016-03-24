@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             int size = theTypeInfo.SizeOnStackInBytes;
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,
@@ -93,7 +93,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "$t0" });
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,

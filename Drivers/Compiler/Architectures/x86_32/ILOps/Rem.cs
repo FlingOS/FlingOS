@@ -40,13 +40,13 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -71,8 +71,8 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
 
             if (itemB.sizeOnStackInBytes < 4 ||
@@ -111,7 +111,7 @@ namespace Drivers.Compiler.Architectures.x86
                     //Result stored in edx
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,

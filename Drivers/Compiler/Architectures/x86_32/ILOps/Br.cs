@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             ASMOps.JmpOp jumpOp = ASMOps.JmpOp.Jump;
-            
+
             switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
@@ -124,7 +124,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (jumpOp == ASMOps.JmpOp.JumpZero || jumpOp == ASMOps.JmpOp.JumpNotZero)
             {
                 //Pop from our stack the test item to use in the condition
-                StackItem testItem = conversionState.CurrentStackFrame.Stack.Pop();
+                StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
             else if (jumpOp == ASMOps.JmpOp.JumpEqual || jumpOp == ASMOps.JmpOp.JumpNotEqual ||
                          jumpOp == ASMOps.JmpOp.JumpGreaterThanEqual ||
@@ -133,17 +133,49 @@ namespace Drivers.Compiler.Architectures.x86
                          jumpOp == ASMOps.JmpOp.JumpGreaterThan)
             {
                 //Pop from our stack the test items to use in the condition
-                StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-                StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+                StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            }
+
+            ILOp targetOp = GetTargetILOp(conversionState, theOp);
+            if (targetOp != null)
+            {
+                conversionState.CurrentStackFrame.ForkStack(theOp, targetOp);
             }
         }
 
         public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
+            //Mark it as requiring a label
+            ILOp targetOp = GetTargetILOp(preprocessState, theOp);
+            if (targetOp != null)
+            {
+                targetOp.LabelRequired = true;
+            }
+        }
+
+        private static ILOp GetTargetILOp(ILPreprocessState preprocessState, ILOp theOp)
+        {
+            int ILOffset = GetTargetILOffset(theOp);
+
+            if (ILOffset != 0)
+            {
+                //Get the IL number of the next op
+                int startILNum = theOp.NextOffset;
+                //Add the offset to get the IL op num to jump to
+                int ILNumToGoTo = startILNum + ILOffset;
+
+                //Find the IL op to jump to 
+                return preprocessState.Input.At(ILNumToGoTo);
+            }
+            return null;
+        }
+        private static int GetTargetILOffset(ILOp theOp)
+        {
             //This will store the offset from the current next op's position
             //to the IL op to jump to.
             int ILOffset = 0;
-            
+
             switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
@@ -258,19 +290,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            if (ILOffset != 0)
-            {
-                //Get the IL number of the next op
-                int startILNum = theOp.NextOffset;
-                //Add the offset to get the IL op num to jump to
-                int ILNumToGoTo = startILNum + ILOffset;
-
-                //Find the IL op to jump to 
-                ILOp opToGoTo = preprocessState.Input.At(ILNumToGoTo);
-                
-                //Mark it as requiring a label
-                opToGoTo.LabelRequired = true;
-            }
+            return ILOffset;
         }
 
         /// <summary>
@@ -524,12 +544,12 @@ namespace Drivers.Compiler.Architectures.x86
                 ILOp opToGoTo = conversionState.Input.At(ILNumToGoTo);
                 int opToGoToPosition = conversionState.PositionOf(opToGoTo);
                 int currOpPosition = conversionState.PositionOf(theOp);
-
+                
                 //If the jump op is not a straightforward jump i.e. has one or more conditions
                 if (jumpOp == ASMOps.JmpOp.JumpZero || jumpOp == ASMOps.JmpOp.JumpNotZero)
                 {
                     //Pop from our stack the test item to use in the condition
-                    StackItem testItem = conversionState.CurrentStackFrame.Stack.Pop();
+                    StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                     
                     if (testItem.isFloat)
                     {
@@ -600,8 +620,8 @@ namespace Drivers.Compiler.Architectures.x86
                          jumpOp == ASMOps.JmpOp.JumpGreaterThan)
                 {
                     //Pop from our stack the test items to use in the condition
-                    StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-                    StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+                    StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                    StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
                     if (itemA.isFloat || itemB.isFloat)
                     {
@@ -670,6 +690,9 @@ namespace Drivers.Compiler.Architectures.x86
                     //Do the straightforward jump...
                     conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition });
                 }
+
+                // Fork the stack after the processing of the jump (since processing of jump may pop some stuff)
+                conversionState.CurrentStackFrame.ForkStack(theOp, opToGoTo);
             }
         }
     }

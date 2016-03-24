@@ -52,7 +52,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         int size = theTypeInfo.SizeOnStackInBytes;
                         bool isFloat = Utilities.IsFloat(theField.FieldType);
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = (size == 8 ? 8 : 4),
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
                     break;
                 case OpCodes.Ldsflda:
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -141,7 +141,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             throw new ArgumentOutOfRangeException("Loading static field that has stack size greater than 8 not supported!");
                         }
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = (size == 8 ? 8 : 4),
@@ -155,7 +155,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t4" });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,

@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
             if (retTypeInfo.SizeOnStackInBytes != 0)
             {
-                conversionState.CurrentStackFrame.Stack.Pop();
+                conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
         }
 
@@ -73,7 +73,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if (retSize != 0)
             {
                 //Pop the return value off our stack
-                StackItem retItem = conversionState.CurrentStackFrame.Stack.Pop();
+                StackItem retItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
                 //If it is float, well, we don't support it yet...
                 if (retItem.isFloat)

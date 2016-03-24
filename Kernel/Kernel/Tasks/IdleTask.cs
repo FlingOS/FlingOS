@@ -45,26 +45,14 @@ namespace Kernel.Tasks
             //      is to be the only thread left awake when all others are slept.
 
             FOS_System.GC.OutputTrace = false;
-
-            int i = 0;
+            
             while (!Terminating)
             {
                 *((ushort*)0xB809E) = (0x1F00 | '1');
-                TheCPU.Halt();
+                TheCPU?.Halt();
 
                 *((ushort*)0xB809E) = (0x3F00 | '2');
-                TheCPU.Halt();
-
-                if (i < 10000)
-                {
-                    i++;
-                }
-                else if (i == 10000)
-                {
-                    i = 0;
-                    BasicConsole.WriteLine(GCThreadId);
-                    SystemCalls.SleepThread(1000);
-                }
+                TheCPU?.Halt();
             }
         }
     }

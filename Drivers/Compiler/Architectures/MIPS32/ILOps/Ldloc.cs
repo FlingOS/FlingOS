@@ -71,7 +71,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             
             if (loadAddr)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -83,7 +83,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 int pushedLocalSizeVal = theLoc.TheTypeInfo.SizeOnStackInBytes;
 
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,
@@ -154,7 +154,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Sub() { Src1 = "$t0", Src2 = bytesOffset.ToString(), Dest = "$t0" });
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -179,7 +179,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
                 }
 
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat =  Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,

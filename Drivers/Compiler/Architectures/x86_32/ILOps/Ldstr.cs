@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = 4,
                 isFloat = false,
@@ -70,7 +70,7 @@ namespace Drivers.Compiler.Architectures.x86
             //Push the address of the string (i.e. address of ID - ASM label)
             conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = theStringID });
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = 4,
                 isFloat = false,

@@ -52,7 +52,7 @@ namespace Drivers.Compiler.Architectures.x86
                         int size = theTypeInfo.SizeOnStackInBytes;
                         bool isFloat = Utilities.IsFloat(theField.FieldType);
                         
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = (size == 8 ? 8 : 4),
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.x86
                     }
                     break;
                 case OpCodes.Ldsflda:
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -156,7 +156,7 @@ namespace Drivers.Compiler.Architectures.x86
                             }
                         }
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = isFloat,
                             sizeOnStackInBytes = theTypeInfo.SizeOnStackInBytes,
@@ -169,7 +169,7 @@ namespace Drivers.Compiler.Architectures.x86
                     //Load the address of the field i.e. address of the ASM label
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = fieldID });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,

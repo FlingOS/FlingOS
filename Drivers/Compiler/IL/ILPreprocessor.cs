@@ -115,6 +115,7 @@ namespace Drivers.Compiler.IL
                     new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Call,
+                        Offset = 0,
                         ValueBytes = null,
                         MethodToCall = anInfo
                     }
@@ -346,7 +347,8 @@ namespace Drivers.Compiler.IL
                                 i++;
                                 theILBlock.ILOps.Insert(i, new ILOp()
                                 {
-                                    opCode = System.Reflection.Emit.OpCodes.Pop
+                                    opCode = System.Reflection.Emit.OpCodes.Pop,
+                                    Offset = theOp.Offset
                                 });
                             }
                             foreach (System.Reflection.ParameterInfo anInfo in theOp.MethodToCall.GetParameters())
@@ -354,7 +356,8 @@ namespace Drivers.Compiler.IL
                                 i++;
                                 theILBlock.ILOps.Insert(i, new ILOp()
                                 {
-                                    opCode = System.Reflection.Emit.OpCodes.Pop
+                                    opCode = System.Reflection.Emit.OpCodes.Pop,
+                                    Offset = theOp.Offset
                                 });
                             }
                         }
@@ -503,11 +506,13 @@ namespace Drivers.Compiler.IL
                         theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
                         {
                             opCode = System.Reflection.Emit.OpCodes.Ldarg,
+                            Offset = -1,
                             ValueBytes = BitConverter.GetBytes(argInfo.Position)
                         });
                         theILBlock.ILOps.Insert(InjectIncArgsRefCountPos + 1, new ILOp()
                         {
                             opCode = System.Reflection.Emit.OpCodes.Call,
+                            Offset = -1,
                             MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
                         });
                     }
@@ -551,11 +556,13 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Ldsfld,
+                                        Offset = currOp.Offset,
                                         ValueBytes = currOp.ValueBytes
                                     });
                                     theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Call,
+                                        Offset = currOp.Offset,
                                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
                                     });
                                     
@@ -601,11 +608,13 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Ldloc,
+                                        Offset = currOp.Offset,
                                         ValueBytes = BitConverter.GetBytes(localIndex)
                                     });
                                     theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Call,
+                                        Offset = currOp.Offset,
                                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
                                     });
                                     
@@ -644,26 +653,31 @@ namespace Drivers.Compiler.IL
 
                                     theILBlock.ILOps.Insert(opIndx, new ILOps.StackSwitch()
                                     {
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 2
                                     });
                                     
                                     theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
                                     {
+                                        Offset = currOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Dup
                                     });
                                     theILBlock.ILOps.Insert(opIndx + 2, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Ldfld,
+                                        Offset = currOp.Offset,
                                         ValueBytes = currOp.ValueBytes
                                     });
                                     theILBlock.ILOps.Insert(opIndx + 3, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Call,
+                                        Offset = currOp.Offset,
                                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
                                     });
 
                                     theILBlock.ILOps.Insert(opIndx + 4, new ILOps.StackSwitch()
                                     {
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 2
                                     });
 
@@ -681,7 +695,7 @@ namespace Drivers.Compiler.IL
                                 bool isRefOp = false;
                                 if ((ILOp.OpCodes)currOp.opCode.Value == ILOp.OpCodes.Stelem_Ref)
                                 {
-                                    doDecrement = preprocessState.CurrentStackFrame.Stack.Peek().isGCManaged;
+                                    doDecrement = preprocessState.CurrentStackFrame.GetStack(currOp).Peek().isGCManaged;
                                     isRefOp = true;
                                 }
                                 else
@@ -734,6 +748,7 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(3),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 3
                                     });
                                     incOpIndexBy++;
@@ -741,6 +756,7 @@ namespace Drivers.Compiler.IL
                                     #region 2.
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
                                     {
+                                        Offset = currOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Dup
                                     });
                                     incOpIndexBy++;
@@ -749,6 +765,7 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(4),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 4
                                     });
                                     incOpIndexBy++;
@@ -756,6 +773,7 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(4),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 4
                                     });
                                     incOpIndexBy++;
@@ -763,6 +781,7 @@ namespace Drivers.Compiler.IL
                                     #region 4.
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
                                     {
+                                        Offset = currOp.Offset,
                                         opCode = System.Reflection.Emit.OpCodes.Dup
                                     });
                                     incOpIndexBy++;
@@ -771,24 +790,28 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(5),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 5
                                     });
                                     incOpIndexBy++;
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(5),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 5
                                     });
                                     incOpIndexBy++;
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(5),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 5
                                     });
                                     incOpIndexBy++;
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(5),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 5
                                     });
                                     incOpIndexBy++;
@@ -797,6 +820,7 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
                                     {
                                         opCode = isRefOp ? System.Reflection.Emit.OpCodes.Ldelem_Ref : System.Reflection.Emit.OpCodes.Ldelem,
+                                        Offset = currOp.Offset,
                                         ValueBytes = currOp.ValueBytes
                                     });
                                     incOpIndexBy++;
@@ -805,6 +829,7 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Call,
+                                        Offset = currOp.Offset,
                                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
                                     });
                                     incOpIndexBy++;
@@ -813,6 +838,7 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOps.StackSwitch()
                                     {
                                         ValueBytes = BitConverter.GetBytes(3),
+                                        Offset = currOp.Offset,
                                         StackSwitch_Items = 3
                                     });
                                     incOpIndexBy++;
@@ -834,11 +860,13 @@ namespace Drivers.Compiler.IL
                                     theILBlock.ILOps.Insert(opIndx, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Ldarg,
+                                        Offset = currOp.Offset,
                                         ValueBytes = BitConverter.GetBytes(index)
                                     });
                                     theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Call,
+                                        Offset = currOp.Offset,
                                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.DecrementRefCountMethodAttribute)].First().UnderlyingInfo
                                     });
 
@@ -851,16 +879,18 @@ namespace Drivers.Compiler.IL
                     }
 
                     if (IncRefCount &&
-                        !preprocessState.CurrentStackFrame.Stack.Peek().isNewGCObject)
+                        !preprocessState.CurrentStackFrame.GetStack(currOp).Peek().isNewGCObject)
                     {
                         theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
                         {
+                            Offset = currOp.Offset,
                             opCode = System.Reflection.Emit.OpCodes.Dup
                         });
                         incOpIndexBy++;
                         theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
                         {
                             opCode = System.Reflection.Emit.OpCodes.Call,
+                            Offset = currOp.Offset,
                             MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
                         });
                         incOpIndexBy++;
@@ -972,12 +1002,14 @@ namespace Drivers.Compiler.IL
                                     // Add ops for incrementing ref count of return value, updare op offsets
                                     theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
                                     {
+                                        Offset = lastOpOffset,
                                         opCode = System.Reflection.Emit.OpCodes.Dup
                                     });
                                     lastOpIndex++;
                                     theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
                                     {
                                         opCode = System.Reflection.Emit.OpCodes.Call,
+                                        Offset = lastOpOffset,
                                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.IncrementRefCountMethodAttribute)].First().UnderlyingInfo
                                     });
                                     lastOpIndex++;
@@ -1230,6 +1262,7 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.Insert(i + 1, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Call,
+                        Offset = theOp.Offset,
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.ExceptionsHandleLeaveMethodAttribute)].First().UnderlyingInfo
                     });
 
@@ -1304,17 +1337,20 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.Insert(insertPos++, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Ldftn, 
+                        Offset = exBlock.Offset,
                         MethodToCall = theMethodInfo.UnderlyingInfo,
                         LoadAtILOffset = finBlock.Offset
                     });
                     theILBlock.ILOps.Insert(insertPos++, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Ldc_I4,
+                        Offset = exBlock.Offset,
                         ValueBytes = BitConverter.GetBytes(0x00000000)
                     });
                     theILBlock.ILOps.Insert(insertPos++, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Call,
+                        Offset = exBlock.Offset,
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.AddExceptionHandlerInfoMethodAttribute)].First().UnderlyingInfo
                     });
                 }
@@ -1323,17 +1359,20 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.Insert(insertPos++, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Ldftn,
+                        Offset = exBlock.Offset,
                         MethodToCall = theMethodInfo.UnderlyingInfo,
                         LoadAtILOffset = catchBlock.Offset
                     });
                     theILBlock.ILOps.Insert(insertPos++, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Ldc_I4,
+                        Offset = exBlock.Offset,
                         ValueBytes = BitConverter.GetBytes(0xFFFFFFFF)
                     });
                     theILBlock.ILOps.Insert(insertPos++, new ILOp()
                     {
                         opCode = System.Reflection.Emit.OpCodes.Call,
+                        Offset = exBlock.Offset,
                         MethodToCall = ILLibrary.SpecialMethods[typeof(Attributes.AddExceptionHandlerInfoMethodAttribute)].First().UnderlyingInfo
                     });
                 }

@@ -73,7 +73,7 @@ namespace Drivers.Compiler.Architectures.x86
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
                 (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -86,7 +86,7 @@ namespace Drivers.Compiler.Architectures.x86
                 Types.VariableInfo argInfo = conversionState.Input.TheMethodInfo.ArgumentInfos[index];
                 Types.TypeInfo paramTypeInfo = argInfo.TheTypeInfo;
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = bytesForArg,
                     isFloat = false,
@@ -168,7 +168,7 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "ECX" });
 
                 //Push the address onto our stack
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -195,7 +195,7 @@ namespace Drivers.Compiler.Architectures.x86
                 }
                 
                 //Push the arg onto our stack
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = paramTypeInfo.SizeOnStackInBytes,
                     isFloat = false,

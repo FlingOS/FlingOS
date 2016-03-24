@@ -48,11 +48,11 @@ namespace Drivers.Compiler.Architectures.x86
             Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
 
-            StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = valueisFloat,
                     sizeOnStackInBytes = stackSize,
@@ -100,7 +100,7 @@ namespace Drivers.Compiler.Architectures.x86
             int fieldMemSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldStackSize;
 
             //Pop the object pointer from our stack
-            StackItem objStackItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem objStackItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             //If the value to load is a float, erm...abort...
             if (valueisFloat)
@@ -176,7 +176,7 @@ namespace Drivers.Compiler.Architectures.x86
                     int sizeToRemove = (objStackItem.sizeOnStackInBytes - fieldStackSize);
                     conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = sizeToRemove.ToString() });
                     
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = valueisFloat,
                         sizeOnStackInBytes = fieldStackSize,
@@ -194,7 +194,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Add() { Src = offset.ToString(), Dest = "ECX" });
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "ECX" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -226,7 +226,7 @@ namespace Drivers.Compiler.Architectures.x86
                         }
                     }
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = valueisFloat,
                         sizeOnStackInBytes = fieldStackSize,

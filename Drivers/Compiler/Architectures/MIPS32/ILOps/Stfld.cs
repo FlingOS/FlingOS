@@ -41,8 +41,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Pop();
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
         }
 
         /// <summary>
@@ -69,8 +69,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
             int memSize = fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : stackSize;
 
-            StackItem value = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem objPointer = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem value = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             
             if (value.isFloat)
             {

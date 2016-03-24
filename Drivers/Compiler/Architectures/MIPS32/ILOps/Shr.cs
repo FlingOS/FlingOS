@@ -41,13 +41,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -60,7 +60,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 if ((OpCodes)theOp.opCode.Value == OpCodes.Shr_Un)
                 {
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
@@ -70,7 +70,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 else
                 {
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
@@ -84,7 +84,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 if ((OpCodes)theOp.opCode.Value == OpCodes.Shr_Un)
                 {
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
@@ -94,7 +94,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 else
                 {
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,
@@ -122,8 +122,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             int currOpPosition = conversionState.PositionOf(theOp);
 
@@ -154,7 +154,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Srlv() { Dest = "$t0", Src = "$t0", BitsReg = "$t2" });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 4,
@@ -172,7 +172,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Srav() { Dest = "$t0", Src = "$t0", BitsReg = "$t2" });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 4,
@@ -230,7 +230,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
@@ -282,7 +282,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                         
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
@@ -348,7 +348,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End2" });
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,
@@ -407,7 +407,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
                         conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End2" });
 
-                        conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                         {
                             isFloat = false,
                             sizeOnStackInBytes = 8,

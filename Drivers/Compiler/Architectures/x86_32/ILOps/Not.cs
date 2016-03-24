@@ -55,7 +55,7 @@ namespace Drivers.Compiler.Architectures.x86
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            StackItem theItem = conversionState.CurrentStackFrame.Stack.Peek();
+            StackItem theItem = conversionState.CurrentStackFrame.GetStack(theOp).Peek();
             if (theItem.isFloat)
             {
                 //SUPPORT - Not op for floats

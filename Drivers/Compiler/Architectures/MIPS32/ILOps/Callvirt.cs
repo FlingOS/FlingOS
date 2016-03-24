@@ -64,13 +64,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     int bytesToAdd = 4;
                     foreach (Type aParam in allParams)
                     {
-                        conversionState.CurrentStackFrame.Stack.Pop();
+                        conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                         bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
                     }
 
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
-                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
                     }
                 }
                 else
@@ -98,19 +98,19 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
                     foreach (Type aParam in allParams)
                     {
-                        conversionState.CurrentStackFrame.Stack.Pop();
+                        conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                         bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
                     }
                     if (bytesToAdd > 0)
                     {
                         if (returnItem.sizeOnStackInBytes != 0)
                         {
-                            conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                            conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
                         }
                     }
                     else if (returnItem.sizeOnStackInBytes != 0)
                     {
-                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
                     }
                 }
             }
@@ -212,7 +212,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         //Pop the paramter off our stack 
                         //(Note: Return value was never pushed onto our stack. See above)
-                        conversionState.CurrentStackFrame.Stack.Pop();
+                        conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                         //Add the size of the paramter to the total number of bytes to pop
                         bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
                     }
@@ -225,7 +225,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //We now push the return value onto our stack as,
                         //after all is said and done below, it will be the 
                         //top item on the stack
-                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
 
                         //SUPPORT - floats (with above)
 
@@ -397,7 +397,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         //Pop the parameter off our stack 
                         //(Note: Return value was never pushed onto our stack. See above)
-                        conversionState.CurrentStackFrame.Stack.Pop();
+                        conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                         //Add the size of the parameter to the total number of bytes to pop
                         bytesToAdd += conversionState.TheILLibrary.GetTypeInfo(aParam).SizeOnStackInBytes;
                     }
@@ -412,7 +412,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             //We now push the return value onto our stack as,
                             //after all is said and done below, it will be the 
                             //top item on the stack
-                            conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                            conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
 
                             //SUPPORT - floats (with above)
 
@@ -453,7 +453,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         //The return value will be the top item on the stack.
                         //So all we need to do is push the return item onto our stack.
-                        conversionState.CurrentStackFrame.Stack.Push(returnItem);
+                        conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
                     }
                 }
             }

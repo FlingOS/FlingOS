@@ -38,6 +38,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
     /// </summary>
     public class Br : IL.ILOps.Br
     {
+        //TODO: Implementation in this class is now severely out of date. Needs to be brought up to speed with the x86 version.
+
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             ASMOps.BranchOp branchOp = ASMOps.BranchOp.Branch;
@@ -124,7 +126,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if (branchOp == ASMOps.BranchOp.BranchZero || branchOp == ASMOps.BranchOp.BranchNotZero)
             {
                 //Pop from our stack the test item to use in the condition
-                StackItem testItem = conversionState.CurrentStackFrame.Stack.Pop();
+                StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
             else if (branchOp == ASMOps.BranchOp.BranchEqual || branchOp == ASMOps.BranchOp.BranchNotEqual ||
                          branchOp == ASMOps.BranchOp.BranchGreaterThanEqual ||
@@ -133,8 +135,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                          branchOp == ASMOps.BranchOp.BranchGreaterThan)
             {
                 //Pop from our stack the test items to use in the condition
-                StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-                StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+                StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
         }
 
@@ -529,7 +531,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 if (branchOp == ASMOps.BranchOp.BranchZero || branchOp == ASMOps.BranchOp.BranchNotZero)
                 {
                     //Pop from our stack the test item to use in the condition
-                    StackItem testItem = conversionState.CurrentStackFrame.Stack.Pop();
+                    StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                     
                     if (testItem.isFloat)
                     {
@@ -591,8 +593,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                          branchOp == ASMOps.BranchOp.BranchGreaterThan)
                 {
                     //Pop from our stack the test items to use in the condition
-                    StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-                    StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+                    StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                    StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
                     if (itemA.isFloat || itemB.isFloat)
                     {

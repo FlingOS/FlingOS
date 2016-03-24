@@ -41,8 +41,8 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Pop();
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace Drivers.Compiler.Architectures.x86
             //Get the object size information
             int size = theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes;
 
-            conversionState.CurrentStackFrame.Stack.Pop();
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             //Load the object onto the stack
             conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "ECX", Src = "[ESP+" + theTypeInfo.SizeOnStackInBytes + "]" });

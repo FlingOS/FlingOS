@@ -94,7 +94,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,
@@ -240,7 +240,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             //Push the constant onto our stack
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,

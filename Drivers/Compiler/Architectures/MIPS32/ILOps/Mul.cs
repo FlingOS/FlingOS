@@ -41,13 +41,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -58,7 +58,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else if (itemA.sizeOnStackInBytes == 8 &&
                 itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     isNewGCObject = false,
@@ -86,8 +86,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop in reverse order to push
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
 
             if (itemB.sizeOnStackInBytes < 4 ||
@@ -116,7 +116,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Result stored in $t0
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -231,7 +231,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     // push $t0
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
 
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         isNewGCObject = false,

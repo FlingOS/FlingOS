@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
 
             switch ((OpCodes)theOp.opCode.Value)
@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
@@ -87,7 +87,7 @@ namespace Drivers.Compiler.Architectures.x86
             //Pop address
             //Push [address]
             
-            StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
             
             switch ((OpCodes)theOp.opCode.Value)
@@ -145,7 +145,7 @@ namespace Drivers.Compiler.Architectures.x86
                 }
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,

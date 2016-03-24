@@ -79,7 +79,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
                 (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -91,7 +91,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 Types.TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = bytesForArg,
                     isFloat = false,
@@ -173,7 +173,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t2" });
 
                 //Push the address onto our stack
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -201,7 +201,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 
                 //Push the arg onto our stack
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     sizeOnStackInBytes = paramTypeInfo.SizeOnStackInBytes,
                     isFloat = false,

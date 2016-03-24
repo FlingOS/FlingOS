@@ -40,16 +40,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
                 isGCManaged = itemA.isGCManaged,
                 isValue = itemA.isValue
             });
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
@@ -71,7 +71,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop item to duplicate
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.isFloat)
             {
@@ -99,14 +99,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 throw new NotSupportedException("Stack item size not supported by duplicate op!");
             }
 
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
                 isGCManaged = itemA.isGCManaged,
                 isValue = itemA.isValue
             });
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,

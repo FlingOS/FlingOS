@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
         }
 
         public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
@@ -67,7 +67,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            StackItem testItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (testItem.isFloat)
             {

@@ -106,10 +106,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             Types.TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
 
             //      5.2. Pop index and array ref from our stack
-            conversionState.CurrentStackFrame.Stack.Pop();
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //      5.3. Push element onto our stack
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
@@ -396,10 +396,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             Types.TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
 
             //      5.2. Pop index and array ref from our stack
-            conversionState.CurrentStackFrame.Stack.Pop();
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //      5.3. Push element onto our stack
-            conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,

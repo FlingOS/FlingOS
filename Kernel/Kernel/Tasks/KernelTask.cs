@@ -377,18 +377,18 @@ namespace Kernel.Tasks
                 BasicConsole.PrimaryOutputEnabled = false;
                 //BasicConsole.SecondaryOutputEnabled = false;
 
-                BasicConsole.WriteLine(" > Starting deferred file syscalls thread...");
-                DeferredFileSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredFileSyscallsThread_Main, "Deferred File Sys Calls");
+                //BasicConsole.WriteLine(" > Starting deferred file syscalls thread...");
+                //DeferredFileSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredFileSyscallsThread_Main, "Deferred File Sys Calls");
 
-                while (!DeferredFileSyscalls_Ready)
-                {
-                    BasicConsole.WriteLine("Waiting on deferred file syscalls thread...");
-                    SystemCalls.SleepThread(50);
-                }
+                //while (!DeferredFileSyscalls_Ready)
+                //{
+                //    BasicConsole.WriteLine("Waiting on deferred file syscalls thread...");
+                //    SystemCalls.SleepThread(50);
+                //}
 
-                BasicConsole.WriteLine(" > Starting deferred file syscalls helper threads...");
-                ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "Deferred File Sys Calls : Wait For File Cmd Pipes");
-                ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "Deferred File Sys Calls : Wait For File Data Pipes");
+                //BasicConsole.WriteLine(" > Starting deferred file syscalls helper threads...");
+                //ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "Deferred File Sys Calls : Wait For File Cmd Pipes");
+                //ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "Deferred File Sys Calls : Wait For File Data Pipes");
 
                 BasicConsole.WriteLine(" > Starting File Systems driver...");
                 Process FileSystemsProcess = ProcessManager.CreateProcess(Tasks.Driver.FileSystemsDriverTask.Main, "File Systems Driver", false);

@@ -40,13 +40,13 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.sizeOnStackInBytes == 4 &&
                     itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -56,7 +56,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -82,9 +82,9 @@ namespace Drivers.Compiler.Architectures.x86
             //top of the stack first
 
             //Pop item B - one of the items to add
-            StackItem itemB = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //Pop item A - the other item to add
-            StackItem itemA = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             //If either item item is < 4 bytes then we have a stack error.
             if (itemB.sizeOnStackInBytes < 4 ||
@@ -121,7 +121,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
 
                     //Push the result onto our stack
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -163,7 +163,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
 
                     //Push the result onto our stack
-                    conversionState.CurrentStackFrame.Stack.Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 8,

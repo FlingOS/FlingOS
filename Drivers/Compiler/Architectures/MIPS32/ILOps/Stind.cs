@@ -40,8 +40,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.Stack.Pop();
-            conversionState.CurrentStackFrame.Stack.Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            conversionState.CurrentStackFrame.GetStack(theOp).Pop();
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Pop address
             //Mov [address], value
 
-            StackItem valueItem = conversionState.CurrentStackFrame.Stack.Pop();
-            StackItem addressItem = conversionState.CurrentStackFrame.Stack.Pop();
+            StackItem valueItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+            StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToStore = 0;
             bool isFloat = false;
 
