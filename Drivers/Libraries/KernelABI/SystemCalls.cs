@@ -36,8 +36,17 @@ using Drivers.Framework.Utilities;
 
 namespace KernelABI
 {
+    /// <summary>
+    /// System Calls Class
+    /// </summary>
     public static class SystemCalls
     {
+        /// <summary>
+        /// Starts Thread
+        /// </summary>
+        /// <remarks>
+        /// Not Implemented
+        /// </remarks>
         public delegate void ThreadStartMethod();
         /*
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\SystemCalls")]
