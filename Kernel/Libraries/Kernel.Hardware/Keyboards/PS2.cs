@@ -51,28 +51,19 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         public override void Enable()
         {
-            //TODO: Looks like this comment is out of date?
-            //We wouldn't want to accidentally add the IRQ handler multiple times
-            //  because then any one scancode would be processed multiple times!
-            if (!enabled)
-            {
-                DeviceManager.AddDevice(this);
-                enabled = true;
-            }
+            if (enabled) return;
+            DeviceManager.AddDevice(this);
+            enabled = true;
         }
+     
         /// <summary>
         /// Disables the PS2 keyboard.
         /// </summary>
         public override void Disable()
         {
-            if (enabled)
-            {
-                DeviceManager.Devices.Remove(this);
-                //TODO: Looks like this comment is out of date?
-                //As per requirements, set temp sote store of id to 0 to prevent
-                //  accidental multiple removal.
-                enabled = false;
-            }
+            if (!enabled) return;
+            DeviceManager.Devices.Remove(this);              
+            enabled = false;
         }
 
         /// <summary>
@@ -83,6 +74,7 @@ namespace Kernel.Hardware.Keyboards
             byte scancode = DataPort.Read_Byte();            
             HandleScancode(scancode);
         }
+      
         /// <summary>
         /// Handles the specified scancode.
         /// </summary>
@@ -143,19 +135,17 @@ namespace Kernel.Hardware.Keyboards
         public void Reset()
         {
             // If the driver is enabled
-            if (enabled)
+            if (!enabled) return;
+            // Wait for the Input Buffer Full flag to clear
+            byte StatusRegValue = 0x02;
+            while ((StatusRegValue & 0x02) != 0)
             {
-                // Wait for the Input Buffer Full flag to clear
-                byte StatusRegValue = 0x02;
-                while ((StatusRegValue & 0x02) != 0)
-                {
-                    StatusRegValue = CommandPort.Read_Byte();
-                }
-
-                // Send the command | options 
-                //          (0xF0   | 0x0E    - pulse only line 0 - CPU reset line)
-                CommandPort.Write_Byte(0xFE);
+                StatusRegValue = CommandPort.Read_Byte();
             }
+
+            // Send the command | options 
+            //          (0xF0   | 0x0E    - pulse only line 0 - CPU reset line)
+            CommandPort.Write_Byte(0xFE);
         }
 
         /// <summary>
@@ -178,10 +168,7 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         public static void Clean()
         {
-            if(ThePS2 != null)
-            {
-                ThePS2.Disable();
-            }
+            ThePS2?.Disable(); // Null propagation => if(thePS2 != null) { thePS2.Disable(); }
         }
     }
 }
