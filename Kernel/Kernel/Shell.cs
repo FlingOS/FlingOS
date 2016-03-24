@@ -38,14 +38,17 @@ namespace Kernel
         /// The console used for output.
         /// </summary>
         protected Console console;
+  
         /// <summary>
         /// The keyboard used for input.
         /// </summary>
         protected Keyboard keyboard;
+  
         /// <summary>
         /// Whether the shell is in the process of closing (/terminating) or not.
         /// </summary>
         protected bool terminating = false;
+  
         /// <summary>
         /// Whether the shell is in the process of closing (/terminating) or not.
         /// </summary>
@@ -60,12 +63,18 @@ namespace Kernel
         /// <summary>
         /// Initialises a new shell instances that uses the default console.
         /// </summary>
-        public Shell()
+        protected Shell()
         {
             Console.InitDefault();
             console = Console.Default;
         }
-        public Shell(Console AConsole, Keyboard AKeyboard)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Shell"/> class.
+        /// </summary>
+        /// <param name="AConsole">a console.</param>
+        /// <param name="AKeyboard">a keyboard.</param>
+        protected Shell(Console AConsole, Keyboard AKeyboard)
         {
             console = AConsole;
             keyboard = AKeyboard;
@@ -115,6 +124,7 @@ namespace Kernel
         /// The default shell for the core kernel.
         /// </summary>
         public static Shell Default;
+   
         /// <summary>
         /// Initialises the default shell.
         /// </summary>
