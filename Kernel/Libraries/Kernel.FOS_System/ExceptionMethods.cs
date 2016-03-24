@@ -208,23 +208,31 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Throw(FOS_System.Exception ex)
         {
-            Kernel.FOS_System.GC.IncrementRefCount(ex);
-
-            //BasicConsole.WriteLine("Exception thrown:");
-            //BasicConsole.WriteLine(ex.Message);
-
-            if (State->CurrentHandlerPtr->Ex != null)
+            if (ex != null)
             {
-                //GC ref count remains consistent because the Ex pointer below is going to be replaced but
-                //  same pointer stored in InnerException.
-                // Result is ref count goes: +1 here, -1 below
-                ex.InnerException = (Kernel.FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                Kernel.FOS_System.GC.IncrementRefCount(ex);
+
+                //BasicConsole.WriteLine("Exception thrown:");
+                //BasicConsole.WriteLine(ex.Message);
+
+                if (State->CurrentHandlerPtr->Ex != null)
+                {
+                    //GC ref count remains consistent because the Ex pointer below is going to be replaced but
+                    //  same pointer stored in InnerException.
+                    // Result is ref count goes: +1 here, -1 below
+                    ex.InnerException = (Kernel.FOS_System.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                }
+                if (ex.InstructionAddress == 0)
+                {
+                    ex.InstructionAddress = *((uint*)BasePointer + 1);
+                }
+                State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
             }
-            if (ex.InstructionAddress == 0)
+            else
             {
-                ex.InstructionAddress = *((uint*)BasePointer + 1);
+                Kernel.FOS_System.GC.DecrementRefCount((FOS_System.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                State->CurrentHandlerPtr->Ex = null;
             }
-            State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
             State->CurrentHandlerPtr->ExPending = 1;
 
             HandleException();
@@ -1136,9 +1144,16 @@ namespace Kernel
             PrintStackTrace();
             PrintExceptionState();
 
-            FOS_System.Exception ex = new FOS_System.Exceptions.NullReferenceException();
-            ex.InstructionAddress = address;
-            Throw(ex);
+            if (FOS_System.GC.Enabled)
+            {
+                FOS_System.Exception ex = new FOS_System.Exceptions.NullReferenceException();
+                ex.InstructionAddress = address;
+                Throw(ex);
+            }
+            else
+            {
+                Throw(null);
+            }
         }
         /// <summary>
         /// Throws an Array Type Mismatch exception.
@@ -1191,7 +1206,14 @@ namespace Kernel
                 FillString(PrevEBP, 64, msg);
                 BasicConsole.WriteLine(msg);
 
-                EBP = (uint*)PrevEBP;
+                if (PrevEBP > (uint)EBP - 2048 && PrevEBP < (uint)EBP + 2048)
+                {
+                    EBP = (uint*)PrevEBP;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         [Drivers.Compiler.Attributes.NoGC]
