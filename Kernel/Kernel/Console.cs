@@ -103,10 +103,10 @@ namespace Kernel
         /// <summary>
         /// Initialises a new instance of a Console.
         /// </summary>
-        public Console()
+        protected Console()
         {
             Buffer.Add(CreateBlankLine());
-            DefaultColour();
+            DefaultColour(); // Virtual member call?
         }
 
         /// <summary>
