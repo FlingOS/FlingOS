@@ -96,42 +96,28 @@ namespace Kernel.Hardware.Processes
                 // Required so that page allocations by new Thread don't create conflicts
                 ProcessManager.EnableKernelAccessToProcessMemory(this);
 
-                bool reenable = Scheduler.Enabled;
-                if (reenable)
-                {
-                    //TODO: Not ideal
-                    Scheduler.Disable();
-                }
-
 #if PAGING_TRACE
                 BasicConsole.Write("Physical address of 0x00106000 is ");
                 FOS_System.String valStr = "0x        ";
                 ExceptionMethods.FillString(VirtMemManager.GetPhysicalAddress(0x00106000), 9, valStr);
                 BasicConsole.WriteLine(valStr);
 #endif
-
-                Thread newThread = new Thread(this, StartPoint, ThreadIdGenerator++, UserMode, Name);
+                void* threadStackPhysAddr;
+                void* kernelStackPhysAddr;
+                Thread newThread = new Thread(this, StartPoint, ThreadIdGenerator++, UserMode, Name, out threadStackPhysAddr, out kernelStackPhysAddr);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
                 // Add the page to the processes memory layout
                 uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
-                uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
                 uint kernelStackVirtAddr = (uint)newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
-                uint kernelStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(newThread.State->KernelStackTop - Thread.KernelStackTopOffset);
-
-                if (reenable)
-                {
-                    //TODO: Not ideal
-                    Scheduler.Enable();
-                }
-
-                TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
-                TheMemoryLayout.AddKernelPage(kernelStackPhysAddr, kernelStackVirtAddr);
+                
+                TheMemoryLayout.AddDataPage((uint)threadStackPhysAddr, threadStackVirtAddr);
+                TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
                 
                 if (ProcessManager.KernelProcess != null && this != ProcessManager.KernelProcess)
                 {
-                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage(kernelStackPhysAddr, kernelStackVirtAddr);
+                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
                 }
 
 #if PROCESS_TRACE
