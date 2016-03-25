@@ -498,7 +498,7 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public static bool WakeProcess(uint processId, uint threadId)
+        public static bool WakeThread(uint processId, uint threadId)
         {
             return WakeThread(GetProcessById(processId), threadId);
         }
@@ -554,6 +554,15 @@ namespace Kernel.Hardware.Processes
                 return true;
             }
             return false;
+        }
+        public static int Semaphore_WaitCurrentThread(int id)
+        {
+            if (Semaphore_VerifyOwner(id, CurrentProcess))
+            {
+                ((Semaphore)Semaphores[id]).Wait();
+                return 1;
+            }
+            return -1;
         }
         public static int Semaphore_Wait(int id, Process aProcess, Thread aThread)
         {
