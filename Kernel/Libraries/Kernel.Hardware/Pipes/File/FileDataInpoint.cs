@@ -71,13 +71,27 @@ namespace Kernel.Pipes.File
                 for (int i = 0; i < Count; i++)
                 {
                     bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataFSInfo), blocking);
+
                     if (bytesRead <= 0)
                     {
                         BasicConsole.WriteLine("FileDataInpoint : Error reading file system infos! Reading file system info data returned zero (or negative) byte count.");
                     }
                     else
                     {
-                        result[i] = ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, 10);
+                        int charCount = 0;
+                        for (; charCount < 10; charCount++)
+                        {
+                            if (DataPtr->Prefix[charCount] == '\0')
+                            {
+                                break;
+                            }
+                        }
+
+                        result[i] = FOS_System.String.New(charCount);
+                        for (int j = 0; j < charCount; j++)
+                        {
+                            result[i][j] = DataPtr->Prefix[j];
+                        }
                     }
                 }
                 return result;
@@ -92,12 +106,7 @@ namespace Kernel.Pipes.File
             int bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataHeader), blocking);
             if (bytesRead > 0)
             {
-                uint Count = ByteConverter.ToUInt32(ReadBuffer, 0);
-                if (Count != bytesRead - 4)
-                {
-                    BasicConsole.WriteLine("FileDataInpoint.ReadString > Error! Count inconsistent with bytes read.");
-                }
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 4, Count);
+                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
             }
             else
             {
