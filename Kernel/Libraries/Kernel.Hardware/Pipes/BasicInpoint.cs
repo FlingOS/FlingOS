@@ -178,11 +178,11 @@ namespace Kernel.Pipes
                             //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Failed!");
                             if (Blocking)
                             {
-                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Write Pipe unexpected failed! (Blocking call)"));
+                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Read Pipe unexpected failed! (Blocking call)"));
                             }
                             else
                             {
-                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Write Pipe failed. (Non-blocking call)"));
+                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Read Pipe failed. (Non-blocking call)"));
                             }
                             break;
                         case SystemCallResults.OK:

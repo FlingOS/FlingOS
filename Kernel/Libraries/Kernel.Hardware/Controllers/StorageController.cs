@@ -156,9 +156,9 @@ namespace Kernel.Hardware.Controllers
                             {
                                 unsafe
                                 {
-                                    BasicConsole.WriteLine("Storage Controller > Wait for command from client...");
+                                    //BasicConsole.WriteLine("Storage Controller > Wait for command from client...");
                                     StoragePipeCommand* CommandPtr = CmdInpoint.Read();
-                                    BasicConsole.WriteLine("Storage Controller > Command received from client: " + (String)CommandPtr->Command);
+                                    //BasicConsole.WriteLine("Storage Controller > Command received from client: " + (String)CommandPtr->Command);
 
                                     switch ((StorageCommands)CommandPtr->Command)
                                     {
@@ -491,13 +491,13 @@ namespace Kernel.Hardware.Controllers
                                 ACommand = (DiskCommand)TheInfo.CommandQueue.Pop();
                                 SystemCalls.SignalSemaphore(TheInfo.CommandQueueAccessSemaphoreId);
 
-                                BasicConsole.WriteLine("Storage controller > Disk command received: " + (String)(uint)ACommand.Command);
+                                //BasicConsole.WriteLine("Storage controller > Disk command received: " + (String)(uint)ACommand.Command);
 
                                 switch(ACommand.Command)
                                 {
                                     case DiskCommands.Read:
                                         {
-                                            BasicConsole.WriteLine("Storage controller > Reading " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
+                                            //BasicConsole.WriteLine("Storage controller > Reading " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
                                             byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
                                             TheInfo.TheDevice.ReadBlock(ACommand.BlockNo, ACommand.BlockCount, data);
                                             //BasicConsole.WriteLine("Data read (non-zero only): ");

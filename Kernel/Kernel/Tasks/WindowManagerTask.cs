@@ -111,7 +111,7 @@ namespace Kernel.Tasks
             //BasicConsole.Write("WM > Test thread id: ");
             //BasicConsole.WriteLine(TestThreadId);
 
-            BasicConsole.Write("WM > Register syscall handlers");
+            BasicConsole.WriteLine("WM > Register syscall handlers");
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.AcceptPages);
             
@@ -310,13 +310,13 @@ namespace Kernel.Tasks
             {
                 case SystemCallNumbers.RegisterPipeOutpoint:
                     {
-                        BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
+                        //BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
                         PipeClasses Class = (PipeClasses)param1;
                         PipeSubclasses Subclass = (PipeSubclasses)param2;
                         if (Class == PipeClasses.Standard &&
                             Subclass == PipeSubclasses.Standard_Out)
                         {
-                            BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
+                            //BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
                             result = SystemCallResults.RequestAction_SignalSemaphore;
                             Return2 = (uint)NewOutpointAvailable_SemaphoreId;
                         }
