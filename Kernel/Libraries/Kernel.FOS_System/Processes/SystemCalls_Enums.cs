@@ -262,8 +262,21 @@ namespace Kernel.FOS_System.Processes
         /// </remarks>
         RequestAction_WakeThread = 0xC6DEC6DE,
         /// <summary>
+        /// The system call was unhandled but the handler method is requesting a semaphore be signalled.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This is only supposed to be seen within the core OS. A caller should never see this value.
+        /// </para>
+        /// <para>
+        /// This is used so a system call can be used as a notification to a process. A method returning
+        /// this cannot also handle the system call.
+        /// </para>
+        /// </remarks>
+        RequestAction_SignalSemaphore = 0xC7DEC7DE,
+        /// <summary>
         /// The system call was handled successfully but the thread should not be woken.
         /// </summary>
-        OK_NoWake = 0xC7DEC7DE,
+        OK_NoWake = 0xC8DEC8DE,
     }
 }
