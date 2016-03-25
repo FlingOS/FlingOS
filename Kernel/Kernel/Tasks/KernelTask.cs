@@ -26,7 +26,7 @@
 
 //DFSC: Deferred System Calls
 //#define DSC_TRACE
-#define DFSC_TRACE
+//#define DFSC_TRACE
 //#define SYSCALLS_TRACE
 
 using Kernel.FOS_System.Collections;
@@ -348,6 +348,19 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(50);
                 }
 
+                BasicConsole.WriteLine(" > Starting deferred file syscalls thread...");
+                DeferredFileSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredFileSyscallsThread_Main, "Deferred File Sys Calls");
+
+                while (!DeferredFileSyscalls_Ready)
+                {
+                    BasicConsole.WriteLine("Waiting on deferred file syscalls thread...");
+                    SystemCalls.SleepThread(50);
+                }
+
+                BasicConsole.WriteLine(" > Starting deferred file syscalls helper threads...");
+                ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "Deferred File Sys Calls : Wait For File Cmd Pipes");
+                ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "Deferred File Sys Calls : Wait For File Data Pipes");
+
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle Task", false);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
@@ -359,6 +372,9 @@ namespace Kernel.Tasks
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
                 //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
+
+                BasicConsole.PrimaryOutputEnabled = false;
+                //BasicConsole.SecondaryOutputEnabled = false;
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager", false);
@@ -373,22 +389,6 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(1000);
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
-
-                BasicConsole.PrimaryOutputEnabled = false;
-                //BasicConsole.SecondaryOutputEnabled = false;
-
-                //BasicConsole.WriteLine(" > Starting deferred file syscalls thread...");
-                //DeferredFileSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredFileSyscallsThread_Main, "Deferred File Sys Calls");
-
-                //while (!DeferredFileSyscalls_Ready)
-                //{
-                //    BasicConsole.WriteLine("Waiting on deferred file syscalls thread...");
-                //    SystemCalls.SleepThread(50);
-                //}
-
-                //BasicConsole.WriteLine(" > Starting deferred file syscalls helper threads...");
-                //ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "Deferred File Sys Calls : Wait For File Cmd Pipes");
-                //ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "Deferred File Sys Calls : Wait For File Data Pipes");
 
                 BasicConsole.WriteLine(" > Starting File Systems driver...");
                 Process FileSystemsProcess = ProcessManager.CreateProcess(Tasks.Driver.FileSystemsDriverTask.Main, "File Systems Driver", false);
