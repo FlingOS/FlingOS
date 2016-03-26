@@ -27,10 +27,6 @@
 //#define GC_TRACE
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.FOS_System
@@ -328,7 +324,7 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        /// Intialises the GC.
+        /// Initialises the GC.
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
