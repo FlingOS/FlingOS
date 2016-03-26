@@ -23,15 +23,10 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-#define GC_TRACE
-#undef GC_TRACE
+
+//#define GC_TRACE
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlingOops
 {
@@ -45,37 +40,258 @@ namespace FlingOops
     /// </remarks>
     public static unsafe class GC
     {
-        /// <summary>
-        /// The total number of objects currently allocated by the GC.
-        /// </summary>
-        public static int NumObjs = 0;
+        //TODO: GC needs an object reference tree to do a thorough scan to find reference loops
+
         /// <summary>
         /// Whether the GC has been initialised yet or not.
         /// Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        private static bool Enabled = false;
+        public static bool Enabled = false;
+
+        public static bool UseCurrentState = false;
+
+        private static GCState state;
+        private static GCState kernel_state;
+        public static GCState State
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (UseCurrentState)
+                {
+                    return state;
+                }
+                else
+                {
+                    return kernel_state;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                if (UseCurrentState)
+                {
+                    state = value;
+                }
+                else
+                {
+                    kernel_state = value;
+                }
+            }
+        }
+        private static bool StateInitialised
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                return State != null;
+            }
+        }
+
+        public static bool OutputTrace
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.OutputTrace;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.OutputTrace = value;
+                }
+            }
+        }
+        public static bool InsideGC
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.InsideGC;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.InsideGC = value;
+                }
+            }
+        }
+        
+        public static int NumObjs
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.NumObjs;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.NumObjs = value;
+                }
+            }
+        }
+        public static int NumStrings
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.NumStrings;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.NumStrings = value;
+                }
+            }
+        }
+
+        public static FlingOops.String lastEnabler
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.lastEnabler;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.lastEnabler = value;
+                }
+            }
+        }
+        public static FlingOops.String lastDisabler
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            get;
+            //{
+            //    if (StateInitialised)
+            //    {
+            //        return state.lastDisabler;
+            //    }
+            //    else
+            //    {
+            //        return "";
+            //    }
+            //}
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            set;
+            //{
+            //    if (StateInitialised)
+            //    {
+            //        state.lastDisabler = value;
+            //    }
+            //}
+        }
+        public static FlingOops.String lastLocker
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.lastLocker;
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.lastLocker = value;
+                }
+            }
+        }
+
+        public static ObjectToCleanup* CleanupList
+        {
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            get
+            {
+                if (StateInitialised)
+                {
+                    return State.CleanupList;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoGC]
+            [Drivers.Compiler.Attributes.NoDebug]
+            set
+            {
+                if (StateInitialised)
+                {
+                    State.CleanupList = value;
+                }
+            }
+        }
+
         /// <summary>
-        /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
-        /// called methods re-calling the GC!)
-        /// </summary>
-        public static bool InsideGC = false;
-
-        private static bool GCAccessLockInitialised = false;
-
-        /// <summary>
-        /// The number of strings currently allocated on the heap.
-        /// </summary>
-        public static int NumStrings = 0;
-
-        /// <summary>
-        /// The linked-list of objects to clean up.
-        /// </summary>
-        private static ObjectToCleanup* CleanupList;
-
-        //TODO: GC needs an object reference tree to do a thorough scan to find reference loops
-
-        /// <summary>
-        /// Intialises the GC.
+        /// Initialises the GC.
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
@@ -83,25 +299,37 @@ namespace FlingOops
         {
             Heap.InitFixedHeap();
 
-            ExceptionMethods.State = ExceptionMethods.DefaultState = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
+            ExceptionMethods.state = ExceptionMethods.kernel_state = (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
 
             Enabled = true;
+
+            GCState newState1 = new GCState();
+            kernel_state = newState1;
+            
+            GCState newState2 = new GCState();
+            state = newState2;
         }
 
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Enable(FlingOops.String caller)
         {
             //BasicConsole.Write(caller);
             //BasicConsole.WriteLine(" enabling GC.");
             //BasicConsole.DelayOutput(2);
 
+            lastEnabler = caller;
             GC.Enabled = true;
         }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Disable(FlingOops.String caller)
         {
             //BasicConsole.Write(caller);
             //BasicConsole.WriteLine(" disabling GC.");
             //BasicConsole.DelayOutput(2);
 
+            lastDisabler = caller;
             GC.Enabled = false;
         }
 
@@ -119,55 +347,58 @@ namespace FlingOops
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.Write("Last disabler: ");
+                BasicConsole.WriteLine(lastDisabler);
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 return null;
             }
-            
-            //try
-            //{
-                InsideGC = true;
 
-                //Alloc space for GC header that prefixes object data
-                //Alloc space for new object
+#if GC_TRACE
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("NewObj");
+            }
+#endif
 
-                uint totalSize = theType.Size;
-                totalSize += (uint)sizeof(GCHeader);
+            InsideGC = true;
 
-                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewObject");
+            //Alloc space for GC header that prefixes object data
+            //Alloc space for new object
 
-                if ((UInt32)newObjPtr == 0)
-                {
-                    InsideGC = false;
+            uint totalSize = theType.Size;
+            totalSize += (uint)sizeof(GCHeader);
 
-                    BasicConsole.SetTextColour(BasicConsole.error_colour);
-                    BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
-                    BasicConsole.DelayOutput(10);
-                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewObject");
 
-                    return null;
-                }
-
-                NumObjs++;
-
-                //Initialise the GCHeader
-                SetSignature(newObjPtr);
-                newObjPtr->RefCount = 1;
-                //Initialise the object _Type field
-                FlingOops.ObjectWithType newObj = (FlingOops.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-                newObj._Type = theType;
-
-                //Move past GCHeader
-                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
+            if ((UInt32)newObjPtr == 0)
+            {
                 InsideGC = false;
 
-                return newObjBytePtr;
-            //}
-            //finally
-            //{
-            //}
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                return null;
+            }
+
+            NumObjs++;
+
+            //Initialise the GCHeader
+            SetSignature(newObjPtr);
+            newObjPtr->RefCount = 1;
+            //Initialise the object _Type field
+            FlingOops.ObjectWithType newObj = (FlingOops.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newObj._Type = theType;
+
+            //Move past GCHeader
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
+            InsideGC = false;
+
+            return newObjBytePtr;
         }
 
         /// <summary>
@@ -187,74 +418,80 @@ namespace FlingOops
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.Write("Last disabler: ");
+                BasicConsole.WriteLine(lastDisabler);
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 return null;
             }
 
-            //try
+#if GC_TRACE
+            if (OutputTrace)
             {
+                BasicConsole.WriteLine("NewArr");
+            }
+#endif
 
-                if (length < 0)
-                {
-                    BasicConsole.WriteLine("length < 0. Overflow exception.");
-                    return null;
-                    //ExceptionMethods.Throw_OverflowException();
-                }
+            if (length < 0)
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new array because \"length\" is less than 0.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-                InsideGC = true;
+                //ExceptionMethods.Throw_OverflowException();
+                //TODO: Throw an error
+            }
 
-                //Alloc space for GC header that prefixes object data
-                //Alloc space for new array object
-                //Alloc space for new array elems
+            InsideGC = true;
 
-                uint totalSize = ((FlingOops.Type)typeof(FlingOops.Array)).Size;
-                if (elemType.IsValueType)
-                {
-                    totalSize += elemType.Size * (uint)length;
-                }
-                else
-                {
-                    totalSize += elemType.StackSize * (uint)length;
-                }
-                totalSize += (uint)sizeof(GCHeader);
+            //Alloc space for GC header that prefixes object data
+            //Alloc space for new array object
+            //Alloc space for new array elems
 
-                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewArray");
+            uint totalSize = ((FlingOops.Type)typeof(FlingOops.Array)).Size;
+            if (elemType.IsValueType)
+            {
+                totalSize += elemType.Size * (uint)length;
+            }
+            else
+            {
+                totalSize += elemType.StackSize * (uint)length;
+            }
+            totalSize += (uint)sizeof(GCHeader);
 
-                if ((UInt32)newObjPtr == 0)
-                {
-                    InsideGC = false;
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewArray");
 
-                    BasicConsole.SetTextColour(BasicConsole.error_colour);
-                    BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
-                    BasicConsole.DelayOutput(10);
-                    BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                    return null;
-                }
-
-                NumObjs++;
-
-                //Initialise the GCHeader
-                SetSignature(newObjPtr);
-                newObjPtr->RefCount = 1;
-
-                FlingOops.Array newArr = (FlingOops.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-                newArr._Type = (FlingOops.Type)typeof(FlingOops.Array);
-                newArr.length = length;
-                newArr.elemType = elemType;
-
-                //Move past GCHeader
-                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
+            if ((UInt32)newObjPtr == 0)
+            {
                 InsideGC = false;
 
-                return newObjBytePtr;
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new array because the heap returned a null pointer.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                return null;
             }
-            //finally
-            {
-            }
+
+            NumObjs++;
+
+            //Initialise the GCHeader
+            SetSignature(newObjPtr);
+            newObjPtr->RefCount = 1;
+
+            FlingOops.Array newArr = (FlingOops.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newArr._Type = (FlingOops.Type)typeof(FlingOops.Array);
+            newArr.length = length;
+            newArr.elemType = elemType;
+
+            //Move past GCHeader
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
+            InsideGC = false;
+
+            return newObjBytePtr;
         }
 
         /// <summary>
@@ -271,81 +508,81 @@ namespace FlingOops
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
                 BasicConsole.WriteLine("Warning! GC returning null pointer because GC not enabled.");
+                BasicConsole.Write("Last disabler: ");
+                BasicConsole.WriteLine(lastDisabler);
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
 
                 return null;
             }
 
-            //try
+#if GC_TRACE
+            if (OutputTrace)
             {
+                BasicConsole.WriteLine("NewString");
+            }
+#endif
 
-                if (length < 0)
-                {
-                    BasicConsole.SetTextColour(BasicConsole.error_colour);
-                    BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
-                    BasicConsole.DelayOutput(5);
-                    BasicConsole.SetTextColour(BasicConsole.default_colour);
+            if (length < 0)
+            {
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new string because \"length\" is less than 0.");
+                BasicConsole.DelayOutput(5);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
 
-                    return null ;
-                    //ExceptionMethods.Throw_OverflowException();
-                }
+                //ExceptionMethods.Throw_OverflowException();
+                //TODO: Throw an error
+            }
 
-                InsideGC = true;
+            InsideGC = true;
 
-                //Alloc space for GC header that prefixes object data
-                //Alloc space for new string object
-                //Alloc space for new string chars
+            //Alloc space for GC header that prefixes object data
+            //Alloc space for new string object
+            //Alloc space for new string chars
 
-                uint totalSize = ((FlingOops.Type)typeof(FlingOops.String)).Size;
-                totalSize += /*char size in bytes*/2 * (uint)length;
-                totalSize += (uint)sizeof(GCHeader);
+            uint totalSize = ((FlingOops.Type)typeof(FlingOops.String)).Size;
+            totalSize += /*char size in bytes*/2 * (uint)length;
+            totalSize += (uint)sizeof(GCHeader);
 
-                GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewString");
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewString");
 
-                if ((UInt32)newObjPtr == 0)
-                {
-                    InsideGC = false;
-
-                    BasicConsole.SetTextColour(BasicConsole.error_colour);
-                    BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
-                    BasicConsole.DelayOutput(10);
-                    BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-                    return null;
-                }
-
-                NumObjs++;
-                NumStrings++;
-
-                //Initialise the GCHeader
-                SetSignature(newObjPtr);
-                //RefCount to 0 initially because of FlingOops.String.New should be used
-                //      - In theory, New should be called, creates new string and passes it back to caller
-                //        Caller is then required to store the string in a variable resulting in inc.
-                //        ref count so ref count = 1 in only stored location. 
-                //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
-                //        Pop IL op) so ref count will always at some point be incremented and later
-                //        decremented by managed code. OR the variable will stay in a static var until
-                //        the OS exits...
-
-                newObjPtr->RefCount = 0;
-
-                FlingOops.String newStr = (FlingOops.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-                newStr._Type = (FlingOops.Type)typeof(FlingOops.String);
-                newStr.length = length;
-
-                //Move past GCHeader
-                byte* newObjBytePtr = (byte*)(newObjPtr + 1);
-
+            if ((UInt32)newObjPtr == 0)
+            {
                 InsideGC = false;
 
-                return newObjBytePtr;
+                BasicConsole.SetTextColour(BasicConsole.error_colour);
+                BasicConsole.WriteLine("Error! GC can't create a new string because the heap returned a null pointer.");
+                BasicConsole.DelayOutput(10);
+                BasicConsole.SetTextColour(BasicConsole.default_colour);
+
+                return null;
             }
-            //finally
-            {
-                //ExitCritical();
-            }
+
+            NumStrings++;
+
+            //Initialise the GCHeader
+            SetSignature(newObjPtr);
+            //RefCount to 0 initially because of FlingOops.String.New should be used
+            //      - In theory, New should be called, creates new string and passes it back to caller
+            //        Caller is then required to store the string in a variable resulting in inc.
+            //        ref count so ref count = 1 in only stored location. 
+            //        Caller is not allowed to just "discard" (i.e. use Pop IL op or C# that generates
+            //        Pop IL op) so ref count will always at some point be incremented and later
+            //        decremented by managed code. OR the variable will stay in a static var until
+            //        the OS exits...
+
+            newObjPtr->RefCount = 0;
+
+            FlingOops.String newStr = (FlingOops.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newStr._Type = (FlingOops.Type)typeof(FlingOops.String);
+            newStr.length = length;
+
+            //Move past GCHeader
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
+
+            InsideGC = false;
+
+            return newObjBytePtr;
         }
 
         /// <summary>
@@ -388,17 +625,40 @@ namespace FlingOops
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't increment ref count of an object in low memory.");
+
+                uint* basePtr = (uint*)ExceptionMethods.BasePointer;
+                // Go up the linked-list of stack frames to (hopefully) the outermost caller
+                basePtr = (uint*)*(basePtr);    // Frame of IncrementRefCount(x)
+                uint retAddr = *(basePtr + 1);  // Caller of IncrementRefCount(x)
+                basePtr = (uint*)*(basePtr);    // Frame of caller of IncrementRefCount(x)
+                uint ret2Addr = *(basePtr + 1); // Caller of caller of IncrementRefCount(x)
+                uint objAddr = (uint)objPtr;
+                String msgStr = "Caller: 0x        , Object: 0x        , PCaller: 0x        ";
+                // Object: 37
+                // Caller: 17
+                // PCaller: 58
+                ExceptionMethods.FillString(retAddr, 17, msgStr);
+                ExceptionMethods.FillString(objAddr, 37, msgStr);
+                ExceptionMethods.FillString(ret2Addr, 58, msgStr);
+                BasicConsole.WriteLine(msgStr);
+
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
-            
+
             objPtr -= sizeof(GCHeader);
             GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
             {
+                if (gcHeaderPtr->CleanedUp)
+                {
+                    BasicConsole.WriteLine("Oops...Incrementing ref count of cleaned up object!");
+                    BasicConsole.WriteLine(((FlingOops.Object)Utilities.ObjectUtilities.GetObject(gcHeaderPtr + 1))._Type.Signature);
+                }
+
                 gcHeaderPtr->RefCount++;
 
-                if (gcHeaderPtr->RefCount > 0)
+                if (gcHeaderPtr->RefCount > 0 && gcHeaderPtr->OnCleanupList)
                 {
                     RemoveObjectToCleanup(gcHeaderPtr);
                 }
@@ -467,13 +727,40 @@ namespace FlingOops
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't decrement ref count of an object in low memory.");
+
+                uint* basePtr = (uint*)ExceptionMethods.BasePointer;
+                // Go up the linked-list of stack frames to (hopefully) the outermost caller
+                basePtr = (uint*)*(basePtr); // DecrementRefCount(x, y)
+                basePtr = (uint*)*(basePtr); // DecrementRefCount(x)
+                uint retAddr = *(basePtr + 1);
+                uint objAddr = (uint)objPtr;
+                String msgStr = "Caller: 0x        , Object: 0x        ";
+                // Object: 37
+                // Caller: 17
+                ExceptionMethods.FillString(retAddr, 17, msgStr);
+                ExceptionMethods.FillString(objAddr, 37, msgStr);
+                BasicConsole.WriteLine(msgStr);
+
                 BasicConsole.DelayOutput(5);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
-            
+
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("GC-DP: 1");
+            }
             GCHeader* gcHeaderPtr = (GCHeader*)(objPtr - sizeof(GCHeader));
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("GC-DP: 2");
+            }
             if (CheckSignature(gcHeaderPtr))
             {
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine("GC-DP: 3");
+                }
+
                 gcHeaderPtr->RefCount--;
 
                 //If the ref count goes below 0 then there was a circular reference somewhere.
@@ -482,9 +769,11 @@ namespace FlingOops
                 if (gcHeaderPtr->RefCount == 0)
                 {
 #if GC_TRACE
-                    BasicConsole.WriteLine("Cleaning up object...");
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("Object ref count hit zero.");
+                    }
 #endif
-
                     FlingOops.Object obj = (FlingOops.Object)Utilities.ObjectUtilities.GetObject(objPtr);
                     if (obj is FlingOops.Array)
                     {
@@ -513,14 +802,17 @@ namespace FlingOops
                             {
                                 byte* fieldPtr = objPtr + FieldInfoPtr->Offset;
                                 FlingOops.Object theFieldObj = (FlingOops.Object)Utilities.ObjectUtilities.GetObject(fieldPtr);
-                                
+
                                 DecrementRefCount(theFieldObj, true);
 
 #if GC_TRACE
-                                BasicConsole.WriteLine("Cleaned up field.");
+                                if (OutputTrace)
+                                {
+                                    BasicConsole.WriteLine("Decremented ref count of field.");
+                                }
 #endif
                             }
-                            
+
                             FieldInfoPtr++;
                         }
 
@@ -531,15 +823,17 @@ namespace FlingOops
                     }
 
 #if GC_TRACE
-                    BasicConsole.WriteLine("Adding object to clean up...");
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("Adding object to cleanup list.");
+                    }
 #endif
                     AddObjectToCleanup(gcHeaderPtr, objPtr);
-
-#if GC_TRACE
-                    BasicConsole.WriteLine("Completed decrement ref count processing.");
-#endif
-
                 }
+            }
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine("GC-DP: 4");
             }
         }
 
@@ -582,48 +876,133 @@ namespace FlingOops
                 return;
             }
 
-            //try
-            {
-                InsideGC = true;
-
 #if GC_TRACE
             int startNumObjs = NumObjs;
             int startNumStrings = NumStrings;
 #endif
 
-                ObjectToCleanup* currObjToCleanupPtr = CleanupList;
-                ObjectToCleanup* prevObjToCleanupPtr = null;
-                while (currObjToCleanupPtr != null)
+            InsideGC = true;
+
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine(" > Inside GC & Cleaning...");
+            }
+
+            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+            ObjectToCleanup* prevObjToCleanupPtr = null;
+
+            if (OutputTrace)
+            {
+                BasicConsole.WriteLine(" > Got list...");
+            }
+
+            while (currObjToCleanupPtr != null)
+            {
+                if (OutputTrace)
                 {
-                    GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
-                    void* objPtr = currObjToCleanupPtr->objPtr;
-                    if (objHeaderPtr->RefCount <= 0)
+                    BasicConsole.WriteLine(" > Item not null.");
+
+                    FlingOops.String str1 = " > Item: 0x        ";
+                    FlingOops.String str2 = " > Prev: 0x        ";
+                    ExceptionMethods.FillString((uint)currObjToCleanupPtr, 18, str1);
+                    ExceptionMethods.FillString((uint)currObjToCleanupPtr->prevPtr, 18, str2);
+                    BasicConsole.WriteLine(str1);
+                    BasicConsole.WriteLine(str2);
+                }
+
+                GCHeader* objHeaderPtr = currObjToCleanupPtr->objHeaderPtr;
+                objHeaderPtr->CleanedUp = true;
+
+                void* objPtr = currObjToCleanupPtr->objPtr;
+
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Got object handles.");
+                }
+
+                if (objHeaderPtr->RefCount <= 0)
+                {
+                    if (OutputTrace)
                     {
-                        FlingOops.Object obj = (FlingOops.Object)Utilities.ObjectUtilities.GetObject(objPtr);
-                        if (obj is FlingOops.String)
+                        BasicConsole.WriteLine("   > Ref count zero or lower.");
+                    }
+
+                    FlingOops.Object obj = (FlingOops.Object)Utilities.ObjectUtilities.GetObject(objPtr);
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("   > Got object.");
+                    }
+
+                    if (obj is FlingOops.String)
+                    {
+                        if (OutputTrace)
                         {
-                            NumStrings--;
+                            BasicConsole.WriteLine("   > (It's a string).");
+                            BasicConsole.WriteLine((FlingOops.String)obj);
                         }
 
-                        Heap.Free(objHeaderPtr);
+                        NumStrings--;
+                    }
+                    else
+                    {
+                        if (OutputTrace)
+                        {
+                            BasicConsole.WriteLine("   > (It's NOT a string).");
+                        }
 
                         NumObjs--;
                     }
 
-                    prevObjToCleanupPtr = currObjToCleanupPtr;
-                    currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
-                    RemoveObjectToCleanup(prevObjToCleanupPtr);
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("   > About to free object...");
+                    }
+
+                    objHeaderPtr->OnCleanupList = false;
+                    Heap.Free(objHeaderPtr);
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("   > Object freed.");
+                    }
+
+                    if (OutputTrace)
+                    {
+                        BasicConsole.WriteLine("   > Done.");
+                    }
                 }
 
-                InsideGC = false;
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Shifting to next item...");
+                }
+
+                prevObjToCleanupPtr = currObjToCleanupPtr;
+                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Removing object to cleanup...");
+                }
+
+                RemoveObjectToCleanup(prevObjToCleanupPtr);
+
+                if (OutputTrace)
+                {
+                    BasicConsole.WriteLine(" > Done.");
+                    BasicConsole.WriteLine(" > Loop back...");
+                }
+            }
+
+            InsideGC = false;
 
 #if GC_TRACE
-            PrintCleanupData(startNumObjs, startNumStrings);
-#endif
-            }
-            //finally
+            if (OutputTrace)
             {
+                PrintCleanupData(startNumObjs, startNumStrings);
             }
+#endif
         }
         /// <summary>
         /// Outputs, via the basic console, how much memory was cleaned up.
@@ -632,14 +1011,14 @@ namespace FlingOops
         /// <param name="startNumStrings">The number of strings before the cleanup.</param>
         private static void PrintCleanupData(int startNumObjs, int startNumStrings)
         {
-            //int numObjsFreed = startNumObjs - NumObjs;
-            //int numStringsFreed = startNumStrings - NumStrings;
-            //BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            //BasicConsole.WriteLine(((FlingOops.String)"Freed objects: ") + numObjsFreed);
-            //BasicConsole.WriteLine(((FlingOops.String)"Freed strings: ") + numStringsFreed);
-            //BasicConsole.WriteLine(((FlingOops.String)"Used memory  : ") + (Heap.FBlock->used * Heap.FBlock->bsize) + " / " + Heap.FBlock->size);
-            //BasicConsole.DelayOutput(2);
-            //BasicConsole.SetTextColour(BasicConsole.default_colour);
+            int numObjsFreed = startNumObjs - NumObjs;
+            int numStringsFreed = startNumStrings - NumStrings;
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            BasicConsole.WriteLine(((FlingOops.String)"Freed objects: ") + numObjsFreed);
+            BasicConsole.WriteLine(((FlingOops.String)"Freed strings: ") + numStringsFreed);
+            BasicConsole.WriteLine(((FlingOops.String)"Used memory  : ") + (Heap.FBlock->used * Heap.FBlock->bsize) + " / " + Heap.FBlock->size);
+            BasicConsole.DelayOutput(2);
+            BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
 
         /// <summary>
@@ -651,27 +1030,25 @@ namespace FlingOops
         [Drivers.Compiler.Attributes.NoGC]
         private static void AddObjectToCleanup(GCHeader* objHeaderPtr, void* objPtr)
         {
-            //try
-            {
-                ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.Alloc((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
-                newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
-                newObjToCleanupPtr->objPtr = objPtr;
+            objHeaderPtr->OnCleanupList = true;
 
-                if (CleanupList != null)
-                {
-                    newObjToCleanupPtr->prevPtr = CleanupList;
-                    CleanupList->nextPtr = newObjToCleanupPtr;
-                }
-                else
-                {
-                    newObjToCleanupPtr->prevPtr = null;
-                }
+            ObjectToCleanup* newObjToCleanupPtr = (ObjectToCleanup*)Heap.AllocZeroed((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
+            newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
+            newObjToCleanupPtr->objPtr = objPtr;
 
-                CleanupList = newObjToCleanupPtr;
-            }
-            //finally
+            if (CleanupList != null)
             {
+                newObjToCleanupPtr->nextPtr = null;
+                newObjToCleanupPtr->prevPtr = CleanupList;
+                CleanupList->nextPtr = newObjToCleanupPtr;
             }
+            else
+            {
+                newObjToCleanupPtr->prevPtr = null;
+                newObjToCleanupPtr->nextPtr = null;
+            }
+
+            CleanupList = newObjToCleanupPtr;
         }
         /// <summary>
         /// Removes an object from the cleanup list.
@@ -681,21 +1058,17 @@ namespace FlingOops
         [Drivers.Compiler.Attributes.NoGC]
         private static void RemoveObjectToCleanup(GCHeader* objHeaderPtr)
         {
-            //try
+            ObjectToCleanup* currObjToCleanupPtr = CleanupList;
+            while (currObjToCleanupPtr != null)
             {
-                ObjectToCleanup* currObjToCleanupPtr = CleanupList;
-                while (currObjToCleanupPtr != null)
+                if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
                 {
-                    if (currObjToCleanupPtr->objHeaderPtr == objHeaderPtr)
-                    {
-                        RemoveObjectToCleanup(currObjToCleanupPtr);
-                        return;
-                    }
-                    currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
+                    objHeaderPtr->OnCleanupList = false;
+
+                    RemoveObjectToCleanup(currObjToCleanupPtr);
+                    return;
                 }
-            }
-            //finally
-            {
+                currObjToCleanupPtr = currObjToCleanupPtr->prevPtr;
             }
         }
         /// <summary>
@@ -708,18 +1081,59 @@ namespace FlingOops
         {
             ObjectToCleanup* prevPtr = objToCleanupPtr->prevPtr;
             ObjectToCleanup* nextPtr = objToCleanupPtr->nextPtr;
-            prevPtr->nextPtr = nextPtr;
-            nextPtr->prevPtr = prevPtr;
-
-            if(CleanupList == objToCleanupPtr)
+            if (prevPtr != null)
             {
-                CleanupList = prevPtr;
+                prevPtr->nextPtr = nextPtr;
             }
-            
+            if (nextPtr != null)
+            {
+                nextPtr->prevPtr = prevPtr;
+            }
+
+            if (CleanupList == objToCleanupPtr)
+            {
+                if (prevPtr != null)
+                {
+                    CleanupList = prevPtr;
+                }
+                else
+                {
+                    CleanupList = nextPtr;
+                }
+            }
+
             Heap.Free(objToCleanupPtr);
         }
     }
-    
+    public unsafe class GCState : FlingOops.Object
+    {
+        /// <summary>
+        /// Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
+        /// called methods re-calling the GC!)
+        /// </summary>
+        public bool InsideGC = false;
+
+        public bool OutputTrace = false;
+
+        public FlingOops.String lastEnabler = "";
+        public FlingOops.String lastDisabler = "";
+        public FlingOops.String lastLocker = "[NEVER SET]";
+
+        /// <summary>
+        /// The total number of objects currently allocated by the GC.
+        /// </summary>
+        public int NumObjs = 0;
+        /// <summary>
+        /// The number of strings currently allocated on the heap.
+        /// </summary>
+        public int NumStrings = 0;
+
+        /// <summary>
+        /// The linked-list of objects to clean up.
+        /// </summary>
+        public ObjectToCleanup* CleanupList = null;
+    }
+
     /// <summary>
     /// Represents the GC header that is put in memory in front of every object so the GC can manage the object.
     /// </summary>
@@ -742,6 +1156,9 @@ namespace FlingOops
         /// The current reference count for the object associated with this header.
         /// </summary>
         public int RefCount;
+
+        public bool OnCleanupList;
+        public bool CleanedUp;
     }
     /// <summary>
     /// Represents an object to be garbage collected (i.e. freed from memory).

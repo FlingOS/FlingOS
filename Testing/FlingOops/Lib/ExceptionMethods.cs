@@ -23,17 +23,11 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlingOops
 {
-    public delegate void PageFaultHandler(uint eip, uint errorCode, uint address);
-
     /// <summary>
     /// Implements the lowest-level kernel exception handling.
     /// </summary>
@@ -54,8 +48,42 @@ namespace FlingOops
         /// </summary>
         public static string UnhandledException_PanicMessage = "Unhandled exception! Panic!";
 
-        public static ExceptionState* State;
-        public static ExceptionState* DefaultState;
+        public static bool UseCurrentState = false;
+
+        //[Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FlingOops")]
+        //public static bool PrintMessages = false;
+
+        public static ExceptionState* state;
+        public static ExceptionState* kernel_state;
+        public static ExceptionState* State
+        {
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            get
+            {
+                if (UseCurrentState)
+                {
+                    return state;
+                }
+                else
+                {
+                    return kernel_state;
+                }
+            }
+            [Drivers.Compiler.Attributes.NoDebug]
+            [Drivers.Compiler.Attributes.NoGC]
+            set
+            {
+                if (UseCurrentState)
+                {
+                    state = value;
+                }
+                else
+                {
+                    kernel_state = value;
+                }
+            }
+        }
 
         [Drivers.Compiler.Attributes.NoGC]
         [Drivers.Compiler.Attributes.NoDebug]
@@ -78,6 +106,13 @@ namespace FlingOops
             }
         }
 
+        private struct AddExceptionHandlerInfo_EntryStackState
+        {
+            public uint EBP;
+            public uint RetAddr;
+            public uint FilterPtr;
+            public uint HandlerPtr;
+        }
         /// <summary>
         /// Adds a new Exception Handler Info structure to the stack and sets 
         /// it as the current handler.
@@ -99,6 +134,8 @@ namespace FlingOops
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
+
+            State->depth++;
 
             //if (filterPtr != null)
             //{
@@ -139,7 +176,7 @@ namespace FlingOops
             uint* DuplicateValsStackPointer = (uint*)StackPointer;
             *DuplicateValsStackPointer = BasePtr->EBP;
             *(DuplicateValsStackPointer + 1) = BasePtr->RetAddr;
-            
+
             ShiftStack((byte*)ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
 
             // Shift stack pointer to correct position - eliminates "empty space" of duplicates
@@ -153,13 +190,6 @@ namespace FlingOops
             //      - Add size of args to esp
             // Which should leave the stack at the bottom of the (shifted up) ex handler info
         }
-        private struct AddExceptionHandlerInfo_EntryStackState
-        {
-            public uint EBP;
-            public uint RetAddr;
-            public uint FilterPtr;
-            public uint HandlerPtr;
-        }
 
         /// <summary>
         /// Throws the specified exception.
@@ -169,23 +199,31 @@ namespace FlingOops
         [Drivers.Compiler.Attributes.NoGC]
         public static unsafe void Throw(FlingOops.Exception ex)
         {
-            FlingOops.GC.IncrementRefCount(ex);
-
-            BasicConsole.WriteLine("Exception thrown");
-            BasicConsole.WriteLine(ex.Message);
-
-            if (State->CurrentHandlerPtr->Ex != null)
+            if (ex != null)
             {
-                //GC ref count remains consistent because the Ex pointer below is going to be replaced but
-                //  same pointer stored in InnerException.
-                // Result is ref count goes: +1 here, -1 below
-                ex.InnerException = (FlingOops.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                FlingOops.GC.IncrementRefCount(ex);
+
+                //BasicConsole.WriteLine("Exception thrown:");
+                //BasicConsole.WriteLine(ex.Message);
+
+                if (State->CurrentHandlerPtr->Ex != null)
+                {
+                    //GC ref count remains consistent because the Ex pointer below is going to be replaced but
+                    //  same pointer stored in InnerException.
+                    // Result is ref count goes: +1 here, -1 below
+                    ex.InnerException = (FlingOops.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                }
+                if (ex.InstructionAddress == 0)
+                {
+                    ex.InstructionAddress = *((uint*)BasePointer + 1);
+                }
+                State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
             }
-            if (ex.InstructionAddress == 0)
+            else
             {
-                ex.InstructionAddress = *((uint*)BasePointer + 1);
+                FlingOops.GC.DecrementRefCount((FlingOops.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                State->CurrentHandlerPtr->Ex = null;
             }
-            State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
             State->CurrentHandlerPtr->ExPending = 1;
 
             HandleException();
@@ -194,7 +232,7 @@ namespace FlingOops
             HaltReason = "HandleException returned!";
             BasicConsole.WriteLine(HaltReason);
             // Try to cause fault
-            *((byte*)0xDEADBEEF) = 0;
+            *((byte*)0x800000000) = 0;
         }
         /// <summary>
         /// Throws the specified exception. Implementation used is exactly the 
@@ -202,6 +240,7 @@ namespace FlingOops
         /// throw an exception.
         /// </summary>
         /// <param name="exPtr">The pointer to the exception to throw.</param>
+        //        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]
         public static void ThrowFromPtr(UInt32* exPtr)
@@ -210,6 +249,8 @@ namespace FlingOops
             ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
         }
+
+        private static bool HasErrored = false;
 
         /// <summary>
         /// Handles the current pending exception.
@@ -233,7 +274,8 @@ namespace FlingOops
                             State->CurrentHandlerPtr->PrevHandlerPtr->Ex = State->CurrentHandlerPtr->Ex;
                             State->CurrentHandlerPtr->PrevHandlerPtr->ExPending = State->CurrentHandlerPtr->ExPending;
                         }
-                        State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+
+                        MoveToPreviousHandler();
                     }
                 }
 
@@ -259,7 +301,7 @@ namespace FlingOops
             HaltReason = "Unhandled / improperly handled exception!";
             BasicConsole.WriteLine(HaltReason);
             // Try to cause fault
-            *((byte*)0xDEADBEEF) = 0;
+            *((byte*)0x800000000) = 0;
         }
         /// <summary>
         /// Handles cleanly leaving a critical section (i.e. try or catch block)
@@ -274,7 +316,20 @@ namespace FlingOops
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
-                HaltReason = "Cannot leave on null handler! Address: 0x        ";
+                HaltReason = "";
+                if (State == null)
+                {
+                    HaltReason = "Cannot leave on null handler! Address: 0x         - Null state";
+                }
+                else if (State->CurrentHandlerPtr == null)
+                {
+                    HaltReason = "Cannot leave on null handler! Address: 0x         - Null handler";
+                }
+                else
+                {
+                    HaltReason = "Cannot leave on null handler! Address: 0x         - Unexpected reason";
+                }
+
 
                 uint y = *((uint*)(BasePointer + 4));
                 int offset = 48;
@@ -340,10 +395,41 @@ namespace FlingOops
                 #endregion
 
                 BasicConsole.WriteLine(HaltReason);
+
+                if (State != null)
+                {
+                    if (State->depth > 0)
+                    {
+                        BasicConsole.WriteLine("    -- Positive depth");
+                    }
+                    else if (State->depth == 0)
+                    {
+                        BasicConsole.WriteLine("    -- Zero depth");
+                    }
+                    else if (State->depth < 0)
+                    {
+                        BasicConsole.WriteLine("    -- Negative depth");
+                    }
+
+                    int pos = State->history_pos;
+                    do
+                    {
+                        BasicConsole.Write(State->history[pos]);
+                        BasicConsole.Write(" ");
+
+                        pos--;
+                        if (pos == -1)
+                        {
+                            pos = 31;
+                        }
+                    }
+                    while (pos != State->history_pos);
+                }
+
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
-                *((byte*)0xDEADBEEF) = 0;
+                *((byte*)0x800000000) = 0;
             }
 
             // Leaving a critical section cleanly
@@ -354,6 +440,7 @@ namespace FlingOops
             if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
             {
                 // Case 1 : Leaving "try" or "catch" of a try-catch
+                //BasicConsole.WriteLine("Leave try or catch of try-catch");
 
                 if (State->CurrentHandlerPtr->Ex != null)
                 {
@@ -366,10 +453,7 @@ namespace FlingOops
                 uint EBP = State->CurrentHandlerPtr->EBP;
                 uint ESP = State->CurrentHandlerPtr->ESP;
 
-                //BasicConsole.WriteLine("Leave try or catch of try-catch");
-                //BasicConsole.WriteLine((uint)continuePtr);
-
-                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+                MoveToPreviousHandler();
 
                 ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
             }
@@ -393,6 +477,7 @@ namespace FlingOops
                                State->CurrentHandlerPtr->ESP,
                                handlerAddress);
             }
+
         }
         /// <summary>
         /// Handles cleanly leaving a "finally" critical section (i.e. finally block). 
@@ -407,24 +492,40 @@ namespace FlingOops
                 State->CurrentHandlerPtr == null)
             {
                 // If we get to here, it's an unhandled exception
-                HaltReason = "Cannot end finally on null handler!";
+                if (State == null)
+                {
+                    HaltReason = "Cannot end finally in null state!";
+                }
+                else if (State->CurrentHandlerPtr == null)
+                {
+                    HaltReason = "Cannot end finally on null handler!";
+                }
+                else
+                {
+                    HaltReason = "Cannot end finally for unexpected reason!";
+                }
                 BasicConsole.WriteLine(HaltReason);
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
-                *((byte*)0xDEADBEEF) = 0;
+                *((byte*)0x800000000) = 0;
             }
-            
+
             // Leaving a "finally" critical section cleanly
             // We need to handle 2 cases:
             // Case 1 : Pending exception
             // Case 2 : No pending exception
 
+            //BasicConsole.WriteLine("Handle end finally");
+
             if (State->CurrentHandlerPtr->ExPending != 0)
             {
                 // Case 1 : Pending exception
 
-                //BasicConsole.WriteLine("End finally with ex");
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: Handle pending exception");
+                //}
 
                 HandleException();
             }
@@ -432,20 +533,53 @@ namespace FlingOops
             {
                 // Case 2 : No pending exception
 
-                //BasicConsole.WriteLine("End finally without ex");
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: No pending exception");
+                //}
 
                 State->CurrentHandlerPtr->InHandler = 0;
 
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 1");
+                //}
+
                 uint EBP = State->CurrentHandlerPtr->EBP;
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 2");
+                //}
+
                 uint ESP = State->CurrentHandlerPtr->ESP;
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 3");
+                //}
+
                 byte* retAddr = State->CurrentHandlerPtr->HandlerAddress;//(byte*)*((uint*)(BasePointer + 4));
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 4");
+                //    FlingOops.String addrStr = "retAddr: 0x        ";
+                //    FillString((uint)retAddr, 18, addrStr);
+                //    BasicConsole.WriteLine(addrStr);
+                //}
 
                 //BasicConsole.Write("Continue ptr (from HandlerAddress): ");
                 //BasicConsole.WriteLine((uint)State->CurrentHandlerPtr->HandlerAddress);
                 //BasicConsole.Write("Actual continue addr (from EBP): ");
                 //BasicConsole.WriteLine(*((uint*)(BasePointer + 4)));
 
-                State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+                MoveToPreviousHandler();
+
+                //if (PrintMessages)
+                //{
+                //    BasicConsole.WriteLine("EndFinally: DP 5");
+                //}
 
                 ArbitaryReturn(EBP,
                     ESP + (uint)sizeof(ExceptionHandlerInfo),
@@ -453,7 +587,30 @@ namespace FlingOops
             }
         }
 
-        internal static unsafe byte* StackPointer
+        /// <summary>
+        /// Sets the current handler pointer to the previous pointer and updates the relevant state info safely.
+        /// </summary>
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
+        private static unsafe void MoveToPreviousHandler()
+        {
+            State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
+            State->depth--;
+            if (State->CurrentHandlerPtr == null)
+            {
+                State->history[State->history_pos++] = 0;
+            }
+            else
+            {
+                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
+            }
+            if (State->history_pos > 31)
+            {
+                State->history_pos = 0;
+            }
+        }
+
+        public static unsafe byte* StackPointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\StackPointer")]
             get
@@ -465,7 +622,7 @@ namespace FlingOops
             {
             }
         }
-        internal static unsafe byte* BasePointer
+        public static unsafe byte* BasePointer
         {
             [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
             get
@@ -479,11 +636,11 @@ namespace FlingOops
         }
 
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
-        internal static void ShiftStack(byte* From_High, uint Dist)
+        private static void ShiftStack(byte* From_High, uint Dist)
         {
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
-        internal static void ArbitaryReturn(uint FP, uint SP, byte* RetAddr)
+        private static void ArbitaryReturn(uint EBP, uint ESP, byte* RetAddr)
         {
         }
 
@@ -497,439 +654,6 @@ namespace FlingOops
             Throw(CurrentException);
         }
 
-        ///// <summary>
-        ///// Throws a divide by zero exception.
-        ///// </summary>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_DivideByZeroException()
-        //{
-        //    HaltReason = "Divide by zero exception.";
-        //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //    BasicConsole.WriteLine(HaltReason);
-        //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-        //    Throw(new FlingOops.Exceptions.DivideByZeroException());
-        //}
-        ///// <summary>
-        ///// Throws a divide by zero exception storing the specified exception address.
-        ///// </summary>
-        ///// <param name="address">The address of the code that caused the exception.</param>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_DivideByZeroException(uint address)
-        //{
-        //    HaltReason = "Divide by zero exception.";
-        //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //    BasicConsole.WriteLine(HaltReason);
-        //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-        //    Throw(new FlingOops.Exceptions.DivideByZeroException(address));
-        //}
-        ///// <summary>
-        ///// Throws an overflow exception.
-        ///// </summary>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_OverflowException()
-        //{
-        //    HaltReason = "Overflow exception.";
-        //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //    BasicConsole.WriteLine(HaltReason);
-        //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-        //    Throw(new FlingOops.Exceptions.OverflowException());
-        //}
-        ///// <summary>
-        ///// Throws an invalid op code exception.
-        ///// </summary>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_InvalidOpCodeException()
-        //{
-        //    HaltReason = "Invalid op code exception.";
-        //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //    BasicConsole.WriteLine(HaltReason);
-        //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-        //    Throw(new FlingOops.Exceptions.InvalidOpCodeException());
-        //}
-        ///// <summary>
-        ///// Throws a double fault exception.
-        ///// </summary>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_DoubleFaultException(uint address, uint errorCode)
-        //{
-        //    HaltReason = "Double fault exception. Address: 0x         Error code: 0x        ";
-
-        //    uint y = address;
-        //    int offset = 42;
-        //    #region Address
-        //    while (offset > 34)
-        //    {
-        //        uint rem = y & 0xFu;
-        //        switch (rem)
-        //        {
-        //            case 0:
-        //                HaltReason[offset] = '0';
-        //                break;
-        //            case 1:
-        //                HaltReason[offset] = '1';
-        //                break;
-        //            case 2:
-        //                HaltReason[offset] = '2';
-        //                break;
-        //            case 3:
-        //                HaltReason[offset] = '3';
-        //                break;
-        //            case 4:
-        //                HaltReason[offset] = '4';
-        //                break;
-        //            case 5:
-        //                HaltReason[offset] = '5';
-        //                break;
-        //            case 6:
-        //                HaltReason[offset] = '6';
-        //                break;
-        //            case 7:
-        //                HaltReason[offset] = '7';
-        //                break;
-        //            case 8:
-        //                HaltReason[offset] = '8';
-        //                break;
-        //            case 9:
-        //                HaltReason[offset] = '9';
-        //                break;
-        //            case 10:
-        //                HaltReason[offset] = 'A';
-        //                break;
-        //            case 11:
-        //                HaltReason[offset] = 'B';
-        //                break;
-        //            case 12:
-        //                HaltReason[offset] = 'C';
-        //                break;
-        //            case 13:
-        //                HaltReason[offset] = 'D';
-        //                break;
-        //            case 14:
-        //                HaltReason[offset] = 'E';
-        //                break;
-        //            case 15:
-        //                HaltReason[offset] = 'F';
-        //                break;
-        //        }
-        //        y >>= 4;
-        //        offset--;
-        //    }
-
-        //    #endregion
-
-        //    y = errorCode;
-        //    offset = 65;
-        //    #region Error Code
-        //    while (offset > 57)
-        //    {
-        //        uint rem = y & 0xFu;
-        //        switch (rem)
-        //        {
-        //            case 0:
-        //                HaltReason[offset] = '0';
-        //                break;
-        //            case 1:
-        //                HaltReason[offset] = '1';
-        //                break;
-        //            case 2:
-        //                HaltReason[offset] = '2';
-        //                break;
-        //            case 3:
-        //                HaltReason[offset] = '3';
-        //                break;
-        //            case 4:
-        //                HaltReason[offset] = '4';
-        //                break;
-        //            case 5:
-        //                HaltReason[offset] = '5';
-        //                break;
-        //            case 6:
-        //                HaltReason[offset] = '6';
-        //                break;
-        //            case 7:
-        //                HaltReason[offset] = '7';
-        //                break;
-        //            case 8:
-        //                HaltReason[offset] = '8';
-        //                break;
-        //            case 9:
-        //                HaltReason[offset] = '9';
-        //                break;
-        //            case 10:
-        //                HaltReason[offset] = 'A';
-        //                break;
-        //            case 11:
-        //                HaltReason[offset] = 'B';
-        //                break;
-        //            case 12:
-        //                HaltReason[offset] = 'C';
-        //                break;
-        //            case 13:
-        //                HaltReason[offset] = 'D';
-        //                break;
-        //            case 14:
-        //                HaltReason[offset] = 'E';
-        //                break;
-        //            case 15:
-        //                HaltReason[offset] = 'F';
-        //                break;
-        //        }
-        //        y >>= 4;
-        //        offset--;
-        //    }
-
-        //    #endregion
-
-        //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //    BasicConsole.WriteLine(HaltReason);
-        //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-        //    Throw(new FlingOops.Exceptions.DoubleFaultException(errorCode));
-        //}
-        ///// <summary>
-        ///// Throws a stack exception.
-        ///// </summary>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_StackException()
-        //{
-        //    HaltReason = "Stack exception.";
-        //    BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //    BasicConsole.WriteLine(HaltReason);
-        //    BasicConsole.SetTextColour(BasicConsole.default_colour);
-        //    Throw(new FlingOops.Exceptions.StackException());
-        //}
-        ///// <summary>
-        ///// Throws a page fault exception.
-        ///// </summary>
-        ///// <param name="errorCode">The error code associated with the page fault.</param>
-        ///// <param name="address">The address which caused the fault.</param>
-        ///// <remarks>
-        ///// Used by CPU interrupts to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        //public static void Throw_PageFaultException(uint eip, uint errorCode, uint address)
-        //{
-        //    if (ThePageFaultHandler != null)
-        //    {
-        //        ThePageFaultHandler(eip, errorCode, address);
-        //    }
-        //    else
-        //    {
-        //        BasicConsole.SetTextColour(BasicConsole.error_colour);
-        //        BasicConsole.WriteLine("Page fault exception!");
-
-        //        HaltReason = "Page fault exception. Address: 0x        , errorCode: 0x        , eip: 0x        ";
-
-        //        uint y = address;
-        //        int offset = 40;
-        //        #region Address
-        //        while (offset > 32)
-        //        {
-        //            uint rem = y & 0xFu;
-        //            switch (rem)
-        //            {
-        //                case 0:
-        //                    HaltReason[offset] = '0';
-        //                    break;
-        //                case 1:
-        //                    HaltReason[offset] = '1';
-        //                    break;
-        //                case 2:
-        //                    HaltReason[offset] = '2';
-        //                    break;
-        //                case 3:
-        //                    HaltReason[offset] = '3';
-        //                    break;
-        //                case 4:
-        //                    HaltReason[offset] = '4';
-        //                    break;
-        //                case 5:
-        //                    HaltReason[offset] = '5';
-        //                    break;
-        //                case 6:
-        //                    HaltReason[offset] = '6';
-        //                    break;
-        //                case 7:
-        //                    HaltReason[offset] = '7';
-        //                    break;
-        //                case 8:
-        //                    HaltReason[offset] = '8';
-        //                    break;
-        //                case 9:
-        //                    HaltReason[offset] = '9';
-        //                    break;
-        //                case 10:
-        //                    HaltReason[offset] = 'A';
-        //                    break;
-        //                case 11:
-        //                    HaltReason[offset] = 'B';
-        //                    break;
-        //                case 12:
-        //                    HaltReason[offset] = 'C';
-        //                    break;
-        //                case 13:
-        //                    HaltReason[offset] = 'D';
-        //                    break;
-        //                case 14:
-        //                    HaltReason[offset] = 'E';
-        //                    break;
-        //                case 15:
-        //                    HaltReason[offset] = 'F';
-        //                    break;
-        //            }
-        //            y >>= 4;
-        //            offset--;
-        //        }
-
-        //        #endregion
-
-        //        y = errorCode;
-        //        offset = 63;
-        //        #region Error Code
-
-        //        while (offset > 55)
-        //        {
-        //            uint rem = y & 0xFu;
-        //            switch (rem)
-        //            {
-        //                case 0:
-        //                    HaltReason[offset] = '0';
-        //                    break;
-        //                case 1:
-        //                    HaltReason[offset] = '1';
-        //                    break;
-        //                case 2:
-        //                    HaltReason[offset] = '2';
-        //                    break;
-        //                case 3:
-        //                    HaltReason[offset] = '3';
-        //                    break;
-        //                case 4:
-        //                    HaltReason[offset] = '4';
-        //                    break;
-        //                case 5:
-        //                    HaltReason[offset] = '5';
-        //                    break;
-        //                case 6:
-        //                    HaltReason[offset] = '6';
-        //                    break;
-        //                case 7:
-        //                    HaltReason[offset] = '7';
-        //                    break;
-        //                case 8:
-        //                    HaltReason[offset] = '8';
-        //                    break;
-        //                case 9:
-        //                    HaltReason[offset] = '9';
-        //                    break;
-        //                case 10:
-        //                    HaltReason[offset] = 'A';
-        //                    break;
-        //                case 11:
-        //                    HaltReason[offset] = 'B';
-        //                    break;
-        //                case 12:
-        //                    HaltReason[offset] = 'C';
-        //                    break;
-        //                case 13:
-        //                    HaltReason[offset] = 'D';
-        //                    break;
-        //                case 14:
-        //                    HaltReason[offset] = 'E';
-        //                    break;
-        //                case 15:
-        //                    HaltReason[offset] = 'F';
-        //                    break;
-        //            }
-        //            y >>= 4;
-        //            offset--;
-        //        }
-
-        //        #endregion
-
-        //        y = eip;
-        //        offset = 80;
-        //        #region EIP
-
-        //        while (offset > 72)
-        //        {
-        //            uint rem = y & 0xFu;
-        //            switch (rem)
-        //            {
-        //                case 0:
-        //                    HaltReason[offset] = '0';
-        //                    break;
-        //                case 1:
-        //                    HaltReason[offset] = '1';
-        //                    break;
-        //                case 2:
-        //                    HaltReason[offset] = '2';
-        //                    break;
-        //                case 3:
-        //                    HaltReason[offset] = '3';
-        //                    break;
-        //                case 4:
-        //                    HaltReason[offset] = '4';
-        //                    break;
-        //                case 5:
-        //                    HaltReason[offset] = '5';
-        //                    break;
-        //                case 6:
-        //                    HaltReason[offset] = '6';
-        //                    break;
-        //                case 7:
-        //                    HaltReason[offset] = '7';
-        //                    break;
-        //                case 8:
-        //                    HaltReason[offset] = '8';
-        //                    break;
-        //                case 9:
-        //                    HaltReason[offset] = '9';
-        //                    break;
-        //                case 10:
-        //                    HaltReason[offset] = 'A';
-        //                    break;
-        //                case 11:
-        //                    HaltReason[offset] = 'B';
-        //                    break;
-        //                case 12:
-        //                    HaltReason[offset] = 'C';
-        //                    break;
-        //                case 13:
-        //                    HaltReason[offset] = 'D';
-        //                    break;
-        //                case 14:
-        //                    HaltReason[offset] = 'E';
-        //                    break;
-        //                case 15:
-        //                    HaltReason[offset] = 'F';
-        //                    break;
-        //            }
-        //            y >>= 4;
-        //            offset--;
-        //        }
-
-        //        #endregion
-
-        //        BasicConsole.WriteLine(HaltReason);
-        //        BasicConsole.SetTextColour(BasicConsole.default_colour);
-
-        //        Throw(new FlingOops.Exceptions.PageFaultException(errorCode, address));
-        //    }
-        //}
-
-        public static PageFaultHandler ThePageFaultHandler = null;
-
         /// <summary>
         /// Throws a Null Reference exception.
         /// </summary>
@@ -941,24 +665,15 @@ namespace FlingOops
         {
             HaltReason = "Null reference exception. Instruction: 0x        ";
             FillString(address, 48, HaltReason);
+            BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
             
-            //FlingOops.Exception ex = new FlingOops.Exceptions.NullReferenceException();
-            //ex.InstructionAddress = address;
-            //Throw(ex);
+            PrintStackTrace();
+            PrintExceptionState();
+            
+            Throw(null);
         }
-        ///// <summary>
-        ///// Throws an Array Type Mismatch exception.
-        ///// </summary>
-        ///// <remarks>
-        ///// Used by compiler to handle the creation of the exception object and calling Throw.
-        ///// </remarks>
-        ////[Drivers.Compiler.Attributes.ThrowArrayTypeMismatchExceptionMethod]
-        //public static void Throw_ArrayTypeMismatchException()
-        //{
-        //    HaltReason = "Array type mismatch exception.";
-        //    Throw(new FlingOops.Exceptions.ArrayTypeMismatchException());
-        //}
         /// <summary>
         /// Throws a Index Out Of Range exception.
         /// </summary>
@@ -969,15 +684,119 @@ namespace FlingOops
         public static void Throw_IndexOutOfRangeException()
         {
             HaltReason = "Index out of range exception.";
+            BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
-            //FlingOops.Exception ex = new FlingOops.Exceptions.IndexOutOfRangeException(0, 0);
-            //ex.InstructionAddress = *((uint*)BasePointer + 1);
-            //Throw(ex);
+            BasicConsole.SetTextColour(BasicConsole.warning_colour);
+            Throw(null);
         }
-        
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\GetEIP")]
+
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\GetEIP")]
         public static void GetEIP()
         {
+        }
+
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        public static void PrintStackTrace()
+        {
+            uint* EBP = (uint*)BasePointer;
+            while ((uint)EBP % 4096 < 4092 && (uint)EBP % 4096 != 0 && (uint)EBP > 4096)
+            {
+                FlingOops.String msg = "EBP: 0x        , Return Address: 0x        , Prev EBP: 0x        ";
+                //EBP: 14
+                //Return address: 42
+                //Prev EBP: 64
+
+                uint ReturnAddress = *(EBP + 1);
+                uint PrevEBP = *(EBP);
+                FillString((uint)EBP, 14, msg);
+                FillString(ReturnAddress, 42, msg);
+                FillString(PrevEBP, 64, msg);
+                BasicConsole.WriteLine(msg);
+
+                if (PrevEBP > (uint)EBP - 2048 && PrevEBP < (uint)EBP + 2048)
+                {
+                    EBP = (uint*)PrevEBP;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        public static void PrintStack()
+        {
+            uint* ESP = (uint*)StackPointer;
+
+            {
+                FlingOops.String msg = "ESP: 0x        ";
+                FillString((uint)ESP, 14, msg);
+                BasicConsole.WriteLine(msg);
+            }
+
+            while ((uint)ESP % 4096 < 4092 && (uint)ESP % 4096 != 0)
+            {
+                FlingOops.String msg = "ESP: 0x        , Value: 0x        ";
+                //ESP: 14
+                //Value: 33
+
+                uint Value = *ESP;
+                FillString((uint)ESP, 14, msg);
+                FillString(Value, 33, msg);
+                BasicConsole.WriteLine(msg);
+
+                ESP++;
+            }
+        }
+        [Drivers.Compiler.Attributes.NoGC]
+        [Drivers.Compiler.Attributes.NoDebug]
+        public static void PrintExceptionState()
+        {
+            if (state != null)
+            {
+                FlingOops.String valStr = "0x        ";
+
+                BasicConsole.WriteLine("Exception state:");
+
+                BasicConsole.Write("    > Current handler pointer : ");
+                FillString((uint)state->CurrentHandlerPtr, 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
+                BasicConsole.Write("    > Depth : ");
+                FillString((uint)state->depth, 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
+                BasicConsole.Write("    > History position : ");
+                FillString((uint)state->history_pos, 9, valStr);
+                BasicConsole.WriteLine(valStr);
+
+                int pos = State->history_pos;
+                int counter = 0;
+                do
+                {
+                    BasicConsole.Write("        [");
+                    FillString((uint)counter, 9, valStr);
+                    BasicConsole.Write(valStr);
+                    BasicConsole.Write("] = ");
+                    FillString(state->history[pos], 9, valStr);
+                    BasicConsole.WriteLine(valStr);
+
+                    pos--;
+                    if (pos == -1)
+                    {
+                        pos = 31;
+                    }
+
+                    counter++;
+                }
+                while (pos != State->history_pos);
+            }
+            else
+            {
+                BasicConsole.WriteLine("Current exception state is null!");
+            }
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
@@ -1049,6 +868,9 @@ namespace FlingOops
     public unsafe struct ExceptionState
     {
         public ExceptionHandlerInfo* CurrentHandlerPtr;
+        public int depth;
+        public fixed uint history[32];
+        public int history_pos;
     }
     /// <summary>
     /// Represents an Exception Handler Info.
@@ -1096,7 +918,7 @@ namespace FlingOops
         public UInt32 InHandler;
 
         public UInt32 ExPending;
-         
+
         public void* Ex;
     }
 }
