@@ -111,13 +111,15 @@ namespace Kernel.Hardware.Processes
                 // Add the page to the processes memory layout
                 uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
                 uint kernelStackVirtAddr = (uint)newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
-                
-                TheMemoryLayout.AddDataPage((uint)threadStackPhysAddr, threadStackVirtAddr);
-                TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
-                
                 if (ProcessManager.KernelProcess != null && this != ProcessManager.KernelProcess)
                 {
+                    TheMemoryLayout.AddDataPage((uint)threadStackPhysAddr, threadStackVirtAddr);
+                    TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
                     ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
+                }
+                else
+                {
+                    TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
                 }
 
 #if PROCESS_TRACE
@@ -125,8 +127,8 @@ namespace Kernel.Hardware.Processes
                 {
                     BasicConsole.WriteLine("New thread info:");
                     BasicConsole.WriteLine("Name : " + Name);
-                    BasicConsole.WriteLine("Thread stack : " + (FOS_System.String)threadStackVirtAddr + " => " + threadStackPhysAddr);
-                    BasicConsole.WriteLine("Kernel stack : " + (FOS_System.String)kernelStackVirtAddr + " => " + kernelStackPhysAddr);
+                    BasicConsole.WriteLine("Thread stack : " + (FOS_System.String)threadStackVirtAddr + " => " + (uint)threadStackPhysAddr);
+                    BasicConsole.WriteLine("Kernel stack : " + (FOS_System.String)kernelStackVirtAddr + " => " + (uint)kernelStackPhysAddr);
                 }
 
                 BasicConsole.WriteLine("Adding thread...");

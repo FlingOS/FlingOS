@@ -182,7 +182,7 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, FOS_System.String AName, out void* ThreadStackTopPAddr, out void* KernelStackTopPAddr)
+        public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, FOS_System.String AName, out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
         {
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");
@@ -211,12 +211,9 @@ namespace Kernel.Hardware.Processes
 #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating kernel stack...");
 #endif
-            State->KernelStackTop = (byte*)FOS_System.Heap.AllocZeroed(0x1000, 0x1000, "Thread : Thread() (2)")/*
-                TODO: This requires a separate MapFreePageForKernel method which maps a free page that has not been used in any other currently executing process.
-                Hardware.VirtMemManager.MapFreePage(
+            State->KernelStackTop = (byte*)Hardware.VirtMemManager.MapFreePageForKernel(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly)*/ + KernelStackTopOffset; //4KiB, page-aligned
-            KernelStackTopPAddr = VirtMemManager.GetPhysicalAddress(State->KernelStackTop - KernelStackTopOffset);
+                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out KernelStackBottomPAddr) + KernelStackTopOffset; //4KiB, page-aligned
 
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
@@ -224,10 +221,19 @@ namespace Kernel.Hardware.Processes
             BasicConsole.WriteLine("Mapping thread stack page...");
 #endif
             State->UserMode = UserMode;
-            State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
+            if (AnOwner == ProcessManager.KernelProcess)
+            {
+                State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePageForKernel(
+                    UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
+                               Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ThreadStackBottomPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
+            }
+            else
+            {
+                State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ThreadStackTopPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
-            
+                           Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ThreadStackBottomPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
+            }
+
             // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
             //  downwards
 #if THREAD_TRACE

@@ -227,7 +227,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtMemManager.MapFreePagesForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -263,7 +263,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtMemManager.MapFreePagesForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");

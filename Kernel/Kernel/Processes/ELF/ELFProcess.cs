@@ -524,41 +524,41 @@ namespace Kernel.Processes.ELF
 
                     for (uint pageOffset = 0; pageOffset < segment.Header.MemSize; pageOffset += 4096)
                     {
-                        uint physPageAddr = Hardware.VirtMemManager.FindFreePhysPage();
-                        uint virtPageAddr = (uint)pageAlignedDestMemPtr + pageOffset;
+                        //uint physPageAddr = Hardware.VirtMemManager.FindFreePhysPage();
+                        //uint virtPageAddr = (uint)pageAlignedDestMemPtr + pageOffset;
 
                         //TODO: Probably need to update this to use system calls
-                        Hardware.VirtMemManager.Map(
-                            physPageAddr,
-                            virtPageAddr,
-                            4096,
-                            theProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
-                        Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
+                        //Hardware.VirtMemManager.Map(
+                        //    physPageAddr,
+                        //    virtPageAddr,
+                        //    4096,
+                        //    theProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None : Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly);
+                        //Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
 
-                        if (executable)
-                        {
-                            theProcess.TheMemoryLayout.AddCodePage(physPageAddr, virtPageAddr);
-                        }
-                        else
-                        {
-                            theProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
-                        }
+                        //if (executable)
+                        //{
+                        //    theProcess.TheMemoryLayout.AddCodePage(physPageAddr, virtPageAddr);
+                        //}
+                        //else
+                        //{
+                        //    theProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
+                        //}
 
-                        uint copySize = FOS_System.Math.Min((uint)bytesRead, 4096 - copyOffset);
-                        if (copySize > 0)
-                        {
-                            Utilities.MemoryUtils.MemCpy_32(
-                                (byte*)(virtPageAddr + copyOffset),
-                                ((byte*)Utilities.ObjectUtilities.GetHandle(segment.Data)) + FOS_System.Array.FieldsBytesSize + pageOffset - copyFromOffset,
-                                copySize);
+                        //uint copySize = FOS_System.Math.Min((uint)bytesRead, 4096 - copyOffset);
+                        //if (copySize > 0)
+                        //{
+                        //    Utilities.MemoryUtils.MemCpy_32(
+                        //        (byte*)(virtPageAddr + copyOffset),
+                        //        ((byte*)Utilities.ObjectUtilities.GetHandle(segment.Data)) + FOS_System.Array.FieldsBytesSize + pageOffset - copyFromOffset,
+                        //        copySize);
 
-                            bytesRead -= (int)copySize;
-                        }
+                        //    bytesRead -= (int)copySize;
+                        //}
 
-                        for (uint j = copySize + copyOffset; j < 4096; j++)
-                        {
-                            *(byte*)(virtPageAddr + j) = 0;
-                        }
+                        //for (uint j = copySize + copyOffset; j < 4096; j++)
+                        //{
+                        //    *(byte*)(virtPageAddr + j) = 0;
+                        //}
 
                         if (copyOffset > 0)
                         {

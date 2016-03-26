@@ -66,6 +66,7 @@ namespace Kernel.Hardware.VirtMem
 
         public abstract uint FindFreePhysPageAddrs(int num);
         public abstract uint FindFreeVirtPageAddrs(int num);
+        public abstract uint FindFreeVirtPageAddrsForKernel(int num);
 
         /// <summary>
         /// Maps the specified virtual address to the specified physical address.

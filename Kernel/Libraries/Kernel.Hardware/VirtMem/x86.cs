@@ -108,6 +108,11 @@ namespace Kernel.Hardware.VirtMem
         private Bitmap UsedVirtPages = new Bitmap(1048576);
 
         /// <summary>
+        /// Bitmap of all the virtual pages that have ever been mapped.
+        /// </summary>
+        private Bitmap AllUsedVirtPages = new Bitmap(1048576); //TODO: This doesn't take into account pages that are removed from all memory layouts so may no longer be in use anywhere.
+
+        /// <summary>
         /// Initialises the new x86 object.
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
@@ -231,6 +236,25 @@ namespace Kernel.Hardware.VirtMem
 
             return (uint)(result * 4096);
         }
+        /// <summary>
+        /// Finds the specified number of contiguous, free, virtual pages that are suitable for use by the kernel.
+        /// </summary>
+        /// <param name="num">The number of virtual pages to find.</param>
+        /// <returns>The address of the first page.</returns>
+        [Drivers.Compiler.Attributes.NoDebug]
+        public override uint FindFreeVirtPageAddrsForKernel(int num)
+        {
+            int result = AllUsedVirtPages.FindContiguousClearEntries(num);
+            if (result == -1)
+            {
+                BasicConsole.WriteLine("Error finding free virtual pages for the kernel!");
+                BasicConsole.DelayOutput(10);
+
+                ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free virtual pages for the kernel."));
+            }
+
+            return (uint)(result * 4096);
+        }
 
         //public static bool Unmap_Print = false;
 
@@ -301,9 +325,11 @@ namespace Kernel.Hardware.VirtMem
             {
                 UsedPhysPages.Set((int)((physPDIdx * 1024) + physPTIdx));
             }
-            if((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
+            int virtIndex = (int)((virtPDIdx * 1024) + virtPTIdx);
+            AllUsedVirtPages.Set(virtIndex);
+            if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
             {
-                UsedVirtPages.Set((int)((virtPDIdx * 1024) + virtPTIdx));
+                UsedVirtPages.Set(virtIndex);
             }
 
             //if (Processes.Scheduler.OutputMessages)
