@@ -331,10 +331,7 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SetWorkingDir);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
-
-                //IMPORTANT NOTE: For now, all threads for the KernelProcess MUST be started BEFORE any/all
-                //                other processes
-
+                
                 BasicConsole.WriteLine(" > Forcing initial GC cleanup...");
                 FOS_System.GC.Cleanup();
 
@@ -349,20 +346,6 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("Waiting on deferred syscalls thread...");
                     SystemCalls.SleepThread(50);
                 }
-
-                BasicConsole.WriteLine(" > Starting file pipe initialisation thread...");
-                FilePipeInitialisationThread = ProcessManager.CurrentProcess.CreateThread(FilePipeInitialisation_Main, "File Management : File Pipe Initialisation");
-
-                while (!FilePipesReady)
-                {
-                    BasicConsole.WriteLine("Waiting on file pipes to be ready...");
-                    SystemCalls.SleepThread(50);
-                }
-
-                BasicConsole.WriteLine(" > Starting file system helper threads...");
-                ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "File Management : Wait For File Cmd Pipes");
-                ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "File Management : Wait For File Data Pipes");
-                FileSystemManagerInitialisationThread = ProcessManager.CurrentProcess.CreateThread(FileSystemManagerInitialisation_Main, "File Management : File System Initialisation");
 
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(Tasks.IdleTask.Main, "Idle Task", false);
@@ -393,17 +376,26 @@ namespace Kernel.Tasks
                 }
                 BasicConsole.WriteLine(" > Window Manager reported ready.");
 
+                BasicConsole.WriteLine(" > Starting file pipe initialisation thread...");
+                FilePipeInitialisationThread = ProcessManager.CurrentProcess.CreateThread(FilePipeInitialisation_Main, "File Management : File Pipe Initialisation");
+
+                while (!FilePipesReady)
+                {
+                    BasicConsole.WriteLine("Waiting on file pipes to be ready...");
+                    SystemCalls.SleepThread(50);
+                }
+
                 BasicConsole.WriteLine(" > Starting File Systems driver...");
                 Process FileSystemsProcess = ProcessManager.CreateProcess(Tasks.Driver.FileSystemsDriverTask.Main, "File Systems Driver", false);
                 ProcessManager.RegisterProcess(FileSystemsProcess, Scheduler.Priority.Normal);
                 
-                BasicConsole.WriteLine(" > Waiting for File System Manager to be ready...");
+                BasicConsole.WriteLine(" > Waiting for File System Driver to be ready...");
                 while (!Tasks.Driver.FileSystemsDriverTask.Ready)
                 {
                     BasicConsole.WriteLine(" > [Wait pause]");
                     SystemCalls.SleepThread(1000);
                 }
-                BasicConsole.WriteLine(" > File System Manager reported ready.");
+                BasicConsole.WriteLine(" > File System Driver reported ready.");
 
                 BasicConsole.WriteLine(" > Starting Device Info task...");
                 Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceInfoTask.Main, "Device Info", false);
@@ -1330,6 +1322,11 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (5)");
             }
+
+            BasicConsole.WriteLine(" > Starting file system helper threads...");
+            ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "File Management : Wait For File Cmd Pipes");
+            ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "File Management : Wait For File Data Pipes");
+            FileSystemManagerInitialisationThread = ProcessManager.CurrentProcess.CreateThread(FileSystemManagerInitialisation_Main, "File Management : File System Initialisation");
 
             FilePipesReady = true;
 
