@@ -47,6 +47,7 @@ namespace Drivers.Debugger
             Active,
             Inactive,
             Suspended,
+            Debugging,
             NotStarted,
             Terminated
         }

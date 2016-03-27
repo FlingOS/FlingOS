@@ -66,7 +66,7 @@
             this.SingleStepButton = new System.Windows.Forms.Button();
             this.StepButton = new System.Windows.Forms.Button();
             this.ResumeButton = new System.Windows.Forms.Button();
-            this.SuspendButton = new System.Windows.Forms.Button();
+            this.DebugButton = new System.Windows.Forms.Button();
             this.RefreshButton = new System.Windows.Forms.Button();
             this.ProcessesTreeView = new System.Windows.Forms.TreeView();
             this.AbortButton = new System.Windows.Forms.Button();
@@ -184,7 +184,7 @@
             this.MainPanel.Controls.Add(this.SingleStepButton);
             this.MainPanel.Controls.Add(this.StepButton);
             this.MainPanel.Controls.Add(this.ResumeButton);
-            this.MainPanel.Controls.Add(this.SuspendButton);
+            this.MainPanel.Controls.Add(this.DebugButton);
             this.MainPanel.Controls.Add(this.RefreshButton);
             this.MainPanel.Controls.Add(this.ProcessesTreeView);
             this.MainPanel.Enabled = false;
@@ -484,13 +484,13 @@
             // 
             // SuspendButton
             // 
-            this.SuspendButton.Location = new System.Drawing.Point(273, 48);
-            this.SuspendButton.Name = "SuspendButton";
-            this.SuspendButton.Size = new System.Drawing.Size(75, 23);
-            this.SuspendButton.TabIndex = 2;
-            this.SuspendButton.Text = "Suspend";
-            this.SuspendButton.UseVisualStyleBackColor = true;
-            this.SuspendButton.Click += new System.EventHandler(this.SuspendButton_Click);
+            this.DebugButton.Location = new System.Drawing.Point(273, 48);
+            this.DebugButton.Name = "DebugButton";
+            this.DebugButton.Size = new System.Drawing.Size(75, 23);
+            this.DebugButton.TabIndex = 2;
+            this.DebugButton.Text = "Debug";
+            this.DebugButton.UseVisualStyleBackColor = true;
+            this.DebugButton.Click += new System.EventHandler(this.DebugButton_Click);
             // 
             // RefreshButton
             // 
@@ -588,7 +588,7 @@
         private System.Windows.Forms.TreeView ProcessesTreeView;
         private System.Windows.Forms.Button AbortButton;
         private System.Windows.Forms.Button ResumeButton;
-        private System.Windows.Forms.Button SuspendButton;
+        private System.Windows.Forms.Button DebugButton;
         private System.Windows.Forms.Button SingleStepButton;
         private System.Windows.Forms.Button StepButton;
         private System.Windows.Forms.Button DestroyButton;

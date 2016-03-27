@@ -167,6 +167,12 @@ namespace Kernel.Hardware.VirtMem
             KernelPages.RemoveRange(vAddrStart, 4096, numPages);
         }
         
+        public void ReplaceKernelPage(uint vAddr, uint newPAddr)
+        {
+            KernelPages[vAddr] = newPAddr;
+            VirtMemManager.Map(newPAddr, vAddr, 0x1000, VirtMemImpl.PageFlags.KernelOnly, UpdateUsedPagesFlags.None);
+        }
+
         public void SwitchFrom(bool ProcessIsUM, MemoryLayout old)
         {
             int unloaded = 0;

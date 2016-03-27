@@ -47,6 +47,7 @@ namespace Kernel.Debug
         /// <summary>
         /// Set to true to terminate the debugger.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         public static bool Terminating = false;
 
         //The compiler complains about this variable only ever being assigned to BUT
@@ -59,12 +60,14 @@ namespace Kernel.Debug
         /// MSBuild complains that this variable is unused (because in the C# code it is only ever assigned to).
         /// However, in reality it is used - in the assembly code for the Int1 and Int3 interrupt routines!
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static bool Enabled = false;
 #pragma warning restore 0414
 
         /// <summary>
         /// The serial port used for sending and receiving synchronous messages to/from the host.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Serial MsgPort;
         /// <summary>
         /// The serial port used for sending asynchronous notifications to the host.
@@ -72,6 +75,7 @@ namespace Kernel.Debug
         /// <remarks>
         /// Send 0xFE to indicate a thread has been suspended that wasn't previously.
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static Serial NotifPort;
 
         /// <summary>
@@ -81,15 +85,18 @@ namespace Kernel.Debug
         /// Set by the kernel task when the debugger is started. Used to prevent the host from suspending the debugger thread (which would result
         /// in total debugger lock-up and potentially irrecoverable system freeze!)
         /// </remarks>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         public static Thread MainThread;
 
         /// <summary>
         /// List of threads (specified as ProcessId:ThreadId) to suspend if they hit a breakpoint.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static UInt64List ThreadsToSuspend = new UInt64List();
         /// <summary>
         /// Dictionary of threads (key specified as ProcessId:ThreadId) and addresses to suspend them at.
         /// </summary>
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static UInt64Dictionary ThreadsToSuspendAtAddresses = new UInt64Dictionary();
 
         /// <summary>
@@ -129,43 +136,44 @@ namespace Kernel.Debug
         [NoGC]
         private static void PauseCurrentThread()
         {
+            // Note: This must be OUTSIDE any exception block.
             Hardware.Interrupts.Interrupts.InsideCriticalHandler = true;
 
             try
             {
 #if DEBUGGER_INTERUPT_TRACE
-                DebugPort.Write("Pause current thread:\n");
+                BasicConsole.Write("Pause current thread:\n");
 
-                DebugPort.Write(" > Current process: ");
-                DebugPort.Write(ProcessManager.CurrentProcess.Name);
-                DebugPort.Write("\n");
+                BasicConsole.Write(" > Current process: ");
+                BasicConsole.Write(ProcessManager.CurrentProcess.Name);
+                BasicConsole.Write("\n");
 
                 FOS_System.String espStr = " > Current ESP : 0x--------\n";
                 ExceptionMethods.FillString((uint)ExceptionMethods.StackPointer, 26, espStr);
-                DebugPort.Write(espStr);
+                BasicConsole.Write(espStr);
                 FOS_System.String ebpStr = " > Current EBP : 0x--------\n";
                 ExceptionMethods.FillString((uint)ExceptionMethods.BasePointer, 26, ebpStr);
-                DebugPort.Write(ebpStr);
+                BasicConsole.Write(ebpStr);
 
-                DebugPort.Write(" > Checking thread is not debugger thread...\n");
+                BasicConsole.Write(" > Checking thread is not debugger thread...\n");
 #endif
                 // Prevent pausing of the debugger thread (which can otherwise result in total system lock-up)
                 if (ProcessManager.CurrentThread != MainThread)
                 {
 #if DEBUGGER_INTERUPT_TRACE
-                    DebugPort.Write(" > Disabling debugger\n");
+                    BasicConsole.Write(" > Disabling debugger\n");
 #endif
                     // Temporarily disable the debugger
                     Enabled = false;
                     
 #if DEBUGGER_INTERUPT_TRACE
-                    DebugPort.Write(" > Calculating process id\n");
+                    BasicConsole.Write(" > Calculating process id\n");
 #endif
                     // Generate a unique identifier for the current process / thread pair.
                     UInt64 ProcessThreadId = (((UInt64)ProcessManager.CurrentProcess.Id) << 32) | ProcessManager.CurrentThread.Id;
                     
 #if DEBUGGER_INTERUPT_TRACE
-                    DebugPort.Write(" > Checking suspended threads list\n");
+                    BasicConsole.Write(" > Checking suspended threads list\n");
 #endif
 
                     bool SuspendAtAddessesContains = ThreadsToSuspendAtAddresses.Contains(ProcessThreadId);
@@ -178,8 +186,8 @@ namespace Kernel.Debug
                     if (ShouldSuspend)
                     {
 #if DEBUGGER_INTERUPT_TRACE
-                        DebugPort.Write(" > Pausing");
-                        PrintCurrentThread();
+                        BasicConsole.Write(" > Pausing");
+                        BasicConsole.WriteLine(ProcessManager.CurrentThread.Name);
 #endif
 
                         if (SuspendAtAddessesContains)
@@ -194,15 +202,15 @@ namespace Kernel.Debug
                         NotifPort.Write(0xFE);
                         
 #if DEBUGGER_INTERUPT_TRACE
-                        DebugPort.Write(" > Doing scheduler update...\n");
+                        BasicConsole.Write(" > Doing scheduler update...\n");
 #endif 
 
                         // Get the scheduler to do an update so we don't return to the same thread
                         Scheduler.UpdateCurrentState();
                         
 #if DEBUGGER_INTERUPT_TRACE
-                        DebugPort.Write(" > New");
-                        PrintCurrentThread();
+                        BasicConsole.Write(" > New");
+                        BasicConsole.WriteLine(ProcessManager.CurrentThread.Name);
 #endif
                     }
                     // If the thread shouldn't be suspended, we might still be single-stepping to a particular address
@@ -213,16 +221,25 @@ namespace Kernel.Debug
                     }
                     
 #if DEBUGGER_INTERUPT_TRACE
-                    DebugPort.Write(" > Enabling debugger\n");
+                    BasicConsole.Write(" > Enabling debugger\n");
 #endif
                     // Re-enable the debugger
                     Enabled = true;
                 }
             }
-            finally
+            catch
             {
-                Hardware.Interrupts.Interrupts.InsideCriticalHandler = false;
+                BasicConsole.WriteLine("Error in Debugger.PauseCurrentThread!");
+                if (ExceptionMethods.CurrentException != null)
+                {
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                }
             }
+            
+            // Note: This must be OUTSIDE any exception block.
+            Hardware.Interrupts.Interrupts.InsideCriticalHandler = false;
+
+            BasicConsole.WriteLine("Debugger > PauseCurrentThread end.");
         }
         
         /// <summary>
@@ -260,7 +277,9 @@ namespace Kernel.Debug
                     line += c;
                     c = (char)MsgPort.Read();
                 }
-                
+
+                BasicConsole.WriteLine("Debugger > Command received: " + line);
+
                 // Echo the command back to the host for verification
                 MsgPort.Write("START OF COMMAND\n");
                 MsgPort.Write(line);
@@ -279,12 +298,15 @@ namespace Kernel.Debug
 
                         if (cmd == "ping")
                         {
+                            BasicConsole.WriteLine("Debugger > Processing `ping` command.");
+
                             MsgPort.Write("pong\n");
                         }
                         else if (cmd == "help")
                         {
                             #region Help
 
+                            BasicConsole.WriteLine("Debugger > Processing `help` command.");
                             MsgPort.Write("Available commands:\n");
                             MsgPort.Write(" - ping\n");
                             MsgPort.Write(" - threads\n");
@@ -303,6 +325,8 @@ namespace Kernel.Debug
                         else if (cmd == "threads")
                         {
                             #region Threads
+
+                            BasicConsole.WriteLine("Debugger > Processing `threads` command.");
 
                             for (int i = 0; i < ProcessManager.Processes.Count; i++)
                             {
@@ -348,7 +372,14 @@ namespace Kernel.Debug
                                             MsgPort.Write("Not Started");
                                             break;
                                         case Thread.ActiveStates.Suspended:
-                                            MsgPort.Write("Suspended");
+                                            if (AThread.Debug_Suspend)
+                                            {
+                                                MsgPort.Write("Debugging");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Suspended");
+                                            }
                                             break;
                                         case Thread.ActiveStates.Terminated:
                                             MsgPort.Write("Terminated");
@@ -366,6 +397,8 @@ namespace Kernel.Debug
                         else if (cmd == "suspend")
                         {
                             #region Suspend
+
+                            BasicConsole.WriteLine("Debugger > Processing `suspend` command.");
 
                             if (lineParts.Count == 3)
                             {
@@ -441,6 +474,8 @@ namespace Kernel.Debug
                         {
                             #region Resume 
 
+                            BasicConsole.WriteLine("Debugger > Processing `resume` command.");
+
                             if (lineParts.Count == 3)
                             {
                                 uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -502,6 +537,8 @@ namespace Kernel.Debug
                         else if (cmd == "step")
                         {
                             #region Step
+
+                            BasicConsole.WriteLine("Debugger > Processing `step` command.");
 
                             if (lineParts.Count == 3)
                             {
@@ -573,6 +610,8 @@ namespace Kernel.Debug
                         {
                             #region Single Step
 
+                            BasicConsole.WriteLine("Debugger > Processing `single step` command.");
+
                             if (lineParts.Count == 3)
                             {
                                 uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -592,14 +631,14 @@ namespace Kernel.Debug
                                             {
                                                 // Set trap flag (int1)
 
-                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                uint OldESP = EnableAccessToThreadStack(TheProcess, AThread);
                                                 try
                                                 {
                                                     AThread.EFLAGSFromInterruptStack |= 0x0100;
                                                 }
                                                 finally
                                                 {
-                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                    DisableAccessToThreadStack(TheProcess, AThread, OldESP);
                                                 }
 
                                                 AThread.Debug_Suspend = false;
@@ -623,14 +662,14 @@ namespace Kernel.Debug
                                             if (TheThread.Debug_Suspend)
                                             {
                                                 // Set trap flag (int1)
-                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                uint OldESP = EnableAccessToThreadStack(TheProcess, TheThread);
                                                 try
                                                 {
                                                     TheThread.EFLAGSFromInterruptStack |= 0x0100;
                                                 }
                                                 finally
                                                 {
-                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                    DisableAccessToThreadStack(TheProcess, TheThread, OldESP);
                                                 }
                                                 TheThread.Debug_Suspend = false;
 
@@ -665,6 +704,8 @@ namespace Kernel.Debug
                         {
                             #region Step To Address
 
+                            BasicConsole.WriteLine("Debugger > Processing `step to address` command.");
+
                             if (lineParts.Count == 4)
                             {
                                 uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -686,14 +727,14 @@ namespace Kernel.Debug
                                                 // Set trap flag (int1)
                                                 UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
                                                 ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
-                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                uint OldESP = EnableAccessToThreadStack(TheProcess, AThread);
                                                 try
                                                 {
                                                     AThread.EFLAGSFromInterruptStack |= 0x0100;
                                                 }
                                                 finally
                                                 {
-                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                    DisableAccessToThreadStack(TheProcess, AThread, OldESP);
                                                 }
                                                 AThread.Debug_Suspend = false;
 
@@ -720,14 +761,14 @@ namespace Kernel.Debug
                                                 // Set trap flag (int1)
                                                 UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
                                                 ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
-                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                uint OldESP = EnableAccessToThreadStack(TheProcess, TheThread);
                                                 try
                                                 {
                                                     TheThread.EFLAGSFromInterruptStack |= 0x0100;
                                                 }
                                                 finally
                                                 {
-                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                    DisableAccessToThreadStack(TheProcess, TheThread, OldESP);
                                                 }
                                                 TheThread.Debug_Suspend = false;
 
@@ -764,6 +805,8 @@ namespace Kernel.Debug
                         {
                             #region Set Breakpoint
 
+                            BasicConsole.WriteLine("Debugger > Processing `set breakpoint` command.");
+
                             if (lineParts.Count == 2)
                             {
                                 uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -785,6 +828,8 @@ namespace Kernel.Debug
                         else if (cmd == "bpc")
                         {
                             #region Clear Breakpoint
+
+                            BasicConsole.WriteLine("Debugger > Processing `clear breakpoint` command.");
 
                             if (lineParts.Count == 2)
                             {
@@ -808,6 +853,8 @@ namespace Kernel.Debug
                         {
                             #region Registers
 
+                            BasicConsole.WriteLine("Debugger > Processing `registers` command.");
+
                             if (lineParts.Count == 3)
                             {
                                 uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
@@ -827,7 +874,7 @@ namespace Kernel.Debug
                                             MsgPort.Write(TheThread.Name);
                                             MsgPort.Write(" : \n");
 
-                                            ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                            uint OldESP = EnableAccessToThreadStack(TheProcess, TheThread);
                                             try
                                             {
                                                 MsgPort.Write(" > EAX : ");
@@ -850,7 +897,7 @@ namespace Kernel.Debug
                                             }
                                             finally
                                             {
-                                                ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                DisableAccessToThreadStack(TheProcess, TheThread, OldESP);
                                             }
                                         }
                                         else
@@ -879,54 +926,69 @@ namespace Kernel.Debug
                         {
                             #region Memory
 
+                            BasicConsole.WriteLine("Debugger > Processing `memory` command.");
+
                             if (lineParts.Count == 5)
                             {
                                 uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
-                                if (TheProcess != null && false)
+                                if (TheProcess != null)
                                 {
-                                    uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[2], 0);
-                                    int length = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[3]);
+                                    uint OldVAddr = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[2], 0);
+                                    int FullLength = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[3]);
                                     int units = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[4]);
 
                                     MsgPort.Write(" Memory from ");
-                                    MsgPort.Write(Address);
+                                    MsgPort.Write(OldVAddr);
                                     MsgPort.Write(" for ");
-                                    MsgPort.Write(length);
+                                    MsgPort.Write(FullLength);
                                     MsgPort.Write(" units with ");
                                     MsgPort.Write(units);
                                     MsgPort.Write(" bytes/unit:\n");
-
-                                    ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
                                     try
                                     {
-                                        if (units == 1)
+                                        // Loop logic makes sure we remap if/when we cross a page boundary
+                                        int PartialLength = 0;
+                                        while (PartialLength < FullLength)
                                         {
-                                            byte* AddrPtr = (byte*)Address;
-                                            for (int i = 0; i < length; i++)
+                                            uint OldPAddr = TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000);
+                                            uint NewVAddr = (uint)ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*)OldPAddr);
+                                            uint PageOffset = OldVAddr & 0x00000FFF;
+                                            uint Address = NewVAddr + PageOffset;
+
+                                            int MaxFullLength = FullLength - PartialLength;
+                                            int MaxPageLength = (int)(0x1000 - PageOffset);
+                                            int length = MaxPageLength > MaxFullLength ? MaxFullLength : MaxPageLength;
+                                            PartialLength += length;
+                                            
+                                            if (units == 1)
                                             {
-                                                MsgPort.Write((FOS_System.String)AddrPtr[i]);
-                                                MsgPort.Write(" ");
+                                                byte* AddrPtr = (byte*)Address;
+                                                for (int i = 0; i < length; i++)
+                                                {
+                                                    MsgPort.Write((FOS_System.String)AddrPtr[i]);
+                                                    MsgPort.Write(" ");
+                                                }
                                             }
-                                        }
-                                        else if (units == 2)
-                                        {
-                                            ushort* AddrPtr = (ushort*)Address;
-                                            for (int i = 0; i < length; i++)
+                                            else if (units == 2)
                                             {
-                                                MsgPort.Write((FOS_System.String)AddrPtr[i]);
-                                                MsgPort.Write(" ");
+                                                ushort* AddrPtr = (ushort*)Address;
+                                                for (int i = 0; i < length; i++)
+                                                {
+                                                    MsgPort.Write((FOS_System.String)AddrPtr[i]);
+                                                    MsgPort.Write(" ");
+                                                }
                                             }
-                                        }
-                                        else if (units == 4)
-                                        {
-                                            uint* AddrPtr = (uint*)Address;
-                                            for (int i = 0; i < length; i++)
+                                            else if (units == 4)
                                             {
-                                                MsgPort.Write((FOS_System.String)AddrPtr[i]);
-                                                MsgPort.Write(" ");
+                                                uint* AddrPtr = (uint*)Address;
+                                                for (int i = 0; i < length; i++)
+                                                {
+                                                    MsgPort.Write((FOS_System.String)AddrPtr[i]);
+                                                    MsgPort.Write(" ");
+                                                }
                                             }
                                         }
                                     }
@@ -977,6 +1039,22 @@ namespace Kernel.Debug
                     MsgPort.Write("END OF COMMAND\n");
                 }
             }
-        }        
+        }
+
+        private static uint EnableAccessToThreadStack(Process TheProcess, Thread AThread)
+        {
+            uint OldESP = AThread.State->ESP;
+            uint OldThreadStackBottomVAddr = (uint)(AThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+            uint OldThreadStackBottomPAddr = TheProcess.TheMemoryLayout.GetPhysicalAddress(OldThreadStackBottomVAddr);
+            uint NewThreadStackBottomVAddr = (uint)ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*)OldThreadStackBottomPAddr);
+            uint NewESP = (OldESP - OldThreadStackBottomVAddr) + NewThreadStackBottomVAddr;
+            AThread.State->ESP = NewESP;
+            return OldESP;
+        }
+        private static void DisableAccessToThreadStack(Process TheProcess, Thread AThread, uint OldESP)
+        {
+            AThread.State->ESP = OldESP;
+            ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+        }
     }
 }

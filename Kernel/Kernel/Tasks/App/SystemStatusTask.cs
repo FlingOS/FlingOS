@@ -86,7 +86,14 @@ namespace Kernel.Tasks.App
                 catch
                 {
                     BasicConsole.WriteLine("System Status > Error executing!");
-                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    if (ExceptionMethods.CurrentException != null)
+                    {
+                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    }
+                    else
+                    {
+                        BasicConsole.WriteLine("Error is null!");
+                    }
                 }
 
                 BasicConsole.WriteLine("System Status > Execution complete.");

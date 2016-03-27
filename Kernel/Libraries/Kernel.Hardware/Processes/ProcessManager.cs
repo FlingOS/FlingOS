@@ -663,37 +663,23 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public static void EnableDebuggerAccessToProcessMemory(Process TargetProcess)
+
+        private static void* ShadowPageVAddr = (void*)0xFFFFFFFF;
+        private static void* ShadowPagePAddr = (void*)0xFFFFFFFF;
+        public static void* EnableDebuggerAccessToProcessMemory(Process TargetProcess, void* PageToShadowPAddr)
         {
-            //TODO: Debugger (kernel) shadow page method
-//            if (DebuggerProcess != null && DebuggerProcess != TargetProcess)
-//            {
-//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
-//                BasicConsole.WriteLine("~E~");
-//#endif
-
-//                DebuggerProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout, false);
-
-//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
-//                BasicConsole.WriteLine("¬E¬");
-//#endif
-//            }
+            if (ShadowPageVAddr == (void*)0xFFFFFFFF)
+            {
+                ShadowPageVAddr = VirtMemManager.MapFreePageForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ShadowPagePAddr);
+                KernelProcess.TheMemoryLayout.AddKernelPage((uint)ShadowPagePAddr, (uint)ShadowPageVAddr);
+            }
+            
+            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint)ShadowPageVAddr, (uint)PageToShadowPAddr);
+            return ShadowPageVAddr;
         }
         public static void DisableDebuggerAccessToProcessMemory(Process TargetProcess)
         {
-            //TODO: Debugger (kernel) shadow page method - see enable
-//            if (DebuggerProcess != null && DebuggerProcess != TargetProcess)
-//            {
-//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
-//                BasicConsole.WriteLine("~D~");
-//#endif
-
-//                DebuggerProcess.TheMemoryLayout.Unmerge(TargetProcess.TheMemoryLayout);
-
-//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
-//                BasicConsole.WriteLine("¬D¬");
-//#endif
-//            }
+            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint)ShadowPageVAddr, (uint)ShadowPagePAddr);
         }
     }
 }
