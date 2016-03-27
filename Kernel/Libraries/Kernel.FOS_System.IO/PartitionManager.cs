@@ -127,18 +127,21 @@ namespace Kernel.FOS_System.IO
             byte[] MBRData = new byte[512];
             TheDisk.ReadBlock(0UL, 1U, MBRData);
 #if PM_TRACE
-                        BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
+            BasicConsole.WriteLine("Read potential MBR data. Attempting to init MBR...");
 #endif
             MBR TheMBR = new MBR(MBRData);
 
             if (!TheMBR.IsValid)
             {
+#if PM_TRACE
+                BasicConsole.WriteLine("Not a valid MBR.");
+#endif
                 return false;
             }
             else
             {
 #if PM_TRACE
-                            BasicConsole.WriteLine("Valid MBR found.");
+                BasicConsole.WriteLine("Valid MBR found.");
 #endif
                 ProcessMBR(TheMBR, TheDisk);
 

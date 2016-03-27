@@ -116,12 +116,17 @@ namespace Kernel.Shells
                         console.Write("Name: ");
                         console.WriteLine(ADevice.Name);
                         console.Write("Info: ");
+                        bool PrintedOne = false;
                         for (int j = 0; j < ADevice.Info.Length; j++)
                         {
-                            console.Write(ADevice.Info[j]);
-                            if (j < ADevice.Info.Length - 1)
+                            if (ADevice.Info[j] != 0xFFFFFFFF)
                             {
-                                console.Write(", ");
+                                if (PrintedOne)
+                                {
+                                    console.Write(", ");
+                                }
+                                console.Write(ADevice.Info[j]);
+                                PrintedOne = true;
                             }
                         }
                         console.WriteLine();

@@ -1172,7 +1172,53 @@ namespace Kernel.Tasks
 #if DFSC_TRACE
                     BasicConsole.WriteLine("DFSC: Stat FS");
 #endif
-                    //TODO:
+                    // Param 1 : Count
+                    // Param 2 : Char[][]
+
+                    int Count = (int)Param1;
+                    if (Count == 0)
+                    {
+                        for (int i = 0; i < FileSystemManagers.Count; i++)
+                        {
+                            FileSystemManagerInfo fsmi = (FileSystemManagerInfo)FileSystemManagers[i];
+                            if (fsmi.MappingPrefixes != null)
+                            {
+                                Count += fsmi.MappingPrefixes.Length;
+                            }
+                        }
+                        Return2 = (uint)Count;
+                    }
+                    else
+                    {
+                        char* ResultPtr = (char*)Param2;
+
+                        ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+
+                        int ActualCount = 0;
+                        for (int i = 0; i < FileSystemManagers.Count && ActualCount < Count; i++)
+                        {
+                            FileSystemManagerInfo fsmi = (FileSystemManagerInfo)FileSystemManagers[i];
+                            if (fsmi.MappingPrefixes != null)
+                            {
+                                for (int j = 0; j < fsmi.MappingPrefixes.Length && ActualCount < Count; j++, ActualCount++)
+                                {
+                                    char* MappingResultPtr = ResultPtr + (ActualCount * 10);
+                                    FOS_System.String mapping = fsmi.MappingPrefixes[j];
+                                    for (int k = 0; k < 10; k++)
+                                    {
+                                        MappingResultPtr[k] = k < mapping.length ? mapping[k] : '\0';
+                                    }
+                                }
+                            }
+                        }
+
+                        Return2 = (uint)ActualCount;
+
+                        ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+                    }
+
+                    result = SystemCallResults.OK;
+
                     #endregion
                     break;
                 default:

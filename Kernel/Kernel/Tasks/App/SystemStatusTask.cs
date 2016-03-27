@@ -80,6 +80,43 @@ namespace Kernel.Tasks.App
                             console.WriteLine("Could not get number of processes!");
                         }
 
+
+                        int FSCount;
+                        if (SystemCalls.StatFS(out FSCount) == SystemCallResults.OK)
+                        {
+                            console.WriteLine("Number of file systems: " + FOS_System.Int32.ToDecimalString(FSCount));
+
+                            if (FSCount > 0)
+                            {
+                                unsafe
+                                {
+                                    char* MappingsPtr = (char*)FOS_System.Heap.AllocZeroed((uint)(sizeof(char) * FSCount * 10), "System Status Task : Main : Mappings");
+                                    if (SystemCalls.StatFS(ref FSCount, MappingsPtr) == SystemCallResults.OK)
+                                    {
+                                        String[] Mappings = new String[FSCount];
+                                        for (int i = 0; i < FSCount; i++)
+                                        {
+                                            Mappings[i] = ByteConverter.GetASCIIStringFromUTF16((byte*)MappingsPtr, (uint)(i * 10 * sizeof(char)), 10);
+                                            console.Write(Mappings[i]);
+                                            if (i < FSCount - 1)
+                                            {
+                                                console.Write(", ");
+                                            }
+                                        }
+                                        console.WriteLine();
+                                    }
+                                    else
+                                    {
+                                        console.WriteLine("Could not get file system mappings!");
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            console.WriteLine("Could not get number of file systems!");
+                        }
+
                         SystemCalls.SleepThread(10000);
                     }
                 }
