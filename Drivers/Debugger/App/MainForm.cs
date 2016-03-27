@@ -1184,13 +1184,17 @@ namespace Drivers.Debugger.App
                     ValueStr = "Null";
                 }
             }
-            else if (Value.Length > 0)
+            else if (Value != null && Value.Length > 0)
             {
                 for (int i = 0; i < Value.Length; i++)
                 {
                     ValueStr = Value[i].ToString("X2") + ValueStr;
                 }
                 ValueStr = "0x" + ValueStr;
+            }
+            else
+            {
+                ValueStr = "[NULL]";
             }
 
             TreeNode NewNode = new TreeNode((!string.IsNullOrEmpty(ValueStr) ? ValueStr + " : " : "") + (!string.IsNullOrWhiteSpace(Name) ? Name : "") + (Temporary ? " : Temp" : (Info != null ? " : " + Info.ID : "")));

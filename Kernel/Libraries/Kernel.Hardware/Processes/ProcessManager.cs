@@ -662,5 +662,38 @@ namespace Kernel.Hardware.Processes
 #endif
             }
         }
+
+        public static void EnableDebuggerAccessToProcessMemory(Process TargetProcess)
+        {
+            //TODO: Debugger (kernel) shadow page method
+//            if (DebuggerProcess != null && DebuggerProcess != TargetProcess)
+//            {
+//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+//                BasicConsole.WriteLine("~E~");
+//#endif
+
+//                DebuggerProcess.TheMemoryLayout.Merge(TargetProcess.TheMemoryLayout, false);
+
+//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+//                BasicConsole.WriteLine("¬E¬");
+//#endif
+//            }
+        }
+        public static void DisableDebuggerAccessToProcessMemory(Process TargetProcess)
+        {
+            //TODO: Debugger (kernel) shadow page method - see enable
+//            if (DebuggerProcess != null && DebuggerProcess != TargetProcess)
+//            {
+//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+//                BasicConsole.WriteLine("~D~");
+//#endif
+
+//                DebuggerProcess.TheMemoryLayout.Unmerge(TargetProcess.TheMemoryLayout);
+
+//#if PROCESSMANAGER_KERNEL_ACCESS_TRACE
+//                BasicConsole.WriteLine("¬D¬");
+//#endif
+//            }
+        }
     }
 }

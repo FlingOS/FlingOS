@@ -268,649 +268,714 @@ namespace Kernel.Debug
 
                 // Filter the line
                 line = line.Trim().ToLower();
-                
-                // Split it up into relevant parts
-                List lineParts = line.Split(' ');
-                if (lineParts.Count > 0)
+
+                try
                 {
-                    FOS_System.String cmd = (FOS_System.String)lineParts[0];
-
-                    if (cmd == "ping")
+                    // Split it up into relevant parts
+                    List lineParts = line.Split(' ');
+                    if (lineParts.Count > 0)
                     {
-                        MsgPort.Write("pong\n");
-                    }
-                    else if (cmd == "help")
-                    {
-                        #region Help
+                        FOS_System.String cmd = (FOS_System.String)lineParts[0];
 
-                        MsgPort.Write("Available commands:\n");
-                        MsgPort.Write(" - ping\n");
-                        MsgPort.Write(" - threads\n");
-                        MsgPort.Write(" - suspend (processId) (threadId | -1 for all threads)\n");
-                        MsgPort.Write(" - resume (processId) (threadId | -1 for all threads)\n");
-                        MsgPort.Write(" - step (processId) (threadId | -1 for all threads)\n");
-                        MsgPort.Write(" - ss (processId) (threadId | -1 for all threads)\n");
-                        MsgPort.Write(" - sta (processId) (threadId | -1 for all threads) (address)\n");
-                        MsgPort.Write(" - bps (address:hex)\n");
-                        MsgPort.Write(" - bpc (address:hex)\n");
-                        MsgPort.Write(" - regs (processId) (threadId)\n");
-                        MsgPort.Write(" - memory (processId) (address:hex) (length) (units:1,2,4)\n");
-
-                        #endregion
-                    }
-                    else if (cmd == "threads")
-                    {
-                        #region Threads
-
-                        for (int i = 0; i < ProcessManager.Processes.Count; i++)
+                        if (cmd == "ping")
                         {
-                            Process AProcess = (Process)ProcessManager.Processes[i];
-                            MsgPort.Write(" - Process : ");
-                            MsgPort.Write((FOS_System.String)AProcess.Id);
-                            MsgPort.Write(" : ");
-                            MsgPort.Write(AProcess.Name);
-                            MsgPort.Write(" : ");
-                            switch (AProcess.Priority)
-                            {
-                                case Scheduler.Priority.ZeroTimed:
-                                    MsgPort.Write("Zero Timed");
-                                    break;
-                                case Scheduler.Priority.Low:
-                                    MsgPort.Write("Low");
-                                    break;
-                                case Scheduler.Priority.Normal:
-                                    MsgPort.Write("Normal");
-                                    break;
-                                case Scheduler.Priority.High:
-                                    MsgPort.Write("High");
-                                    break;
-                            }
-                            MsgPort.Write("\n");
-                            for (int j = 0; j < AProcess.Threads.Count; j++)
-                            {
-                                Thread AThread = (Thread)AProcess.Threads[j];
+                            MsgPort.Write("pong\n");
+                        }
+                        else if (cmd == "help")
+                        {
+                            #region Help
 
-                                MsgPort.Write("      - Thread : ");
-                                MsgPort.Write((FOS_System.String)AThread.Id);
+                            MsgPort.Write("Available commands:\n");
+                            MsgPort.Write(" - ping\n");
+                            MsgPort.Write(" - threads\n");
+                            MsgPort.Write(" - suspend (processId) (threadId | -1 for all threads)\n");
+                            MsgPort.Write(" - resume (processId) (threadId | -1 for all threads)\n");
+                            MsgPort.Write(" - step (processId) (threadId | -1 for all threads)\n");
+                            MsgPort.Write(" - ss (processId) (threadId | -1 for all threads)\n");
+                            MsgPort.Write(" - sta (processId) (threadId | -1 for all threads) (address)\n");
+                            MsgPort.Write(" - bps (address:hex)\n");
+                            MsgPort.Write(" - bpc (address:hex)\n");
+                            MsgPort.Write(" - regs (processId) (threadId)\n");
+                            MsgPort.Write(" - memory (processId) (address:hex) (length) (units:1,2,4)\n");
+
+                            #endregion
+                        }
+                        else if (cmd == "threads")
+                        {
+                            #region Threads
+
+                            for (int i = 0; i < ProcessManager.Processes.Count; i++)
+                            {
+                                Process AProcess = (Process)ProcessManager.Processes[i];
+                                MsgPort.Write(" - Process : ");
+                                MsgPort.Write((FOS_System.String)AProcess.Id);
                                 MsgPort.Write(" : ");
-
-                                switch (AThread.ActiveState)
+                                MsgPort.Write(AProcess.Name);
+                                MsgPort.Write(" : ");
+                                switch (AProcess.Priority)
                                 {
-                                    case Thread.ActiveStates.Active:
-                                        MsgPort.Write("Active");
+                                    case Scheduler.Priority.ZeroTimed:
+                                        MsgPort.Write("Zero Timed");
                                         break;
-                                    case Thread.ActiveStates.Inactive:
-                                        MsgPort.Write("Inactive");
+                                    case Scheduler.Priority.Low:
+                                        MsgPort.Write("Low");
                                         break;
-                                    case Thread.ActiveStates.NotStarted:
-                                        MsgPort.Write("Not Started");
+                                    case Scheduler.Priority.Normal:
+                                        MsgPort.Write("Normal");
                                         break;
-                                    case Thread.ActiveStates.Suspended:
-                                        MsgPort.Write("Suspended");
-                                        break;
-                                    case Thread.ActiveStates.Terminated:
-                                        MsgPort.Write("Terminated");
+                                    case Scheduler.Priority.High:
+                                        MsgPort.Write("High");
                                         break;
                                 }
-
-                                MsgPort.Write(" : ");
-                                MsgPort.Write(AThread.Name);
                                 MsgPort.Write("\n");
-                            }
-                        }
-
-                        #endregion
-                    }
-                    else if (cmd == "suspend")
-                    {
-                        #region Suspend
-
-                        if (lineParts.Count == 3)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
-
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null)
-                            {
-                                if (ThreadId == -1)
+                                for (int j = 0; j < AProcess.Threads.Count; j++)
                                 {
-                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                    Thread AThread = (Thread)AProcess.Threads[j];
+
+                                    MsgPort.Write("      - Thread : ");
+                                    MsgPort.Write((FOS_System.String)AThread.Id);
+                                    MsgPort.Write(" : ");
+
+                                    switch (AThread.ActiveState)
                                     {
-                                        Thread AThread = ((Thread)TheProcess.Threads[i]);
+                                        case Thread.ActiveStates.Active:
+                                            MsgPort.Write("Active");
+                                            break;
+                                        case Thread.ActiveStates.Inactive:
+                                            MsgPort.Write("Inactive");
+                                            break;
+                                        case Thread.ActiveStates.NotStarted:
+                                            MsgPort.Write("Not Started");
+                                            break;
+                                        case Thread.ActiveStates.Suspended:
+                                            MsgPort.Write("Suspended");
+                                            break;
+                                        case Thread.ActiveStates.Terminated:
+                                            MsgPort.Write("Terminated");
+                                            break;
+                                    }
 
-                                        if (AThread != MainThread)
+                                    MsgPort.Write(" : ");
+                                    MsgPort.Write(AThread.Name);
+                                    MsgPort.Write("\n");
+                                }
+                            }
+
+                            #endregion
+                        }
+                        else if (cmd == "suspend")
+                        {
+                            #region Suspend
+
+                            if (lineParts.Count == 3)
+                            {
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                                int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
+
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                                if (TheProcess != null)
+                                {
+                                    if (ThreadId == -1)
+                                    {
+                                        for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | AThread.Id;
-                                            if (ThreadsToSuspend.IndexOf(ProcessThreadId) == -1)
+                                            Thread AThread = ((Thread)TheProcess.Threads[i]);
+
+                                            if (AThread != MainThread)
                                             {
-                                                ThreadsToSuspend.Add(ProcessThreadId);
+                                                UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | AThread.Id;
+                                                if (ThreadsToSuspend.IndexOf(ProcessThreadId) == -1)
+                                                {
+                                                    ThreadsToSuspend.Add(ProcessThreadId);
+                                                }
+
+                                                AThread.Debug_Suspend = true;
+
+                                                MsgPort.Write(" > Suspended ");
+                                                MsgPort.Write(AThread.Name);
+                                                MsgPort.Write(" thread\n");
                                             }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
+                                        if (ThreadsToSuspend.IndexOf(ProcessThreadId) == -1)
+                                        {
+                                            ThreadsToSuspend.Add(ProcessThreadId);
+                                        }
 
-                                            AThread.Debug_Suspend = true;
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
-                                            MsgPort.Write(" > Suspended ");
-                                            MsgPort.Write(AThread.Name);
-                                            MsgPort.Write(" thread\n");
+                                        if (TheThread != null)
+                                        {
+                                            if (TheThread != MainThread)
+                                            {
+                                                TheThread.Debug_Suspend = true;
+
+                                                MsgPort.Write(" > Suspended ");
+                                                MsgPort.Write(TheThread.Name);
+                                                MsgPort.Write(" thread\n");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MsgPort.Write("Thread not found.\n");
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
-                                    if (ThreadsToSuspend.IndexOf(ProcessThreadId) == -1)
-                                    {
-                                        ThreadsToSuspend.Add(ProcessThreadId);
-                                    }
+                                    MsgPort.Write("Process not found.\n");
+                                }
+                            }
+                            else
+                            {
+                                MsgPort.Write("Incorrect arguments, see help.\n");
+                            }
 
-                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+                            #endregion
+                        }
+                        else if (cmd == "resume")
+                        {
+                            #region Resume 
 
-                                    if (TheThread != null)
+                            if (lineParts.Count == 3)
+                            {
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                                int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
+
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                                if (TheProcess != null)
+                                {
+                                    if (ThreadId == -1)
                                     {
-                                        if (TheThread != MainThread)
+                                        for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            TheThread.Debug_Suspend = true;
+                                            Thread AThread = ((Thread)TheProcess.Threads[i]);
 
-                                            MsgPort.Write(" > Suspended ");
-                                            MsgPort.Write(TheThread.Name);
+                                            UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | AThread.Id;
+                                            ThreadsToSuspend.Remove(ProcessThreadId);
+
+                                            AThread.Debug_Suspend = false;
+
+                                            MsgPort.Write(" > Resumed ");
+                                            MsgPort.Write(AThread.Name);
                                             MsgPort.Write(" thread\n");
                                         }
                                     }
                                     else
                                     {
-                                        MsgPort.Write("Thread not found.\n");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                MsgPort.Write("Process not found.\n");
-                            }
-                        }
-                        else
-                        {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
-
-                        #endregion
-                    }
-                    else if (cmd == "resume")
-                    {
-                        #region Resume 
-
-                        if (lineParts.Count == 3)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
-
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null)
-                            {
-                                if (ThreadId == -1)
-                                {
-                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
-                                    {
-                                        Thread AThread = ((Thread)TheProcess.Threads[i]);
-
-                                        UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | AThread.Id;
+                                        UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
                                         ThreadsToSuspend.Remove(ProcessThreadId);
 
-                                        AThread.Debug_Suspend = false;
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
-                                        MsgPort.Write(" > Resumed ");
-                                        MsgPort.Write(AThread.Name);
-                                        MsgPort.Write(" thread\n");
-                                    }
-                                }
-                                else
-                                {
-                                    UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
-                                    ThreadsToSuspend.Remove(ProcessThreadId);
-
-                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
-
-                                    if (TheThread != null)
-                                    {
-                                        TheThread.Debug_Suspend = false;
-
-                                        MsgPort.Write(" > Resumed ");
-                                        MsgPort.Write(TheThread.Name);
-                                        MsgPort.Write(" thread\n");
-                                    }
-                                    else
-                                    {
-                                        MsgPort.Write("Thread not found.\n");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                MsgPort.Write("Process not found.\n");
-                            }
-                        }
-                        else
-                        {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
-
-                        #endregion
-                    }
-                    else if (cmd == "step")
-                    {
-                        #region Step
-
-                        if (lineParts.Count == 3)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
-
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null)
-                            {
-                                if (ThreadId == -1)
-                                {
-                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
-                                    {
-                                        Thread AThread = ((Thread)TheProcess.Threads[i]);
-
-                                        if (AThread.Debug_Suspend)
-                                        {
-                                            AThread.Debug_Suspend = false;
-
-                                            MsgPort.Write(" > Stepping ");
-                                            MsgPort.Write(AThread.Name);
-                                            MsgPort.Write(" thread\n");
-                                        }
-                                        else
-                                        {
-                                            MsgPort.Write("Thread must be suspended first.\n");
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
-
-                                    if (TheThread != null)
-                                    {
-                                        if (TheThread.Debug_Suspend)
+                                        if (TheThread != null)
                                         {
                                             TheThread.Debug_Suspend = false;
 
-                                            MsgPort.Write(" > Stepping ");
+                                            MsgPort.Write(" > Resumed ");
                                             MsgPort.Write(TheThread.Name);
                                             MsgPort.Write(" thread\n");
                                         }
                                         else
                                         {
-                                            MsgPort.Write("Thread must be suspended first.\n");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        MsgPort.Write("Thread not found.\n");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                MsgPort.Write("Process not found.\n");
-                            }
-                        }
-                        else
-                        {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
-
-                        #endregion
-                    }
-                    else if (cmd == "ss")
-                    {
-                        #region Single Step
-
-                        if (lineParts.Count == 3)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
-
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null)
-                            {
-                                if (ThreadId == -1)
-                                {
-                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
-                                    {
-                                        Thread AThread = ((Thread)TheProcess.Threads[i]);
-
-                                        if (AThread.Debug_Suspend)
-                                        {
-                                            // Set trap flag (int1)
-                                            AThread.EFLAGSFromInterruptStack |= 0x0100;
-                                            AThread.Debug_Suspend = false;
-
-                                            MsgPort.Write(" > Single stepping ");
-                                            MsgPort.Write(AThread.Name);
-                                            MsgPort.Write(" thread\n");
-                                        }
-                                        else
-                                        {
-                                            MsgPort.Write("Thread must be suspended first.\n");
+                                            MsgPort.Write("Thread not found.\n");
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
-
-                                    if (TheThread != null)
-                                    {
-                                        if (TheThread.Debug_Suspend)
-                                        {
-                                            // Set trap flag (int1)
-                                            TheThread.EFLAGSFromInterruptStack |= 0x0100;
-                                            TheThread.Debug_Suspend = false;
-
-                                            MsgPort.Write(" > Single stepping ");
-                                            MsgPort.Write(TheThread.Name);
-                                            MsgPort.Write(" thread\n");
-                                        }
-                                        else
-                                        {
-                                            MsgPort.Write("Thread must be suspended first.\n");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        MsgPort.Write("Thread not found.\n");
-                                    }
+                                    MsgPort.Write("Process not found.\n");
                                 }
                             }
                             else
                             {
-                                MsgPort.Write("Process not found.\n");
+                                MsgPort.Write("Incorrect arguments, see help.\n");
                             }
+
+                            #endregion
                         }
-                        else
+                        else if (cmd == "step")
                         {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
+                            #region Step
 
-                        #endregion
-                    }
-                    else if (cmd == "sta")
-                    {
-                        #region Step To Address
-
-                        if (lineParts.Count == 4)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
-                            uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[3], 0);
-
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null)
+                            if (lineParts.Count == 3)
                             {
-                                if (ThreadId == -1)
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                                int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
+
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                                if (TheProcess != null)
                                 {
-                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                    if (ThreadId == -1)
                                     {
-                                        Thread AThread = ((Thread)TheProcess.Threads[i]);
-
-                                        if (AThread.Debug_Suspend)
+                                        for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            // Set trap flag (int1)
-                                            UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
-                                            ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
-                                            AThread.EFLAGSFromInterruptStack |= 0x0100;
-                                            AThread.Debug_Suspend = false;
+                                            Thread AThread = ((Thread)TheProcess.Threads[i]);
 
-                                            MsgPort.Write(" > Single stepping ");
-                                            MsgPort.Write(AThread.Name);
-                                            MsgPort.Write(" thread to address ");
-                                            MsgPort.Write(Address);
-                                            MsgPort.Write("\n");
+                                            if (AThread.Debug_Suspend)
+                                            {
+                                                AThread.Debug_Suspend = false;
+
+                                                MsgPort.Write(" > Stepping ");
+                                                MsgPort.Write(AThread.Name);
+                                                MsgPort.Write(" thread\n");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Thread must be suspended first.\n");
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+
+                                        if (TheThread != null)
+                                        {
+                                            if (TheThread.Debug_Suspend)
+                                            {
+                                                TheThread.Debug_Suspend = false;
+
+                                                MsgPort.Write(" > Stepping ");
+                                                MsgPort.Write(TheThread.Name);
+                                                MsgPort.Write(" thread\n");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Thread must be suspended first.\n");
+                                            }
                                         }
                                         else
                                         {
-                                            MsgPort.Write("Thread must be suspended first.\n");
+                                            MsgPort.Write("Thread not found.\n");
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
-
-                                    if (TheThread != null)
-                                    {
-                                        if (TheThread.Debug_Suspend)
-                                        {
-                                            // Set trap flag (int1)
-                                            UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
-                                            ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
-                                            TheThread.EFLAGSFromInterruptStack |= 0x0100;
-                                            TheThread.Debug_Suspend = false;
-
-                                            MsgPort.Write(" > Single stepping ");
-                                            MsgPort.Write(TheThread.Name);
-                                            MsgPort.Write(" thread to address ");
-                                            MsgPort.Write(Address);
-                                            MsgPort.Write("\n");
-                                        }
-                                        else
-                                        {
-                                            MsgPort.Write("Thread must be suspended first.\n");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        MsgPort.Write("Thread not found.\n");
-                                    }
+                                    MsgPort.Write("Process not found.\n");
                                 }
                             }
                             else
                             {
-                                MsgPort.Write("Process not found.\n");
+                                MsgPort.Write("Incorrect arguments, see help.\n");
                             }
+
+                            #endregion
                         }
-                        else
+                        else if (cmd == "ss")
                         {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
+                            #region Single Step
 
-                        #endregion
-                    }
-                    else if (cmd == "bps")
-                    {
-                        #region Set Breakpoint
-
-                        if (lineParts.Count == 2)
-                        {
-                            uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            
-                            MsgPort.Write(" > Breakpoint to be set at ");
-                            MsgPort.Write(Address);
-                            MsgPort.Write("\n");
-                            
-                            *((byte*)Address) = 0xCC;
-                        }
-                        else
-                        {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
-
-                        #endregion
-                    }
-                    else if (cmd == "bpc")
-                    {
-                        #region Clear Breakpoint
-
-                        if (lineParts.Count == 2)
-                        {
-                            uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
-
-                            MsgPort.Write(" > Breakpoint to be cleared at ");
-                            MsgPort.Write(Address);
-                            MsgPort.Write("\n");
-
-                            *((byte*)Address) = 0x90;
-                        }
-                        else
-                        {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
-
-                        #endregion
-                    }
-                    else if (cmd == "regs")
-                    {
-                        #region Registers
-
-                        if (lineParts.Count == 3)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            uint ThreadId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[2], 0);
-
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null)
+                            if (lineParts.Count == 3)
                             {
-                                Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                                int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
 
-                                if (TheThread != null)
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                                if (TheProcess != null)
                                 {
-                                    if (TheThread.Debug_Suspend)
+                                    if (ThreadId == -1)
                                     {
-                                        MsgPort.Write("Registers of ");
-                                        MsgPort.Write(TheThread.Name);
-                                        MsgPort.Write(" : \n");
+                                        for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                        {
+                                            Thread AThread = ((Thread)TheProcess.Threads[i]);
 
-                                        MsgPort.Write(" > EAX : ");
-                                        MsgPort.Write(TheThread.EAXFromInterruptStack);
-                                        MsgPort.Write("\n > EBX : ");
-                                        MsgPort.Write(TheThread.EBXFromInterruptStack);
-                                        MsgPort.Write("\n > ECX : ");
-                                        MsgPort.Write(TheThread.ECXFromInterruptStack);
-                                        MsgPort.Write("\n > EDX : ");
-                                        MsgPort.Write(TheThread.EDXFromInterruptStack);
-                                        MsgPort.Write("\n");
+                                            if (AThread.Debug_Suspend)
+                                            {
+                                                // Set trap flag (int1)
 
-                                        MsgPort.Write("\n > ESP : ");
-                                        MsgPort.Write(TheThread.ESPFromInterruptStack);
-                                        MsgPort.Write("\n > EBP : ");
-                                        MsgPort.Write(TheThread.EBPFromInterruptStack);
-                                        MsgPort.Write("\n > EIP : ");
-                                        MsgPort.Write(TheThread.EIPFromInterruptStack);
-                                        MsgPort.Write("\n");
+                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                try
+                                                {
+                                                    AThread.EFLAGSFromInterruptStack |= 0x0100;
+                                                }
+                                                finally
+                                                {
+                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                }
+
+                                                AThread.Debug_Suspend = false;
+
+                                                MsgPort.Write(" > Single stepping ");
+                                                MsgPort.Write(AThread.Name);
+                                                MsgPort.Write(" thread\n");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Thread must be suspended first.\n");
+                                            }
+                                        }
                                     }
                                     else
                                     {
-                                        MsgPort.Write("Thread must be suspended first.\n");
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+
+                                        if (TheThread != null)
+                                        {
+                                            if (TheThread.Debug_Suspend)
+                                            {
+                                                // Set trap flag (int1)
+                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                try
+                                                {
+                                                    TheThread.EFLAGSFromInterruptStack |= 0x0100;
+                                                }
+                                                finally
+                                                {
+                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                }
+                                                TheThread.Debug_Suspend = false;
+
+                                                MsgPort.Write(" > Single stepping ");
+                                                MsgPort.Write(TheThread.Name);
+                                                MsgPort.Write(" thread\n");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Thread must be suspended first.\n");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MsgPort.Write("Thread not found.\n");
+                                        }
                                     }
                                 }
                                 else
                                 {
-                                    MsgPort.Write("Thread not found.\n");
+                                    MsgPort.Write("Process not found.\n");
                                 }
                             }
                             else
                             {
-                                MsgPort.Write("Process not found.\n");
+                                MsgPort.Write("Incorrect arguments, see help.\n");
                             }
+
+                            #endregion
                         }
-                        else
+                        else if (cmd == "sta")
                         {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
-                        }
+                            #region Step To Address
 
-                        #endregion
-                    }
-                    else if (cmd == "mem")
-                    {
-                        #region Memory
-
-                        if (lineParts.Count == 5)
-                        {
-                            uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
-                            
-                            Process TheProcess = ProcessManager.GetProcessById(ProcessId);
-
-                            if (TheProcess != null && false)
+                            if (lineParts.Count == 4)
                             {
-                                // Need access to specified process' memory
-                                //TODO: Debugger needs special access to another process' memory
-                                //MemoryLayout OriginalMemoryLayout = SystemCallsHelpers.EnableAccessToMemoryOfProcess(TheProcess);
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                                int ThreadId = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[2]);
+                                uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[3], 0);
 
-                                uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[2], 0);
-                                int length = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[3]);
-                                int units = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[4]);
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
-                                MsgPort.Write(" Memory from ");
+                                if (TheProcess != null)
+                                {
+                                    if (ThreadId == -1)
+                                    {
+                                        for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                        {
+                                            Thread AThread = ((Thread)TheProcess.Threads[i]);
+
+                                            if (AThread.Debug_Suspend)
+                                            {
+                                                // Set trap flag (int1)
+                                                UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
+                                                ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
+                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                try
+                                                {
+                                                    AThread.EFLAGSFromInterruptStack |= 0x0100;
+                                                }
+                                                finally
+                                                {
+                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                }
+                                                AThread.Debug_Suspend = false;
+
+                                                MsgPort.Write(" > Single stepping ");
+                                                MsgPort.Write(AThread.Name);
+                                                MsgPort.Write(" thread to address ");
+                                                MsgPort.Write(Address);
+                                                MsgPort.Write("\n");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Thread must be suspended first.\n");
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+
+                                        if (TheThread != null)
+                                        {
+                                            if (TheThread.Debug_Suspend)
+                                            {
+                                                // Set trap flag (int1)
+                                                UInt64 ProcessThreadId = (((UInt64)ProcessId) << 32) | (uint)ThreadId;
+                                                ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
+                                                ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                                try
+                                                {
+                                                    TheThread.EFLAGSFromInterruptStack |= 0x0100;
+                                                }
+                                                finally
+                                                {
+                                                    ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                                }
+                                                TheThread.Debug_Suspend = false;
+
+                                                MsgPort.Write(" > Single stepping ");
+                                                MsgPort.Write(TheThread.Name);
+                                                MsgPort.Write(" thread to address ");
+                                                MsgPort.Write(Address);
+                                                MsgPort.Write("\n");
+                                            }
+                                            else
+                                            {
+                                                MsgPort.Write("Thread must be suspended first.\n");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MsgPort.Write("Thread not found.\n");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    MsgPort.Write("Process not found.\n");
+                                }
+                            }
+                            else
+                            {
+                                MsgPort.Write("Incorrect arguments, see help.\n");
+                            }
+
+                            #endregion
+                        }
+                        else if (cmd == "bps")
+                        {
+                            #region Set Breakpoint
+
+                            if (lineParts.Count == 2)
+                            {
+                                uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
+
+                                MsgPort.Write(" > Breakpoint to be set at ");
                                 MsgPort.Write(Address);
-                                MsgPort.Write(" for ");
-                                MsgPort.Write(length);
-                                MsgPort.Write(" units with ");
-                                MsgPort.Write(units);
-                                MsgPort.Write(" bytes/unit:\n");
-
-                                if (units == 1)
-                                {
-                                    byte* AddrPtr = (byte*)Address;
-                                    for (int i = 0; i < length; i++)
-                                    {
-                                        MsgPort.Write((FOS_System.String)AddrPtr[i]);
-                                        MsgPort.Write(" ");
-                                    }
-                                }
-                                else if (units == 2)
-                                {
-                                    ushort* AddrPtr = (ushort*)Address;
-                                    for (int i = 0; i < length; i++)
-                                    {
-                                        MsgPort.Write((FOS_System.String)AddrPtr[i]);
-                                        MsgPort.Write(" ");
-                                    }
-                                }
-                                else if (units == 4)
-                                {
-                                    uint* AddrPtr = (uint*)Address;
-                                    for (int i = 0; i < length; i++)
-                                    {
-                                        MsgPort.Write((FOS_System.String)AddrPtr[i]);
-                                        MsgPort.Write(" ");
-                                    }
-                                }
-
                                 MsgPort.Write("\n");
 
-                                //TODO: Debugger needs to remove special access to memory - see TODO further up.
-                                //SystemCallsHelpers.DisableAccessToMemoryOfProcess(OriginalMemoryLayout);
+                                //TODO: Hmm...target process is definitely required here in future
+                                *((byte*)Address) = 0xCC;
                             }
                             else
                             {
-                                MsgPort.Write("Process not found.\n");
+                                MsgPort.Write("Incorrect arguments, see help.\n");
                             }
+
+                            #endregion
+                        }
+                        else if (cmd == "bpc")
+                        {
+                            #region Clear Breakpoint
+
+                            if (lineParts.Count == 2)
+                            {
+                                uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[1], 0);
+
+                                MsgPort.Write(" > Breakpoint to be cleared at ");
+                                MsgPort.Write(Address);
+                                MsgPort.Write("\n");
+
+                                //TODO: Hmm...target process is definitely required here in future
+                                *((byte*)Address) = 0x90;
+                            }
+                            else
+                            {
+                                MsgPort.Write("Incorrect arguments, see help.\n");
+                            }
+
+                            #endregion
+                        }
+                        else if (cmd == "regs")
+                        {
+                            #region Registers
+
+                            if (lineParts.Count == 3)
+                            {
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+                                uint ThreadId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[2], 0);
+
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                                if (TheProcess != null)
+                                {
+                                    Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
+
+                                    if (TheThread != null)
+                                    {
+                                        if (TheThread.Debug_Suspend)
+                                        {
+                                            MsgPort.Write("Registers of ");
+                                            MsgPort.Write(TheThread.Name);
+                                            MsgPort.Write(" : \n");
+
+                                            ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                            try
+                                            {
+                                                MsgPort.Write(" > EAX : ");
+                                                MsgPort.Write(TheThread.EAXFromInterruptStack);
+                                                MsgPort.Write("\n > EBX : ");
+                                                MsgPort.Write(TheThread.EBXFromInterruptStack);
+                                                MsgPort.Write("\n > ECX : ");
+                                                MsgPort.Write(TheThread.ECXFromInterruptStack);
+                                                MsgPort.Write("\n > EDX : ");
+                                                MsgPort.Write(TheThread.EDXFromInterruptStack);
+                                                MsgPort.Write("\n");
+
+                                                MsgPort.Write("\n > ESP : ");
+                                                MsgPort.Write(TheThread.ESPFromInterruptStack);
+                                                MsgPort.Write("\n > EBP : ");
+                                                MsgPort.Write(TheThread.EBPFromInterruptStack);
+                                                MsgPort.Write("\n > EIP : ");
+                                                MsgPort.Write(TheThread.EIPFromInterruptStack);
+                                                MsgPort.Write("\n");
+                                            }
+                                            finally
+                                            {
+                                                ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MsgPort.Write("Thread must be suspended first.\n");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        MsgPort.Write("Thread not found.\n");
+                                    }
+                                }
+                                else
+                                {
+                                    MsgPort.Write("Process not found.\n");
+                                }
+                            }
+                            else
+                            {
+                                MsgPort.Write("Incorrect arguments, see help.\n");
+                            }
+
+                            #endregion
+                        }
+                        else if (cmd == "mem")
+                        {
+                            #region Memory
+
+                            if (lineParts.Count == 5)
+                            {
+                                uint ProcessId = FOS_System.Int32.Parse_DecimalUnsigned((FOS_System.String)lineParts[1], 0);
+
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
+
+                                if (TheProcess != null && false)
+                                {
+                                    uint Address = FOS_System.Int32.Parse_HexadecimalUnsigned((FOS_System.String)lineParts[2], 0);
+                                    int length = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[3]);
+                                    int units = FOS_System.Int32.Parse_DecimalSigned((FOS_System.String)lineParts[4]);
+
+                                    MsgPort.Write(" Memory from ");
+                                    MsgPort.Write(Address);
+                                    MsgPort.Write(" for ");
+                                    MsgPort.Write(length);
+                                    MsgPort.Write(" units with ");
+                                    MsgPort.Write(units);
+                                    MsgPort.Write(" bytes/unit:\n");
+
+                                    ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess);
+                                    try
+                                    {
+                                        if (units == 1)
+                                        {
+                                            byte* AddrPtr = (byte*)Address;
+                                            for (int i = 0; i < length; i++)
+                                            {
+                                                MsgPort.Write((FOS_System.String)AddrPtr[i]);
+                                                MsgPort.Write(" ");
+                                            }
+                                        }
+                                        else if (units == 2)
+                                        {
+                                            ushort* AddrPtr = (ushort*)Address;
+                                            for (int i = 0; i < length; i++)
+                                            {
+                                                MsgPort.Write((FOS_System.String)AddrPtr[i]);
+                                                MsgPort.Write(" ");
+                                            }
+                                        }
+                                        else if (units == 4)
+                                        {
+                                            uint* AddrPtr = (uint*)Address;
+                                            for (int i = 0; i < length; i++)
+                                            {
+                                                MsgPort.Write((FOS_System.String)AddrPtr[i]);
+                                                MsgPort.Write(" ");
+                                            }
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+                                    }
+
+                                    MsgPort.Write("\n");
+                                }
+                                else
+                                {
+                                    MsgPort.Write("Process not found.\n");
+                                }
+                            }
+                            else
+                            {
+                                MsgPort.Write("Incorrect arguments, see help.\n");
+                            }
+
+                            #endregion
                         }
                         else
                         {
-                            MsgPort.Write("Incorrect arguments, see help.\n");
+                            MsgPort.Write("Unrecognised command. (Note: Backspace not supported!)\n");
                         }
-
-                        #endregion
-                    }
-                    else
-                    {
-                        MsgPort.Write("Unrecognised command. (Note: Backspace not supported!)\n");
                     }
                 }
+                catch
+                {
+                    BasicConsole.WriteLine("Debugger encountered an error while processing a command! Error was:");
+                    if (ExceptionMethods.CurrentException != null)
+                    {
+                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    }
 
-                // Always issue end of command signal, even if something else went wrong
-                //  - Keeps the host in sync.
-                MsgPort.Write("END OF COMMAND\n");
+                    MsgPort.Write("Error processing command! Error was:\n");
+                    if (ExceptionMethods.CurrentException != null)
+                    {
+                        MsgPort.Write(ExceptionMethods.CurrentException.Message);
+                        MsgPort.Write((byte)'\n');
+                    }
+                }
+                finally
+                {
+                    // Always issue end of command signal, even if something else went wrong
+                    //  - Keeps the host in sync.
+                    MsgPort.Write("END OF COMMAND\n");
+                }
             }
         }        
     }
