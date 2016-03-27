@@ -59,13 +59,19 @@ namespace Kernel.Pipes.File
         {
             WriteCommand(PipeId, FileCommands.StatFS, 0, 0, 0, 0);
         }
-        public unsafe void Send_Read(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
+
+        public unsafe void Write_ListDir(int PipeId)
         {
-            WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
+            WriteCommand(PipeId, FileCommands.ListDir, 0, 0, 0, 0);
         }
-        public unsafe void Send_Write(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
-        {
-            WriteCommand(PipeId, FileCommands.Write, 0, FileHandle, BlockNo, BlockCount);
-        }
+
+        //public unsafe void Send_Read(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
+        //{
+        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
+        //}
+        //public unsafe void Send_Write(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
+        //{
+        //    WriteCommand(PipeId, FileCommands.Write, 0, FileHandle, BlockNo, BlockCount);
+        //}
     }
 }

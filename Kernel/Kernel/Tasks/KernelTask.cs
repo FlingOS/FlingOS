@@ -313,22 +313,6 @@ namespace Kernel.Tasks
 
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StatFS);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.InitFS);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Open);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Close);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Delete);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Read);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Write);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Seek);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Stat);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Rename);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Sync);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.Truncate);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.MakeDir);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeleteDir);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ListDir);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadDirEntry);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetWorkingDir);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SetWorkingDir);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
                 
@@ -355,8 +339,8 @@ namespace Kernel.Tasks
                 Hardware.Devices.DeviceManager.Init();
 
 #if DEBUG
-                BasicConsole.WriteLine(" > Starting Debugger thread...");
-                Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
+                //BasicConsole.WriteLine(" > Starting Debugger thread...");
+                //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
 
                 BasicConsole.PrimaryOutputEnabled = false;
@@ -1173,7 +1157,8 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DFSC: Stat FS");
 #endif
                     // Param 1 : Count
-                    // Param 2 : Char[][]
+                    // Param 2 : char[][] (Mappings)
+                    // Param 3 : uint[]   (Processes)
 
                     int Count = (int)Param1;
                     if (Count == 0)
@@ -1190,7 +1175,8 @@ namespace Kernel.Tasks
                     }
                     else
                     {
-                        char* ResultPtr = (char*)Param2;
+                        char* MappingsPtr = (char*)Param2;
+                        uint* ProcessesPtr = (uint*)Param3;
 
                         ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
@@ -1202,12 +1188,14 @@ namespace Kernel.Tasks
                             {
                                 for (int j = 0; j < fsmi.MappingPrefixes.Length && ActualCount < Count; j++, ActualCount++)
                                 {
-                                    char* MappingResultPtr = ResultPtr + (ActualCount * 10);
+                                    char* MappingResultPtr = MappingsPtr + (ActualCount * 10);
                                     FOS_System.String mapping = fsmi.MappingPrefixes[j];
                                     for (int k = 0; k < 10; k++)
                                     {
                                         MappingResultPtr[k] = k < mapping.length ? mapping[k] : '\0';
                                     }
+
+                                    ProcessesPtr[ActualCount] = fsmi.RemoteProcessId;
                                 }
                             }
                         }
@@ -1991,22 +1979,23 @@ namespace Kernel.Tasks
                     #endregion
                     break;
 
-                case SystemCallNumbers.StatFS:
-                    #region Stat File System(s)
-                    //#if SYSCALLS_TRACE
-                    BasicConsole.WriteLine("System call : File System Status (StatFS)");
-//#endif
-                    result = SystemCallResults.Deferred;
-                    #endregion
-                    break;
                 case SystemCallNumbers.InitFS:
                     #region Init File System
-                    //#if SYSCALLS_TRACE
+#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : File System Initialise (InitFS)");
-//#endif
+#endif
                     result = SystemCallResults.Deferred;
                     #endregion
                     break;
+                case SystemCallNumbers.StatFS:
+                    #region Stat File System(s)
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : File System Status (StatFS)");
+#endif
+                    result = SystemCallResults.Deferred;
+                    #endregion
+                    break;
+
 
                 //TODO: Implement handlers for remaining sys calls
                 //#if SYSCALLS_TRACE
