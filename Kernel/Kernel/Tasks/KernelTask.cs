@@ -565,6 +565,7 @@ namespace Kernel.Tasks
             switch (syscallNumber)
             {
                 case SystemCallNumbers.StartProcess:
+                    #region Start Process
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Process");
 #endif
@@ -578,8 +579,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Process - done.");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.GetNumProcesses:
+                    #region Get Num Processes
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get Num Processes");
 #endif
@@ -590,8 +593,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get Num Processes - done.");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.GetProcessList:
+                    #region Get Process List
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get Num Processes");
 #endif
@@ -620,8 +625,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get Num Processes - done.");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.StartThread:
+                    #region Start Thread
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread");
 #endif
@@ -630,8 +637,10 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Start Thread - done.");
 #endif
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:
+                    #region Register Pipe Outpoint
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Register Pipe Outpoint");
@@ -655,8 +664,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Register Pipe Outpoint - done.");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.GetNumPipeOutpoints:
+                    #region Get Num Pipe Outpoints
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints");
@@ -676,8 +687,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints - done");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.GetPipeOutpoints:
+                    #region Get Pipe Outpoints
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
@@ -697,8 +710,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints - done");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.CreatePipe:
+                    #region Create Pipe
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Create Pipe");
@@ -718,8 +733,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Create Pipe - done");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.WaitOnPipeCreate:
+                    #region Wait On Pipe Create
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Wait On Pipe Create");
@@ -739,8 +756,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Wait On Pipe Create - done");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.ReadPipe:
+                    #region Read Pipe
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Read Pipe");
@@ -770,8 +789,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Read Pipe - done");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.WritePipe:
+                    #region Write Pipe
                     {
 #if DSC_TRACE
                         BasicConsole.WriteLine("DSC: Write Pipe");
@@ -801,8 +822,10 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Write Pipe - done");
 #endif
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.RequestPages:
+                    #region Request Pages
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Request pages");
 #endif
@@ -955,8 +978,10 @@ namespace Kernel.Tasks
                     {
                         ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.UnmapPages:
+                    #region Unmap Pages
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unmap pages");
 #endif
@@ -964,8 +989,10 @@ namespace Kernel.Tasks
                     // Param2: Count
                     CallerProcess.TheMemoryLayout.RemovePages(Param1, Param2);
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.SharePages:
+                    #region Share Pages
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Share pages");
 #endif
@@ -981,9 +1008,10 @@ namespace Kernel.Tasks
                     TargetProcess.ResumeThreads();
 
                     result = SystemCallResults.OK;
-
+                    #endregion
                     break;
                 case SystemCallNumbers.CreateSemaphore:
+                    #region Create Semaphore
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Create semaphore");
 #endif
@@ -1001,8 +1029,10 @@ namespace Kernel.Tasks
                         bool added = ProcessManager.Semaphore_AddOwner((int)Param1, Param2, CallerProcess);
                         result = added ? SystemCallResults.OK : SystemCallResults.Fail;
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.ReleaseSemaphore:
+                    #region Release Semaphore
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Release semaphore");
 #endif
@@ -1015,8 +1045,10 @@ namespace Kernel.Tasks
                         }
                         result = removed ? SystemCallResults.OK : SystemCallResults.Fail;
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.WaitSemaphore:
+                    #region Wait Semaphore
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Wait semaphore");
 #endif
@@ -1025,8 +1057,10 @@ namespace Kernel.Tasks
                         int waitResult = ProcessManager.Semaphore_Wait((int)Param1, CallerProcess, CallerThread);
                         result = waitResult == -1 ? SystemCallResults.Fail : (waitResult == 1 ? SystemCallResults.OK : SystemCallResults.OK_NoWake);
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.RegisterDevice:
+                    #region Register Device
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Register device");
 #endif
@@ -1041,19 +1075,23 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Register device - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.DeregisterDevice:
+                    #region Deregister Device
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Deregister device");
 #endif
-                    
+
                     result = Hardware.Devices.DeviceManager.DeregisterDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Deregister device - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.GetNumDevices:
+                    #region Get Num Devices
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get num devices");
 #endif
@@ -1067,8 +1105,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get num devices - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.GetDeviceList:
+                    #region Get Device List
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device list");
 #endif
@@ -1078,8 +1118,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device list - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.GetDeviceInfo:
+                    #region Get Device Info
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device info");
 #endif
@@ -1089,8 +1131,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device info - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.ClaimDevice:
+                    #region Claim Device
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Claim device");
 #endif
@@ -1100,8 +1144,10 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Claim device - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.ReleaseDevice:
+                    #region Release Device
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Release device");
 #endif
@@ -1111,12 +1157,23 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Release device - end");
 #endif
+                    #endregion
                     break;
                 case SystemCallNumbers.InitFS:
+                    #region Init File System
 #if DFSC_TRACE
                     BasicConsole.WriteLine("DFSC: Init FS");
 #endif
                     ProcessManager.Semaphore_Signal(FileSystemManagerAvailable_SemaphoreId, ProcessManager.KernelProcess);
+                    #endregion
+                    break;
+                case SystemCallNumbers.StatFS:
+                    #region Stat File System(s)
+#if DFSC_TRACE
+                    BasicConsole.WriteLine("DFSC: Stat FS");
+#endif
+                    //TODO:
+                    #endregion
                     break;
                 default:
 //#if DSC_TRACE
@@ -1443,6 +1500,7 @@ namespace Kernel.Tasks
             switch ((SystemCallNumbers)syscallNumber)
             {
                 case SystemCallNumbers.RegisterISRHandler:
+                    #region Register ISR Handler
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register ISR Handler");
 #endif
@@ -1454,15 +1512,19 @@ namespace Kernel.Tasks
                     {
                         result = SystemCallResults.Fail;
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.DeregisterISRHandler:
+                    #region Deregister ISR Handler
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister ISR Handler");
 #endif
                     SysCall_DeregisterISRHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.RegisterIRQHandler:
+                    #region Register IRQ Handler
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register IRQ Handler");
 #endif
@@ -1474,15 +1536,19 @@ namespace Kernel.Tasks
                     {
                         result = SystemCallResults.Fail;
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.DeregisterIRQHandler:
+                    #region Deregister IRQ Handler
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister IRQ Handler");
 #endif
                     SysCall_DeregisterIRQHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.RegisterSyscallHandler:
+                    #region Register Syscall Handler
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Syscall Handler");
 #endif
@@ -1494,118 +1560,154 @@ namespace Kernel.Tasks
                     {
                         result = SystemCallResults.Fail;
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.DeregisterSyscallHandler:
+                    #region Deregister Syscall Handler
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister Syscall Handler");
 #endif
                     SysCall_DeregisterSyscallHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.StartProcess:
+                    #region Start Process
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Start Process");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetNumProcesses:
+                    #region Get Num Processes
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get Num Processes");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetProcessList:
+                    #region Get Process List
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get Process List");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.StartThread:
+                    #region Start Thread
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Start Thread");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.SleepThread:
+                    #region Sleep Thread
 #if SYSCALLS_TRACE
                     //BasicConsole.WriteLine("System call : Sleep Thread");
 #endif
                     SysCall_Sleep((int)param1, callerProcessId, callerThreadId);
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.WakeThread:
+                    #region Wake Thread
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Wake Thread");
 #endif
                     SysCall_Wake(callerProcessId, param1);
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.RegisterPipeOutpoint:
+                    #region Register Pipe Outpoint
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Pipe Outpoint");
 #endif
                     result = SystemCallResults.Deferred_PermitActions;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetNumPipeOutpoints:
+                    #region Get Num Pipe Outpoints
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get Num Pipe Outpoints");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetPipeOutpoints:
+                    #region Get Pipe Outpoints
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get Pipe Outpoints");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.CreatePipe:
+                    #region Create Pipe
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Create Pipe");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.WaitOnPipeCreate:
+                    #region Wait On Pipe Create
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Wait On Pipe Create");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.ReadPipe:
+                    #region Read Pipe
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Read Pipe");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.WritePipe:
+                    #region Write Pipe
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Write Pipe");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.SendMessage:
+                    #region Send Message
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Send message");
 #endif
                     result = SysCall_SendMessage(callerProcessId, callerThreadId, param1, param2, param3) ? SystemCallResults.OK : SystemCallResults.Fail;
+                    #endregion
                     break;
                 case SystemCallNumbers.ReceiveMessage:
+                    #region Receive Message
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Receive message");
 #endif
                     ReceiveMessage(callerProcessId, param1, param2);
+                    #endregion
                     break;
                 case SystemCallNumbers.RequestPages:
+                    #region Request Pages
 #if SYSCALLS_TRACE
                     BasicConsole.Write("System call : Request pages for ");
                     BasicConsole.WriteLine(ProcessManager.GetProcessById(callerProcessId).Name);
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.IsPhysicalAddressMapped:
+                    #region Is Physical Address Mapped
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Is physical address mapped");
 #endif
-                    
+
                     // TODO: This is a bit hacky
                     // If address is in low 1MiB then it is mapped
                     if (param1 < 0x100000)
@@ -1617,8 +1719,10 @@ namespace Kernel.Tasks
                         Return2 = ProcessManager.GetProcessById(callerProcessId).TheMemoryLayout.ContainsAnyPhysicalAddresses(param1, 1) ? 1u : 0u;
                     }
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.IsVirtualAddressMapped:
+                    #region Is Virtual Address Mapped
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Is virtual address mapped");
 #endif
@@ -1633,8 +1737,10 @@ namespace Kernel.Tasks
                         Return2 = ProcessManager.GetProcessById(callerProcessId).TheMemoryLayout.ContainsAnyVirtualAddresses(param1, 1) ? 1u : 0u;
                     }
                     result = SystemCallResults.OK;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetPhysicalAddress:
+                    #region Get Physical Address
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get physical address");
 #endif
@@ -1659,8 +1765,10 @@ namespace Kernel.Tasks
                             result = SystemCallResults.Fail;
                         }
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.GetVirtualAddress:
+                    #region Get Virtual Address
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get virtual address");
 #endif
@@ -1685,14 +1793,18 @@ namespace Kernel.Tasks
                             result = SystemCallResults.Fail;
                         }
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.UnmapPages:
+                    #region Unmap Pages
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Unmap pages");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.SharePages:
+                    #region Share Pages
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Share pages");
 #endif
@@ -1730,32 +1842,42 @@ namespace Kernel.Tasks
                             }
                         }
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.CreateSemaphore:
+                    #region Create Semaphore
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Create semaphore");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.ShareSemaphore:
+                    #region Share Semaphore
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Share semaphore");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.ReleaseSemaphore:
+                    #region Release Semaphore
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Release semaphore");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.WaitSemaphore:
+                    #region Wait Semaphore
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Wait semaphore");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.SignalSemaphore:
+                    #region Signal Semaphore
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Signal semaphore");
 #endif
@@ -1764,61 +1886,80 @@ namespace Kernel.Tasks
                         bool signalResult = ProcessManager.Semaphore_Signal((int)param1, ProcessManager.GetProcessById(callerProcessId));
                         result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
                     }
+                    #endregion
                     break;
                 case SystemCallNumbers.RegisterDevice:
+                    #region Register Device
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register device");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.DeregisterDevice:
+                    #region Deregister Device
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister device");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetNumDevices:
+                    #region Get Num Devices
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get num devices");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetDeviceList:
+                    #region Get Device List
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get device list");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.GetDeviceInfo:
+                    #region Get Device Info
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Get device info");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.ClaimDevice:
+                    #region Claim Device
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Claim device");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.ReleaseDevice:
+                    #region Release Device
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Release device");
 #endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
 
                 case SystemCallNumbers.StatFS:
-//#if SYSCALLS_TRACE
+                    #region Stat File System(s)
+                    //#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : File System Status (StatFS)");
 //#endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
                 case SystemCallNumbers.InitFS:
-//#if SYSCALLS_TRACE
+                    #region Init File System
+                    //#if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : File System Initialise (InitFS)");
 //#endif
                     result = SystemCallResults.Deferred;
+                    #endregion
                     break;
 
                 //TODO: Implement handlers for remaining sys calls
