@@ -122,7 +122,7 @@ namespace Kernel.FOS_System.IO
         private static bool InitAsMBR(DiskDevice TheDisk)
         {
 #if PM_TRACE
-                        BasicConsole.WriteLine("Attempting to read MBR...");
+           BasicConsole.WriteLine("Attempting to read MBR...");
 #endif
             byte[] MBRData = new byte[512];
             TheDisk.ReadBlock(0UL, 1U, MBRData);
