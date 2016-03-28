@@ -128,7 +128,15 @@ namespace Kernel.FOS_System.IO
                 String Output = "";
                 for (int i = 0; i < Listings.Count; i++)
                 {
-                    Output += ((Base)Listings[i]).Name;
+                    Base AListing = (Base)Listings[i];
+                    if (AListing.IsDirectory)
+                    {
+                        Output += AListing.Name + FileSystemManager.PathDelimiter;
+                    }
+                    else
+                    {
+                        Output += AListing.Name;
+                    }
                     if (i < Listings.Count - 1)
                     {
                         Output += "\n";
