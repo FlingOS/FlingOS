@@ -44,20 +44,12 @@ using Kernel.FOS_System.Processes.Requests.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Pipes;
 using Kernel.Pipes.File;
+using Kernel.FOS_System.IO;
 
 namespace Kernel.Tasks
 {
     public unsafe static class KernelTask
     {
-        private class FileSystemManagerInfo : FOS_System.Object
-        {
-            public uint RemoteProcessId;
-            public int CmdPipeId;
-            public int DataOutPipeId;
-            public FileDataInpoint DataInPipe;
-            public FOS_System.String[] MappingPrefixes = null;
-        }
-
         private class DeferredSyscallInfo : FOS_System.Object
         {
             public uint ProcessId;
@@ -95,23 +87,9 @@ namespace Kernel.Tasks
         private static Consoles.VirtualConsole console;
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static FileCmdOutpoint File_CmdOutpoint;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static FileDataOutpoint File_DataOutpoint;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
         private static int File_ConnectSemaphoreId;
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static int File_CmdOutPipesSemaphoreId;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static int File_DataOutPipesSemaphoreId;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static UInt32List File_CmdOutPipes;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static UInt32List File_DataOutPipes;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static List File_DataInpoints;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static List FileSystemManagers;
+        private static List FileSystemAccessors;
 
         public static void Main()
         {
@@ -1163,9 +1141,9 @@ namespace Kernel.Tasks
                     int Count = (int)Param1;
                     if (Count == 0)
                     {
-                        for (int i = 0; i < FileSystemManagers.Count; i++)
+                        for (int i = 0; i < FileSystemAccessors.Count; i++)
                         {
-                            FileSystemManagerInfo fsmi = (FileSystemManagerInfo)FileSystemManagers[i];
+                            FileSystemAccessor fsmi = (FileSystemAccessor)FileSystemAccessors[i];
                             if (fsmi.MappingPrefixes != null)
                             {
                                 Count += fsmi.MappingPrefixes.Length;
@@ -1181,9 +1159,9 @@ namespace Kernel.Tasks
                         ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
                         int ActualCount = 0;
-                        for (int i = 0; i < FileSystemManagers.Count && ActualCount < Count; i++)
+                        for (int i = 0; i < FileSystemAccessors.Count && ActualCount < Count; i++)
                         {
-                            FileSystemManagerInfo fsmi = (FileSystemManagerInfo)FileSystemManagers[i];
+                            FileSystemAccessor fsmi = (FileSystemAccessor)FileSystemAccessors[i];
                             if (fsmi.MappingPrefixes != null)
                             {
                                 for (int j = 0; j < fsmi.MappingPrefixes.Length && ActualCount < Count; j++, ActualCount++)
@@ -1252,10 +1230,10 @@ namespace Kernel.Tasks
                         PipeOutpointDescriptor Descriptor = OutpointDescriptors[i];
                         bool PipeExists = false;
 
-                        for (int j = 0; j < File_DataInpoints.Count; j++)
+                        for (int j = 0; j < FileSystemAccessors.Count; j++)
                         {
-                            FileDataInpoint ExistingPipeInfo = (FileDataInpoint)File_DataInpoints[j];
-                            if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
+                            FileSystemAccessor ExistingAccessor = (FileSystemAccessor)FileSystemAccessors[j];
+                            if (ExistingAccessor.RemoteProcessId == Descriptor.ProcessId)
                             {
                                 PipeExists = true;
                                 break;
@@ -1268,44 +1246,7 @@ namespace Kernel.Tasks
                             {
                                 if (SystemCalls.WaitSemaphore(File_ConnectSemaphoreId) == SystemCallResults.OK)
                                 {
-                                    BasicConsole.WriteLine("KT File Management > Connecting to: " + (FOS_System.String)Descriptor.ProcessId);
-                                    FileDataInpoint DataIn = new FileDataInpoint(Descriptor.ProcessId, true);
-                                    File_DataInpoints.Add(DataIn);
-
-                                    BasicConsole.WriteLine("KT File Management > Connected.");
-
-                                    try
-                                    {
-                                        //TODO: Ought to store InProcessId (see WaitForFileCmdPipes or WaitForFileDataPipes)
-                                        //  then check that against the Descriptor.ProcessId - wait until the correct process has connected
-                                        if (SystemCalls.WaitSemaphore(File_CmdOutPipesSemaphoreId) == SystemCallResults.OK)
-                                        {
-                                            int CmdPipeId = (int)File_CmdOutPipes[File_CmdOutPipes.Count - 1];
-
-                                            BasicConsole.WriteLine("KT File Management > Got command output pipe id.");
-
-                                            //TODO: As above w.r.t. process ids
-                                            if (SystemCalls.WaitSemaphore(File_DataOutPipesSemaphoreId) == SystemCallResults.OK)
-                                            {
-                                                int DataPipeId = (int)File_DataOutPipes[File_DataOutPipes.Count - 1];
-
-                                                BasicConsole.WriteLine("KT File Management > Got data output pipe id.");
-
-                                                FileSystemManagers.Add(new FileSystemManagerInfo()
-                                                {
-                                                    RemoteProcessId = Descriptor.ProcessId,
-                                                    CmdPipeId = CmdPipeId,
-                                                    DataOutPipeId = DataPipeId,
-                                                    DataInPipe = DataIn
-                                                });
-                                            }
-                                        }
-                                    }
-                                    catch
-                                    {
-                                        BasicConsole.WriteLine("KT File Management > Error probing File controller!");
-                                        BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
-                                    }
+                                    FileSystemAccessors.Add(new FileSystemAccessor(Descriptor.ProcessId));
 
                                     SystemCalls.SignalSemaphore(File_ConnectSemaphoreId);
                                 }
@@ -1332,91 +1273,37 @@ namespace Kernel.Tasks
         private static void InitFileSystemManagers()
         {
             BasicConsole.WriteLine("KT File Management > Initialising file system managers...");
-            for (int i = 0; i < FileSystemManagers.Count; i++)
+            for (int i = 0; i < FileSystemAccessors.Count; i++)
             {
                 BasicConsole.WriteLine("KT File Management > Initialising file system manager...");
 
-                FileSystemManagerInfo info = (FileSystemManagerInfo)FileSystemManagers[i];
-
-                BasicConsole.WriteLine("KT File Management > Sending StatFS command...");
-                File_CmdOutpoint.Send_StatFS(info.CmdPipeId);
-                File_DataOutpoint.WriteString(info.DataOutPipeId, "\0");
-
-                BasicConsole.WriteLine("KT File Management > Reading mapping prefixes...");
-                info.MappingPrefixes = info.DataInPipe.ReadFSInfos(true);
-
-                BasicConsole.Write("KT > Got file system mappings: ");
-                for (int j = 0; j < info.MappingPrefixes.Length; j++)
-                {
-                    BasicConsole.Write(info.MappingPrefixes[j]);
-                    if (j < info.MappingPrefixes.Length - 1)
-                    {
-                        BasicConsole.Write(", ");
-                    }
-                }
-                BasicConsole.WriteLine();
-            }
-        }
-        private static void WaitForFileCmdPipes()
-        {
-            while (!Terminating)
-            {
-                uint InProcessId;
-                int PipeId = File_CmdOutpoint.WaitForConnect(out InProcessId);
-                BasicConsole.WriteLine("Kernel Task > File Access > Storage command output connected.");
-                File_CmdOutPipes.Add((uint)PipeId);
-                SystemCalls.SignalSemaphore(File_CmdOutPipesSemaphoreId);
-            }
-        }
-        private static void WaitForFileDataPipes()
-        {
-            while (!Terminating)
-            {
-                uint InProcessId;
-                int PipeId = File_DataOutpoint.WaitForConnect(out InProcessId);
-                BasicConsole.WriteLine("Kernel Task > File Access > Storage data output connected.");
-                File_DataOutPipes.Add((uint)PipeId);
-                SystemCalls.SignalSemaphore(File_DataOutPipesSemaphoreId);
+                FileSystemAccessor accessor = (FileSystemAccessor)FileSystemAccessors[i];
+                accessor.StatFS();
             }
         }
         public static void FilePipeInitialisation_Main()
         {
-            File_DataInpoints = new List();
-            File_CmdOutPipes = new UInt32List();
-            File_DataOutPipes = new UInt32List();
-            File_CmdOutpoint = new FileCmdOutpoint(PipeConstants.UnlimitedConnections);
-            File_DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, false);
-
-            FileSystemManagers = new List();
+            FileSystemAccessors = new List();
 
             if (SystemCalls.CreateSemaphore(1, out File_ConnectSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (1)");
             }
 
-            if (SystemCalls.CreateSemaphore(-1, out File_CmdOutPipesSemaphoreId) != SystemCallResults.OK)
+            if (SystemCalls.CreateSemaphore(-1, out FilePipeAvailable_SemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (2)");
             }
 
-            if (SystemCalls.CreateSemaphore(-1, out File_DataOutPipesSemaphoreId) != SystemCallResults.OK)
+            if (SystemCalls.CreateSemaphore(-1, out FileSystemManagerAvailable_SemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (3)");
             }
 
-            if (SystemCalls.CreateSemaphore(-1, out FilePipeAvailable_SemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (4)");
-            }
-
-            if (SystemCalls.CreateSemaphore(-1, out FileSystemManagerAvailable_SemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (5)");
-            }
+            BasicConsole.WriteLine("Kernel Task > File Access > Initialising File System Accessor.");
+            FileSystemAccessor.Init();
 
             BasicConsole.WriteLine(" > Starting file system helper threads...");
-            ProcessManager.CurrentProcess.CreateThread(WaitForFileCmdPipes, "File Management : Wait For File Cmd Pipes");
-            ProcessManager.CurrentProcess.CreateThread(WaitForFileDataPipes, "File Management : Wait For File Data Pipes");
             FileSystemManagerInitialisationThread = ProcessManager.CurrentProcess.CreateThread(FileSystemManagerInitialisation_Main, "File Management : File System Initialisation");
 
             FilePipesReady = true;

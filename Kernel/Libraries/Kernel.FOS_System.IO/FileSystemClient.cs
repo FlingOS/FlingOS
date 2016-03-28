@@ -58,6 +58,9 @@ namespace Kernel.FOS_System.IO
                         case FileCommands.StatFS:
                             StatFS();
                             break;
+                        case FileCommands.ListDir:
+                            ListDir();
+                            break;
                     }
                 }
                 catch
@@ -106,6 +109,37 @@ namespace Kernel.FOS_System.IO
                 }
             }
         }
-
+        private void ListDir()
+        {
+            String Path = DataInPipe.ReadString(true);
+            Base BaseListing = Directory.Find(Path);
+            if (BaseListing != null)
+            {
+                Directory DirectoryListing;
+                if (BaseListing.IsDirectory)
+                {
+                    DirectoryListing = (Directory)BaseListing;
+                }
+                else
+                {
+                    DirectoryListing = ((File)BaseListing).Parent;
+                }
+                List Listings = DirectoryListing.GetListings();
+                String Output = "";
+                for (int i = 0; i < Listings.Count; i++)
+                {
+                    Output += ((Base)Listings[i]).Name;
+                    if (i < Listings.Count - 1)
+                    {
+                        Output += "\n";
+                    }
+                }
+                DataOutPipe.WriteString(DataOutPipeId, Output);
+            }
+            else
+            {
+                DataOutPipe.WriteString(DataOutPipeId, "");
+            }
+        }
     }
 }

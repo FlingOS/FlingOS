@@ -512,12 +512,15 @@ namespace Kernel.FOS_System
 
                 BasicConsole.Write(name);
                 BasicConsole.WriteLine(" heap needs to expand!");
-                
-                ExpandHeap(false);
+
+                if (!ExpandHeap(false))
+                {
+                    retry--;
+                }
                 
                 BasicConsole.WriteLine("Heap expansion complete.");
             }
-            while (retry-- > 0);
+            while (retry > 0);
 
             {
                 bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
@@ -666,15 +669,17 @@ namespace Kernel.FOS_System
 #endif
         }
         
-        public static void ExpandHeap(bool print)
+        public static bool ExpandHeap(bool print)
         {
             if (fblock == null)
             {
-                // Creates initial heap of 4MiB
-                if (!DoExpandHeap(/*0x400000*/0xA000))
+                // Creates initial heap of 40KiB
+                if (!DoExpandHeap(0xA000))
                 {
                     BasicConsole.WriteLine("New heap NOT created (via expand)!");
+                    return false;
                 }
+                return true;
                 //else
                 //{
                 //    BasicConsole.WriteLine("New heap created (via expand)!");
@@ -692,9 +697,11 @@ namespace Kernel.FOS_System
                 {
                     HeapBlock* oldFBlock = fblock;
                     oldFBlock->expanding = true;
-                    if (!DoExpandHeap(GetTotalMem()))
+                    // Expand by 1MiB
+                    if (!DoExpandHeap(0x100000))
                     {
                         BasicConsole.WriteLine("Couldn't expand heap!");
+                        return false;
                     }
                     //else
                     //{
@@ -707,8 +714,10 @@ namespace Kernel.FOS_System
                     //    }
                     //}
                     oldFBlock->expanding = false;
+                    return true;
                 }
             }
+            return false;
         }
         private static bool DoExpandHeap(uint Size)
         {

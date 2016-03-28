@@ -81,6 +81,10 @@ namespace Kernel.Pipes.Standard
         /// </remarks>
         public unsafe void Write(int PipeId, FOS_System.String Message, bool Blocking)
         {
+            if (Message == "")
+            {
+                Message = "\0";
+            }
             byte[] data = ByteConverter.GetASCIIBytes(Message);
             base.Write(PipeId, data, 0, data.Length, Blocking);
         }
@@ -101,6 +105,10 @@ namespace Kernel.Pipes.Standard
         /// </remarks>
         public unsafe void WriteLine(int PipeId, FOS_System.String Message, bool Blocking)
         {
+            if (Message == "")
+            {
+                Message = "\0";
+            }
             byte[] data = ByteConverter.GetASCIIBytes(Message);
             base.Write(PipeId, data, 0, data.Length, Blocking);
             data[0] = (byte)'\n';
