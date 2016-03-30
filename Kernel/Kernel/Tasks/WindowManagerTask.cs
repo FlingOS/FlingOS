@@ -73,6 +73,8 @@ namespace Kernel.Tasks
         private static uint AcceptedPages_Count = 0;
         private static uint AcceptedPages_FromProcessId = 0;
 
+        private static int ConsoleAccessSemaphoreId = 0;
+
         public static void Main()
         {
             Helpers.ProcessInit("Window Manager", out GCThreadId);
@@ -92,6 +94,10 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("WM > Failed to create a semaphore! (3)");
             }
+            if (SystemCalls.CreateSemaphore(1, out ConsoleAccessSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("WM > Failed to create a semaphore! (4)");
+            }
 
             // Start thread for handling background input processing
             uint InputProcessingThreadId;
@@ -101,6 +107,9 @@ namespace Kernel.Tasks
             }
             BasicConsole.Write("WM > InputProcessing thread id: ");
             BasicConsole.WriteLine(InputProcessingThreadId);
+
+            BasicConsole.WriteLine("WM > Register syscall handlers");
+            SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
             
             // Start thread for other testing
             //uint TestThreadId;
@@ -110,11 +119,9 @@ namespace Kernel.Tasks
             //}
             //BasicConsole.Write("WM > Test thread id: ");
             //BasicConsole.WriteLine(TestThreadId);
+            //SystemCalls.RegisterSyscallHandler(SystemCallNumbers.AcceptPages);
 
-            BasicConsole.WriteLine("WM > Register syscall handlers");
-            SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
-            SystemCalls.RegisterSyscallHandler(SystemCallNumbers.AcceptPages);
-            
+
             // Start thread for handling background output processing
             uint OutputProcessingThreadId;
             if (SystemCalls.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
@@ -148,7 +155,18 @@ namespace Kernel.Tasks
                             CurrentPipeInfo.TheConsole.Update();
                         }
 
-                        CurrentPipeInfo.TheConsole.Write(CurrentPipeInfo.StdOut.Read(false));
+                        String str = CurrentPipeInfo.StdOut.Read(false);
+
+                        SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                        try
+                        {
+                            CurrentPipeInfo.TheConsole.Scroll(CurrentPipeInfo.TheConsole.ScreenHeight);
+                            CurrentPipeInfo.TheConsole.Write(str);
+                        }
+                        finally
+                        {
+                            SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                        }
                     }
                 }
                 catch
@@ -373,13 +391,46 @@ namespace Kernel.Tasks
                                     CurrentPipeIdx = 0;
                                 }
 
-                                CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
-                                CurrentPipeIndex_Changed = true;
+                                SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                                try
+                                {
+                                    CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+                                    CurrentPipeIndex_Changed = true;
+                                }
+                                finally
+                                {
+                                    SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                                }
 
                                 //BasicConsole.WriteLine("WM > OP : (4)");
                             }
                             else
                             {
+                                if (Key == KeyboardKey.UpArrow)
+                                {
+                                    SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                                    try
+                                    {
+                                        CurrentPipeInfo.TheConsole.Scroll(-1);
+                                    }
+                                    finally
+                                    {
+                                        SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                                    }
+                                }
+                                else if (Key == KeyboardKey.DownArrow)
+                                {
+                                    SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                                    try
+                                    {
+                                        CurrentPipeInfo.TheConsole.Scroll(+1);
+                                    }
+                                    finally
+                                    {
+                                        SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                                    }
+                                }
+
                                 //BasicConsole.WriteLine("WM > OP : (5)");
 
                                 SystemCalls.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);

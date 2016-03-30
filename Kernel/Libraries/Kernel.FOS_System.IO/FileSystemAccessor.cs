@@ -161,25 +161,6 @@ namespace Kernel.FOS_System.IO
             for (int j = 0; j < MappingPrefixes.Length; j++)
             {
                 BasicConsole.Write(MappingPrefixes[j]);
-
-                List Listings = ListDir(MappingPrefixes[j]);
-                for (int k = 0; k < Listings.Count; k++)
-                {
-                    String Name = (String)Listings[k];
-                    BasicConsole.Write(Name);
-                    if (k < Listings.Count - 1)
-                    {
-                        BasicConsole.Write(", ");
-                    }
-                }
-                if (Listings.Count == 0)
-                {
-                    BasicConsole.WriteLine("[NO LISTINGS]");
-                }
-                else
-                {
-                    BasicConsole.WriteLine();
-                }
             }
         }
         public List ListDir(String Path)
@@ -187,6 +168,28 @@ namespace Kernel.FOS_System.IO
             CmdOutpoint.Write_ListDir(CmdPipeId);
             DataOutpoint.WriteString(DataOutPipeId, Path);
             return DataInPipe.ReadString(true).Split('\n');
+        }
+
+        public void PrintListings(String Path)
+        {
+            List Listings = ListDir(Path);
+            for (int k = 0; k < Listings.Count; k++)
+            {
+                String Name = (String)Listings[k];
+                BasicConsole.Write(Name);
+                if (k < Listings.Count - 1)
+                {
+                    BasicConsole.Write(", ");
+                }
+            }
+            if (Listings.Count == 0)
+            {
+                BasicConsole.WriteLine("[NO LISTINGS]");
+            }
+            else
+            {
+                BasicConsole.WriteLine();
+            }
         }
 
         #endregion

@@ -80,7 +80,6 @@ namespace Kernel.Shells
                         //List of supported commands
                         /* Command { Req Arg } [Opt Arg] *Default val*:
                          *  - Halt
-                         *  - Init { ALL / / FS }
                          *  - Output { FS / Memory }
                          *  - CheckDisk/ChkD  { Drive# }
                          *  - FormatDisk/FmtD { Drive# }
@@ -96,8 +95,7 @@ namespace Kernel.Shells
                          *              ATA         /   USB                             }
                          *  - GC   { Cleanup }
                          *  - USB { Update / Eject }
-                         *  - Start { Filename } [*KM* / UM] [*Raw* / ELF]
-                         *  - ILY
+                         *  - Start { Filename } [*KM* / UM] [Raw / *ELF*]
                          *  - Show { c / w }
                          *  - Help { <Command Name> }
                          *  - Clear
@@ -920,17 +918,6 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify the file path.");
                                 }
-                                #endregion
-                            }
-                            else if (cmd == "ily")
-                            {
-                                #region ILY
-
-                                Hardware.Processes.ProcessManager.RegisterProcess(
-                                    Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(
-                                        File.Open("a:/ily.bin"), false),
-                                    Hardware.Processes.Scheduler.Priority.Normal);
-
                                 #endregion
                             }
                             else if (cmd == "show")

@@ -27,7 +27,7 @@
 // DSC  : Deferred System Calls
 // DFSC : Deferred File System Calls
 //#define DSC_TRACE
-#define DFSC_TRACE
+//#define DFSC_TRACE
 //#define SYSCALLS_TRACE
 
 using Kernel.FOS_System.Collections;

@@ -192,6 +192,18 @@ namespace Kernel
                         ((FOS_System.String)Buffer[CurrentLine])[--CurrentChar] = (char)((' ' & 0xFF) | CurrentAttr);
                     }
                 }
+                //Else if upwards arrow character is found
+                //  scroll up one line
+                else if (str[i] == '\u2191')
+                {
+                    Scroll(-1);
+                }
+                //Else if downwards arrow character is found
+                //  scroll down one line
+                else if (str[i] == '\u2193')
+                {
+                    Scroll(1);
+                }
                 //Otherwise, just output the character to the current position
                 //  and move current position to the next character.
                 else
