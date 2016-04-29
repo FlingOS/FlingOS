@@ -210,7 +210,7 @@ namespace Drivers.Debugger
                         CurrentProcess.Threads.Add(Id, new Thread()
                         {
                             Id = Id,
-                            Name = LineParts[3],
+                            Name = Line.Substring(Line.IndexOf(LineParts[3])),
                             State = (Thread.States)Enum.Parse(typeof(Thread.States), LineParts[2].Replace(" ", ""))
                         });
                     }

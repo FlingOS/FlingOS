@@ -227,7 +227,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtMemManager.MapFreePagesForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -263,7 +263,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtMemManager.MapFreePages(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtMemManager.MapFreePagesForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -661,6 +661,25 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.WriteLine("¬D¬");
 #endif
             }
+        }
+
+
+        private static void* ShadowPageVAddr = (void*)0xFFFFFFFF;
+        private static void* ShadowPagePAddr = (void*)0xFFFFFFFF;
+        public static void* EnableDebuggerAccessToProcessMemory(Process TargetProcess, void* PageToShadowPAddr)
+        {
+            if (ShadowPageVAddr == (void*)0xFFFFFFFF)
+            {
+                ShadowPageVAddr = VirtMemManager.MapFreePageForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ShadowPagePAddr);
+                KernelProcess.TheMemoryLayout.AddKernelPage((uint)ShadowPagePAddr, (uint)ShadowPageVAddr);
+            }
+            
+            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint)ShadowPageVAddr, (uint)PageToShadowPAddr);
+            return ShadowPageVAddr;
+        }
+        public static void DisableDebuggerAccessToProcessMemory(Process TargetProcess)
+        {
+            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint)ShadowPageVAddr, (uint)ShadowPagePAddr);
         }
     }
 }

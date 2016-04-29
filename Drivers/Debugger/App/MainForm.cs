@@ -120,7 +120,7 @@ namespace Drivers.Debugger.App
             PerformingAction = true;
             Task.Run((Action)RefreshThreads);
         }
-        private void SuspendButton_Click(object sender, EventArgs e)
+        private void DebugButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
             Task.Run((Action)SuspendThread);
@@ -417,7 +417,7 @@ namespace Drivers.Debugger.App
         }
         private void RefreshRegisters()
         {
-            if (IsSelectionSuspended())
+            if (IsSelectionDebugging())
             {
                 Registers = TheDebugger.GetRegisters(GetSelectedProcessId(), (uint)GetSelectedThreadId());
             }
@@ -477,11 +477,8 @@ namespace Drivers.Debugger.App
                             int MaxOffset = TheMethod.Arguments.Select(x => x.Value.Offset).Max();
                             string MaxTypeID = TheMethod.Arguments.Where(x => x.Value.Offset == MaxOffset).Select(x => x.Value.TypeID).First();
                             TypeInfo MaxArgType = TheDebugger.GetTypeInfo(MaxTypeID);
-
-                            //                                                                   +8 for old ebp and return address
-                            //                                                                   +4 or more for return value
-                            uint RetValSize = (uint)TheMethod.ReturnSize;
-                            string ArgumentValuesStr = TheDebugger.GetMemoryValues(ProcessId, EBP + 8 + RetValSize, MaxOffset + MaxArgType.SizeOnStackInBytes, 1);
+                            
+                            string ArgumentValuesStr = TheDebugger.GetMemoryValues(ProcessId, EBP, MaxOffset + MaxArgType.SizeOnStackInBytes, 1);
                             byte[] ArgumentValuesArr = ArgumentValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
                             List<VariableInfo> ArgInfos = TheMethod.Arguments.Values.OrderBy(x => x.Offset).ToList();
                             foreach (VariableInfo AnArgInfo in ArgInfos)
@@ -563,7 +560,7 @@ namespace Drivers.Debugger.App
                                 foreach (VariableInfo ALocInfo in LocInfos)
                                 {
                                     TypeInfo LocType = TheDebugger.GetTypeInfo(ALocInfo.TypeID);
-                                    int position = (LocalValuesArr.Length - (ALocInfo.Offset + LocType.SizeOnStackInBytes));
+                                    int position = (LocalValuesArr.Length - (-ALocInfo.Offset + LocType.SizeOnStackInBytes));
                                     VariableData NewVarData = new VariableData()
                                     {
                                         Address = (uint)(EBP + ALocInfo.Offset),
@@ -660,6 +657,24 @@ namespace Drivers.Debugger.App
             PerformingAction = false;
         }
 
+        private bool IsSelectionDebugging()
+        {
+            if (this.InvokeRequired)
+            {
+                return (bool)this.Invoke(new BoolDelegate(IsSelectionDebugging));
+            }
+            else
+            {
+                bool NodeSuspended = false;
+                if (ProcessesTreeView.SelectedNode != null)
+                {
+                    uint SelectedProcessId = GetSelectedProcessId();
+                    int SelectedThreadId = GetSelectedThreadId();
+                    NodeSuspended = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Debugging;
+                }
+                return NodeSuspended;
+            }
+        }
         private bool IsSelectionSuspended()
         {
             if (this.InvokeRequired)
@@ -703,12 +718,12 @@ namespace Drivers.Debugger.App
                         MainPanel.Enabled = true;
 
                         bool NodeSelected = ProcessesTreeView.SelectedNode != null;
-                        bool NodeSuspended = IsSelectionSuspended();
-                        SuspendButton.Enabled = NodeSelected && !NodeSuspended;
-                        ResumeButton.Enabled = NodeSelected && NodeSuspended;
-                        StepButton.Enabled = NodeSelected && NodeSuspended;
-                        SingleStepButton.Enabled = NodeSelected && NodeSuspended;
-                        StepThreadToLabelButton.Enabled = NodeSelected && NodeSuspended && LabelsTreeView.SelectedNode != null;
+                        bool NodeDebugging = IsSelectionDebugging();
+                        DebugButton.Enabled = NodeSelected && !NodeDebugging;
+                        ResumeButton.Enabled = NodeSelected && NodeDebugging;
+                        StepButton.Enabled = NodeSelected && NodeDebugging;
+                        SingleStepButton.Enabled = NodeSelected && NodeDebugging;
+                        StepThreadToLabelButton.Enabled = NodeSelected && NodeDebugging && LabelsTreeView.SelectedNode != null;
 
                         NodeSelected = LabelsTreeView.SelectedNode != null && 
                             LabelsTreeView.SelectedNode.Parent != null &&
@@ -1184,13 +1199,17 @@ namespace Drivers.Debugger.App
                     ValueStr = "Null";
                 }
             }
-            else if (Value.Length > 0)
+            else if (Value != null && Value.Length > 0)
             {
                 for (int i = 0; i < Value.Length; i++)
                 {
                     ValueStr = Value[i].ToString("X2") + ValueStr;
                 }
                 ValueStr = "0x" + ValueStr;
+            }
+            else if (ValueStr == null)
+            {
+                ValueStr = "[NULL]";
             }
 
             TreeNode NewNode = new TreeNode((!string.IsNullOrEmpty(ValueStr) ? ValueStr + " : " : "") + (!string.IsNullOrWhiteSpace(Name) ? Name : "") + (Temporary ? " : Temp" : (Info != null ? " : " + Info.ID : "")));

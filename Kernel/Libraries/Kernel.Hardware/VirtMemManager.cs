@@ -57,30 +57,7 @@ namespace Kernel.Hardware
             //     state
             impl.MapKernel();
         }
-
-        //TODO: Eliminate these obsolete (dangerous, breaking) functions
-
-        [Obsolete]
-        public static uint FindFreePhysPage()
-        {
-            return impl.FindFreePhysPageAddrs(1);
-        }
-        [Obsolete]
-        public static uint FindFreeVirtPage()
-        {
-            return impl.FindFreeVirtPageAddrs(1);
-        }
-        [Obsolete]
-        public static uint FindFreePhysPages(int num)
-        {
-            return impl.FindFreePhysPageAddrs(num);
-        }
-        [Obsolete]
-        public static uint FindFreeVirtPages(int num)
-        {
-            return impl.FindFreeVirtPageAddrs(num);
-        }
-
+        
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static FOS_System.Processes.Synchronisation.SpinLock MapFreePagesLock = new FOS_System.Processes.Synchronisation.SpinLock(-1);
         
@@ -201,6 +178,87 @@ namespace Kernel.Hardware
                 {
                     BasicConsole.WriteLine("!!! PANIC !!!");
                     BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for virtual addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map(physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
+
+                result = (void*)virtAddrsStart;
+            }
+            finally
+            {
+                MapFreePagesLock.Exit();
+            }
+
+            return result;
+        }
+
+        public static void* MapFreePageForKernel(VirtMemImpl.PageFlags flags, out void* physAddr)
+        {
+            return MapFreePagesForKernel(flags, 1, out physAddr);
+        }
+        public static void* MapFreePagesForKernel(VirtMemImpl.PageFlags flags, int numPages, out void* physAddrsStart)
+        {
+            uint virtAddrsStart = 0xDEADBEEF;
+            physAddrsStart = (void*)0xDEADBEEF;
+
+            MapFreePagesLock.Enter();
+
+            void* result = (void*)0xDEADBEEF;
+
+            try
+            {
+                virtAddrsStart = impl.FindFreeVirtPageAddrsForKernel(numPages);
+
+                if (virtAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePagesForKernel using 0xDEADBEEF for virtual addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
+                physAddrsStart = (void*)impl.FindFreePhysPageAddrs(numPages);
+
+                if ((uint)physAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
+                    BasicConsole.WriteLine("!-!-!-!-!-!-!");
+                }
+
+                for (uint i = 0; i < numPages; i++)
+                {
+                    Map((uint)physAddrsStart + (i * 4096), virtAddrsStart + (i * 4096), 4096, flags);
+                }
+
+                result = (void*)virtAddrsStart;
+            }
+            finally
+            {
+                MapFreePagesLock.Exit();
+            }
+
+            return result;
+        }
+        public static void* MapFreePhysicalPagesForKernel(VirtMemImpl.PageFlags flags, int numPages, uint physAddrsStart)
+        {
+            uint virtAddrsStart = 0xDEADBEEF;
+
+            MapFreePagesLock.Enter();
+
+            void* result = (void*)0xDEADBEEF;
+
+            try
+            {
+                virtAddrsStart = impl.FindFreeVirtPageAddrsForKernel(numPages);
+
+                if (virtAddrsStart == 0xDEADBEEF)
+                {
+                    BasicConsole.WriteLine("!!! PANIC !!!");
+                    BasicConsole.WriteLine("VirtMemManager.MapFreePhysicalPagesForKernel using 0xDEADBEEF for virtual addresses!");
                     BasicConsole.WriteLine("!-!-!-!-!-!-!");
                 }
 

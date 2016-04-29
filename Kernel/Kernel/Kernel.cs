@@ -98,7 +98,7 @@ namespace Kernel
                 }
                 
                 BasicConsole.WriteLine("Registering kernel process...");
-                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.Normal);
+                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.High);
                 
                 BasicConsole.WriteLine("Initialising kernel IRQs...");
                 KernelProcess.IRQHandler = Tasks.KernelTask.HandleIRQ;
