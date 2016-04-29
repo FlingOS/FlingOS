@@ -114,11 +114,12 @@ namespace Kernel.Pipes
                         ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create failed!"));
                         break;
                     case SystemCallResults.OK:
+                        aPipeId = request->Result.Id;
+                        InProcessId = request->Result.InpointProcessId;
+
                         //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Succeeded.");
                         //BasicConsole.Write("BasicOutPipe > New pipe id: ");
                         //BasicConsole.WriteLine(aPipeId);
-                        aPipeId = request->Result.Id;
-                        InProcessId = request->Result.InpointProcessId;
                         break;
                     default:
                         //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");

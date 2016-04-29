@@ -70,6 +70,24 @@ namespace Kernel.Hardware.Processes.Synchronisation
             count = (limit = aLimit) == -1 ? 0 : limit;
         }
 
+        public void Wait()
+        {
+            ulong identifier = ((UInt64)ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
+
+            ExclLock.Enter();
+            bool notLocked = count > 0;
+            if (notLocked)
+            {
+                count--;
+                ExclLock.Exit();
+            }
+            else
+            {
+                WaitingThreads.Add(identifier);
+                ExclLock.Exit();
+                Thread.Sleep(Thread.IndefiniteSleep);
+            }
+        }
         public bool WaitOnBehalf(Process aProcess, Thread aThread)
         {
             ulong identifier = ((UInt64)aProcess.Id << 32) | aThread.Id;
@@ -103,7 +121,7 @@ namespace Kernel.Hardware.Processes.Synchronisation
                     //BasicConsole.Write("Identifier: ");
                     //BasicConsole.WriteLine(identifier);
                 }
-                while (!ProcessManager.WakeProcess((uint)(identifier >> 32), (uint)identifier) && WaitingThreads.Count > 0);
+                while (!ProcessManager.WakeThread((uint)(identifier >> 32), (uint)identifier) && WaitingThreads.Count > 0);
             }
             else if (count < limit || limit == -1)
             {

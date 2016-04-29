@@ -175,7 +175,10 @@ namespace Kernel.Hardware.Keyboards
         /// </summary>
         public static void Clean()
         {
-            ThePS2?.Disable();
+            if (ThePS2 != null)
+            {
+                ThePS2.Disable();
+            }
         }
     }
 }

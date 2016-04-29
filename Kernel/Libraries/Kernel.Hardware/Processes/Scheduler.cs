@@ -363,9 +363,9 @@ namespace Kernel.Hardware.Processes
 
             while (ActiveQueue.Count == 0)
             {
-                //#if SCHEDULER_HANDLER_TRACE
-                BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
-                //#endif
+#if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
+                //BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
+#endif
                 UpdateInactiveThreads();
             }
 

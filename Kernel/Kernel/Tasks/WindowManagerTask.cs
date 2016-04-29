@@ -53,9 +53,9 @@ namespace Kernel.Tasks
         /// </remarks>
         private static uint MainThreadId = 1;
         private static uint GCThreadId;
-        private static uint InputProcessingThreadId;
-        private static bool InputProcessingThreadAwake = false;
-        private static uint OutputProcessingThreadId;
+        private static int NewOutpointAvailable_SemaphoreId;
+        private static int NewPipeConnected_SemaphoreId;
+        private static int NewClientReady_SemaphoreId;
 
         public static bool Ready
         {
@@ -80,7 +80,21 @@ namespace Kernel.Tasks
             // Initialise connected pipes list
             ConnectedPipes = new List();
 
+            if (SystemCalls.CreateSemaphore(-1, out NewOutpointAvailable_SemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("WM > Failed to create a semaphore! (1)");
+            }
+            if (SystemCalls.CreateSemaphore(-1, out NewPipeConnected_SemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("WM > Failed to create a semaphore! (2)");
+            }
+            if (SystemCalls.CreateSemaphore(-1, out NewClientReady_SemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("WM > Failed to create a semaphore! (3)");
+            }
+
             // Start thread for handling background input processing
+            uint InputProcessingThreadId;
             if (SystemCalls.StartThread(InputProcessing, out InputProcessingThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: InputProcessing thread failed to create!");
@@ -97,11 +111,12 @@ namespace Kernel.Tasks
             //BasicConsole.Write("WM > Test thread id: ");
             //BasicConsole.WriteLine(TestThreadId);
 
-            BasicConsole.Write("WM > Register syscall handlers");
+            BasicConsole.WriteLine("WM > Register syscall handlers");
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.AcceptPages);
             
             // Start thread for handling background output processing
+            uint OutputProcessingThreadId;
             if (SystemCalls.StartThread(OutputProcessing, out OutputProcessingThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
@@ -115,7 +130,7 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("WM > Wait for pipe to be created");
             // Wait for pipe to be created
             ready_count++;
-            SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+            SystemCalls.WaitSemaphore(NewClientReady_SemaphoreId);
 
             PipeInfo CurrentPipeInfo = null;
 
@@ -201,12 +216,8 @@ namespace Kernel.Tasks
             {
                 //BasicConsole.WriteLine("WM > IP : (0)");
 
-                if (!InputProcessingThreadAwake)
-                {
-                    SystemCalls.SleepThread(10000);
-                }
-                InputProcessingThreadAwake = false;
-
+                SystemCalls.WaitSemaphore(NewOutpointAvailable_SemaphoreId);
+                
                 //BasicConsole.WriteLine("WM > InputProcessing thread running...");
 
                 int numOutpoints;
@@ -245,7 +256,7 @@ namespace Kernel.Tasks
                                 }
                             }
 
-                            if(!PipeExists)
+                            if (!PipeExists)
                             {
                                 try
                                 {
@@ -263,8 +274,8 @@ namespace Kernel.Tasks
                                         CurrentPipeIdx = 0;
                                         CurrentPipeIndex_Changed = true;
 
-                                        SystemCalls.WakeThread(MainThreadId);
-                                        SystemCalls.WakeThread(OutputProcessingThreadId);
+                                        SystemCalls.SignalSemaphore(NewClientReady_SemaphoreId);
+                                        SystemCalls.SignalSemaphore(NewPipeConnected_SemaphoreId);
                                     }
 
                                     //BasicConsole.WriteLine("WM > IP : (8)");
@@ -299,16 +310,15 @@ namespace Kernel.Tasks
             {
                 case SystemCallNumbers.RegisterPipeOutpoint:
                     {
-                        BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
+                        //BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
                         PipeClasses Class = (PipeClasses)param1;
                         PipeSubclasses Subclass = (PipeSubclasses)param2;
                         if (Class == PipeClasses.Standard &&
                             Subclass == PipeSubclasses.Standard_Out)
                         {
-                            BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
-                            result = SystemCallResults.RequestAction_WakeThread;
-                            Return2 = InputProcessingThreadId;
-                            InputProcessingThreadAwake = true;
+                            //BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
+                            result = SystemCallResults.RequestAction_SignalSemaphore;
+                            Return2 = (uint)NewOutpointAvailable_SemaphoreId;
                         }
                     }
                     break;
@@ -331,7 +341,7 @@ namespace Kernel.Tasks
             ready_count++;
 
             // Wait for pipe to be created
-            SystemCalls.SleepThread(SystemCalls.IndefiniteSleepThread);
+            SystemCalls.WaitSemaphore(NewPipeConnected_SemaphoreId);
 
             PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
 
@@ -341,11 +351,11 @@ namespace Kernel.Tasks
                 {
                     //BasicConsole.WriteLine("WM > OP : (0)");
 
-                    bool AltPressed = Keyboard.Default.AltPressed;
                     uint Scancode;
                     bool GotScancode = Keyboard.Default.GetScancode(out Scancode);
                     if (GotScancode)
                     {
+                        bool AltPressed = Keyboard.Default.AltPressed;
                         //BasicConsole.WriteLine("WM > OP : (1)");
 
                         KeyboardKey Key;

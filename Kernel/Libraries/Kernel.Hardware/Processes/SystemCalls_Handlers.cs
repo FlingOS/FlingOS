@@ -115,6 +115,14 @@ namespace Kernel.Hardware.Processes
                             ProcessManager.WakeThread(handlerProcess, TempReturn2);
                             tempResult = SystemCallResults.Unhandled;
                         }
+                        else if (tempResult == SystemCallResults.RequestAction_SignalSemaphore)
+                        {
+#if SYSCALLS_TRACE
+                            BasicConsole.WriteLine("System calls : Performing action - signal semaphore");
+#endif
+                            ProcessManager.Semaphore_Signal((int)TempReturn2, handlerProcess);
+                            tempResult = SystemCallResults.Unhandled;
+                        }
 
                         if (tempResult != SystemCallResults.Unhandled && !PermitActionResulted)
                         {

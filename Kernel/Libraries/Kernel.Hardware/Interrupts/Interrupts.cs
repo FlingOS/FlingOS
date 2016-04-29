@@ -229,7 +229,10 @@ namespace Kernel.Hardware.Interrupts
             catch
             {
                 BasicConsole.WriteLine("Error processing ISR/IRQ!");
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                if (ExceptionMethods.CurrentException != null)
+                {
+                    BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                }
             }
 
             InsideCriticalHandler = false;
@@ -242,31 +245,36 @@ namespace Kernel.Hardware.Interrupts
             Thread currThread = ProcessManager.CurrentThread;
             bool switched = false;
 
-            Process handlerProcess = null;
-            for (int i = 0; i < ProcessManager.Processes.Count; i++)
+            try
             {
-                handlerProcess = (Process)ProcessManager.Processes[i];
-                if (handlerProcess.ISRsToHandle.IsSet((int)ISRNum))
+                Process handlerProcess = null;
+                for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    if (handlerProcess.SwitchProcessForISRs && EnableProcessSwitching)
+                    handlerProcess = (Process)ProcessManager.Processes[i];
+                    if (handlerProcess.ISRsToHandle.IsSet((int)ISRNum))
                     {
-                        ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
-                        switched = true;
-                    }
-                    if (handlerProcess.ISRHandler == null)
-                    {
-                        BasicConsole.WriteLine("Error! handlerProcess.ISRHandler is null but is set to handle the ISR.");
-                    }
-                    else if (handlerProcess.ISRHandler(ISRNum) == 0)
-                    {
-                        break;
+                        if (handlerProcess.SwitchProcessForISRs && EnableProcessSwitching)
+                        {
+                            ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
+                            switched = true;
+                        }
+                        if (handlerProcess.ISRHandler == null)
+                        {
+                            BasicConsole.WriteLine("Error! handlerProcess.ISRHandler is null but is set to handle the ISR.");
+                        }
+                        else if (handlerProcess.ISRHandler(ISRNum) == 0)
+                        {
+                            break;
+                        }
                     }
                 }
             }
-
-            if (switched)
+            finally
             {
-                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                if (switched)
+                {
+                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                }
             }
         }
         [Drivers.Compiler.Attributes.NoDebug]
@@ -276,36 +284,41 @@ namespace Kernel.Hardware.Interrupts
             Process currProcess = ProcessManager.CurrentProcess;
             Thread currThread = ProcessManager.CurrentThread;
             bool switched = false;
-            
-            Process handlerProcess = null;
-            for (int i = 0; i < ProcessManager.Processes.Count; i++)
+
+            try
             {
-                handlerProcess = (Process)ProcessManager.Processes[i];
-                if (handlerProcess.IRQsToHandle.IsSet((int)IRQNum))
+                Process handlerProcess = null;
+                for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    if (handlerProcess.SwitchProcessForIRQs && EnableProcessSwitching)
+                    handlerProcess = (Process)ProcessManager.Processes[i];
+                    if (handlerProcess.IRQsToHandle.IsSet((int)IRQNum))
                     {
-                        ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
-                        switched = true;
-                    }
-                    
-                    if (handlerProcess.IRQHandler == null)
-                    {
-                        BasicConsole.WriteLine("Error! handlerProcess.IRQHandler is null but is set to handle the IRQ.");
-                    }
-                    else if (handlerProcess.IRQHandler(IRQNum) == 0)
-                    {
-                        break;
+                        if (handlerProcess.SwitchProcessForIRQs && EnableProcessSwitching)
+                        {
+                            ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
+                            switched = true;
+                        }
+
+                        if (handlerProcess.IRQHandler == null)
+                        {
+                            BasicConsole.WriteLine("Error! handlerProcess.IRQHandler is null but is set to handle the IRQ.");
+                        }
+                        else if (handlerProcess.IRQHandler(IRQNum) == 0)
+                        {
+                            break;
+                        }
                     }
                 }
             }
-
-            if (switched)
+            finally
             {
-                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
-            }
+                if (switched)
+                {
+                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                }
 
-            EndIRQ(IRQNum > 7);
+                EndIRQ(IRQNum > 7);
+            }
         }
         /// <summary>
         /// Sends the End of Interrupt to the PIC to signify the end of an IRQ.

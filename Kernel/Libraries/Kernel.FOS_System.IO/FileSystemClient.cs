@@ -64,6 +64,7 @@ namespace Kernel.FOS_System.IO
                 {
                     BasicConsole.WriteLine("File System Client > Error processing command!");
                     BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                    SystemCalls.SleepThread(1000);
                 }
             }
         }

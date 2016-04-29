@@ -49,10 +49,10 @@ namespace Kernel.Tasks
             while (!Terminating)
             {
                 *((ushort*)0xB809E) = (0x1F00 | '1');
-                TheCPU?.Halt();
+                TheCPU.Halt();
 
                 *((ushort*)0xB809E) = (0x3F00 | '2');
-                TheCPU?.Halt();
+                TheCPU.Halt();
             }
         }
     }

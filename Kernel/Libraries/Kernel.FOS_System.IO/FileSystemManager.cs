@@ -70,7 +70,6 @@ namespace Kernel.FOS_System.IO
             FileSystemMappings = new List(3);
 
             Clients = new List(5);
-            DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, true);
 
             if (SystemCalls.CreateSemaphore(1, out MappingsListSemaphoreId) != SystemCallResults.OK)
             {
@@ -164,6 +163,8 @@ namespace Kernel.FOS_System.IO
 
         private static void WaitForClients()
         {
+            DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, true);
+
             while (!Terminating)
             {
                 uint InProcessId;
@@ -182,21 +183,24 @@ namespace Kernel.FOS_System.IO
                     RemoteProcessId = InProcessId
                 };
 
-                if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
+                while (SystemCalls.WaitSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
                 {
-                    Clients.Add(NewInfo);
+                    BasicConsole.WriteLine("File System Manager > Failed wait on client list semaphore!");
+                }
 
-                    uint NewThreadId;
-                    if (SystemCalls.StartThread(ManageClient, out NewThreadId) == SystemCallResults.OK)
-                    {
-                        NewInfo.ManagementThreadId = NewThreadId;
-                    }
-                    else
-                    {
-                        BasicConsole.WriteLine("File System Manager > Failed to create client management thread!");
-                    }
+                Clients.Add(NewInfo);
 
-                    SystemCalls.SignalSemaphore(ClientListSemaphoreId);
+                uint NewThreadId;
+                while (SystemCalls.StartThread(ManageClient, out NewThreadId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("File System Manager > Failed to create client management thread!");
+                }
+
+                NewInfo.ManagementThreadId = NewThreadId;
+
+                while (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("File System Manager > Failed signal client list semaphore!");
                 }
             }
         }
@@ -215,6 +219,10 @@ namespace Kernel.FOS_System.IO
                 BasicConsole.WriteLine("File System Manager > Client manager started.");
 
                 TheClient.Manage();
+            }
+            else
+            {
+                BasicConsole.WriteLine("File System Manager > Failed wait on client list semaphore! (MC 2)");
             }
         }
     }

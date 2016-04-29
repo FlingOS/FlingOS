@@ -675,16 +675,16 @@ namespace Kernel.FOS_System
                 {
                     BasicConsole.WriteLine("New heap NOT created (via expand)!");
                 }
-                else
-                {
-                    BasicConsole.WriteLine("New heap created (via expand)!");
-                    if (print)
-                    {
-                        BasicConsole.Write("New heap size: ");
-                        BasicConsole.Write(GetTotalMem() / 1024);
-                        BasicConsole.WriteLine("KiB");
-                    }
-                }
+                //else
+                //{
+                //    BasicConsole.WriteLine("New heap created (via expand)!");
+                //    if (print)
+                //    {
+                //        BasicConsole.Write("New heap size: ");
+                //        BasicConsole.Write(GetTotalMem() / 1024);
+                //        BasicConsole.WriteLine("KiB");
+                //    }
+                //}
             }
             else
             {
@@ -696,16 +696,16 @@ namespace Kernel.FOS_System
                     {
                         BasicConsole.WriteLine("Couldn't expand heap!");
                     }
-                    else
-                    {
-                        BasicConsole.WriteLine("Heap expanded successfully.");
-                        if (print)
-                        {
-                            BasicConsole.Write("New heap size: ");
-                            BasicConsole.Write(GetTotalMem() / 1024);
-                            BasicConsole.WriteLine("KiB");
-                        }
-                    }
+                    //else
+                    //{
+                    //    BasicConsole.WriteLine("Heap expanded successfully.");
+                    //    if (print)
+                    //    {
+                    //        BasicConsole.Write("New heap size: ");
+                    //        BasicConsole.Write(GetTotalMem() / 1024);
+                    //        BasicConsole.WriteLine("KiB");
+                    //    }
+                    //}
                     oldFBlock->expanding = false;
                 }
             }
