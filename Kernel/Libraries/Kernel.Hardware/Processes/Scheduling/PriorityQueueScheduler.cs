@@ -36,6 +36,7 @@ namespace Kernel.Hardware.Processes.Scheduling
 {
     public unsafe class PriorityQueueScheduler : FOS_System.Object, IScheduler
     {
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static PriorityQueueScheduler ThePQScheduler;
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
