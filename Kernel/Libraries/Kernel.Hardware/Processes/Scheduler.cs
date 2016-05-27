@@ -46,15 +46,7 @@ namespace Kernel.Hardware.Processes
 
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static Scheduling.IScheduler TheScheduler;
-
-        public static void InitProcess(Process process, Scheduler.Priority priority)
-        {
-            TheScheduler.InitProcess(process, priority);
-        }
-        public static void InitThread(Process process, Thread t)
-        {
-            TheScheduler.InitThread(process, t);
-        }
+        
 
         public static void Init()
         {
@@ -67,7 +59,7 @@ namespace Kernel.Hardware.Processes
         {
             TheScheduler.Start();
         }
-        public static void Started()
+        internal static void Started()
         {
             // Busy wait until the scheduler interrupts us. 
             while (true)
@@ -78,15 +70,27 @@ namespace Kernel.Hardware.Processes
             //  to it.
         }
 
-        public static void HandlePageFault(uint eip, uint errorCode, uint address)
+
+        public static void InitProcess(Process process, Scheduler.Priority priority)
         {
-            TheScheduler.HandlePageFault(eip, errorCode, address);
+            TheScheduler.InitProcess(process, priority);
         }
+        public static void InitThread(Process process, Thread t)
+        {
+            TheScheduler.InitThread(process, t);
+        }
+        public static void UpdateList(Thread t)
+        {
+            TheScheduler.UpdateList(t);
+        }
+
 
         public static void UpdateCurrentState()
         {
             TheScheduler.UpdateCurrentState();
         }
+
+
         public static void Enable()
         {
             TheScheduler.Enable();
@@ -100,13 +104,13 @@ namespace Kernel.Hardware.Processes
             return TheScheduler.IsEnabled();
         }
 
-        public static void UpdateList(Thread t)
+
+        public static void HandlePageFault(uint eip, uint errorCode, uint address)
         {
-            TheScheduler.UpdateList(t);
+            TheScheduler.HandlePageFault(eip, errorCode, address);
         }
 
-
-
+        
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
         public static void LoadTR()
         {
