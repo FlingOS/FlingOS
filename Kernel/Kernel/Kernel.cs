@@ -66,6 +66,9 @@ namespace Kernel
 
             try
             {
+                BasicConsole.WriteLine("Initialising scheduler...");
+                Scheduler.Init();
+
                 Hardware.IO.Serial.Serial.InitCOM1();
                 Hardware.IO.Serial.Serial.InitCOM2();
                 Hardware.IO.Serial.Serial.InitCOM3();
@@ -200,16 +203,8 @@ namespace Kernel
                 //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
                 //    bpm);
 
-                BasicConsole.WriteLine("Initialising scheduler...");
-                Scheduler.Init();
-
-                // Busy wait until the scheduler interrupts us. 
-                while (true)
-                {
-                    ;
-                }
-                // We will never return to this point since there is no way for the scheduler to point
-                //  to it.
+                BasicConsole.WriteLine("Starting scheduler...");
+                Scheduler.Start();
             }
             catch
             {

@@ -181,6 +181,8 @@ namespace Kernel.Hardware.Controllers
                                             break;
                                         case StorageCommands.Read:
                                             {
+                                                //BasicConsole.WriteLine("Storage controller > Issuing read (disk cmd) " + (String)CommandPtr->BlockCount + " blocks from " + (String)CommandPtr->BlockNo + " blocks offset.");
+
                                                 if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
                                                 {
                                                     DiskInfo TheDiskInfo = null;
@@ -498,15 +500,14 @@ namespace Kernel.Hardware.Controllers
                                     case DiskCommands.Read:
                                         {
                                             //BasicConsole.WriteLine("Storage controller > Reading " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
+                                            //BasicConsole.WriteLine("Storage controller > Disk block size: " + (FOS_System.String)TheInfo.TheDevice.BlockSize);
                                             byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
                                             TheInfo.TheDevice.ReadBlock(ACommand.BlockNo, ACommand.BlockCount, data);
-                                            //BasicConsole.WriteLine("Data read (non-zero only): ");
+                                            //BasicConsole.WriteLine("Data read: ");
                                             //for (int i = 0; i < data.Length; i++)
                                             //{
-                                            //    if (data[i] != 0)
-                                            //    {
-                                            //        BasicConsole.Write(data[i]);
-                                            //    }
+                                            //    BasicConsole.Write(data[i]);
+                                            //    BasicConsole.Write(" ");
                                             //}
                                             //BasicConsole.WriteLine("---------------------------------------------");
                                             DataOutpoint.Write(ACommand.DataOutPipeId, data, 0, data.Length, true);
@@ -516,7 +517,12 @@ namespace Kernel.Hardware.Controllers
                                         {
                                             BasicConsole.WriteLine("Storage controller > Writing " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
                                             byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
-                                            ACommand.DataInPipe.Read(data, 0, data.Length, true);                                            
+                                            int BytesRead = ACommand.DataInPipe.Read(data, 0, data.Length, true);
+                                            int DesiredBytesRead = (int)(ACommand.BlockCount * (uint)TheInfo.TheDevice.BlockSize);
+                                            if (BytesRead < DesiredBytesRead)
+                                            {
+                                                BasicConsole.WriteLine("Storage controller > Error! Virtual disk controller (Storage Controller Disk) did not provide enough data for Write command.");
+                                            }
                                             TheInfo.TheDevice.WriteBlock(ACommand.BlockNo, ACommand.BlockCount, data);                                            
                                         }
                                         break;

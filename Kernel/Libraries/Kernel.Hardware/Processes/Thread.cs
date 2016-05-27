@@ -523,7 +523,7 @@ namespace Kernel.Hardware.Processes
             //Prevent getting stuck forever.
             //  This may cause other problems later but at least we don't end up in the infinite
             //  while loop.
-            if (!Scheduler.Enabled)
+            if (!Scheduler.IsEnabled())
             {
                 return false;
             }

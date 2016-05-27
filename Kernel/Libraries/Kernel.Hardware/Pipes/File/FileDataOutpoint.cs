@@ -68,6 +68,10 @@ namespace Kernel.Pipes.File
         }
         public unsafe void WriteString(int PipeId, FOS_System.String str)
         {
+            if (str == "")
+            {
+                str = "\0";
+            }
             byte[] strBytes = ByteConverter.GetASCIIBytes(str);
             base.Write(PipeId, strBytes, 0, strBytes.Length, true);
         }

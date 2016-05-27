@@ -37,47 +37,99 @@ namespace Kernel.Tasks.App
 
                             unsafe
                             {
-                                ProcessDescriptor* ProcessList = (ProcessDescriptor*)Heap.AllocZeroed((uint)(sizeof(ProcessDescriptor) * NumProcesses), "System Status Task : Main (1)");
-                                if (SystemCalls.GetProcessList(ProcessList, NumProcesses) == SystemCallResults.OK)
+                                ProcessDescriptor* ProcessList = (ProcessDescriptor*)Heap.AllocZeroed((uint)(sizeof(ProcessDescriptor) * NumProcesses), "System Status Task : Main : ProcessList");
+                                try
                                 {
-                                    for (int i = 0; i < NumProcesses; i++)
+                                    if (SystemCalls.GetProcessList(ProcessList, NumProcesses) == SystemCallResults.OK)
                                     {
-                                        ProcessDescriptor* descriptor = ProcessList + i;
-                                        console.Write_AsDecimal(descriptor->Id);
-                                        console.Write(":");
-                                        
-                                        switch((Hardware.Processes.Scheduler.Priority)descriptor->Priority)
+                                        for (int i = 0; i < NumProcesses; i++)
                                         {
-                                            case Hardware.Processes.Scheduler.Priority.High:
-                                                console.Write("High");
-                                                break;
-                                            case Hardware.Processes.Scheduler.Priority.Low:
-                                                console.Write("Low");
-                                                break;
-                                            case Hardware.Processes.Scheduler.Priority.Normal:
-                                                console.Write("Normal");
-                                                break;
-                                            case Hardware.Processes.Scheduler.Priority.ZeroTimed:
-                                                console.Write("Zero Timed");
-                                                break;
-                                        }
+                                            ProcessDescriptor* descriptor = ProcessList + i;
+                                            console.Write_AsDecimal(descriptor->Id);
+                                            console.Write(":");
 
-                                        if (i < NumProcesses-1)
-                                        {
-                                            console.Write(", ");
+                                            switch ((Hardware.Processes.Scheduler.Priority)descriptor->Priority)
+                                            {
+                                                case Hardware.Processes.Scheduler.Priority.High:
+                                                    console.Write("High");
+                                                    break;
+                                                case Hardware.Processes.Scheduler.Priority.Low:
+                                                    console.Write("Low");
+                                                    break;
+                                                case Hardware.Processes.Scheduler.Priority.Normal:
+                                                    console.Write("Normal");
+                                                    break;
+                                                case Hardware.Processes.Scheduler.Priority.ZeroTimed:
+                                                    console.Write("Zero Timed");
+                                                    break;
+                                            }
+
+                                            if (i < NumProcesses - 1)
+                                            {
+                                                console.Write(", ");
+                                            }
                                         }
+                                        console.WriteLine();
                                     }
-                                    console.WriteLine();
+                                    else
+                                    {
+                                        console.WriteLine("Could not get process list!");
+                                    }
                                 }
-                                else
+                                finally
                                 {
-                                    console.WriteLine("Could not get process list!");
+                                    Heap.Free(ProcessList);
                                 }
                             }
                         }
                         else
                         {
                             console.WriteLine("Could not get number of processes!");
+                        }
+
+
+                        int FSCount;
+                        if (SystemCalls.StatFS(out FSCount) == SystemCallResults.OK)
+                        {
+                            console.WriteLine("Number of file systems: " + FOS_System.Int32.ToDecimalString(FSCount));
+
+                            if (FSCount > 0)
+                            {
+                                unsafe
+                                {
+                                    char* MappingsPtr = (char*)Heap.AllocZeroed((uint)(sizeof(char) * FSCount * 10), "System Status Task : Main : Mappings");
+                                    try
+                                    {
+                                        uint* ProcessesPtr = (uint*)Heap.AllocZeroed((uint)(sizeof(uint) * FSCount), "System Status Task : Main : FS Processes");
+                                        if (SystemCalls.StatFS(ref FSCount, MappingsPtr, ProcessesPtr) == SystemCallResults.OK)
+                                        {
+                                            String[] Mappings = new String[FSCount];
+                                            for (int i = 0; i < FSCount; i++)
+                                            {
+                                                Mappings[i] = ByteConverter.GetASCIIStringFromUTF16((byte*)MappingsPtr, (uint)(i * 10 * sizeof(char)), 10);
+                                                console.Write(Mappings[i] + "@" + ProcessesPtr[i]);
+                                                if (i < FSCount - 1)
+                                                {
+                                                    console.Write(", ");
+                                                }
+                                            }
+                                            console.WriteLine();
+                                        }
+                                        else
+                                        {
+                                            console.WriteLine("Could not get file system mappings!");
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        Heap.Free(MappingsPtr);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            console.WriteLine("Could not get number of file systems!");
                         }
 
                         SystemCalls.SleepThread(10000);

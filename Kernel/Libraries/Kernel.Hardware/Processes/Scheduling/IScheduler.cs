@@ -23,49 +23,24 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FlingOops
+namespace Kernel.Hardware.Processes.Scheduling
 {
-    public static class Kernel
+    public interface IScheduler
     {
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue)]
-        public static void Boot()
-        {
-        }
+        void InitProcess(Process process, Scheduler.Priority priority);
+        void InitThread(Process process, Thread t);
 
-        [Drivers.Compiler.Attributes.MainMethod]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void Main()
-        {
-#if MIPS
-            FlingOops.MIPS.CI20.Kernel.Start();
-#elif x86
-            FlingOops.x86.Kernel.Start();
-#endif
+        void Init();
+        void Start();
 
-            BasicConsole.Init();
-            BasicConsole.WriteLine("Kernel executing...");
+        void HandlePageFault(uint eip, uint errorCode, uint address);
 
-            Interfaces.InterfaceTests.RunTests();
-            CompilerTests.RunTests();
+        void UpdateCurrentState();
+        void Enable();
+        void Disable();
+        bool IsEnabled();
 
-#if MIPS
-            FlingOops.MIPS.CI20.Kernel.End();
-#elif x86
-            FlingOops.x86.Kernel.End();
-#endif
-        }
-
-        [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
-        public static void CallStaticConstructors()
-        {
-        }
+        void UpdateList(Thread t);
     }
 }

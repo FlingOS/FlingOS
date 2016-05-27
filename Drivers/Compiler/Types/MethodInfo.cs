@@ -160,7 +160,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         /// The unique identifier of the method (within a type).
         /// </summary>
-        public int IDValue = -1;
+        public int IDValue = int.MinValue;
 
         /// <summary>
         /// The priority value of the method (if any).
@@ -225,7 +225,7 @@ namespace Drivers.Compiler.Types
         /// </summary>
         /// <param name="aMethod">The method to generate the signature of.</param>
         /// <returns>The signature string.</returns>
-        private static string GetMethodSignature(System.Reflection.MethodBase aMethod)
+        public static string GetMethodSignature(System.Reflection.MethodBase aMethod)
         {
             string[] paramTypes = aMethod.GetParameters().Select(x => x.ParameterType).Select(x => x.FullName).ToArray();
             string returnType = "";

@@ -103,7 +103,7 @@ namespace Kernel.Pipes.File
         }
         public unsafe FOS_System.String ReadString(bool blocking)
         {
-            int bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataHeader), blocking);
+            int bytesRead = base.Read(ReadBuffer, 0, BufferSize, blocking);
             if (bytesRead > 0)
             {
                 return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);

@@ -108,7 +108,7 @@ namespace Drivers.Compiler.IL
             for (int i = 0; i < TheLibrary.TypeInfos.Count; i++)
             {
                 Types.TypeInfo aTypeInfo = TheLibrary.TypeInfos[i];
-                if (!ScannedTypes.ContainsKey(aTypeInfo.ID))
+                if (!ScannedTypes.ContainsKey(aTypeInfo.ID) && !aTypeInfo.UnderlyingType.IsInterface)
                 {
                     ScannedTypes.Add(aTypeInfo.ID, TheLibrary);
                     ScanStaticFields(TheLibrary, aTypeInfo, StaticFieldsBlocks);

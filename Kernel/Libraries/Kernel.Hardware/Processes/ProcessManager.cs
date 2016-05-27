@@ -487,7 +487,6 @@ namespace Kernel.Hardware.Processes
 
 #if PROCESSMANAGER_SWITCH_TRACE
             BasicConsole.WriteLine("Exception state updated.");
-#endif
 
             if (Scheduler.OutputMessages)
             {
@@ -496,6 +495,7 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.Write(" : ");
                 BasicConsole.WriteLine(CurrentThread.Name);
             }
+#endif
         }
 
         public static bool WakeThread(uint processId, uint threadId)

@@ -130,11 +130,12 @@ namespace Drivers.Compiler.Architectures.x86
             Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
+            conversionState.AddExternalLabel(conversionState.GetObjectTypeMethodInfo().ID);
 
             //The method to call is a method base
             //A method base can be either a method info i.e. a normal method
             //or a constructor method. The two types are treated separately.
-            if(methodToCall is MethodInfo)
+            if (methodToCall is MethodInfo)
             {
                 //Need to do callvirt related stuff to load address of method to call
                 // - Check for invoke of a delegate - if so, treat rather differently from normal callvirt
@@ -267,9 +268,14 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNull" });
 
                     //Get type ref
-                    int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + typeOffset.ToString() + "]", Dest = "EAX" });
-                    
+                    //int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
+                    //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + typeOffset.ToString() + "]", Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetObjectTypeMethodInfo().ID });
+                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
+
                     //Get method table ref
                     int methodTablePtrOffset = conversionState.GetTypeFieldOffset("MethodTablePtr");
                     conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + methodTablePtrOffset.ToString() + "]", Dest = "EAX" });

@@ -35,12 +35,10 @@ namespace Kernel.FOS_System.IO.Disk
 
         public ISO9660(Hardware.Devices.DiskDevice disk)
         {
-            byte[] data = disk.NewBlockArray(1);
             VolumeDescriptor desciptor = null;
             uint sector = 0x10;
             do
             {
-                disk.ReadBlock(sector, 1, data);
                 desciptor = VolumeDescriptor.CreateDescriptor(disk, sector, 1);
                 VolumeDescriptors.Add(desciptor);
 

@@ -35,24 +35,24 @@ namespace Kernel.Shells
                     BasicConsole.WriteLine("DM > ATA Driver started.");
                 }
 
-                //if (Tasks.Helpers.StartBuiltInProcess("DM", "PCI Driver", Tasks.Driver.PCIDriverTask.Main, false))
-                //{
-                //    BasicConsole.WriteLine("DM > Couldn't start the PCI Driver!");
-                //}
-                //else
-                //{
-                //    BasicConsole.WriteLine("DM > PCI Driver started.");
-                //}
+                if (Tasks.Helpers.StartBuiltInProcess("DM", "PCI Driver", Tasks.Driver.PCIDriverTask.Main, false))
+                {
+                    BasicConsole.WriteLine("DM > Couldn't start the PCI Driver!");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("DM > PCI Driver started.");
+                }
 
-                //if (Tasks.Helpers.StartBuiltInProcess("DM", "USB Driver", Tasks.Driver.USBDriverTask.Main, false))
-                //{
-                //    BasicConsole.WriteLine("DM > Couldn't start the USB Driver!");
-                //}
-                //else
-                //{
-                //    BasicConsole.WriteLine("DM > USB Driver started.");
-                //}
-                
+                if (Tasks.Helpers.StartBuiltInProcess("DM", "USB Driver", Tasks.Driver.USBDriverTask.Main, false))
+                {
+                    BasicConsole.WriteLine("DM > Couldn't start the USB Driver!");
+                }
+                else
+                {
+                    BasicConsole.WriteLine("DM > USB Driver started.");
+                }
+
                 while (!terminating)
                 {
                     try
@@ -116,12 +116,17 @@ namespace Kernel.Shells
                         console.Write("Name: ");
                         console.WriteLine(ADevice.Name);
                         console.Write("Info: ");
+                        bool PrintedOne = false;
                         for (int j = 0; j < ADevice.Info.Length; j++)
                         {
-                            console.Write(ADevice.Info[j]);
-                            if (j < ADevice.Info.Length - 1)
+                            if (ADevice.Info[j] != 0xFFFFFFFF)
                             {
-                                console.Write(", ");
+                                if (PrintedOne)
+                                {
+                                    console.Write(", ");
+                                }
+                                console.Write(ADevice.Info[j]);
+                                PrintedOne = true;
                             }
                         }
                         console.WriteLine();

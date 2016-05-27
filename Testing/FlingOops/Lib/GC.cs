@@ -380,18 +380,19 @@ namespace FlingOops
                 BasicConsole.WriteLine("Error! GC can't create a new object because the heap returned a null pointer.");
                 BasicConsole.DelayOutput(10);
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
-
+                
                 return null;
             }
-
-            NumObjs++;
-
+                
             //Initialise the GCHeader
             SetSignature(newObjPtr);
             newObjPtr->RefCount = 1;
+
             //Initialise the object _Type field
-            FlingOops.ObjectWithType newObj = (FlingOops.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newObj._Type = theType;
+            FlingOops.Object newObj = (FlingOops.Object)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+            newObj._type = theType;
+
+            NumObjs++;
 
             //Move past GCHeader
             byte* newObjBytePtr = (byte*)(newObjPtr + 1);
@@ -476,13 +477,13 @@ namespace FlingOops
             }
 
             NumObjs++;
-
+            
             //Initialise the GCHeader
             SetSignature(newObjPtr);
             newObjPtr->RefCount = 1;
 
             FlingOops.Array newArr = (FlingOops.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newArr._Type = (FlingOops.Type)typeof(FlingOops.Array);
+            newArr._type = (FlingOops.Type)typeof(FlingOops.Array);
             newArr.length = length;
             newArr.elemType = elemType;
 
@@ -572,9 +573,9 @@ namespace FlingOops
             //        the OS exits...
 
             newObjPtr->RefCount = 0;
-
+       
             FlingOops.String newStr = (FlingOops.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-            newStr._Type = (FlingOops.Type)typeof(FlingOops.String);
+            newStr._type = (FlingOops.Type)typeof(FlingOops.String);
             newStr.length = length;
 
             //Move past GCHeader

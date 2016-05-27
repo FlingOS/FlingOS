@@ -89,6 +89,8 @@ namespace Drivers.Compiler.IL
                     PreprocessILOps(TheLibrary, aMethodInfo, TheLibrary.ILBlocks[aMethodInfo]);
                 }
             }
+
+            TheLibrary.ILBlocks = TheLibrary.ILBlocks.Where(x => !x.Value.TheMethodInfo.UnderlyingInfo.DeclaringType.IsInterface).ToDictionary(x => x.Key, x => x.Value);
         }
 
         /// <summary>
@@ -135,6 +137,11 @@ namespace Drivers.Compiler.IL
                 return;
             }
             theMethodInfo.Preprocessed = true;
+            
+            if (theMethodInfo.Signature.Contains("ITest"))
+            {
+                System.Diagnostics.Debugger.Break();
+            }
 
             string sig = theMethodInfo.Signature;
             bool SetMethodID = true;
@@ -147,6 +154,15 @@ namespace Drivers.Compiler.IL
                     PreprocessMethodInfo(TheLibrary, baseMethodInfo);
                     theMethodInfo.IDValue = baseMethodInfo.IDValue;
                     SetMethodID = false;
+                }
+                else
+                {
+                    System.Reflection.MethodBase InterfaceMethod = GetInterfaceMethod(theMethodInfo);
+                    if (InterfaceMethod != null)
+                    {
+                        theMethodInfo.IDValue = GetInterfaceMethodIDValue(InterfaceMethod);
+                        SetMethodID = false;
+                    }
                 }
             }
             if (SetMethodID)
@@ -263,6 +279,49 @@ namespace Drivers.Compiler.IL
             }
             return totalGen;
         }
+
+        private static System.Reflection.MethodBase GetInterfaceMethod(Types.MethodInfo methodInf)
+        {
+            Type DeclaringType = methodInf.UnderlyingInfo.DeclaringType;
+            if (DeclaringType.IsInterface)
+            {
+                return methodInf.UnderlyingInfo;
+            }
+
+            Type[] InterfaceTypes = DeclaringType.GetInterfaces();
+            foreach (Type InterfaceType in InterfaceTypes)
+            {
+                System.Reflection.MethodBase[] InterfaceMethods = InterfaceType.GetMethods();
+                foreach (System.Reflection.MethodBase AnInterfaceMethod in InterfaceMethods)
+                {
+                    if (AnInterfaceMethod.Name == methodInf.UnderlyingInfo.Name)
+                    {
+                        // Assume one is an implementation of the other
+                        //TODO: Is there a better way of doing this? Because IL allows for name-hiding/name-reuse that might cause this to be wrong
+
+                        return AnInterfaceMethod;
+                    }
+                }
+            }
+            return null;
+        }
+        static Dictionary<String, int> InterfaceMethodIds = new Dictionary<string, int>();
+        static int InterfaceMethodIdGenerator = -22;
+        private static int GetInterfaceMethodIDValue(System.Reflection.MethodBase interfaceMethod)
+        {
+            string sig = Types.MethodInfo.GetMethodSignature(interfaceMethod);
+            if (InterfaceMethodIds.ContainsKey(sig))
+            {
+                return InterfaceMethodIds[sig];
+            }
+            else
+            {
+                int id = InterfaceMethodIdGenerator--;
+                InterfaceMethodIds.Add(sig, id);
+                return id;
+            }
+        }
+
         /// <summary>
         /// Preprocesses the IL ops of the specified method/IL block.
         /// </summary>
