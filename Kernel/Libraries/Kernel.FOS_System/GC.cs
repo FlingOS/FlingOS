@@ -499,8 +499,8 @@ namespace Kernel.FOS_System
                 SetSignature(newObjPtr);
                 newObjPtr->RefCount = 1;
                 //Initialise the object _Type field
-                FOS_System.ObjectWithType newObj = (FOS_System.ObjectWithType)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-                newObj._Type = theType;
+                FOS_System.Object newObj = (FOS_System.Object)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
+                newObj._type = theType;
 
                 //Move past GCHeader
                 byte* newObjBytePtr = (byte*)(newObjPtr + 1);
@@ -595,7 +595,7 @@ namespace Kernel.FOS_System
                 newObjPtr->RefCount = 1;
 
                 FOS_System.Array newArr = (FOS_System.Array)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-                newArr._Type = (FOS_System.Type)typeof(FOS_System.Array);
+                newArr._type = (FOS_System.Type)typeof(FOS_System.Array);
                 newArr.length = length;
                 newArr.elemType = elemType;
 
@@ -696,7 +696,7 @@ namespace Kernel.FOS_System
                 newObjPtr->RefCount = 0;
 
                 FOS_System.String newStr = (FOS_System.String)Utilities.ObjectUtilities.GetObject(newObjPtr + 1);
-                newStr._Type = (FOS_System.Type)typeof(FOS_System.String);
+                newStr._type = (FOS_System.Type)typeof(FOS_System.String);
                 newStr.length = length;
 
                 //Move past GCHeader

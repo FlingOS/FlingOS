@@ -150,6 +150,14 @@ namespace Drivers.Compiler.IL
         {
             return ILLibrary.SpecialMethods[typeof(Attributes.NewObjMethodAttribute)].First();
         }
+        /// <summary>
+        /// Gets the method info for the GetObjectType method.
+        /// </summary>
+        /// <returns>The type info.</returns>
+        public Types.MethodInfo GetObjectTypeMethodInfo()
+        {
+            return ILLibrary.SpecialMethods[typeof(Attributes.GetObjectTypeMethodAttribute)].First();
+        }
 
         /// <summary>
         /// Gets the offset of the specified field of the replacement Type class from the start of the Type class when it is held in memory.

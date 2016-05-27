@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompilerTests.cs" />
+    <Compile Include="Interfaces\ITest.cs" />
     <Compile Include="Kernel.cs" />
     <Compile Include="MIPS\CI20\CI20.cs" />
     <Compile Include="MIPS\CI20\Kernel.cs" />
