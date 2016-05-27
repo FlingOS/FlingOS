@@ -137,6 +137,8 @@
     <Compile Include="Processes\Process.cs" />
     <Compile Include="Processes\ProcessManager.cs" />
     <Compile Include="Processes\Scheduler.cs" />
+    <Compile Include="Processes\Scheduling\IScheduler.cs" />
+    <Compile Include="Processes\Scheduling\PriorityQueueScheduler.cs" />
     <Compile Include="Processes\Synchronisation\Semaphore.cs" />
     <Compile Include="Processes\SystemCalls_Handlers.cs" />
     <Compile Include="Processes\Thread.cs" />

@@ -482,14 +482,6 @@ namespace Kernel.Hardware.VirtMem
             //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.7");
             //}
 
-            if (Processes.Scheduler.OutputMessages)
-            {
-                if (vAddr == 0x00106000)
-                {
-                    BasicConsole.WriteLine("Unmapping 0x00106000");
-                }
-            }
-
             SetPageEntry(virtPTPtr, virtPTIdx, 0, PTEFlags.None);
 
             //if (Unmap_Print)
