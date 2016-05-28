@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.Hardware.VirtMem
+namespace Kernel.Hardware.VirtualMemory
 {
     [Flags]
     public enum UpdateUsedPagesFlags : byte

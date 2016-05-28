@@ -44,7 +44,7 @@ namespace Kernel.Hardware.Processes
             High = 5
         }
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         private static Scheduling.IScheduler TheScheduler;
         
         public static long PreemptionPeriod

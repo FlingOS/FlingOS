@@ -36,12 +36,12 @@ namespace Kernel.Hardware.Processes.Scheduling
 {
     public unsafe class PriorityQueueScheduler : FOS_System.Object, IScheduler
     {
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         private static PriorityQueueScheduler ThePQScheduler;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         private PriorityQueue ActiveQueue = new PriorityQueue(1024);
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         private PriorityQueue InactiveQueue = new PriorityQueue(1024);
         //private List SuspendedList = new List(1024);
         
@@ -127,7 +127,7 @@ namespace Kernel.Hardware.Processes.Scheduling
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting cr3...");
 #endif
-            tss->cr3 = VirtMem.x86.GetCR3();
+            tss->cr3 = VirtualMemory.x86.GetCR3();
 
             //Load Task Register
 #if SCHEDULER_TRACE

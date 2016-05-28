@@ -30,7 +30,7 @@ using Kernel.FOS_System.IO;
 using Kernel.FOS_System.IO.Streams;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware.VirtMem;
+using Kernel.Hardware.VirtualMemory;
 
 namespace Kernel.Processes.ELF
 {

@@ -165,6 +165,10 @@
       <Project>{63c61b22-f7fb-4de2-8d25-73bc0d1dc04f}</Project>
       <Name>Kernel.Hardware.USB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.VirtualMemory\Kernel.Hardware.VirtualMemory.csproj">
+      <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
+      <Name>Kernel.Hardware.VirtualMemory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.Hardware\Kernel.Hardware.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
       <Name>Kernel.Hardware.Multiprocessing</Name>

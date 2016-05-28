@@ -444,7 +444,7 @@ namespace Kernel.Hardware.Timers
         /// <summary>
         /// The (only) PIT device instance.
         /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
         public static PIT ThePIT;
         /// <summary>
         /// Initialises the (only) PIT device instance.

@@ -24,7 +24,7 @@
 // ------------------------------------------------------------------------------ //
 #endregion
 
-namespace Kernel.Hardware.VirtMem
+namespace Kernel.Hardware.VirtualMemory
 {
     /// <summary>
     /// The virtual memory manager for the kernel. Wraps the specific implementation to allow targetting different architectures without
@@ -37,7 +37,7 @@ namespace Kernel.Hardware.VirtMem
         /// <summary>
         /// The specific virtual memory implementation to use.
         /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_VirtualMemory")]
         private static VirtMemImpl impl;
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Kernel.Hardware.VirtMem
             impl.MapKernel();
         }
         
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_VirtualMemory")]
         private static FOS_System.Processes.Synchronisation.SpinLock MapFreePagesLock = new FOS_System.Processes.Synchronisation.SpinLock(-1);
         
         public static void* MapFreePage(VirtMemImpl.PageFlags flags, out void* physAddr)

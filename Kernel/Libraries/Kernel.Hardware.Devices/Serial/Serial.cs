@@ -272,7 +272,7 @@ namespace Kernel.Hardware.IO.Serial
             }
         }
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
         public static Serial COM1;
         public static void InitCOM1()
         {

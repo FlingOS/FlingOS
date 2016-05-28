@@ -29,7 +29,7 @@
 
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Hardware.VirtMem
+namespace Kernel.Hardware.VirtualMemory
 {
     /// <remarks>
     /// Bit 1 of physical addresses is used to indicate whether the mapping came from a merge or not.

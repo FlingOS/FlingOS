@@ -28,7 +28,7 @@ using System;
 using Kernel.FOS_System.IO;
 using Kernel.FOS_System.Processes;
 using Kernel.Processes.ELF;
-using Kernel.Hardware.VirtMem;
+using Kernel.Hardware.VirtualMemory;
 
 namespace Kernel.Processes
 {

@@ -32,7 +32,7 @@
 
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
-using Kernel.Hardware.VirtMem;
+using Kernel.Hardware.VirtualMemory;
 using SystemCalls = Kernel.FOS_System.Processes.SystemCalls;
 using SystemCallNumbers = Kernel.FOS_System.Processes.SystemCallNumbers;
 using SystemCallResults = Kernel.FOS_System.Processes.SystemCallResults;
@@ -819,14 +819,14 @@ namespace Kernel.Tasks
                                 if (CallerProcess == ProcessManager.KernelProcess)
                                 {
                                     ptr = (uint)VirtMemManager.MapFreePagesForKernel(
-                                                        CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                        Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
+                                                        CallerProcess.UserMode ? Hardware.VirtualMemory.VirtMemImpl.PageFlags.None :
+                                                        Hardware.VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
                                 else
                                 {
                                     ptr = (uint)VirtMemManager.MapFreePages(
-                                                        CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                        Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
+                                                        CallerProcess.UserMode ? Hardware.VirtualMemory.VirtMemImpl.PageFlags.None :
+                                                        Hardware.VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
                             }
                             else
@@ -845,8 +845,8 @@ namespace Kernel.Tasks
 #endif
                                     void* unusedPAddr;
                                     ptr = (uint)VirtMemManager.MapFreePages(
-                                                    CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, out unusedPAddr);
+                                                    CallerProcess.UserMode ? Hardware.VirtualMemory.VirtMemImpl.PageFlags.None :
+                                                    Hardware.VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, count, Param2, out unusedPAddr);
                                 }
 #if DSC_TRACE
                                 else
@@ -873,14 +873,14 @@ namespace Kernel.Tasks
                                     if (CallerProcess == ProcessManager.KernelProcess)
                                     {
                                         ptr = (uint)VirtMemManager.MapFreePhysicalPagesForKernel(
-                                                    CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
+                                                    CallerProcess.UserMode ? Hardware.VirtualMemory.VirtMemImpl.PageFlags.None :
+                                                    Hardware.VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
                                     }
                                     else
                                     {
                                         ptr = (uint)VirtMemManager.MapFreePhysicalPages(
-                                                    CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                    Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
+                                                    CallerProcess.UserMode ? Hardware.VirtualMemory.VirtMemImpl.PageFlags.None :
+                                                    Hardware.VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
                                     }
                                 }
                             }
@@ -899,8 +899,8 @@ namespace Kernel.Tasks
                                         BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
                                         ptr = (uint)VirtMemManager.MapFreePages(
-                                                        CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
-                                                        Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, Param1);
+                                                        CallerProcess.UserMode ? Hardware.VirtualMemory.VirtMemImpl.PageFlags.None :
+                                                        Hardware.VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, count, Param2, Param1);
                                     }
                                 }
                             }

@@ -68,10 +68,10 @@ namespace Kernel.Hardware.Interrupts
     {
         //TODO: This lot is all x86 specific. It needs to be abstracted into a separate x86 interrupts class to support new architectures.
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static bool wasPrintingMessages = false;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static bool insideCriticalHandler = false;
         public static bool InsideCriticalHandler
         {
@@ -116,13 +116,13 @@ namespace Kernel.Hardware.Interrupts
         /// <summary>
         /// Used to disable attempts to process switch while the OS is initialising.
         /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static bool EnableProcessSwitching = false;
 
         /// <summary>
         /// Exception state for during interrupt handlers.
         /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static ExceptionState* InterruptsExState;
 
         static Interrupts()

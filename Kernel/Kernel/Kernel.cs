@@ -29,7 +29,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using System;
 using Kernel.Hardware.Processes;
-using Kernel.Hardware.VirtMem;
+using Kernel.Hardware.VirtualMemory;
 
 namespace Kernel
 {
@@ -44,6 +44,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static Kernel()
         {
+            VirtMemManager.Init(new x86());
         }
 
         /// <summary>

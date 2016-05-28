@@ -39,22 +39,22 @@ namespace Kernel.Hardware.Processes
     {
         public const int THREAD_DONT_CARE = -1;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static List Processes = new List();
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static Process CurrentProcess = null;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static Thread CurrentThread = null;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static ThreadState* CurrentThread_State = null;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static Process KernelProcess = null;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         public static uint ProcessIdGenerator = 1;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
         private static List Semaphores = new List(1024, 1024);
         
         public static Process CreateProcess(ThreadStartPoint MainMethod, FOS_System.String Name, bool UserMode)
@@ -65,7 +65,7 @@ namespace Kernel.Hardware.Processes
             
             Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
             
-            uint[] vAddrs = VirtMem.VirtMemManager.GetBuiltInProcessVAddrs();
+            uint[] vAddrs = VirtualMemory.VirtMemManager.GetBuiltInProcessVAddrs();
             uint startVAddr = 0xDEADBEEF;
             uint vAddrCount = 0;
             for (int i = 0; i < vAddrs.Length; i++)
@@ -227,7 +227,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtMem.VirtMemManager.MapFreePagesForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtualMemory.VirtMemManager.MapFreePagesForKernel(VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -263,7 +263,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtMem.VirtMemManager.MapFreePagesForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtualMemory.VirtMemManager.MapFreePagesForKernel(VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -670,7 +670,7 @@ namespace Kernel.Hardware.Processes
         {
             if (ShadowPageVAddr == (void*)0xFFFFFFFF)
             {
-                ShadowPageVAddr = VirtMem.VirtMemManager.MapFreePageForKernel(VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ShadowPagePAddr);
+                ShadowPageVAddr = VirtualMemory.VirtMemManager.MapFreePageForKernel(VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, out ShadowPagePAddr);
                 KernelProcess.TheMemoryLayout.AddKernelPage((uint)ShadowPagePAddr, (uint)ShadowPageVAddr);
             }
             

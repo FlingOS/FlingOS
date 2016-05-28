@@ -63,12 +63,12 @@ namespace Kernel.Pipes
         /// <summary>
         /// The list of all registered outpoints.
         /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
         public static List PipeOutpoints = new List(256, 256);
         /// <summary>
         /// The list of all created pipes.
         /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
         public static List Pipes = new List(20);
         
         /// <summary>
@@ -78,7 +78,7 @@ namespace Kernel.Pipes
         /// Might overflow back to 1 eventually but creating that number of pipes would be astounding. (The system would run out of memory first and
         /// there isn't currently a way to destroy pipes).
         /// </remarks>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
+        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
         private static int PipeIdGenerator = 1;
 
         /// <summary>

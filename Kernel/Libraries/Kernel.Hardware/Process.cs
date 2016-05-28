@@ -30,7 +30,7 @@ using System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Synchronisation;
 using Kernel.Hardware;
-using Kernel.Hardware.VirtMem;
+using Kernel.Hardware.VirtualMemory;
 using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.Processes

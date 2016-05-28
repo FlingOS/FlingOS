@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F59B042C-435D-48ED-AD7B-23666931A952}</ProjectGuid>
+    <ProjectGuid>{2F9D1B2A-6CC2-45E2-BD36-BDF7AB8626B2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.Hardware.Multiprocessing</RootNamespace>
-    <AssemblyName>Kernel.Hardware.Multiprocessing</AssemblyName>
+    <RootNamespace>Kernel.Hardware.VirtualMemory</RootNamespace>
+    <AssemblyName>Kernel.Hardware.VirtualMemory</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,15 +20,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.VirtualMemory.XML</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;x86</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -37,9 +37,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Docs|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;x86;UKKEYBOARD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.VirtualMemory.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,15 +53,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.VirtualMemory.XML</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|MIPS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;MIPS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -70,9 +70,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|MIPS'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.VirtualMemory.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -85,19 +85,15 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interrupts.cs" />
-    <Compile Include="Process.cs" />
-    <Compile Include="ProcessManager.cs" />
-    <Compile Include="Scheduler.cs" />
-    <Compile Include="Scheduling\IScheduler.cs" />
-    <Compile Include="Scheduling\PriorityQueueScheduler.cs" />
-    <Compile Include="Synchronisation\Semaphore.cs" />
-    <Compile Include="SystemCalls_Handlers.cs" />
-    <Compile Include="Thread.cs" />
+    <Compile Include="MemoryLayout.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VirtMemImpl.cs" />
+    <Compile Include="VirtMemManager.cs" />
+    <Compile Include="x86.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
@@ -108,29 +104,12 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj">
-      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.Hardware.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.VirtualMemory\Kernel.Hardware.VirtualMemory.csproj">
-      <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
-      <Name>Kernel.Hardware.VirtualMemory</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ASM\Interrupts\Interrupts.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Processes\Scheduler.x86_32.asm">
+    <Content Include="ASM\VirtMem\x86.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Kernel\Kernel.licenseheader">
-      <Link>Kernel.licenseheader</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
