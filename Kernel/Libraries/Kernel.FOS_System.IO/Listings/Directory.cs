@@ -26,9 +26,10 @@
 
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents a directory (folder) listing.

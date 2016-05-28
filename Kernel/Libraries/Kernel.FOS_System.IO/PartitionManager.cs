@@ -30,12 +30,13 @@
 
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.IO.Disk;
-using Kernel.FOS_System.IO.FAT;
-using Kernel.FOS_System.IO.ISO9660;
+using Kernel.FileSystems.Disk;
+using Kernel.FileSystems.FAT;
+using Kernel.FileSystems.ISO9660;
 using Kernel.Devices;
+using Kernel.FOS_System;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     public class PartitionManager : Object
     {

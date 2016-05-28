@@ -26,9 +26,10 @@
 
 #endregion
 
-using Kernel.FOS_System.IO.Streams;
+using Kernel.FileSystems.Streams;
+using Kernel.FOS_System;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents a file listing in a file system.

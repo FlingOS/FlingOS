@@ -31,9 +31,10 @@
 
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.IO.Streams.ISO9660;
+using Kernel.FileSystems.Streams.ISO9660;
+using Kernel.FOS_System;
 
-namespace Kernel.FOS_System.IO.ISO9660
+namespace Kernel.FileSystems.ISO9660
 {
     public class ISO9660Directory : Directory
     {

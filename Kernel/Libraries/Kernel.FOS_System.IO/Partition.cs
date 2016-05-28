@@ -28,8 +28,9 @@
 
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Devices;
+using Kernel.FOS_System;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents a partition on a disk drive.

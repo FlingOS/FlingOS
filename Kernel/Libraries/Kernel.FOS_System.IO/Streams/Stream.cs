@@ -26,7 +26,9 @@
 
 #endregion
 
-namespace Kernel.FOS_System.IO.Streams
+using Kernel.FOS_System;
+
+namespace Kernel.FileSystems.Streams
 {
     /// <summary>
     ///     Represents any stream.

@@ -26,7 +26,9 @@
 
 #endregion
 
-namespace Kernel.FOS_System.IO
+using Kernel.FOS_System;
+
+namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents an IO exception.

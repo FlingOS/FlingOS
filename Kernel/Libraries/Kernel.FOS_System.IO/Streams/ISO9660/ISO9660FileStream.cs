@@ -30,9 +30,10 @@
 #undef ISO9660FileStream_TRACE
 
 using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.IO.ISO9660;
+using Kernel.FileSystems.ISO9660;
+using Kernel.FOS_System;
 
-namespace Kernel.FOS_System.IO.Streams.ISO9660
+namespace Kernel.FileSystems.Streams.ISO9660
 {
     /// <summary>
     ///     Represents a file stream to a ISO9660 file or ISO9660 directory file.

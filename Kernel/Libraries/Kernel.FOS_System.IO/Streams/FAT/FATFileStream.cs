@@ -31,9 +31,10 @@
 
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.IO.FAT;
+using Kernel.FileSystems.FAT;
+using Kernel.FOS_System;
 
-namespace Kernel.FOS_System.IO.Streams.FAT
+namespace Kernel.FileSystems.Streams.FAT
 {
     /// <summary>
     ///     Represents a file stream to a FAT file or FAT directory file.

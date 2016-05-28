@@ -29,10 +29,11 @@
 #define FATDIR_TRACE
 #undef FATDIR_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO.Streams.FAT;
+using Kernel.FileSystems.Streams.FAT;
 
-namespace Kernel.FOS_System.IO.FAT
+namespace Kernel.FileSystems.FAT
 {
     /// <summary>
     ///     Represents a directory in a FAT file system.

@@ -26,10 +26,11 @@
 
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 
-namespace Kernel.FOS_System.IO.ISO9660
+namespace Kernel.FileSystems.ISO9660
 {
     public class ISO9660FileSystem : FileSystem
     {

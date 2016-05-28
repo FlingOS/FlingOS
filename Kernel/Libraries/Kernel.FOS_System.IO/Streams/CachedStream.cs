@@ -26,9 +26,10 @@
 
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Exceptions;
 
-namespace Kernel.FOS_System.IO.Streams
+namespace Kernel.FileSystems.Streams
 {
     public class CachedFileStream : FileStream
     {

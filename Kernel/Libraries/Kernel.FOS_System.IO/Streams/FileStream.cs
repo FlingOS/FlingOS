@@ -26,12 +26,12 @@
 
 #endregion
 
-using Kernel.FOS_System.IO.FAT;
-using Kernel.FOS_System.IO.ISO9660;
-using Kernel.FOS_System.IO.Streams.FAT;
-using Kernel.FOS_System.IO.Streams.ISO9660;
+using Kernel.FileSystems.FAT;
+using Kernel.FileSystems.ISO9660;
+using Kernel.FileSystems.Streams.FAT;
+using Kernel.FileSystems.Streams.ISO9660;
 
-namespace Kernel.FOS_System.IO.Streams
+namespace Kernel.FileSystems.Streams
 {
     /// <summary>
     ///     Represents a file stream which can read and write to files in a file system.

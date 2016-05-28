@@ -31,10 +31,11 @@ using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.Devices;
+using Kernel.FOS_System;
 using Kernel.Pipes;
 using Kernel.Pipes.Storage;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     public class StorageManager : Object
     {

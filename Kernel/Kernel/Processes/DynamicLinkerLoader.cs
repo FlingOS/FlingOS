@@ -27,7 +27,7 @@
 #endregion
 
 using Kernel.FOS_System;
-using Kernel.FOS_System.IO;
+using Kernel.FileSystems;
 using Kernel.FOS_System.Processes;
 using Kernel.Multiprocessing;
 using Kernel.Processes.ELF;

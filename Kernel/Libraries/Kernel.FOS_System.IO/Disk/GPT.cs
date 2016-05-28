@@ -29,10 +29,11 @@
 #define GPT_TRACE
 #undef GPT_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Devices;
 
-namespace Kernel.FOS_System.IO.Disk
+namespace Kernel.FileSystems.Disk
 {
     /// <summary>
     ///     Represents a GUID partition table partitioning scheme.

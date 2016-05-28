@@ -28,7 +28,7 @@
 
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO.Streams;
+using Kernel.FileSystems.Streams;
 
 namespace Kernel.Processes.ELF
 {

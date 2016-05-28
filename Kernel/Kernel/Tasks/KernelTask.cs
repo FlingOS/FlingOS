@@ -36,7 +36,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO;
+using Kernel.FileSystems;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Processes.Requests.Pipes;

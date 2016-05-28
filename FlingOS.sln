@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kernel", "Kernel", "{C45DB1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASM Method Label Builder", "Tools\Kernel\ASM Method Label Builder\ASM Method Label Builder.csproj", "{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FOS_System.IO", "Kernel\Libraries\Kernel.FOS_System.IO\Kernel.FOS_System.IO.csproj", "{5C9FDB7D-604E-4927-9D3F-E2C599B20797}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FileSystems", "Kernel\Libraries\Kernel.FOS_System.IO\Kernel.FileSystems.csproj", "{5C9FDB7D-604E-4927-9D3F-E2C599B20797}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISO9660Generator", "Kernel\Compiler\ISO9660Generator\ISO9660Generator.csproj", "{AE35B438-A252-40E3-8DB1-AA6FD22AC156}"
 EndProject

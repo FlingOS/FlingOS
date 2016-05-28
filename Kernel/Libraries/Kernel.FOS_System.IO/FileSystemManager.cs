@@ -28,13 +28,14 @@
 
 #define FSM_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.Pipes.File;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Provides management for file systems in the kernel.

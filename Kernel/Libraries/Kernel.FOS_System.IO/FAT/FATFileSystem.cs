@@ -29,10 +29,11 @@
 #define FATFS_TRACE
 #undef FATFS_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 
-namespace Kernel.FOS_System.IO.FAT
+namespace Kernel.FileSystems.FAT
 {
     /// <summary>
     ///     Represents a FAT (12/16/32) file system.

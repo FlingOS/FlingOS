@@ -29,10 +29,11 @@
 #define MBR_TRACE
 #undef MBR_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Devices;
 
-namespace Kernel.FOS_System.IO.Disk
+namespace Kernel.FileSystems.Disk
 {
     /// <summary>
     ///     Represents a master boot record partitioning scheme.

@@ -26,11 +26,12 @@
 
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 
-namespace Kernel.FOS_System.IO
+namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents a file system which must exist within a partition.

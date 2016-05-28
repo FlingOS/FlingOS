@@ -28,8 +28,8 @@
 
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO;
-using Kernel.FOS_System.IO.Streams;
+using Kernel.FileSystems;
+using Kernel.FileSystems.Streams;
 using Kernel.FOS_System.Stubs;
 
 namespace Kernel.Processes.ELF

@@ -26,10 +26,11 @@
 
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Devices;
 
-namespace Kernel.FOS_System.IO.Disk
+namespace Kernel.FileSystems.Disk
 {
     public class ISO9660 : Object
     {

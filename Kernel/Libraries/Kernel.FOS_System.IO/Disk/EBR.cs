@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.IO.Disk
+namespace Kernel.FileSystems.Disk
 {
     /// <summary>
     ///     Represents an extended boot record.
