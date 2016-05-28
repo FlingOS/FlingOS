@@ -30,7 +30,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.Hardware.IO;
 
-namespace Kernel.Hardware.ATA
+namespace Kernel.ATA
 {
     /// <summary>
     ///     Wraps the IO Ports for communicating with ATA devices.

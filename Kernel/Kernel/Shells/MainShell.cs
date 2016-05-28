@@ -29,6 +29,7 @@
 //#define PERIODIC_REBOOT
 
 using Drivers.Compiler.Attributes;
+using Kernel.ATA;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
@@ -45,7 +46,6 @@ using Kernel.Hardware.Interrupts;
 using Kernel.Hardware.Keyboards;
 using Kernel.PCI;
 using Kernel.Hardware.Processes;
-using Kernel.Hardware.Testing;
 using Kernel.Hardware.Timers;
 using Kernel.Processes;
 using Kernel.Tasks;

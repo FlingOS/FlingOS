@@ -91,7 +91,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Debugger.App", "Dri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.USB", "Kernel\Libraries\Kernel.Hardware.USB\Kernel.USB.csproj", "{63C61B22-F7FB-4DE2-8D25-73BC0D1DC04F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.ATA", "Kernel\Libraries\Kernel.Hardware.ATA\Kernel.Hardware.ATA.csproj", "{2D18C11E-3C86-4131-8DE9-C4385C9131B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.ATA", "Kernel\Libraries\Kernel.Hardware.ATA\Kernel.ATA.csproj", "{2D18C11E-3C86-4131-8DE9-C4385C9131B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.Devices", "Kernel\Libraries\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj", "{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}"
 EndProject

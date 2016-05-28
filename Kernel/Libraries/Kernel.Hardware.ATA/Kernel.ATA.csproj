@@ -7,8 +7,8 @@
     <ProjectGuid>{2D18C11E-3C86-4131-8DE9-C4385C9131B4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.Hardware.ATA</RootNamespace>
-    <AssemblyName>Kernel.Hardware.ATA</AssemblyName>
+    <RootNamespace>Kernel.ATA</RootNamespace>
+    <AssemblyName>Kernel.ATA</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.ATA.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.ATA.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.ATA.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.ATA.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,7 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.ATA.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.ATA.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
@@ -72,7 +72,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.ATA.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.ATA.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -86,7 +86,6 @@
     <Compile Include="ATA.cs" />
     <Compile Include="ATAIOPorts.cs" />
     <Compile Include="ATAManager.cs" />
-    <Compile Include="ATATests.cs" />
     <Compile Include="Exceptions\NoDiskException.cs" />
     <Compile Include="PATA.cs" />
     <Compile Include="PATABase.cs" />

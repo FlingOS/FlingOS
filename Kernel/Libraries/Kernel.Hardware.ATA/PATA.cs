@@ -30,7 +30,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
 
-namespace Kernel.Hardware.ATA
+namespace Kernel.ATA
 {
     /// <summary>
     ///     Represents an ATA Pio device.

@@ -29,7 +29,7 @@
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
 
-namespace Kernel.Hardware.ATA
+namespace Kernel.ATA
 {
     public class SATA : DiskDevice
     {

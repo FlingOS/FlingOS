@@ -35,7 +35,7 @@ using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
 using Kernel.Hardware.Exceptions;
 
-namespace Kernel.Hardware.ATA
+namespace Kernel.ATA
 {
     public class PATAPI : DiskDevice
     {

@@ -31,7 +31,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Controllers;
 using Kernel.Hardware.Devices;
 
-namespace Kernel.Hardware.ATA
+namespace Kernel.ATA
 {
     /// <summary>
     ///     Provides methods for managing ATA access.

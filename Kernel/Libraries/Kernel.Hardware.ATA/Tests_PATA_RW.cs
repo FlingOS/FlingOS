@@ -27,11 +27,12 @@
 #endregion
 
 using Kernel.FOS_System;
-using Kernel.Hardware.ATA;
+using Kernel.Hardware;
+using Kernel.Hardware.Testing;
 
-namespace Kernel.Hardware.Testing
+namespace Kernel.ATA
 {
-    public partial class ATATests : Test
+    public class ATATests : Test
     {
         public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning,
             OutputErrorDel OutputError)
@@ -60,10 +61,10 @@ namespace Kernel.Hardware.Testing
                 return;
             }
             OutputMessage("ATATests : Test_LongRead", (String) "Device found. Controller ID: " +
-                                                      (TestDevice.ControllerID == ATA.ATA.ControllerID.Primary
+                                                      (TestDevice.ControllerID == ATA.ControllerID.Primary
                                                           ? "Primary"
                                                           : "Secondary") + " , Position: " +
-                                                      (TestDevice.BusPosition == ATA.ATA.BusPosition.Master
+                                                      (TestDevice.BusPosition == ATA.BusPosition.Master
                                                           ? "Master"
                                                           : "Slave"));
 

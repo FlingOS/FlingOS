@@ -31,7 +31,7 @@ using Exception = Kernel.FOS_System.Exception;
 using NotSupportedException = Kernel.FOS_System.Exceptions.NotSupportedException;
 using String = Kernel.FOS_System.String;
 
-namespace Kernel.Hardware.ATA
+namespace Kernel.ATA
 {
     public class PATABase : ATA
     {

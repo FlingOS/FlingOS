@@ -145,9 +145,9 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\Kernel.Hardware.ATA\Kernel.Hardware.ATA.csproj">
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.ATA\Kernel.ATA.csproj">
       <Project>{2d18c11e-3c86-4131-8de9-c4385c9131b4}</Project>
-      <Name>Kernel.Hardware.ATA</Name>
+      <Name>Kernel.ATA</Name>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj">
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>

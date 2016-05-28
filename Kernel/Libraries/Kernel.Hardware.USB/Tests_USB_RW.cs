@@ -27,10 +27,11 @@
 #endregion
 
 using Kernel.FOS_System;
-using Kernel.USB;
+using Kernel.Hardware;
+using Kernel.Hardware.Testing;
 using Kernel.USB.Devices;
 
-namespace Kernel.Hardware.Testing
+namespace Kernel.USB
 {
     public class USBTests : Test
     {
