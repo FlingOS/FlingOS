@@ -30,8 +30,6 @@
 using System;
 using Kernel.Hardware.Processes;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Processes;
-using Kernel.Hardware.VirtMem;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 

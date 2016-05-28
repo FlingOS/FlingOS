@@ -92,7 +92,7 @@ namespace Kernel.Hardware.Processes
         public static void UpdateCurrentState()
         {
             TheScheduler.UpdateCurrentState();
-        }
+        } 
 
         [Drivers.Compiler.Attributes.NoDebug]
         [Drivers.Compiler.Attributes.NoGC]

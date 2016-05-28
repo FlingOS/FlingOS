@@ -93,6 +93,7 @@
     <Compile Include="ATAIOPorts.cs" />
     <Compile Include="ATAManager.cs" />
     <Compile Include="ATATests.cs" />
+    <Compile Include="Exceptions\NoDiskException.cs" />
     <Compile Include="PATA.cs" />
     <Compile Include="PATABase.cs" />
     <Compile Include="PATAPI.cs" />
@@ -114,9 +115,9 @@
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Hardware.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.csproj">
-      <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
-      <Name>Kernel.Hardware</Name>
+    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj">
+      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
+      <Name>Kernel.Hardware.IO</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

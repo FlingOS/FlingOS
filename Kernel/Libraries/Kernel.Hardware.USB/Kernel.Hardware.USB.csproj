@@ -117,9 +117,17 @@
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Hardware.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.csproj">
+    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj">
+      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
+      <Name>Kernel.Hardware.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kernel.Hardware.PCI\Kernel.Hardware.PCI.csproj">
+      <Project>{02d891e8-4aaa-48fa-8608-5135fb4dc493}</Project>
+      <Name>Kernel.Hardware.PCI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
-      <Name>Kernel.Hardware</Name>
+      <Name>Kernel.Hardware.Multiprocessing</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
