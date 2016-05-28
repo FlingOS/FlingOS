@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,120 +23,125 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
+using Drivers.Framework.Exceptions;
 
 namespace Drivers.Framework
 {
     /// <summary>
-    /// Methods for converting to and from byte arrays.
+    ///     Methods for converting to and from byte arrays.
     /// </summary>
     public static class ByteConverter
     {
         /// <summary>
-        /// Converts 2 bytes from the specified byte array at the specified index into a UInt16.
+        ///     Converts 2 bytes from the specified byte array at the specified index into a UInt16.
         /// </summary>
         /// <param name="n">The byte array from which to convert bytes.</param>
         /// <param name="aPos">The index of the first of the two bytes to convert.</param>
         /// <returns>The converted UInt16.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt16 ToUInt16(byte[] n, UInt32 aPos)
+        [NoDebug]
+        [NoGC]
+        public static ushort ToUInt16(byte[] n, uint aPos)
         {
-            return (UInt16)((UInt16)n[aPos + 1] << 8 | (UInt16)n[aPos]);
+            return (ushort) ((ushort) n[aPos + 1] << 8 | (ushort) n[aPos]);
         }
+
         /// <summary>
-        /// Converts 4 bytes from the specified byte array at the specified index into a UInt32.
+        ///     Converts 4 bytes from the specified byte array at the specified index into a UInt32.
         /// </summary>
         /// <param name="n">The byte array from which to convert bytes.</param>
         /// <param name="aPos">The index of the first of the four bytes to convert.</param>
         /// <returns>The converted UInt32.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt32 ToUInt32(byte[] n, UInt32 aPos)
+        [NoDebug]
+        [NoGC]
+        public static uint ToUInt32(byte[] n, uint aPos)
         {
-            return ((UInt32)n[aPos + 3] << 24 | (UInt32)n[aPos + 2] << 16 |
-                    (UInt32)n[aPos + 1] << 8 | (UInt32)n[aPos]);
+            return (uint) n[aPos + 3] << 24 | (uint) n[aPos + 2] << 16 |
+                   (uint) n[aPos + 1] << 8 | (uint) n[aPos];
         }
+
         /// <summary>
-        /// Converts 8 bytes from the specified byte array at the specified index into a UInt64.
+        ///     Converts 8 bytes from the specified byte array at the specified index into a UInt64.
         /// </summary>
         /// <param name="n">The byte array from which to convert bytes.</param>
         /// <param name="aPos">The index of the first of the four bytes to convert.</param>
         /// <returns>The converted UInt64.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt64 ToUInt64(byte[] n, UInt32 aPos)
+        [NoDebug]
+        [NoGC]
+        public static ulong ToUInt64(byte[] n, uint aPos)
         {
-            return ((UInt64)n[aPos + 7] << 54 | (UInt64)n[aPos + 6] << 48 | 
-                    (UInt64)n[aPos + 5] << 40 | (UInt64)n[aPos + 4] << 32 |
-                    (UInt64)n[aPos + 3] << 24 | (UInt64)n[aPos + 2] << 16 |
-                    (UInt64)n[aPos + 1] << 8  | (UInt64)n[aPos]);
+            return (ulong) n[aPos + 7] << 54 | (ulong) n[aPos + 6] << 48 |
+                   (ulong) n[aPos + 5] << 40 | (ulong) n[aPos + 4] << 32 |
+                   (ulong) n[aPos + 3] << 24 | (ulong) n[aPos + 2] << 16 |
+                   (ulong) n[aPos + 1] << 8 | (ulong) n[aPos];
         }
+
         /// <summary>
-        /// Converts the specified ASCII encoded string into an array of ASCII encoded bytes.
+        ///     Converts the specified ASCII encoded string into an array of ASCII encoded bytes.
         /// </summary>
         /// <param name="asciiString">The ASCII encoded string to convert.</param>
         /// <returns>The ASCII encoded bytes.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public static byte[] GetASCIIBytes(Framework.String asciiString)
+        [NoDebug]
+        public static byte[] GetASCIIBytes(String asciiString)
         {
             byte[] result = new byte[asciiString.length];
-            for(int i = 0; i < asciiString.length; i++)
+            for (int i = 0; i < asciiString.length; i++)
             {
-                result[i] = (byte)asciiString[i];
+                result[i] = (byte) asciiString[i];
             }
             return result;
         }
+
         /// <summary>
-        /// Converts the specified ASCII encoded string into an array of UTF16 encoded bytes.
+        ///     Converts the specified ASCII encoded string into an array of UTF16 encoded bytes.
         /// </summary>
         /// <param name="asciiString">The ASCII encoded string to convert.</param>
         /// <param name="offset">The offset within the ASCII string at which to start converting.</param>
         /// <param name="count">The number of characters to convert.</param>
         /// <returns>The UTF16 encoded bytes.</returns>
         /// <remarks>
-        /// This method does not add the null termination character "\0" to the end of the bytes.
+        ///     This method does not add the null termination character "\0" to the end of the bytes.
         /// </remarks>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public static byte[] GetUTF16Bytes(Framework.String asciiString, int offset, int count)
+        [NoDebug]
+        public static byte[] GetUTF16Bytes(String asciiString, int offset, int count)
         {
             if (count == 0)
             {
                 return new byte[0];
             }
 
-            byte[] result = new byte[count * 2];
+            byte[] result = new byte[count*2];
             int endIndex = offset + count;
             if (endIndex > asciiString.length)
             {
-                ExceptionMethods.Throw(new Framework.Exception("ByteConverter.GetUTF16Bytes: offset + count >= asciiString.length!"));
+                ExceptionMethods.Throw(
+                    new Exception("ByteConverter.GetUTF16Bytes: offset + count >= asciiString.length!"));
             }
             for (int i = offset, j = 0; i < endIndex; i++, j += 2)
             {
-                result[j] = (byte)asciiString[i];
-                result[j + 1] = (byte)(asciiString[i] >> 8);
+                result[j] = (byte) asciiString[i];
+                result[j + 1] = (byte) (asciiString[i] >> 8);
             }
             return result;
         }
+
         /// <summary>
-        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
+        ///     Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
         /// </summary>
         /// <param name="n">The bytes to convert.</param>
         /// <param name="aStart">The index in the array at which to start converting bytes.</param>
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public static Framework.String GetASCIIStringFromASCII(byte[] n, UInt32 aStart, UInt32 aCharCount)
+        [NoDebug]
+        public static String GetASCIIStringFromASCII(byte[] n, uint aStart, uint aCharCount)
         {
             {
-                uint maxExtent = (aCharCount + aStart);
+                uint maxExtent = aCharCount + aStart;
                 uint i = aStart;
-                for (;  i < n.Length && i < maxExtent; i++)
+                for (; i < n.Length && i < maxExtent; i++)
                 {
                     if (n[i] == 0)
                     {
@@ -145,40 +151,41 @@ namespace Drivers.Framework
                 aCharCount = i - aStart;
             }
 
-            Framework.String result = Framework.String.New((int)aCharCount);
+            String result = String.New((int) aCharCount);
 
             if (result == null)
             {
-                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
             else
             {
-                for (int i = 0; i < aCharCount && (i + aStart) < n.Length; i++)
+                for (int i = 0; i < aCharCount && i + aStart < n.Length; i++)
                 {
-                    UInt32 pos = (UInt32)(aStart + i);
-                    UInt16 aChar = (UInt16)(n[pos]);
+                    uint pos = (uint) (aStart + i);
+                    ushort aChar = (ushort) n[pos];
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char)aChar;
+                    result[i] = (char) aChar;
                 }
             }
 
             return result;
         }
+
         /// <summary>
-        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
+        ///     Converts the specified bytes to an ASCII encoded string, treating the bytes as ASCII encoded bytes.
         /// </summary>
         /// <param name="n">The bytes to convert.</param>
         /// <param name="aStart">The index in the array at which to start converting bytes.</param>
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public static unsafe Framework.String GetASCIIStringFromASCII(byte* n, UInt32 aStart, UInt32 aCharCount)
+        [NoDebug]
+        public static unsafe String GetASCIIStringFromASCII(byte* n, uint aStart, uint aCharCount)
         {
             {
-                uint maxExtent = (aCharCount + aStart);
+                uint maxExtent = aCharCount + aStart;
                 uint i = aStart;
                 for (; i < maxExtent; i++)
                 {
@@ -190,45 +197,46 @@ namespace Drivers.Framework
                 aCharCount = i - aStart;
             }
 
-            Framework.String result = Framework.String.New((int)aCharCount);
-            
+            String result = String.New((int) aCharCount);
+
             if (result == null)
             {
-                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
             else
             {
                 for (int i = 0; i < aCharCount; i++)
                 {
-                    UInt32 pos = (UInt32)(aStart + i);
-                    UInt16 aChar = (UInt16)(n[pos]);
+                    uint pos = (uint) (aStart + i);
+                    ushort aChar = (ushort) n[pos];
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char)aChar;
+                    result[i] = (char) aChar;
                 }
             }
 
             return result;
         }
+
         /// <summary>
-        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
+        ///     Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
         /// </summary>
         /// <param name="n">The bytes to convert.</param>
         /// <param name="aStart">The index in the array at which to start converting bytes.</param>
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
         /// <remarks>
-        /// This method does not handle removing the null termination character if it is present.
+        ///     This method does not handle removing the null termination character if it is present.
         /// </remarks>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public static Framework.String GetASCIIStringFromUTF16(byte[] n, UInt32 aStart, UInt32 aCharCount)
+        [NoDebug]
+        public static String GetASCIIStringFromUTF16(byte[] n, uint aStart, uint aCharCount)
         {
             //If you change this method, change the pointer version below too.
 
             {
-                uint maxExtent = (aCharCount * 2) + aStart;
+                uint maxExtent = aCharCount*2 + aStart;
                 uint i = aStart;
                 for (; i < n.Length && i < maxExtent; i += 2)
                 {
@@ -237,46 +245,47 @@ namespace Drivers.Framework
                         break;
                     }
                 }
-                aCharCount = (i - aStart) / 2;
+                aCharCount = (i - aStart)/2;
             }
 
-            Framework.String result = Framework.String.New((int)aCharCount);
-            
+            String result = String.New((int) aCharCount);
+
             if (result == null)
             {
-                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
             else
             {
-                for (int i = 0; i < aCharCount && ((i * 2) + aStart + 1) < n.Length; i++)
+                for (int i = 0; i < aCharCount && i*2 + aStart + 1 < n.Length; i++)
                 {
-                    UInt32 pos = (UInt32)(aStart + (i * 2));
-                    UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
+                    uint pos = (uint) (aStart + i*2);
+                    ushort aChar = (ushort) (n[pos + 1] << 8 | n[pos]);
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char)aChar;
+                    result[i] = (char) aChar;
                 }
             }
             return result;
         }
+
         /// <summary>
-        /// Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
+        ///     Converts the specified bytes to an ASCII encoded string, treating the bytes as UTF16 encoded bytes.
         /// </summary>
         /// <param name="n">Pointer to the bytes to convert.</param>
         /// <param name="aStart">The index in the array at which to start converting bytes.</param>
         /// <param name="aCharCount">The number of characters to convert.</param>
         /// <returns>The ASCII encoded string.</returns>
         /// <remarks>
-        /// This method does not handle removing the null termination character if it is present.
+        ///     This method does not handle removing the null termination character if it is present.
         /// </remarks>
-        public unsafe static Framework.String GetASCIIStringFromUTF16(byte* n, UInt32 aStart, UInt32 aCharCount)
+        public static unsafe String GetASCIIStringFromUTF16(byte* n, uint aStart, uint aCharCount)
         {
             //If you change this method, change the array version above too.
 
             {
-                uint maxExtent = (aCharCount * 2) + aStart;
+                uint maxExtent = aCharCount*2 + aStart;
                 uint i = aStart;
                 for (; i < maxExtent; i += 2)
                 {
@@ -285,26 +294,26 @@ namespace Drivers.Framework
                         break;
                     }
                 }
-                aCharCount = (i - aStart) / 2;
+                aCharCount = (i - aStart)/2;
             }
 
-            Framework.String result = Framework.String.New((int)aCharCount);
+            String result = String.New((int) aCharCount);
 
             if (result == null)
             {
-                ExceptionMethods.Throw(new Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
             else
             {
                 for (int i = 0; i < aCharCount; i++)
                 {
-                    UInt32 pos = (UInt32)(aStart + (i * 2));
-                    UInt16 aChar = (UInt16)(n[pos + 1] << 8 | n[pos]);
+                    uint pos = (uint) (aStart + i*2);
+                    ushort aChar = (ushort) (n[pos + 1] << 8 | n[pos]);
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char)aChar;
+                    result[i] = (char) aChar;
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldfld : IL.ILOps.Ldfld
     {
@@ -45,12 +45,12 @@ namespace Drivers.Compiler.Architectures.x86
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
 
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);
-            Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+            TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
 
             StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -73,14 +73,14 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if field to load is a floating value or the field to load
-        /// is not of size 4 or 8 bytes.
+        ///     Thrown if field to load is a floating value or the field to load
+        ///     is not of size 4 or 8 bytes.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -89,13 +89,13 @@ namespace Drivers.Compiler.Architectures.x86
             //Get the field info from the referencing assembly
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
             //Get the database type information about the object that contains the field
-            Types.TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
+            TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
             int offset = conversionState.TheILLibrary.GetFieldInfo(objTypeInfo, theField.Name).OffsetInBytes;
 
             //Is the value to load a floating pointer number?
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);
             //Get the size of the value to load (in bytes, as it will appear on the stack)
-            Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+            TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int fieldStackSize = fieldTypeInfo.SizeOnStackInBytes;
             int fieldMemSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldStackSize;
 
@@ -112,11 +112,12 @@ namespace Drivers.Compiler.Architectures.x86
             if (objStackItem.isValue)
             {
                 // Address = ESP + Offset to field
-                
-                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+
+                if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
                 {
                     //Error - How can we load the address of a field which is no longer on the stack??
-                    throw new NotSupportedException("Can't load address of field of value type instance that's no longer on the stack!");
+                    throw new NotSupportedException(
+                        "Can't load address of field of value type instance that's no longer on the stack!");
                 }
                 else
                 {
@@ -137,23 +138,53 @@ namespace Drivers.Compiler.Architectures.x86
                     // Copy value as efficiently as possible (to ESP-Size of object)
 
                     int i = fieldMemSize;
-                    for (; i >= 4; )
+                    for (; i >= 4;)
                     {
                         i -= 4;
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "EBX", Src = "[ESP+" + (offset + i) + "]" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]", Src = "EBX" });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Dword,
+                            Dest = "EBX",
+                            Src = "[ESP+" + (offset + i) + "]"
+                        });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Dword,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
+                            Src = "EBX"
+                        });
                     }
                     for (; i >= 2;)
                     {
                         i -= 2;
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "BX", Src = "[ESP+" + (offset + i) + "]" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]", Src = "BX" });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Word,
+                            Dest = "BX",
+                            Src = "[ESP+" + (offset + i) + "]"
+                        });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Word,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
+                            Src = "BX"
+                        });
                     }
                     for (; i >= 1;)
                     {
                         i -= 1;
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "BL", Src = "[ESP+" + (offset + i) + "]" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]", Src = "BL" });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Byte,
+                            Dest = "BL",
+                            Src = "[ESP+" + (offset + i) + "]"
+                        });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Byte,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
+                            Src = "BL"
+                        });
                     }
 
                     // Move in padding 0s
@@ -161,21 +192,41 @@ namespace Drivers.Compiler.Architectures.x86
                     switch (paddingSize)
                     {
                         case 1:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]", Src = "0" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Byte,
+                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
+                                Src = "0"
+                            });
                             break;
                         case 2:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]", Src = "0" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Word,
+                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
+                                Src = "0"
+                            });
                             break;
                         case 3:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]", Src = "0" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize + 1) + "]", Src = "0" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Byte,
+                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
+                                Src = "0"
+                            });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Word,
+                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize + 1) + "]",
+                                Src = "0"
+                            });
                             break;
                     }
 
                     // Remove everything else
-                    int sizeToRemove = (objStackItem.sizeOnStackInBytes - fieldStackSize);
-                    conversionState.Append(new ASMOps.Add() { Dest = "ESP", Src = sizeToRemove.ToString() });
-                    
+                    int sizeToRemove = objStackItem.sizeOnStackInBytes - fieldStackSize;
+                    conversionState.Append(new ASMOps.Add() {Dest = "ESP", Src = sizeToRemove.ToString()});
+
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
                         isFloat = valueisFloat,
@@ -188,11 +239,11 @@ namespace Drivers.Compiler.Architectures.x86
             else
             {
                 //Pop object pointer
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
-                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
+                if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
                 {
-                    conversionState.Append(new ASMOps.Add() { Src = offset.ToString(), Dest = "ECX" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "ECX" });
+                    conversionState.Append(new ASMOps.Add() {Src = offset.ToString(), Dest = "ECX"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "ECX"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
@@ -206,23 +257,33 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     //Push value at pointer+offset
                     int sizeNotInMem = fieldStackSize - fieldMemSize;
-                    int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
+                    int sizeToSub = sizeNotInMem/2*2; //Rounds down
                     for (int i = 0; i < sizeToSub; i += 2)
                     {
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "0"});
                     }
-                    for (int i = fieldMemSize + (fieldMemSize % 2); i > 0; i -= 2)
+                    for (int i = fieldMemSize + fieldMemSize%2; i > 0; i -= 2)
                     {
                         if (sizeToSub != sizeNotInMem)
                         {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0", Dest = "AX" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AL" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
+                            conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "0", Dest = "AX"});
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Byte,
+                                Src = "[ECX+" + (offset + i - 2).ToString() + "]",
+                                Dest = "AL"
+                            });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "AX"});
                         }
                         else
                         {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[ECX+" + (offset + i - 2).ToString() + "]", Dest = "AX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "AX" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Word,
+                                Src = "[ECX+" + (offset + i - 2).ToString() + "]",
+                                Dest = "AX"
+                            });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "AX"});
                         }
                     }
 

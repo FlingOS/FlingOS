@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,39 +23,41 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes.File
 {
     /// <summary>
-    /// Represents an outpoint for a standard in or standard out pipe.
+    ///     Represents an outpoint for a standard in or standard out pipe.
     /// </summary>
     public class FileCmdOutpoint : BasicOutpoint
     {
         /// <summary>
-        /// Creates and registers a storage command outpoint.
+        ///     Creates and registers a storage command outpoint.
         /// </summary>
         public FileCmdOutpoint(int MaxConnections)
             : base(PipeClasses.File, PipeSubclasses.File_Command, MaxConnections)
         {
         }
 
-        private unsafe void WriteCommand(int PipeId, FileCommands Command, ulong DiskId, ulong FileHandle, ulong BlockNo, uint BlockCount)
+        private unsafe void WriteCommand(int PipeId, FileCommands Command, ulong DiskId, ulong FileHandle, ulong BlockNo,
+            uint BlockCount)
         {
             byte[] buffer = new byte[sizeof(FilePipeCommand)];
-            FilePipeCommand* CmdPtr = (FilePipeCommand*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize);
-            CmdPtr->Command = (int)Command;
+            FilePipeCommand* CmdPtr =
+                (FilePipeCommand*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
+            CmdPtr->Command = (int) Command;
             CmdPtr->DiskId = DiskId;
             CmdPtr->BlockNo = BlockNo;
             CmdPtr->BlockCount = BlockCount;
             base.Write(PipeId, buffer, 0, buffer.Length, true);
         }
+
         public unsafe void Send_StatFS(int PipeId)
         {
             WriteCommand(PipeId, FileCommands.StatFS, 0, 0, 0, 0);
@@ -65,10 +68,11 @@ namespace Kernel.Pipes.File
             WriteCommand(PipeId, FileCommands.ListDir, 0, 0, 0, 0);
         }
 
-        //public unsafe void Send_Read(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
-        //{
-        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
         //}
+        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
+        //{
+
+        //public unsafe void Send_Read(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
         //public unsafe void Send_Write(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
         //{
         //    WriteCommand(PipeId, FileCommands.Write, 0, FileHandle, BlockNo, BlockCount);

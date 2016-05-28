@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,42 +23,41 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes.File
 {
     /// <summary>
-    /// Represents an inpoint for a standard in or standard out pipe.
+    ///     Represents an inpoint for a standard in or standard out pipe.
     /// </summary>
     public unsafe class FileCmdInpoint : BasicInpoint
     {
         /// <summary>
-        /// The buffer to use when reading commands from the pipe.
+        ///     The buffer to use when reading commands from the pipe.
         /// </summary>
         protected byte[] ReadBuffer;
 
         /// <summary>
-        /// Creates and connects a new storage command pipe to the target process.
+        ///     Creates and connects a new storage command pipe to the target process.
         /// </summary>
         /// <param name="aOutProcessId">The target process Id.</param>
         public FileCmdInpoint(uint aOutProcessId)
-            : base(aOutProcessId, PipeClasses.File, PipeSubclasses.File_Command, sizeof(FilePipeCommand) * 20)
+            : base(aOutProcessId, PipeClasses.File, PipeSubclasses.File_Command, sizeof(FilePipeCommand)*20)
         {
             ReadBuffer = new byte[BufferSize];
         }
-        
+
         public FilePipeCommand* Read()
         {
             int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, true);
             if (bytesRead > 0)
             {
-                return (FilePipeCommand*)((byte*)Utilities.ObjectUtilities.GetHandle(ReadBuffer) + FOS_System.Array.FieldsBytesSize);
+                return (FilePipeCommand*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
             }
             else
             {

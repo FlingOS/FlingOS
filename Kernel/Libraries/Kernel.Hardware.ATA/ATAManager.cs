@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,30 +23,35 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware.Controllers;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Hardware.ATA
 {
     /// <summary>
-    /// Provides methods for managing ATA access.
+    ///     Provides methods for managing ATA access.
     /// </summary>
     public static class ATAManager
     {
         /// <summary>
-        /// ATA primary IO device.
+        ///     ATA primary IO device.
         /// </summary>
         private static ATAIOPorts ATAIO1;
+
         /// <summary>
-        /// ATA secondary IO device.
+        ///     ATA secondary IO device.
         /// </summary>
         private static ATAIOPorts ATAIO2;
 
         public static List Devices;
 
         /// <summary>
-        /// Initialises all available ATA devices on the primary bus.
+        ///     Initialises all available ATA devices on the primary bus.
         /// </summary>
         public static void Init()
         {
@@ -54,7 +60,7 @@ namespace Kernel.Hardware.ATA
             ATAIO1 = new ATAIOPorts(false);
             ATAIO2 = new ATAIOPorts(true);
 
-            FOS_System.Exception ex = null;
+            Exception ex = null;
             int exCount = 0;
 
             //Try to initialise primary IDE:PATA/PATAPI drives.
@@ -71,7 +77,9 @@ namespace Kernel.Hardware.ATA
                 }
                 else
                 {
-                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    Exception newEx =
+                        new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
+                                      (String) exCount);
                     newEx.InnerException = ex;
                     ex = newEx;
                 }
@@ -89,7 +97,9 @@ namespace Kernel.Hardware.ATA
                 }
                 else
                 {
-                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    Exception newEx =
+                        new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
+                                      (String) exCount);
                     newEx.InnerException = ex;
                     ex = newEx;
                 }
@@ -107,7 +117,9 @@ namespace Kernel.Hardware.ATA
                 }
                 else
                 {
-                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    Exception newEx =
+                        new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
+                                      (String) exCount);
                     newEx.InnerException = ex;
                     ex = newEx;
                 }
@@ -125,7 +137,9 @@ namespace Kernel.Hardware.ATA
                 }
                 else
                 {
-                    FOS_System.Exception newEx = new FOS_System.Exception("Multiple errors occurred while initialising the ATA stack. Count=" + (FOS_System.String)exCount);
+                    Exception newEx =
+                        new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
+                                      (String) exCount);
                     newEx.InnerException = ex;
                     ex = newEx;
                 }
@@ -140,7 +154,7 @@ namespace Kernel.Hardware.ATA
         }
 
         /// <summary>
-        /// Initialises a particular drive on the ATA bus.
+        ///     Initialises a particular drive on the ATA bus.
         /// </summary>
         /// <param name="ctrlId">The controller ID of the device.</param>
         /// <param name="busPos">The bus position of the device.</param>
@@ -163,15 +177,15 @@ namespace Kernel.Hardware.ATA
                         {
                             PATA device = new PATA(ThePATABase);
                             Devices.Add(device);
-                            Hardware.Devices.DeviceManager.RegisterDevice(device);
+                            DeviceManager.RegisterDevice(device);
 
                             // Initialise a thread to control the interface to the disk
-                            Controllers.StorageController.Init();
-                            Controllers.StorageController.AddDisk(device);
+                            StorageController.Init();
+                            StorageController.AddDisk(device);
                         }
                         catch
                         {
-                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising PATA device."));
+                            ExceptionMethods.Throw(new Exception("Error initialising PATA device."));
                         }
                     }
                     else if (ThePATABase.DriveType == PATABase.SpecLevel.PATAPI)
@@ -181,15 +195,15 @@ namespace Kernel.Hardware.ATA
                         {
                             PATAPI device = new PATAPI(ThePATABase);
                             Devices.Add(device);
-                            Hardware.Devices.DeviceManager.RegisterDevice(device);
+                            DeviceManager.RegisterDevice(device);
 
                             // Initialise a thread to control the interface to the disk
-                            Controllers.StorageController.Init();
-                            Controllers.StorageController.AddDisk(device);
+                            StorageController.Init();
+                            StorageController.AddDisk(device);
                         }
                         catch
                         {
-                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising PATAPI device."));
+                            ExceptionMethods.Throw(new Exception("Error initialising PATAPI device."));
                         }
                     }
                     //TODO: Remove the SATA/SATAPI initialisation from here. It should be done
@@ -201,7 +215,7 @@ namespace Kernel.Hardware.ATA
                         {
                             SATA device = new SATA();
                             Devices.Add(device);
-                            Hardware.Devices.DeviceManager.RegisterDevice(device);
+                            DeviceManager.RegisterDevice(device);
 
                             // TODO: Initialise a thread to control the interface to the disk (SATA)
                             //Controllers.StorageController.Init();
@@ -209,7 +223,7 @@ namespace Kernel.Hardware.ATA
                         }
                         catch
                         {
-                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising SATA device."));
+                            ExceptionMethods.Throw(new Exception("Error initialising SATA device."));
                         }
                     }
                     else if (ThePATABase.DriveType == PATABase.SpecLevel.SATAPI)
@@ -219,7 +233,7 @@ namespace Kernel.Hardware.ATA
                         {
                             SATAPI device = new SATAPI();
                             Devices.Add(device);
-                            Hardware.Devices.DeviceManager.RegisterDevice(device);
+                            DeviceManager.RegisterDevice(device);
 
                             // TODO: Initialise a thread to control the interface to the disk (SATAPI)
                             //Controllers.StorageController.Init();
@@ -227,16 +241,17 @@ namespace Kernel.Hardware.ATA
                         }
                         catch
                         {
-                            ExceptionMethods.Throw(new FOS_System.Exception("Error initialising SATAPI device."));
+                            ExceptionMethods.Throw(new Exception("Error initialising SATAPI device."));
                         }
                     }
                 }
             }
             catch
             {
-                ExceptionMethods.Throw(new FOS_System.Exception((FOS_System.String)"Error initialising PATA Base device. Controller ID: " + 
-                    (ctrlId == ATA.ControllerID.Primary ? "Primary" : "Secondary") + " , Position: " + 
-                    (busPos == ATA.BusPosition.Master ? "Master" : "Slave")));
+                ExceptionMethods.Throw(new Exception((String) "Error initialising PATA Base device. Controller ID: " +
+                                                     (ctrlId == ATA.ControllerID.Primary ? "Primary" : "Secondary") +
+                                                     " , Position: " +
+                                                     (busPos == ATA.BusPosition.Master ? "Master" : "Slave")));
             }
         }
     }

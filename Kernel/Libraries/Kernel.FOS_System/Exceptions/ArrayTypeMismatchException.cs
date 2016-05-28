@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,22 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Exceptions
 {
     /// <summary>
-    /// Represents a array type mismatch exception.
+    ///     Represents a array type mismatch exception.
     /// </summary>
-    public class ArrayTypeMismatchException : FOS_System.Exception
+    public class ArrayTypeMismatchException : Exception
     {
         /// <summary>
-        /// Sets the message to "Array type mismatch exception."
+        ///     Sets the message to "Array type mismatch exception."
         /// </summary>
         public ArrayTypeMismatchException()
             : base("Array type mismatch exception.")

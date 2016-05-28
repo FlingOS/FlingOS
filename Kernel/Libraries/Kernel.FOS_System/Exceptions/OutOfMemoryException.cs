@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,23 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Exceptions
 {
     /// <summary>
-    /// Represents an out of memory exception.
+    ///     Represents an out of memory exception.
     /// </summary>
-    public class OutOfMemoryException : FOS_System.Exception
+    public class OutOfMemoryException : Exception
     {
         /// <summary>
-        /// Sets the message to "Argument exception".
+        ///     Sets the message to "Argument exception".
         /// </summary>
         /// <param name="anExtendedMessage">
-        /// The extended message to append to the main message. Should specify which argument caused the exception.
+        ///     The extended message to append to the main message. Should specify which argument caused the exception.
         /// </param>
-        public OutOfMemoryException(FOS_System.String anExtendedMessage)
+        public OutOfMemoryException(String anExtendedMessage)
             : base("Out of memory. " + anExtendedMessage)
         {
         }

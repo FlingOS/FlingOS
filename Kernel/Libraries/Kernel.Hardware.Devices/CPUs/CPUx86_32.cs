@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Hardware.CPUs
 {
     /// <summary>
-    /// Represents an x86 32-bit CPU.
+    ///     Represents an x86 32-bit CPU.
     /// </summary>
-    public class CPUx86_32 : Devices.CPU
+    public class CPUx86_32 : CPU
     {
+        /// <summary>
+        ///     The main x86 CPU instance.
+        /// </summary>
+        public static CPUx86_32 TheCPU;
+
 #if x86
         static CPUx86_32()
         {
@@ -45,19 +50,15 @@ namespace Kernel.Hardware.CPUs
 #endif
 
         /// <summary>
-        /// Halts the CPU using the Hlt instruction.
+        ///     Halts the CPU using the Hlt instruction.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\CPUs\CPUx86_32\Halt")]
+        [PluggedMethod(ASMFilePath = @"ASM\CPUs\CPUx86_32\Halt")]
         public override void Halt()
         {
         }
 
         /// <summary>
-        /// The main x86 CPU instance.
-        /// </summary>
-        public static CPUx86_32 TheCPU;
-        /// <summary>
-        /// Initialises the main x86 CPU instance.
+        ///     Initialises the main x86 CPU instance.
         /// </summary>
         public static void Init()
         {

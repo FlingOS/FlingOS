@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,12 +23,12 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Attributes;
+using Object = Kernel.FOS_System.Object;
 
 namespace Kernel.VirtualMemory
 {
@@ -41,9 +42,9 @@ namespace Kernel.VirtualMemory
     }
 
     /// <summary>
-    /// Represents a specific implementation of a virtual memory system.
+    ///     Represents a specific implementation of a virtual memory system.
     /// </summary>
-    public abstract class VirtualMemoryImplementation : FOS_System.Object
+    public abstract class VirtualMemoryImplementation : Object
     {
         [Flags]
         public enum PageFlags : uint
@@ -55,11 +56,12 @@ namespace Kernel.VirtualMemory
         }
 
         /// <summary>
-        /// Tests the virtual memory system.
+        ///     Tests the virtual memory system.
         /// </summary>
         public abstract void Test();
+
         /// <summary>
-        /// Prints out information about the free physical and virtual pages.
+        ///     Prints out information about the free physical and virtual pages.
         /// </summary>
         public abstract void PrintUsedPages();
 
@@ -68,49 +70,54 @@ namespace Kernel.VirtualMemory
         public abstract uint FindFreeVirtPageAddrsForKernel(int num);
 
         /// <summary>
-        /// Maps the specified virtual address to the specified physical address.
+        ///     Maps the specified virtual address to the specified physical address.
         /// </summary>
         /// <remarks>
-        /// Uses the flags Present, KernelOnly and Writeable as defaults.
+        ///     Uses the flags Present, KernelOnly and Writeable as defaults.
         /// </remarks>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public virtual void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable, UpdateUsedPages);
         }
+
         /// <summary>
-        /// Maps the specified virtual address to the specified physical address.
+        ///     Maps the specified virtual address to the specified physical address.
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
+        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags,
+            UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
+
         /// <summary>
-        /// Unmaps the specified page of virtual memory.
+        ///     Unmaps the specified page of virtual memory.
         /// </summary>
         /// <remarks>
-        /// <para>
-        /// Unmaps means it sets the address to 0 and marks the page as not present.
-        /// </para>
-        /// <para>
-        /// It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes available for use
-        /// but the physical page remains reserved (though unmapped).
-        /// </para>
+        ///     <para>
+        ///         Unmaps means it sets the address to 0 and marks the page as not present.
+        ///     </para>
+        ///     <para>
+        ///         It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes
+        ///         available for use
+        ///         but the physical page remains reserved (though unmapped).
+        ///     </para>
         /// </remarks>
         /// <param name="vAddr">The virtual address of the page to unmap.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public abstract void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
+
         /// <summary>
-        /// Gets the physical address for the specified virtual address.
+        ///     Gets the physical address for the specified virtual address.
         /// </summary>
         /// <param name="vAddr">The virtual address to get the physical address of.</param>
         /// <returns>The physical address.</returns>
         /// <remarks>
-        /// This has an undefined return value and behaviour if the virtual address is not mapped.
+        ///     This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
         public abstract uint GetPhysicalAddress(uint vAddr);
 
@@ -118,7 +125,7 @@ namespace Kernel.VirtualMemory
         public abstract bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd);
 
         /// <summary>
-        /// Maps in the main kernel memory.
+        ///     Maps in the main kernel memory.
         /// </summary>
         public abstract void MapKernel();
 

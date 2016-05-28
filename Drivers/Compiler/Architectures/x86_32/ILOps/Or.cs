@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Or : IL.ILOps.Or
     {
@@ -55,7 +54,7 @@ namespace Drivers.Compiler.Architectures.x86
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 &&
-                itemB.sizeOnStackInBytes == 8)
+                     itemB.sizeOnStackInBytes == 8)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -68,17 +67,17 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to 'or' are floating point values.
+        ///     Thrown if either or both values to 'or' are floating point values.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either or both values to multiply are not 4 or 8 bytes
-        /// in size or if the values are of different size.
+        ///     Thrown if either or both values to multiply are not 4 or 8 bytes
+        ///     in size or if the values are of different size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -103,11 +102,11 @@ namespace Drivers.Compiler.Architectures.x86
                     itemB.sizeOnStackInBytes == 4)
                 {
                     //Pop item B
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
                     //Pop item A
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Or() { Src = "EBX", Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Or() {Src = "EBX", Dest = "EAX"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
@@ -118,26 +117,26 @@ namespace Drivers.Compiler.Architectures.x86
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4) || 
-                    (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 8))
+                          itemB.sizeOnStackInBytes == 4) ||
+                         (itemA.sizeOnStackInBytes == 4 &&
+                          itemB.sizeOnStackInBytes == 8))
                 {
                     throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 8)
+                         itemB.sizeOnStackInBytes == 8)
                 {
                     //Pop item B to ecx:ebx
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
                     //Pop item A to edx:eax
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
                     //Or ecx:ebx with edx:eax
-                    conversionState.Append(new ASMOps.Or() { Src = "EBX", Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Or() { Src = "ECX", Dest = "EDX" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                    conversionState.Append(new ASMOps.Or() {Src = "EBX", Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Or() {Src = "ECX", Dest = "EDX"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {

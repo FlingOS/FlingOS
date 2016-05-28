@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,8 +23,9 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using Kernel.FOS_System;
 
 namespace Kernel.Processes.ELF
@@ -34,12 +36,14 @@ namespace Kernel.Processes.ELF
         Class32 = 1,
         Class64 = 2
     }
+
     public enum ELFDataEncoding : byte
     {
         Invalid = 0,
         LSB = 1,
         MSB = 2
     }
+
     public enum ELFFileType : ushort
     {
         None = 0,
@@ -48,6 +52,7 @@ namespace Kernel.Processes.ELF
         Shared = 3,
         Core = 4
     }
+
     public enum ELFMachines : ushort
     {
         None = 0,
@@ -59,42 +64,25 @@ namespace Kernel.Processes.ELF
         Intel80860 = 7,
         MIPS = 8
     }
-    public unsafe class ELFHeader : FOS_System.Object
+
+    public unsafe class ELFHeader : Object
     {
         public const int HEADER_SIZE = 52;
+        public ushort ELFHeaderSize;
+        public byte* EntryPoint;
+        public ELFFileType FileType;
+        public uint flags;
 
-        public bool SignatureOK
-        {
-            get
-            {
-                bool OK = ident[0] == 0x7F;
-                OK = OK && ident[1] == 'E';
-                OK = OK && ident[2] == 'L';
-                OK = OK && ident[3] == 'F';
-                return OK;
-            }
-        }
-        public ELFFileClass FileClass
-        {
-            get
-            {
-                return (ELFFileClass)ident[4];
-            }
-        }
-        public ELFDataEncoding DataEncoding
-        {
-            get
-            {
-                return (ELFDataEncoding)ident[5];
-            }
-        }
-        public byte HeaderVersion
-        {
-            get
-            {
-                return ident[6];
-            }
-        }
+        public byte[] ident;
+        public ELFMachines Machine;
+        public ushort ProgHeaderEntrySize;
+        public ushort ProgHeaderNumEntries;
+        public uint ProgHeaderTableOffset;
+        public ushort SecHeaderEntrySize;
+        public ushort SecHeaderIdxForSecNameStrings;
+        public ushort SecHeaderNumEntries;
+        public uint SecHeaderTableOffset;
+        public uint Version;
 
         public ELFHeader(byte[] data)
         {
@@ -116,10 +104,10 @@ namespace Kernel.Processes.ELF
             ident[14] = data[14];
             ident[15] = data[15];
 
-            FileType = (ELFFileType)ByteConverter.ToUInt16(data, 16);
-            Machine = (ELFMachines)ByteConverter.ToUInt16(data, 18);
+            FileType = (ELFFileType) ByteConverter.ToUInt16(data, 16);
+            Machine = (ELFMachines) ByteConverter.ToUInt16(data, 18);
             Version = ByteConverter.ToUInt32(data, 20);
-            EntryPoint = (byte*)ByteConverter.ToUInt32(data, 24);
+            EntryPoint = (byte*) ByteConverter.ToUInt32(data, 24);
             ProgHeaderTableOffset = ByteConverter.ToUInt32(data, 28);
             SecHeaderTableOffset = ByteConverter.ToUInt32(data, 32);
             flags = ByteConverter.ToUInt32(data, 36);
@@ -131,19 +119,31 @@ namespace Kernel.Processes.ELF
             SecHeaderIdxForSecNameStrings = ByteConverter.ToUInt16(data, 50);
         }
 
-        public byte[] ident;
-        public ELFFileType FileType;
-        public ELFMachines Machine;
-        public uint Version;
-        public byte* EntryPoint;
-        public uint ProgHeaderTableOffset;
-        public uint SecHeaderTableOffset;
-        public uint flags;
-        public ushort ELFHeaderSize;
-        public ushort ProgHeaderEntrySize;
-        public ushort ProgHeaderNumEntries;
-        public ushort SecHeaderEntrySize;
-        public ushort SecHeaderNumEntries;
-        public ushort SecHeaderIdxForSecNameStrings;
+        public bool SignatureOK
+        {
+            get
+            {
+                bool OK = ident[0] == 0x7F;
+                OK = OK && ident[1] == 'E';
+                OK = OK && ident[2] == 'L';
+                OK = OK && ident[3] == 'F';
+                return OK;
+            }
+        }
+
+        public ELFFileClass FileClass
+        {
+            get { return (ELFFileClass) ident[4]; }
+        }
+
+        public ELFDataEncoding DataEncoding
+        {
+            get { return (ELFDataEncoding) ident[5]; }
+        }
+
+        public byte HeaderVersion
+        {
+            get { return ident[6]; }
+        }
     }
 }

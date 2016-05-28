@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,34 +23,31 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Reflection;
-using System.ComponentModel;
-
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Manages loading libraries from files (e.g. IL libraries from .dll or .exe files).
+    ///     Manages loading libraries from files (e.g. IL libraries from .dll or .exe files).
     /// </summary>
     public static class LibraryLoader
     {
         /// <summary>
-        /// Library caching means only one ILLibrary object used per assembly (even if multiple refs exist in
-        ///  different dependency locations) so type scanner, compiler etc. don't duplicate work later.
+        ///     Library caching means only one ILLibrary object used per assembly (even if multiple refs exist in
+        ///     different dependency locations) so type scanner, compiler etc. don't duplicate work later.
         /// </summary>
-        private static Dictionary<string, ILLibrary> LibraryCache = new Dictionary<string, ILLibrary>();
+        private static readonly Dictionary<string, ILLibrary> LibraryCache = new Dictionary<string, ILLibrary>();
 
         /// <summary>
-        /// Loads an IL Library from the specified file.
+        ///     Loads an IL Library from the specified file.
         /// </summary>
         /// <param name="FilePath">The path to the file to load as an IL Library.</param>
         /// <returns>The loaded IL Library.</returns>
@@ -87,7 +85,7 @@ namespace Drivers.Compiler
         }
 
         /// <summary>
-        /// Loads an IL Library from the specified file and scans types within the library.
+        ///     Loads an IL Library from the specified file and scans types within the library.
         /// </summary>
         /// <param name="FilePath">The path to the file to load as an IL Library.</param>
         /// <returns>The loaded IL Library.</returns>
@@ -99,13 +97,14 @@ namespace Drivers.Compiler
             {
                 LoadDependencies(TheLibrary);
 
-                Types.TypeScanner.ScanTypes(TheLibrary);
+                TypeScanner.ScanTypes(TheLibrary);
             }
 
             return TheLibrary;
         }
+
         /// <summary>
-        /// Loads all the dependencies of a library.
+        ///     Loads all the dependencies of a library.
         /// </summary>
         /// <param name="aLibrary">The library to load dependencies of.</param>
         /// <returns>The number of dependencies loaded.</returns>
@@ -149,9 +148,9 @@ namespace Drivers.Compiler
 
             return DependenciesLoaded;
         }
-        
+
         /// <summary>
-        /// Determines whether the assembly name is in the list of names to ignore.
+        ///     Determines whether the assembly name is in the list of names to ignore.
         /// </summary>
         /// <param name="fullName">The name to test.</param>
         /// <returns>True if it is in the ignore list, otherwise false.</returns>

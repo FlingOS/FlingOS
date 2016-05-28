@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,39 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System.Exceptions;
+using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.FOS_System.Collections
 {
-    public class CircularBuffer : FOS_System.Object
+    public class CircularBuffer : Object
     {
-        private FOS_System.Object[] _array;
+        public readonly bool ThrowExceptions;
+        private readonly Object[] _array;
+
+        private readonly SpinLock AccessLock = new SpinLock();
         private int ReadIdx = -1;
         private int WriteIdx = -1;
 
-        public readonly bool ThrowExceptions;
+        public CircularBuffer(int size)
+            : this(size, true)
+        {
+        }
+
+        public CircularBuffer(int size, bool throwExceptions)
+        {
+            ThrowExceptions = throwExceptions;
+            if (ThrowExceptions && size <= 0)
+            {
+                ExceptionMethods.Throw(
+                    new ArgumentException("Size of circular buffer cannot be less than or equal to zero!"));
+            }
+            _array = new Object[size];
+        }
+
         public int Count
         {
             get
@@ -45,7 +66,7 @@ namespace Kernel.FOS_System.Collections
                 }
                 else if (WriteIdx <= ReadIdx)
                 {
-                    return (_array.Length - ReadIdx) + WriteIdx;
+                    return _array.Length - ReadIdx + WriteIdx;
                 }
                 else
                 {
@@ -53,31 +74,13 @@ namespace Kernel.FOS_System.Collections
                 }
             }
         }
+
         public int Size
         {
-            get
-            {
-                return _array.Length;
-            }
+            get { return _array.Length; }
         }
 
-        private Processes.Synchronisation.SpinLock AccessLock = new Processes.Synchronisation.SpinLock();
-
-        public CircularBuffer(int size)
-            : this(size, true)
-        {
-        }
-        public CircularBuffer(int size, bool throwExceptions)
-        {
-            ThrowExceptions = throwExceptions;
-            if (ThrowExceptions && size <= 0)
-            {
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("Size of circular buffer cannot be less than or equal to zero!"));
-            }
-            _array = new FOS_System.Object[size];
-        }
-
-        public bool Push(FOS_System.Object obj)
+        public bool Push(Object obj)
         {
             AccessLock.Enter();
 
@@ -88,7 +91,8 @@ namespace Kernel.FOS_System.Collections
                 {
                     if (ThrowExceptions)
                     {
-                        ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Push because the buffer is full."));
+                        ExceptionMethods.Throw(
+                            new OverflowException("Circular buffer cannot Push because the buffer is full."));
                     }
                     return false;
                 }
@@ -103,7 +107,8 @@ namespace Kernel.FOS_System.Collections
 
                         if (ThrowExceptions)
                         {
-                            ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Push because the buffer is full."));
+                            ExceptionMethods.Throw(
+                                new OverflowException("Circular buffer cannot Push because the buffer is full."));
                         }
                         return false;
                     }
@@ -120,7 +125,8 @@ namespace Kernel.FOS_System.Collections
                 AccessLock.Exit();
             }
         }
-        public FOS_System.Object Pop()
+
+        public Object Pop()
         {
             AccessLock.Enter();
 
@@ -130,7 +136,8 @@ namespace Kernel.FOS_System.Collections
                 {
                     if (ThrowExceptions)
                     {
-                        ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Pop because the buffer is empty."));
+                        ExceptionMethods.Throw(
+                            new OverflowException("Circular buffer cannot Pop because the buffer is empty."));
                     }
                     return null;
                 }
@@ -155,7 +162,8 @@ namespace Kernel.FOS_System.Collections
                 AccessLock.Exit();
             }
         }
-        public FOS_System.Object Peek()
+
+        public Object Peek()
         {
             AccessLock.Enter();
 
@@ -165,7 +173,8 @@ namespace Kernel.FOS_System.Collections
                 {
                     if (ThrowExceptions)
                     {
-                        ExceptionMethods.Throw(new Exceptions.OverflowException("Circular buffer cannot Peek because the buffer is empty."));
+                        ExceptionMethods.Throw(
+                            new OverflowException("Circular buffer cannot Peek because the buffer is empty."));
                     }
                     return null;
                 }

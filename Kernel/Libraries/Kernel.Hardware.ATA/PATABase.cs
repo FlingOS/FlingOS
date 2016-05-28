@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,103 +23,104 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using Exception = Kernel.FOS_System.Exception;
+using NotSupportedException = Kernel.FOS_System.Exceptions.NotSupportedException;
+using String = Kernel.FOS_System.String;
 
 namespace Kernel.Hardware.ATA
 {
     public class PATABase : ATA
     {
         /// <summary>
-        /// Device statuses.
+        ///     ATA Pio commands.
         /// </summary>
-        [Flags]
-        public enum Status : byte
+        public enum Cmd : byte
         {
             /// <summary>
-            /// No status.
+            ///     Read Pio command.
             /// </summary>
-            None = 0x00,
-            /// <summary>
-            /// Busy status.
-            /// </summary>
-            Busy = 0x80,
-            /// <summary>
-            /// ATA_SR_DRD status.
-            /// </summary>
-            ATA_SR_DRD = 0x40,
-            /// <summary>
-            /// ATA_SR_DF status.
-            /// </summary>
-            ATA_SR_DF = 0x20,
-            /// <summary>
-            /// ATA_SR_DSC status.
-            /// </summary>
-            ATA_SR_DSC = 0x10,
-            /// <summary>
-            /// DRQ status.
-            /// </summary>
-            DRQ = 0x08,
-            /// <summary>
-            /// ATA_SR_COR status.
-            /// </summary>
-            ATA_SR_COR = 0x04,
-            /// <summary>
-            /// ATA_SR_IDX status.
-            /// </summary>
-            ATA_SR_IDX = 0x02,
-            /// <summary>
-            /// Error status.
-            /// </summary>
-            Error = 0x01,
+            ReadPio = 0x20,
 
-            Timeout = 0xFF
-        };
+            /// <summary>
+            ///     Read Pio extended command.
+            /// </summary>
+            ReadPioExt = 0x24,
+
+            /// <summary>
+            ///     Read direct memory access command.
+            /// </summary>
+            ReadDma = 0xC8,
+
+            /// <summary>
+            ///     Read direct memory access extended command.
+            /// </summary>
+            ReadDmaExt = 0x25,
+
+            /// <summary>
+            ///     Write Pio command.
+            /// </summary>
+            WritePio = 0x30,
+
+            /// <summary>
+            ///     Write Pio extended command.
+            /// </summary>
+            WritePioExt = 0x34,
+
+            /// <summary>
+            ///     Write direct memory access command.
+            /// </summary>
+            WriteDma = 0xCA,
+
+            /// <summary>
+            ///     Write direct memory access extended command.
+            /// </summary>
+            WriteDmaExt = 0x35,
+
+            /// <summary>
+            ///     Cache flush command.
+            /// </summary>
+            CacheFlush = 0xE7,
+
+            /// <summary>
+            ///     Cache flush extended command.
+            /// </summary>
+            CacheFlushExt = 0xEA,
+
+            /// <summary>
+            ///     Packet command.
+            /// </summary>
+            Packet = 0xA0,
+
+            /// <summary>
+            ///     Identify packet command.
+            /// </summary>
+            /// <remarks>
+            ///     Unused. This is for PATAPI devices only.
+            /// </remarks>
+            IdentifyPacket = 0xA1,
+
+            /// <summary>
+            ///     Identify command.
+            /// </summary>
+            Identify = 0xEC,
+
+            /// <summary>
+            ///     Read command.
+            /// </summary>
+            Read = 0xA8,
+
+            /// <summary>
+            ///     Eject command.
+            /// </summary>
+            Eject = 0x1B
+        }
+
         /// <summary>
-        /// Error masks.
-        /// </summary>
-        [Flags]
-        public enum Error : byte
-        {
-            /// <summary>
-            /// BBK error.
-            /// </summary>
-            ATA_ER_BBK = 0x80,
-            /// <summary>
-            /// UNC error.
-            /// </summary>
-            ATA_ER_UNC = 0x40,
-            /// <summary>
-            /// MC error.
-            /// </summary>
-            ATA_ER_MC = 0x20,
-            /// <summary>
-            /// IDNF error.
-            /// </summary>
-            ATA_ER_IDNF = 0x10,
-            /// <summary>
-            /// MCR error.
-            /// </summary>
-            ATA_ER_MCR = 0x08,
-            /// <summary>
-            /// ABRT error.
-            /// </summary>
-            ATA_ER_ABRT = 0x04,
-            /// <summary>
-            /// TK0NF error.
-            /// </summary>
-            ATA_ER_TK0NF = 0x02,
-            /// <summary>
-            /// AMNF error.
-            /// </summary>
-            ATA_ER_AMNF = 0x01
-        };
-        /// <summary>
-        /// Drive Select values.
+        ///     Drive Select values.
         /// </summary>
         [Flags]
         public enum DriveSelectValue : byte
@@ -126,225 +128,213 @@ namespace Kernel.Hardware.ATA
             // Bits 0-3: Head Number for CHS.
             // Bit 4: Slave Bit. (0: Selecting Master Drive, 1: Selecting Slave Drive).
             /// <summary>
-            /// Slave value.
+            ///     Slave value.
             /// </summary>
             Slave = 0x10,
             // Bit 6: LBA (0: CHS, 1: LBA).
             /// <summary>
-            /// LBA value.
+            ///     LBA value.
             /// </summary>
             LBA = 0x40,
             // Bit 5: Obsolete and isn't used, but should be set.
             // Bit 7: Obsolete and isn't used, but should be set. 
             /// <summary>
-            /// Default value.
+            ///     Default value.
             /// </summary>
             Default = 0xA0
         };
+
         /// <summary>
-        /// ATA Pio commands.
+        ///     Error masks.
         /// </summary>
-        public enum Cmd : byte
+        [Flags]
+        public enum Error : byte
         {
             /// <summary>
-            /// Read Pio command.
+            ///     BBK error.
             /// </summary>
-            ReadPio = 0x20,
+            ATA_ER_BBK = 0x80,
+
             /// <summary>
-            /// Read Pio extended command.
+            ///     UNC error.
             /// </summary>
-            ReadPioExt = 0x24,
+            ATA_ER_UNC = 0x40,
+
             /// <summary>
-            /// Read direct memory access command.
+            ///     MC error.
             /// </summary>
-            ReadDma = 0xC8,
+            ATA_ER_MC = 0x20,
+
             /// <summary>
-            /// Read direct memory access extended command.
+            ///     IDNF error.
             /// </summary>
-            ReadDmaExt = 0x25,
+            ATA_ER_IDNF = 0x10,
+
             /// <summary>
-            /// Write Pio command.
+            ///     MCR error.
             /// </summary>
-            WritePio = 0x30,
+            ATA_ER_MCR = 0x08,
+
             /// <summary>
-            /// Write Pio extended command.
+            ///     ABRT error.
             /// </summary>
-            WritePioExt = 0x34,
+            ATA_ER_ABRT = 0x04,
+
             /// <summary>
-            /// Write direct memory access command.
+            ///     TK0NF error.
             /// </summary>
-            WriteDma = 0xCA,
+            ATA_ER_TK0NF = 0x02,
+
             /// <summary>
-            /// Write direct memory access extended command.
+            ///     AMNF error.
             /// </summary>
-            WriteDmaExt = 0x35,
-            /// <summary>
-            /// Cache flush command.
-            /// </summary>
-            CacheFlush = 0xE7,
-            /// <summary>
-            /// Cache flush extended command.
-            /// </summary>
-            CacheFlushExt = 0xEA,
-            /// <summary>
-            /// Packet command.
-            /// </summary>
-            Packet = 0xA0,
-            /// <summary>
-            /// Identify packet command.
-            /// </summary>
-            /// <remarks>
-            /// Unused. This is for PATAPI devices only.
-            /// </remarks>
-            IdentifyPacket = 0xA1,
-            /// <summary>
-            /// Identify command.
-            /// </summary>
-            Identify = 0xEC,
-            /// <summary>
-            /// Read command.
-            /// </summary>
-            Read = 0xA8,
-            /// <summary>
-            /// Eject command.
-            /// </summary>
-            Eject = 0x1B
-        }
+            ATA_ER_AMNF = 0x01
+        };
+
         /// <summary>
-        /// Specification levels (Drive types and identifiers)
+        ///     Specification levels (Drive types and identifiers)
         /// </summary>
         public enum SpecLevel : ushort
         {
             /// <summary>
-            /// Null
+            ///     Null
             /// </summary>
             /// <remarks>
-            /// This value is arbitary and has no meaning in the ATA spec.
+            ///     This value is arbitary and has no meaning in the ATA spec.
             /// </remarks>
             Null = 0x0000,
+
             /// <summary>
-            /// PATA
+            ///     PATA
             /// </summary>
             /// <remarks>
-            /// This value is arbitary and has no meaning in the ATA spec.
+            ///     This value is arbitary and has no meaning in the ATA spec.
             /// </remarks>
             PATA = 0x0001,
+
             /// <summary>
-            /// SATA
+            ///     SATA
             /// </summary>
             /// <remarks>
-            /// This value is NOT arbitary. It is the SATA device identifier.
+            ///     This value is NOT arbitary. It is the SATA device identifier.
             /// </remarks>
             SATA = 0xC33C,
+
             /// <summary>
-            /// PATAPI
+            ///     PATAPI
             /// </summary>
             /// <remarks>
-            /// This value is NOT arbitary. It is the PATAPI device identifier.
+            ///     This value is NOT arbitary. It is the PATAPI device identifier.
             /// </remarks>
             PATAPI = 0xEB14,
+
             /// <summary>
-            /// SATAPI
+            ///     SATAPI
             /// </summary>
             /// <remarks>
-            /// This value is NOT arbitary. It is the SATAPI device identifier.
+            ///     This value is NOT arbitary. It is the SATAPI device identifier.
             /// </remarks>
             SATAPI = 0x9669
         }
 
         /// <summary>
-        /// IO ports for this device.
+        ///     Device statuses.
+        /// </summary>
+        [Flags]
+        public enum Status : byte
+        {
+            /// <summary>
+            ///     No status.
+            /// </summary>
+            None = 0x00,
+
+            /// <summary>
+            ///     Busy status.
+            /// </summary>
+            Busy = 0x80,
+
+            /// <summary>
+            ///     ATA_SR_DRD status.
+            /// </summary>
+            ATA_SR_DRD = 0x40,
+
+            /// <summary>
+            ///     ATA_SR_DF status.
+            /// </summary>
+            ATA_SR_DF = 0x20,
+
+            /// <summary>
+            ///     ATA_SR_DSC status.
+            /// </summary>
+            ATA_SR_DSC = 0x10,
+
+            /// <summary>
+            ///     DRQ status.
+            /// </summary>
+            DRQ = 0x08,
+
+            /// <summary>
+            ///     ATA_SR_COR status.
+            /// </summary>
+            ATA_SR_COR = 0x04,
+
+            /// <summary>
+            ///     ATA_SR_IDX status.
+            /// </summary>
+            ATA_SR_IDX = 0x02,
+
+            /// <summary>
+            ///     Error status.
+            /// </summary>
+            Error = 0x01,
+
+            Timeout = 0xFF
+        };
+
+        internal bool initialised = false;
+
+        /// <summary>
+        ///     IO ports for this device.
         /// </summary>
         public ATAIOPorts IO;
 
+        internal uint maxWritePioBlocks = 128;
+
         /// <summary>
-        /// Pio drive type.
+        ///     Pio drive type.
         /// </summary>
         internal SpecLevel mDriveType = SpecLevel.Null;
-        /// <summary>
-        /// Pio drive type.
-        /// </summary>
-        public SpecLevel DriveType
-        {
-            get { return mDriveType; }
-        }
 
         /// <summary>
-        /// Drive's serial number.
+        ///     Drive's .
         /// </summary>
-        internal FOS_System.String mSerialNo;
-        /// <summary>
-        /// Drive's .
-        /// </summary>
-        public FOS_System.String SerialNo
-        {
-            get { return mSerialNo; }
-        }
-
-        /// <summary>
-        /// Drive's .
-        /// </summary>
-        internal FOS_System.String mFirmwareRev;
-        /// <summary>
-        /// Drive's .
-        /// </summary>
-        public FOS_System.String FirmwareRev
-        {
-            get { return mFirmwareRev; }
-        }
-
-        /// <summary>
-        /// Drive's model number.
-        /// </summary>
-        internal FOS_System.String mModelNo;
-        /// <summary>
-        /// Drive's model number.
-        /// </summary>
-        public FOS_System.String ModelNo
-        {
-            get { return mModelNo; }
-        }
+        internal String mFirmwareRev;
 
         internal bool mLBA48Mode = false;
-        public bool LBA48Mode
-        {
-            get
-            {
-                return mLBA48Mode;
-            }
-        }
-        
-        internal bool initialised = false;
-        public bool Initialised
-        {
-            get
-            {
-                return initialised;
-            }
-        }
 
-        internal UInt32 maxWritePioBlocks = 128;
-        public UInt32 MaxWritePioBlocks
-        {
-            get
-            {
-                return maxWritePioBlocks;
-            }
-        }
+        /// <summary>
+        ///     Drive's model number.
+        /// </summary>
+        internal String mModelNo;
 
-        public PATABase(ATAIOPorts anIO, ATA.ControllerID aControllerId, ATA.BusPosition aBusPosition)
+        /// <summary>
+        ///     Drive's serial number.
+        /// </summary>
+        internal String mSerialNo;
+
+        public PATABase(ATAIOPorts anIO, ControllerID aControllerId, BusPosition aBusPosition)
             : base("PATA Base Device")
         {
             IO = anIO;
-            Info[0] = (uint)(controllerId = aControllerId);
-            Info[1] = (uint)(busPosition = aBusPosition);
+            Info[0] = (uint) (controllerId = aControllerId);
+            Info[1] = (uint) (busPosition = aBusPosition);
 
             // Disable IRQs, we use polling currently
             SelectDrive(0, false);
-            IO.Control.Write_Byte((byte)0x02);
-            
+            IO.Control.Write_Byte((byte) 0x02);
+
             mDriveType = DiscoverDrive();
-            
+
             if (mDriveType == SpecLevel.PATAPI)
             {
                 blockSize = 2048;
@@ -359,7 +349,54 @@ namespace Kernel.Hardware.ATA
         }
 
         /// <summary>
-        /// Attempts to initialise the ATA drive.
+        ///     Pio drive type.
+        /// </summary>
+        public SpecLevel DriveType
+        {
+            get { return mDriveType; }
+        }
+
+        /// <summary>
+        ///     Drive's .
+        /// </summary>
+        public String SerialNo
+        {
+            get { return mSerialNo; }
+        }
+
+        /// <summary>
+        ///     Drive's .
+        /// </summary>
+        public String FirmwareRev
+        {
+            get { return mFirmwareRev; }
+        }
+
+        /// <summary>
+        ///     Drive's model number.
+        /// </summary>
+        public String ModelNo
+        {
+            get { return mModelNo; }
+        }
+
+        public bool LBA48Mode
+        {
+            get { return mLBA48Mode; }
+        }
+
+        public bool Initialised
+        {
+            get { return initialised; }
+        }
+
+        public uint MaxWritePioBlocks
+        {
+            get { return maxWritePioBlocks; }
+        }
+
+        /// <summary>
+        ///     Attempts to initialise the ATA drive.
         /// </summary>
         protected void InitDrive()
         {
@@ -374,7 +411,7 @@ namespace Kernel.Hardware.ATA
             }
 
             // Read Identification Space of the Device
-            var deviceInfoBuffer = new UInt16[256];
+            var deviceInfoBuffer = new ushort[256];
             IO.Data.Read_UInt16s(deviceInfoBuffer);
             mSerialNo = GetString(deviceInfoBuffer, 10, 20).Trim();
             mFirmwareRev = GetString(deviceInfoBuffer, 23, 8).Trim();
@@ -395,7 +432,7 @@ namespace Kernel.Hardware.ATA
             //Words (61:60) shall contain the value one greater than the total number of user-addressable
             //sectors in 28-bit addressing and shall not exceed 0x0FFFFFFF. 
             // We need 28 bit addressing - small drives on VMWare and possibly other cases are 28 bit
-            blockCount = ((UInt32)deviceInfoBuffer[61] << 16 | deviceInfoBuffer[60]) - 1;
+            blockCount = ((uint) deviceInfoBuffer[61] << 16 | deviceInfoBuffer[60]) - 1;
 
             //Words (103:100) shall contain the value one greater than the total number of user-addressable
             //sectors in 48-bit addressing and shall not exceed 0x0000FFFFFFFFFFFF.
@@ -404,62 +441,71 @@ namespace Kernel.Hardware.ATA
             bool xLba48Capable = (deviceInfoBuffer[83] & 0x400) != 0;
             if (xLba48Capable)
             {
-                blockCount = ((UInt64)deviceInfoBuffer[103] << 48 | (UInt64)deviceInfoBuffer[102] << 32 | (UInt64)deviceInfoBuffer[101] << 16 | (UInt64)deviceInfoBuffer[100]) - 1;
+                blockCount = ((ulong) deviceInfoBuffer[103] << 48 | (ulong) deviceInfoBuffer[102] << 32 |
+                              (ulong) deviceInfoBuffer[101] << 16 | (ulong) deviceInfoBuffer[100]) - 1;
                 mLBA48Mode = true;
             }
         }
 
         /// <summary>
-        /// Gets a string from the specified UInt16[]. Equivalent of ASCII byte array conversion.
+        ///     Gets a string from the specified UInt16[]. Equivalent of ASCII byte array conversion.
         /// </summary>
         /// <param name="buffer">The data to convert.</param>
         /// <param name="startIndex">The index to start converting at.</param>
         /// <param name="strLength">The length of the string to create.</param>
         /// <returns>The new string.</returns>
-        protected FOS_System.String GetString(UInt16[] buffer, int startIndex, int strLength)
+        protected String GetString(ushort[] buffer, int startIndex, int strLength)
         {
             //Each UInt16 is treated as 2 ASCII characters.
             //  The upshot is that the buffer is essentially a byte array 
             //  and we are treating each byte as one ASCII character.
 
-            FOS_System.String newStr = FOS_System.String.New(strLength);
-            for (int i = 0; i < strLength / 2; i++)
+            String newStr = String.New(strLength);
+            for (int i = 0; i < strLength/2; i++)
             {
-                UInt16 xChar = buffer[startIndex + i];
-                newStr[i * 2] = (char)((xChar >> 8) & 0xFF);
-                newStr[i * 2 + 1] = (char)(xChar & 0xFF);
+                ushort xChar = buffer[startIndex + i];
+                newStr[i*2] = (char) ((xChar >> 8) & 0xFF);
+                newStr[i*2 + 1] = (char) (xChar & 0xFF);
             }
             return newStr;
         }
 
 
         /// <summary>
-        /// Sends the drive select command.
+        ///     Sends the drive select command.
         /// </summary>
         /// <param name="aLbaHigh4">LBA High 4 bits</param>
         internal void SelectDrive(byte aLbaHigh4, bool setLBA)
         {
             if (setLBA)
             {
-                IO.DeviceSelect.Write_Byte((byte)((byte)(DriveSelectValue.Default | DriveSelectValue.LBA | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | aLbaHigh4));
+                IO.DeviceSelect.Write_Byte(
+                    (byte)
+                        ((byte)
+                            (DriveSelectValue.Default | DriveSelectValue.LBA |
+                             (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | aLbaHigh4));
             }
             else
             {
-                IO.DeviceSelect.Write_Byte((byte)((byte)(DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | aLbaHigh4));
+                IO.DeviceSelect.Write_Byte(
+                    (byte)
+                        ((byte)
+                            (DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) |
+                         aLbaHigh4));
             }
             Wait();
         }
 
         /// <summary>
-        /// Waits by performing 4 reads (see remarks / ATA spec)
+        ///     Waits by performing 4 reads (see remarks / ATA spec)
         /// </summary>
         /// <remarks>
-        /// ATA requires a wait of 400 nanoseconds.
-        /// Read the Status register FIVE TIMES, and only pay attention to the value 
-        /// returned by the last one -- after selecting a new master or slave device. The point being that 
-        /// you can assume an IO port read takes approximately 100ns, so doing the first four creates a 400ns 
-        /// delay -- which allows the drive time to push the correct voltages onto the bus. 
-        /// Since we read status again later, we wait by reading it 4 times.
+        ///     ATA requires a wait of 400 nanoseconds.
+        ///     Read the Status register FIVE TIMES, and only pay attention to the value
+        ///     returned by the last one -- after selecting a new master or slave device. The point being that
+        ///     you can assume an IO port read takes approximately 100ns, so doing the first four creates a 400ns
+        ///     delay -- which allows the drive time to push the correct voltages onto the bus.
+        ///     Since we read status again later, we wait by reading it 4 times.
         /// </remarks>
         internal void Wait()
         {
@@ -470,8 +516,9 @@ namespace Kernel.Hardware.ATA
             IO.Control.Read_Byte();
             IO.Control.Read_Byte();
         }
+
         /// <summary>
-        /// Attempts to discover the ATA drive.
+        ///     Attempts to discover the ATA drive.
         /// </summary>
         /// <returns>The specification level of the discovered drive. SpecLevel.Null if not found.</returns>
         internal SpecLevel DiscoverDrive()
@@ -485,22 +532,20 @@ namespace Kernel.Hardware.ATA
 
             if ((status & Status.Error) != 0)
             {
-
-
                 // Can look in Error port for more info
                 // Device is not ATA
                 // Error status can also triggered by ATAPI devices
                 // So check LBA1 and LBA2 to detect an ATAPI device.
-                ushort typeId = (ushort)(IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
-                if (typeId == (ushort)SpecLevel.PATAPI)
+                ushort typeId = (ushort) (IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
+                if (typeId == (ushort) SpecLevel.PATAPI)
                 {
                     return SpecLevel.PATAPI;
                 }
-                else if (typeId == (ushort)SpecLevel.SATAPI)
+                else if (typeId == (ushort) SpecLevel.SATAPI)
                 {
                     return SpecLevel.SATAPI;
                 }
-                else if (typeId == (ushort)SpecLevel.SATA)
+                else if (typeId == (ushort) SpecLevel.SATA)
                 {
                     return SpecLevel.SATA;
                 }
@@ -522,17 +567,17 @@ namespace Kernel.Hardware.ATA
             //  check LBA1 and LBA2 ports for non-zero values.
             //  If they are non-zero, then the drive is not ATA.
             {
-                ushort typeId = (ushort)(IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
+                ushort typeId = (ushort) (IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
                 // It is, however, possible to detect what type of device is actually attached.
-                if (typeId == (ushort)SpecLevel.PATAPI)
+                if (typeId == (ushort) SpecLevel.PATAPI)
                 {
                     return SpecLevel.PATAPI;
                 }
-                else if (typeId == (ushort)SpecLevel.SATAPI)
+                else if (typeId == (ushort) SpecLevel.SATAPI)
                 {
                     return SpecLevel.SATAPI;
                 }
-                else if (typeId == (ushort)SpecLevel.SATA)
+                else if (typeId == (ushort) SpecLevel.SATA)
                 {
                     return SpecLevel.SATA;
                 }
@@ -546,7 +591,7 @@ namespace Kernel.Hardware.ATA
             do
             {
                 Wait();
-                status = (Status)IO.Status.Read_Byte();
+                status = (Status) IO.Status.Read_Byte();
             } while ((status & Status.DRQ) == 0 &&
                      (status & Status.Error) == 0);
 
@@ -566,7 +611,7 @@ namespace Kernel.Hardware.ATA
         }
 
         /// <summary>
-        /// Sends the specified command (with ThrowOnError=true).
+        ///     Sends the specified command (with ThrowOnError=true).
         /// </summary>
         /// <param name="aCmd">The command to send.</param>
         /// <returns>The device status.</returns>
@@ -574,24 +619,25 @@ namespace Kernel.Hardware.ATA
         {
             return SendCmd(aCmd, true);
         }
+
         /// <summary>
-        /// Sends the specified command.
+        ///     Sends the specified command.
         /// </summary>
         /// <param name="aCmd">The command to send.</param>
         /// <param name="aThrowOnError">
-        /// Whether to throw an exception if the device reports 
-        /// an error status.
+        ///     Whether to throw an exception if the device reports
+        ///     an error status.
         /// </param>
         /// <returns>The device status.</returns>
         internal Status SendCmd(Cmd aCmd, bool aThrowOnError)
         {
-            IO.Command.Write_Byte((byte)aCmd);
+            IO.Command.Write_Byte((byte) aCmd);
             Status xStatus;
             int timeout = 20000000;
             do
             {
                 Wait();
-                xStatus = (Status)IO.Control.Read_Byte();
+                xStatus = (Status) IO.Control.Read_Byte();
             } while ((xStatus & Status.Busy) != 0 &&
                      (xStatus & Status.Error) == 0 &&
                      timeout-- > 0);
@@ -601,7 +647,7 @@ namespace Kernel.Hardware.ATA
             {
                 #region Throw Exception 
 
-                FOS_System.String cmdName = "";
+                String cmdName = "";
                 switch (aCmd)
                 {
                     case Cmd.CacheFlush:
@@ -653,7 +699,7 @@ namespace Kernel.Hardware.ATA
                         cmdName = "[Unrecognised]";
                         break;
                 }
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA send command error! Command was: " + cmdName));
+                ExceptionMethods.Throw(new Exception("ATA send command error! Command was: " + cmdName));
 
                 #endregion
             }
@@ -670,7 +716,7 @@ namespace Kernel.Hardware.ATA
             do
             {
                 Wait();
-                xStatus = (Status)IO.Control.Read_Byte();
+                xStatus = (Status) IO.Control.Read_Byte();
             } while ((xStatus & Status.Busy) != 0 &&
                      (xStatus & Status.Error) == 0 &&
                      timeout-- > 0);
@@ -678,11 +724,11 @@ namespace Kernel.Hardware.ATA
             // Error occurred
             if ((xStatus & Status.Error) != 0)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA software reset error!"));
+                ExceptionMethods.Throw(new Exception("ATA software reset error!"));
             }
             else if (timeout == 0)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("ATA software reset timeout!"));
+                ExceptionMethods.Throw(new Exception("ATA software reset timeout!"));
             }
 
             //Reselect the correct drive
@@ -691,15 +737,17 @@ namespace Kernel.Hardware.ATA
 
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Read from PATABase object not supported!"));
+            ExceptionMethods.Throw(new NotSupportedException("Read from PATABase object not supported!"));
         }
+
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Write to PATABase object not supported!"));
+            ExceptionMethods.Throw(new NotSupportedException("Write to PATABase object not supported!"));
         }
+
         public override void CleanCaches()
         {
-            ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("CleanCaches of PATABase object not supported!"));
+            ExceptionMethods.Throw(new NotSupportedException("CleanCaches of PATABase object not supported!"));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,34 +23,31 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Exceptions
 {
     /// <summary>
-    /// Represents a divide by zero exception.
-    /// Usually thrown by hardware interrupt 0 when code attempts to divide a number (always integer?) by 0.
+    ///     Represents a divide by zero exception.
+    ///     Usually thrown by hardware interrupt 0 when code attempts to divide a number (always integer?) by 0.
     /// </summary>
-    public class DivideByZeroException : FOS_System.Exception
+    public class DivideByZeroException : Exception
     {
         /// <summary>
-        /// Sets the message to "Attempt to divide by zero invalid."
+        ///     Sets the message to "Attempt to divide by zero invalid."
         /// </summary>
         public DivideByZeroException()
             : base("Attempt to divide by zero invalid.")
         {
         }
+
         /// <summary>
-        /// Sets the message to "Attempt to divide by zero invalid. Address: [address]"
+        ///     Sets the message to "Attempt to divide by zero invalid. Address: [address]"
         /// </summary>
         /// <param name="address">The address of the instruction which caused the exception.</param>
         public DivideByZeroException(uint address)
-            : base(((FOS_System.String)"Attempt to divide by zero invalid. Address: ") + address)
+            : base((String) "Attempt to divide by zero invalid. Address: " + address)
         {
         }
     }

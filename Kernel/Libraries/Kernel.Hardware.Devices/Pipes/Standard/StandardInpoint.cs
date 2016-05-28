@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,48 +23,48 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes.Standard
 {
     /// <summary>
-    /// Represents an inpoint for a standard in or standard out pipe.
+    ///     Represents an inpoint for a standard in or standard out pipe.
     /// </summary>
     public class StandardInpoint : BasicInpoint
     {
         /// <summary>
-        /// The buffer to use when reading strings from the pipe.
+        ///     The buffer to use when reading strings from the pipe.
         /// </summary>
         protected byte[] ReadBuffer;
 
         /// <summary>
-        /// Creates and connects a new standard pipe to the target process as either a Standard In or Standard Out pipe.
+        ///     Creates and connects a new standard pipe to the target process as either a Standard In or Standard Out pipe.
         /// </summary>
         /// <param name="aOutProcessId">The target process Id.</param>
         /// <param name="OutputPipe">Whether the pipe is a Standard In or Standard Out pipe.</param>
         public StandardInpoint(uint aOutProcessId, bool OutputPipe)
-            : base(aOutProcessId, PipeClasses.Standard, (OutputPipe ? PipeSubclasses.Standard_Out : PipeSubclasses.Standard_In), 800)
+            : base(
+                aOutProcessId, PipeClasses.Standard,
+                OutputPipe ? PipeSubclasses.Standard_Out : PipeSubclasses.Standard_In, 800)
         {
             ReadBuffer = new byte[BufferSize];
         }
 
         /// <summary>
-        /// Reads as much available data from the pipe as possible and interprets it as an ASCII string.
+        ///     Reads as much available data from the pipe as possible and interprets it as an ASCII string.
         /// </summary>
         /// <param name="blocking">Whether the read call should be blocking or not.</param>
         /// <returns>The string or empty string if the number of bytes read was zero.</returns>
-        public unsafe FOS_System.String Read(bool blocking)
+        public unsafe String Read(bool blocking)
         {
             int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, blocking);
             if (bytesRead > 0)
             {
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
+                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint) bytesRead);
             }
             else
             {

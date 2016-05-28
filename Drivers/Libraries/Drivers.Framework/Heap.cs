@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,13 +23,15 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define HEAP_TRACE
 #undef HEAP_TRACE
-    
-using System;
+
+using Drivers.Compiler.Attributes;
 using Drivers.Framework.Processes.Synchronisation;
+using Drivers.Utilities;
 
 namespace Drivers.Framework
 {
@@ -37,79 +40,79 @@ namespace Drivers.Framework
     //(www.kmcg3413.net) (kmcg3413@gmail.com)
 
     /// <summary>
-    /// Represents a block of memory that has been allocated for use by the heap.
+    ///     Represents a block of memory that has been allocated for use by the heap.
     /// </summary>
     public unsafe struct HeapBlock
     {
         /// <summary>
-        /// A pointer to the next heap block.
+        ///     A pointer to the next heap block.
         /// </summary>
         public HeapBlock* next;
+
         /// <summary>
-        /// The size of the block of memory allocated.
+        ///     The size of the block of memory allocated.
         /// </summary>
-        public UInt32 size;
+        public uint size;
+
         /// <summary>
-        /// The amount of memory in the block that has been used.
+        ///     The amount of memory in the block that has been used.
         /// </summary>
-        public UInt32 used;
+        public uint used;
+
         /// <summary>
-        /// The size of the chunks to use when allocating memory.
+        ///     The size of the chunks to use when allocating memory.
         /// </summary>
-        public UInt32 bsize;
+        public uint bsize;
+
         /// <summary>
-        /// Used for optimisation.
+        ///     Used for optimisation.
         /// </summary>
-        public UInt32 lfb;
+        public uint lfb;
 
         public bool expanding;
     }
 
     /// <summary>
-    /// The Drivers heap - currently a very simple implementation.
+    ///     The Drivers heap - currently a very simple implementation.
     /// </summary>
     public static unsafe class Heap
     {
         public delegate bool ExpandHeapDelegate(uint ExtraSize);
+
         public static ExpandHeapDelegate ExpandHeap = null;
 
         public static bool PreventAllocation = false;
-        public static Framework.String PreventReason = "[NONE]";
+        public static String PreventReason = "[NONE]";
 
         public static bool OutputTrace = false;
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        /// <summary>
+        ///     A pointer to the most-recently added heap block.
+        /// </summary>
+        private static HeapBlock* fblock;
+
+        public static String name = "[UNINITIALISED]";
+
+        public static SpinLock AccessLock;
+        public static bool AccessLockInitialised = false;
+
+        [NoDebug]
+        [NoGC]
         static Heap()
         {
         }
 
         /// <summary>
-        /// A pointer to the most-recently added heap block.
-        /// </summary>
-        private static HeapBlock* fblock;
-
-        /// <summary>
-        /// A pointer to the most-recently added heap block.
+        ///     A pointer to the most-recently added heap block.
         /// </summary>
         public static HeapBlock* FBlock
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return fblock;
-            }
+            [NoDebug] [NoGC] get { return fblock; }
         }
 
-        public static Framework.String name = "[UNINITIALISED]";
-
-        public static SpinLock AccessLock;
-        public static bool AccessLockInitialised = false;
-
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        private static void EnterCritical(Framework.String caller)
+        [NoDebug]
+        [NoGC]
+        private static void EnterCritical(String caller)
         {
             //BasicConsole.WriteLine("Entering critical section...");
             if (AccessLockInitialised)
@@ -139,8 +142,9 @@ namespace Drivers.Framework
             //    BasicConsole.DelayOutput(5);
             //}
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         private static void ExitCritical()
         {
             //BasicConsole.WriteLine("Exiting critical section...");
@@ -165,15 +169,15 @@ namespace Drivers.Framework
 
 
         /// <summary>
-        /// Calculates the total amount of memory in the heap.
+        ///     Calculates the total amount of memory in the heap.
         /// </summary>
         /// <returns>The total amount of memory in the heap.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt32 GetTotalMem()
+        [NoDebug]
+        [NoGC]
+        public static uint GetTotalMem()
         {
             HeapBlock* cBlock = fblock;
-            UInt32 result = 0;
+            uint result = 0;
             while (cBlock != null)
             {
                 result += cBlock->size;
@@ -181,16 +185,17 @@ namespace Drivers.Framework
             }
             return result;
         }
+
         /// <summary>
-        /// Calculates the total amount of used memory in the heap.
+        ///     Calculates the total amount of used memory in the heap.
         /// </summary>
         /// <returns>The total amount of used memory in the heap.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt32 GetTotalUsedMem()
+        [NoDebug]
+        [NoGC]
+        public static uint GetTotalUsedMem()
         {
             HeapBlock* cBlock = fblock;
-            UInt32 result = 0;
+            uint result = 0;
             while (cBlock != null)
             {
                 result += GetUsedMem(cBlock);
@@ -198,16 +203,17 @@ namespace Drivers.Framework
             }
             return result;
         }
+
         /// <summary>
-        /// Calculates the total amount of free memory in the heap.
+        ///     Calculates the total amount of free memory in the heap.
         /// </summary>
         /// <returns>The total amount of free memory in the heap.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt32 GetTotalFreeMem()
+        [NoDebug]
+        [NoGC]
+        public static uint GetTotalFreeMem()
         {
             HeapBlock* cBlock = fblock;
-            UInt32 result = 0;
+            uint result = 0;
             while (cBlock != null)
             {
                 result += GetFreeMem(cBlock);
@@ -215,57 +221,60 @@ namespace Drivers.Framework
             }
             return result;
         }
+
         /// <summary>
-        /// Calculates the amount of used memory in the specified block.
+        ///     Calculates the amount of used memory in the specified block.
         /// </summary>
         /// <param name="aBlock">The block to calculate used mem of.</param>
         /// <returns>The amount of used memory in bytes.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt32 GetUsedMem(HeapBlock* aBlock)
+        [NoDebug]
+        [NoGC]
+        public static uint GetUsedMem(HeapBlock* aBlock)
         {
-            return (aBlock->used * aBlock->bsize);
+            return aBlock->used*aBlock->bsize;
         }
+
         /// <summary>
-        /// Calculates the amount of free memory in the specified block.
+        ///     Calculates the amount of free memory in the specified block.
         /// </summary>
         /// <param name="aBlock">The block to calculate free mem of.</param>
         /// <returns>The amount of free memory in bytes.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static UInt32 GetFreeMem(HeapBlock* aBlock)
+        [NoDebug]
+        [NoGC]
+        public static uint GetFreeMem(HeapBlock* aBlock)
         {
-            return aBlock->size - (aBlock->used * aBlock->bsize);
+            return aBlock->size - aBlock->used*aBlock->bsize;
         }
 
         public static void Load(HeapBlock* heapPtr, SpinLock heapLock)
         {
             fblock = heapPtr;
             AccessLock = heapLock;
-            AccessLockInitialised = (AccessLock != null);
+            AccessLockInitialised = AccessLock != null;
         }
 
         /// <summary>
-        /// Intialises the heap.
+        ///     Intialises the heap.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static void Init()
         {
             fblock = null;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static int InitBlock(HeapBlock* b, UInt32 size, UInt32 bsize)
+
+        [NoDebug]
+        [NoGC]
+        public static int InitBlock(HeapBlock* b, uint size, uint bsize)
         {
-            UInt32 bcnt;
-            
-            b->size = size - (UInt32)sizeof(HeapBlock);
+            uint bcnt;
+
+            b->size = size - (uint) sizeof(HeapBlock);
             b->bsize = bsize;
             b->expanding = false;
 
-            bcnt = size / bsize;
-            byte* bm = (byte*)&b[1];
+            bcnt = size/bsize;
+            byte* bm = (byte*) &b[1];
 
             /* clear bitmap */
             for (uint x = 0; x < bcnt; ++x)
@@ -274,7 +283,7 @@ namespace Drivers.Framework
             }
 
             /* reserve room for bitmap */
-            bcnt = (bcnt / bsize) * bsize < bcnt ? bcnt / bsize + 1 : bcnt / bsize;
+            bcnt = bcnt/bsize*bsize < bcnt ? bcnt/bsize + 1 : bcnt/bsize;
             for (uint x = 0; x < bcnt; ++x)
             {
                 bm[x] = 5;
@@ -284,15 +293,16 @@ namespace Drivers.Framework
 
             b->used = bcnt;
             b->next = null;
-            
+
             return 1;
         }
+
         /// <summary>
-        /// Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
+        ///     Adds a contiguous block of memory to the heap so it can be used for allocating memory to objects.
         /// </summary>
         /// <returns>Returns 1 if the block was added successfully.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static int AddBlock(HeapBlock* b)
         {
             if (!fblock->expanding)
@@ -312,101 +322,110 @@ namespace Drivers.Framework
         }
 
         /// <summary>
-        /// Don't understand what this actually does...anyone care to inform me?
+        ///     Don't understand what this actually does...anyone care to inform me?
         /// </summary>
         /// <param name="a">Umm...</param>
         /// <param name="b">Umm...</param>
         /// <returns>Umm...the NID I guess... :)</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static byte GetNID(byte a, byte b)
         {
             byte c;
-            for (c = (byte)(a + 1); c == b || c == 0; ++c) ;
+            for (c = (byte) (a + 1); c == b || c == 0; ++c) ;
             return c;
         }
 
         /// <summary>
-        /// Attempts to allocate the specified amount of memory from the heap.
+        ///     Attempts to allocate the specified amount of memory from the heap.
         /// </summary>
         /// <param name="size">The amount of memory to try and allocate.</param>
-        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
-        /// contiguous memory is available.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void* Alloc(UInt32 size, Framework.String caller)
+        /// <returns>
+        ///     A pointer to the start of the allocated memory or a null pointer if not enough
+        ///     contiguous memory is available.
+        /// </returns>
+        [NoDebug]
+        [NoGC]
+        public static void* Alloc(uint size, String caller)
         {
             return Alloc(size, 1, caller);
         }
+
         /// <summary>
-        /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
+        ///     Attempts to allocate the specified amount of memory from the heap and then zero all of it.
         /// </summary>
         /// <param name="size">The amount of memory to try and allocate.</param>
-        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
-        /// contiguous memory is available.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroed(UInt32 size, Framework.String caller)
+        /// <returns>
+        ///     A pointer to the start of the allocated memory or a null pointer if not enough
+        ///     contiguous memory is available.
+        /// </returns>
+        [NoDebug]
+        [NoGC]
+        public static void* AllocZeroed(uint size, String caller)
         {
             return AllocZeroed(size, 1, caller);
         }
 
         /// <summary>
-        /// Avoids Page Boundary.
+        ///     Avoids Page Boundary.
         /// </summary>
         /// <param name="size"></param>
         /// <param name="boundary"></param>
         /// <returns></returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroedAPB(UInt32 size, UInt32 boundary, Framework.String caller)
+        [NoDebug]
+        [NoGC]
+        public static void* AllocZeroedAPB(uint size, uint boundary, String caller)
         {
             void* result = null;
             void* oldValue = null;
-            UInt32 resultAddr;
+            uint resultAddr;
             do
             {
                 oldValue = result;
                 result = AllocZeroed(size, boundary, caller);
-                resultAddr = (UInt32)result;
+                resultAddr = (uint) result;
                 if (oldValue != null)
                 {
                     Free(oldValue);
                 }
-            }
-            while (resultAddr / 0x1000 != (resultAddr + size - 1) / 0x1000);
+            } while (resultAddr/0x1000 != (resultAddr + size - 1)/0x1000);
 
             return result;
         }
 
         /// <summary>
-        /// Attempts to allocate the specified amount of memory from the heap and then zero all of it.
+        ///     Attempts to allocate the specified amount of memory from the heap and then zero all of it.
         /// </summary>
         /// <param name="size">The amount of memory to try and allocate.</param>
         /// <param name="boundary">The boundary on which the data must be allocated. 1 = no boundary. Must be power of 2.</param>
-        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
-        /// contiguous memory is available.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void* AllocZeroed(UInt32 size, UInt32 boundary, Framework.String caller)
+        /// <returns>
+        ///     A pointer to the start of the allocated memory or a null pointer if not enough
+        ///     contiguous memory is available.
+        /// </returns>
+        [NoDebug]
+        [NoGC]
+        public static void* AllocZeroed(uint size, uint boundary, String caller)
         {
             void* result = Alloc(size, boundary, caller);
-            if(result == null)
+            if (result == null)
             {
                 return null;
             }
-            return Utilities.MemoryUtils.ZeroMem(result, size);
+            return MemoryUtils.ZeroMem(result, size);
         }
+
         /// <summary>
-        /// Attempts to allocate the specified amount of memory from the heap.
+        ///     Attempts to allocate the specified amount of memory from the heap.
         /// </summary>
         /// <param name="size">The amount of memory to try and allocate.</param>
         /// <param name="boundary">The boundary on which the data must be allocated. 1 = no boundary. Must be power of 2.</param>
-        /// <returns>A pointer to the start of the allocated memory or a null pointer if not enough 
-        /// contiguous memory is available.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void* Alloc(UInt32 size, UInt32 boundary, Framework.String caller)
+        /// <returns>
+        ///     A pointer to the start of the allocated memory or a null pointer if not enough
+        ///     contiguous memory is available.
+        /// </returns>
+        [NoDebug]
+        [NoGC]
+        public static void* Alloc(uint size, uint boundary, String caller)
         {
 #if HEAP_TRACE
             if (OutputTrace)
@@ -433,35 +452,34 @@ namespace Drivers.Framework
             }
 
             EnterCritical("Alloc");
-            
+
             int retry = 1;
 
             do
             {
                 HeapBlock* b;
                 byte* bm;
-                UInt32 bcnt;
-                UInt32 x, y, z;
-                UInt32 bneed;
+                uint bcnt;
+                uint x, y, z;
+                uint bneed;
                 byte nid;
 
                 if (boundary > 1)
                 {
-                    size += (boundary - 1);
+                    size += boundary - 1;
                 }
 
                 /* iterate blocks */
-                for (b = fblock; (UInt32)b != 0; b = b->next)
+                for (b = fblock; (uint) b != 0; b = b->next)
                 {
                     /* check if block has enough room */
-                    if (b->size - (b->used * b->bsize) >= size)
+                    if (b->size - b->used*b->bsize >= size)
                     {
+                        bcnt = b->size/b->bsize;
+                        bneed = size/b->bsize*b->bsize < size ? size/b->bsize + 1 : size/b->bsize;
+                        bm = (byte*) &b[1];
 
-                        bcnt = b->size / b->bsize;
-                        bneed = (size / b->bsize) * b->bsize < size ? size / b->bsize + 1 : size / b->bsize;
-                        bm = (byte*)&b[1];
-
-                        for (x = (b->lfb + 1 >= bcnt ? 0 : b->lfb + 1); x != b->lfb; ++x)
+                        for (x = b->lfb + 1 >= bcnt ? 0 : b->lfb + 1; x != b->lfb; ++x)
                         {
                             /* just wrap around */
                             if (x >= bcnt)
@@ -472,7 +490,7 @@ namespace Drivers.Framework
                             if (bm[x] == 0)
                             {
                                 /* count free blocks */
-                                for (y = 0; bm[x + y] == 0 && y < bneed && (x + y) < bcnt; ++y) ;
+                                for (y = 0; bm[x + y] == 0 && y < bneed && x + y < bcnt; ++y) ;
 
                                 /* we have enough, now allocate them */
                                 if (y == bneed)
@@ -487,15 +505,15 @@ namespace Drivers.Framework
                                     }
 
                                     /* optimization */
-                                    b->lfb = (x + bneed) - 2;
+                                    b->lfb = x + bneed - 2;
 
                                     /* count used blocks NOT bytes */
                                     b->used += y;
 
-                                    void* result = (void*)(x * b->bsize + (UInt32)(&b[1]));
+                                    void* result = (void*) (x*b->bsize + (uint) &b[1]);
                                     if (boundary > 1)
                                     {
-                                        result = (void*)((((UInt32)result) + (boundary - 1)) & ~(boundary - 1));
+                                        result = (void*) (((uint) result + (boundary - 1)) & ~(boundary - 1));
 
 //#if HEAP_TRACE
 //                                      ExitCritical();
@@ -509,7 +527,7 @@ namespace Drivers.Framework
                                 }
 
                                 /* x will be incremented by one ONCE more in our FOR loop */
-                                x += (y - 1);
+                                x += y - 1;
                                 continue;
                             }
                         }
@@ -531,7 +549,7 @@ namespace Drivers.Framework
                     {
                         BasicConsole.WriteLine("Heap expanded successfully.");
                         BasicConsole.Write("New heap size: ");
-                        BasicConsole.Write(GetTotalMem() / 1024);
+                        BasicConsole.Write(GetTotalMem()/1024);
                         BasicConsole.WriteLine("KiB");
                     }
                     oldFBlock->expanding = false;
@@ -542,8 +560,7 @@ namespace Drivers.Framework
                 }
 
                 BasicConsole.WriteLine("Heap expansion complete.");
-            }
-            while (retry-- > 0);
+            } while (retry-- > 0);
 
             {
                 bool BCPOEnabled = BasicConsole.PrimaryOutputEnabled;
@@ -577,37 +594,38 @@ namespace Drivers.Framework
 
             return null;
         }
+
         /// <summary>
-        /// Frees the specified memory giving it back to the heap.
+        ///     Frees the specified memory giving it back to the heap.
         /// </summary>
         /// <param name="ptr">A pointer to the memory to free.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static void Free(void* ptr)
         {
             EnterCritical("Free");
 
             HeapBlock* b;
-            UInt32 ptroff;
-            UInt32 bi, x;
+            uint ptroff;
+            uint bi, x;
             byte* bm;
             byte id;
-            UInt32 max;
+            uint max;
 
-            for (b = fblock; (UInt32)b != 0; b = b->next)
+            for (b = fblock; (uint) b != 0; b = b->next)
             {
-                if ((UInt32)ptr > (UInt32)b && (UInt32)ptr < (UInt32)b + b->size)
+                if ((uint) ptr > (uint) b && (uint) ptr < (uint) b + b->size)
                 {
                     /* found block */
-                    ptroff = (UInt32)ptr - (UInt32)(&b[1]);  /* get offset to get block */
+                    ptroff = (uint) ptr - (uint) &b[1]; /* get offset to get block */
                     /* block offset in BM */
-                    bi = (UInt32)ptroff / b->bsize;
+                    bi = (uint) ptroff/b->bsize;
                     /* .. */
-                    bm = (byte*)&b[1];
+                    bm = (byte*) &b[1];
                     /* clear allocation */
                     id = bm[bi];
                     /* oddly.. HeapC did not optimize this */
-                    max = b->size / b->bsize;
+                    max = b->size/b->bsize;
                     for (x = bi; bm[x] == id && x < max; ++x)
                     {
                         bm[x] = 0;

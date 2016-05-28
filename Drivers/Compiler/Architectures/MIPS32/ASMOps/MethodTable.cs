@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,26 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Drivers.Compiler;
+using Drivers.Compiler.ASM;
+using Drivers.Compiler.ASM.ASMOps;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
-    public class MethodTable : ASM.ASMOps.ASMMethodTable
+    public class MethodTable : ASMMethodTable
     {
-        public MethodTable(string currentTypeId, string currentTypeName, List<Tuple<string, string>> allMethodInfos, List<Tuple<string, int>> tableEntryFieldInfos)
+        public MethodTable(string currentTypeId, string currentTypeName, List<Tuple<string, string>> allMethodInfos,
+            List<Tuple<string, int>> tableEntryFieldInfos)
             : base(currentTypeId, currentTypeName, allMethodInfos, tableEntryFieldInfos)
         {
         }
 
-        public override string Convert(ASM.ASMBlock theBlock)
+        public override string Convert(ASMBlock theBlock)
         {
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine("# Method Table - " + CurrentTypeName);

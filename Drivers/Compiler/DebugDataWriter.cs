@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// This class has yet to be implemented.
+    ///     This class has yet to be implemented.
     /// </summary>
     public static class DebugDataWriter
     {
@@ -58,7 +60,9 @@ namespace Drivers.Compiler
 
         public static void SaveDataFiles(string FolderPath, string AssemblyName)
         {
-            using (StreamWriter MethodFileMappingsStr = new StreamWriter(Path.Combine(FolderPath, AssemblyName + "_MethodFileMappings.txt"), false))
+            using (
+                StreamWriter MethodFileMappingsStr =
+                    new StreamWriter(Path.Combine(FolderPath, AssemblyName + "_MethodFileMappings.txt"), false))
             {
                 foreach (KeyValuePair<string, string> Mapping in MethodFileMappings)
                 {
@@ -66,12 +70,14 @@ namespace Drivers.Compiler
                 }
             }
 
-            using (StreamWriter DebugOpsStr = new StreamWriter(Path.Combine(FolderPath, AssemblyName + "_DebugOps.txt"), false))
+            using (
+                StreamWriter DebugOpsStr = new StreamWriter(Path.Combine(FolderPath, AssemblyName + "_DebugOps.txt"),
+                    false))
             {
                 foreach (KeyValuePair<string, List<string>> MethodOps in DebugOps)
                 {
                     DebugOpsStr.WriteLine("¬" + MethodOps.Key);
-                    
+
                     foreach (string Op in MethodOps.Value)
                     {
                         DebugOpsStr.WriteLine("|" + Op);
@@ -79,6 +85,7 @@ namespace Drivers.Compiler
                 }
             }
         }
+
         public static void ProcessMapFile(string FileName)
         {
             string[] Lines = File.ReadAllLines(FileName);
@@ -98,7 +105,10 @@ namespace Drivers.Compiler
                             string AddressStr = ProcessedLine.Substring(0, 8);
                             if (AddressStr != "00000000")
                             {
-                                string LabelStr = ProcessedLine.Substring(17).Split(new char[] { ' ' }, 3, StringSplitOptions.RemoveEmptyEntries).Last();
+                                string LabelStr =
+                                    ProcessedLine.Substring(17)
+                                        .Split(new char[] {' '}, 3, StringSplitOptions.RemoveEmptyEntries)
+                                        .Last();
                                 ResultLines.Add(AddressStr + "¬" + LabelStr);
                             }
                         }
@@ -113,26 +123,30 @@ namespace Drivers.Compiler
                 }
             }
 
-            ResultLines = ResultLines.OrderBy(x => int.Parse(x.Split('¬')[0], System.Globalization.NumberStyles.HexNumber)).ToList();
+            ResultLines = ResultLines.OrderBy(x => int.Parse(x.Split('¬')[0], NumberStyles.HexNumber)).ToList();
 
             File.Delete(FileName);
             File.WriteAllLines(FileName, ResultLines.ToArray());
         }
-        public static void SaveLibraryInfo(string FolderPath, IL.ILLibrary TheLibrary)
+
+        public static void SaveLibraryInfo(string FolderPath, ILLibrary TheLibrary)
         {
             string RootAssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
 
-            using (StreamWriter Str = new StreamWriter(Path.Combine(FolderPath, RootAssemblyName + "_Dependencies.txt"), false))
+            using (
+                StreamWriter Str = new StreamWriter(Path.Combine(FolderPath, RootAssemblyName + "_Dependencies.txt"),
+                    false))
             {
-                foreach (IL.ILLibrary DependencyLibrary in TheLibrary.Dependencies)
+                foreach (ILLibrary DependencyLibrary in TheLibrary.Dependencies)
                 {
                     Str.WriteLine(Utilities.CleanFileName(DependencyLibrary.TheAssembly.GetName().Name));
                 }
             }
 
-            using (StreamWriter Str = new StreamWriter(Path.Combine(FolderPath, RootAssemblyName + "_Library.txt"), false))
+            using (
+                StreamWriter Str = new StreamWriter(Path.Combine(FolderPath, RootAssemblyName + "_Library.txt"), false))
             {
-                foreach (Types.TypeInfo ATypeInfo in TheLibrary.TypeInfos)
+                foreach (TypeInfo ATypeInfo in TheLibrary.TypeInfos)
                 {
                     //TypeID
                     //¬BaseTypeID:[ID]
@@ -158,7 +172,7 @@ namespace Drivers.Compiler
                     //~Local:Offset|Position|TypeID
 
                     Str.WriteLine(ATypeInfo.ID);
-                    if (ATypeInfo.UnderlyingType.BaseType != null && 
+                    if (ATypeInfo.UnderlyingType.BaseType != null &&
                         !ATypeInfo.UnderlyingType.BaseType.AssemblyQualifiedName.Contains("mscorlib"))
                     {
                         Str.WriteLine("¬BaseTypeID:" + TheLibrary.GetTypeInfo(ATypeInfo.UnderlyingType.BaseType).ID);
@@ -169,7 +183,7 @@ namespace Drivers.Compiler
                     Str.WriteLine("¬SizeOnHeapInBytes:" + ATypeInfo.SizeOnHeapInBytes.ToString());
                     Str.WriteLine("¬SizeOnStackInBytes:" + ATypeInfo.SizeOnStackInBytes.ToString());
 
-                    foreach (Types.FieldInfo AFieldInfo in ATypeInfo.FieldInfos)
+                    foreach (FieldInfo AFieldInfo in ATypeInfo.FieldInfos)
                     {
                         Str.WriteLine("|Field:" + AFieldInfo.ID);
                         Str.WriteLine("~Type:" + TheLibrary.GetTypeInfo(AFieldInfo.FieldType).ID);
@@ -178,7 +192,7 @@ namespace Drivers.Compiler
                         Str.WriteLine("~OffsetInBytes:" + AFieldInfo.OffsetInBytes.ToString());
                     }
 
-                    foreach (Types.MethodInfo AMethodInfo in ATypeInfo.MethodInfos)
+                    foreach (MethodInfo AMethodInfo in ATypeInfo.MethodInfos)
                     {
                         Str.WriteLine("|Method:" + AMethodInfo.ID);
                         Str.WriteLine("~ApplyDebug:" + AMethodInfo.ApplyDebug.ToString());
@@ -189,17 +203,20 @@ namespace Drivers.Compiler
                         Str.WriteLine("~IsStatic:" + AMethodInfo.IsStatic.ToString());
                         Str.WriteLine("~Signature:" + AMethodInfo.Signature);
 
-                        Type RetType = (AMethodInfo.IsConstructor ?
-                                            typeof(void) : ((System.Reflection.MethodInfo)AMethodInfo.UnderlyingInfo).ReturnType);
-                        Str.WriteLine("~ReturnSize:" + Types.TypeScanner.GetSizeOnStackInBytes(RetType));
+                        Type RetType = AMethodInfo.IsConstructor
+                            ? typeof(void)
+                            : ((System.Reflection.MethodInfo) AMethodInfo.UnderlyingInfo).ReturnType;
+                        Str.WriteLine("~ReturnSize:" + TypeScanner.GetSizeOnStackInBytes(RetType));
 
-                        foreach (Types.VariableInfo AnArgumentInfo in AMethodInfo.ArgumentInfos)
+                        foreach (VariableInfo AnArgumentInfo in AMethodInfo.ArgumentInfos)
                         {
-                            Str.WriteLine("~Argument:" + AnArgumentInfo.Offset.ToString() + "|" + AnArgumentInfo.Position.ToString() + "|" + AnArgumentInfo.TheTypeInfo.ID);
+                            Str.WriteLine("~Argument:" + AnArgumentInfo.Offset.ToString() + "|" +
+                                          AnArgumentInfo.Position.ToString() + "|" + AnArgumentInfo.TheTypeInfo.ID);
                         }
-                        foreach (Types.VariableInfo ALocalInfo in AMethodInfo.LocalInfos)
+                        foreach (VariableInfo ALocalInfo in AMethodInfo.LocalInfos)
                         {
-                            Str.WriteLine("~Local:" + ALocalInfo.Offset.ToString() + "|" + ALocalInfo.Position.ToString() + "|" + ALocalInfo.TheTypeInfo.ID);
+                            Str.WriteLine("~Local:" + ALocalInfo.Offset.ToString() + "|" +
+                                          ALocalInfo.Position.ToString() + "|" + ALocalInfo.TheTypeInfo.ID);
                         }
                     }
                 }

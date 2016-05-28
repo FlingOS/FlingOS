@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,98 +23,113 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #if x86
-   
+
 //#define PAGING_TRACE
 
 using System;
+using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Collections;
+using OutOfMemoryException = Kernel.FOS_System.Exceptions.OutOfMemoryException;
+using String = Kernel.FOS_System.String;
 
 namespace Kernel.VirtualMemory.Implementations
 {
     /// <summary>
-    /// Provides methods for setting up paged virtual memory.
+    ///     Provides methods for setting up paged virtual memory.
     /// </summary>
     public unsafe class x86VirtualMemoryImplementation : VirtualMemoryImplementation
     {
         /// <summary>
-        /// x86-specific Page Table Entry (bit) flags
+        ///     x86-specific Page Table Entry (bit) flags
         /// </summary>
         [Flags]
         public enum PTEFlags : uint
         {
             /// <summary>
-            /// No flags.
+            ///     No flags.
             /// </summary>
             None = 0x0,
+
             /// <summary>
-            /// Mark the page as present
+            ///     Mark the page as present
             /// </summary>
             Present = 0x1,
+
             /// <summary>
-            /// Mark the page as writeable
+            ///     Mark the page as writeable
             /// </summary>
             Writeable = 0x2,
+
             /// <summary>
-            /// Mark the page as user-mode accessible
+            ///     Mark the page as user-mode accessible
             /// </summary>
             UserAllowed = 0x4,
+
             /// <summary>
-            /// Switches caching from write-back to write-through caching mode.
+            ///     Switches caching from write-back to write-through caching mode.
             /// </summary>
             PageLevelWriteThrough = 0x8,
+
             /// <summary>
-            /// Disables page level caching.
+            ///     Disables page level caching.
             /// </summary>
             PageLevelCacheDisable = 0x10,
+
             /// <summary>
-            /// Specifies page table entries refer to 4MiB instead of 4KiB pages.
+            ///     Specifies page table entries refer to 4MiB instead of 4KiB pages.
             /// </summary>
             /// <remarks>
-            /// Attribute only set in page directory entries. 0 for page table entries.
+            ///     Attribute only set in page directory entries. 0 for page table entries.
             /// </remarks>
             Size_FourMiBPages = 0x80,
+
             /// <summary>
-            /// Whether the page table entry is global or not. Prevents TLB flush for the associated page when CR3 is changed.
+            ///     Whether the page table entry is global or not. Prevents TLB flush for the associated page when CR3 is changed.
             /// </summary>
             /// <remarks>
-            /// <para>
-            /// Requires Global Pages enabled bit in CR4 to be set. 
-            /// </para>
-            /// <para>
-            /// Ignored for page directory entries.
-            /// </para>
+            ///     <para>
+            ///         Requires Global Pages enabled bit in CR4 to be set.
+            ///     </para>
+            ///     <para>
+            ///         Ignored for page directory entries.
+            ///     </para>
             /// </remarks>
             Global = 0x100
         }
 
+        /// <summary>
+        ///     Bitmap of all the virtual pages that have ever been mapped.
+        /// </summary>
+        private readonly Bitmap AllUsedVirtPages = new Bitmap(1048576);
+            //TODO: This doesn't take into account pages that are removed from all memory layouts so may no longer be in use anywhere.
+
+        private uint[] BuiltInProcessVAddrs = null;
+
         //1024 * 1024 = 1048576
         /// <summary>
-        /// Bitmap of all the free (unmapped) physical pages of memory.
+        ///     Bitmap of all the free (unmapped) physical pages of memory.
         /// </summary>
-        private Bitmap UsedPhysPages = new Bitmap(1048576);
-        /// <summary>
-        /// Bitmap of all the free (unmapped) virtual pages of memory.
-        /// </summary>
-        private Bitmap UsedVirtPages = new Bitmap(1048576);
+        private readonly Bitmap UsedPhysPages = new Bitmap(1048576);
 
         /// <summary>
-        /// Bitmap of all the virtual pages that have ever been mapped.
+        ///     Bitmap of all the free (unmapped) virtual pages of memory.
         /// </summary>
-        private Bitmap AllUsedVirtPages = new Bitmap(1048576); //TODO: This doesn't take into account pages that are removed from all memory layouts so may no longer be in use anywhere.
+        private readonly Bitmap UsedVirtPages = new Bitmap(1048576);
 
         /// <summary>
-        /// Initialises the new x86 object.
+        ///     Initialises the new x86 object.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public x86VirtualMemoryImplementation()
         {
         }
 
         /// <summary>
-        /// Tests the virtual memory system.
+        ///     Tests the virtual memory system.
         /// </summary>
         public override void Test()
         {
@@ -124,15 +140,15 @@ namespace Kernel.VirtualMemory.Implementations
                 uint pAddr = 0x40000000;
                 uint vAddr1 = 0x40000000;
                 uint vAddr2 = 0x60000000;
-                uint* vPtr1 = (uint*)vAddr1;
-                uint* vPtr2 = (uint*)vAddr2;
+                uint* vPtr1 = (uint*) vAddr1;
+                uint* vPtr2 = (uint*) vAddr2;
 
                 BasicConsole.WriteLine("Set up addresses.");
-                BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
-                BasicConsole.WriteLine(((FOS_System.String)"vAddr1=") + vAddr1);
-                BasicConsole.WriteLine(((FOS_System.String)"vAddr2=") + vAddr2);
-                BasicConsole.WriteLine(((FOS_System.String)"vPtr1=") + (uint)vPtr1);
-                BasicConsole.WriteLine(((FOS_System.String)"vPtr2=") + (uint)vPtr2);
+                BasicConsole.WriteLine((String) "pAddr=" + pAddr);
+                BasicConsole.WriteLine((String) "vAddr1=" + vAddr1);
+                BasicConsole.WriteLine((String) "vAddr2=" + vAddr2);
+                BasicConsole.WriteLine((String) "vPtr1=" + (uint) vPtr1);
+                BasicConsole.WriteLine((String) "vPtr2=" + (uint) vPtr2);
 
                 Map(pAddr, vAddr1);
                 BasicConsole.WriteLine("Mapped virtual address 1.");
@@ -167,27 +183,30 @@ namespace Kernel.VirtualMemory.Implementations
 
             BasicConsole.WriteLine("Test completed.");
         }
+
         /// <summary>
-        /// Prints out information about the free physical and virtual pages.
+        ///     Prints out information about the free physical and virtual pages.
         /// </summary>
         public override void PrintUsedPages()
         {
-            BasicConsole.WriteLine("Used physical pages: " + (FOS_System.String)UsedPhysPages.Count);
-            BasicConsole.WriteLine("Used virtual pages : " + (FOS_System.String)UsedVirtPages.Count);
+            BasicConsole.WriteLine("Used physical pages: " + (String) UsedPhysPages.Count);
+            BasicConsole.WriteLine("Used virtual pages : " + (String) UsedVirtPages.Count);
             BasicConsole.DelayOutput(5);
         }
 
         /// <summary>
-        /// Finds the specified number of contiguous, free, physical pages.
+        ///     Finds the specified number of contiguous, free, physical pages.
         /// </summary>
         /// <remarks>
-        /// While in most applications the pages needn't be contiguous, some areas require it (e.g. physical pages for USB transactions). 
-        /// A future optimisation would be to create a separate function which enforces contiguous pages and makes this one non-contiguous 
-        /// by default.
+        ///     While in most applications the pages needn't be contiguous, some areas require it (e.g. physical pages for USB
+        ///     transactions).
+        ///     A future optimisation would be to create a separate function which enforces contiguous pages and makes this one
+        ///     non-contiguous
+        ///     by default.
         /// </remarks>
         /// <param name="num">The number of physical pages to find.</param>
         /// <returns>The address of the first page.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public override uint FindFreePhysPageAddrs(int num)
         {
             int result = UsedPhysPages.FindContiguousClearEntries(num);
@@ -196,22 +215,25 @@ namespace Kernel.VirtualMemory.Implementations
                 BasicConsole.WriteLine("Error finding free physical pages!");
                 BasicConsole.DelayOutput(10);
 
-                ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free physical pages."));
+                ExceptionMethods.Throw(new OutOfMemoryException("Could not find any more free physical pages."));
             }
-            
-            return (uint)(result * 4096);
+
+            return (uint) (result*4096);
         }
+
         /// <summary>
-        /// Finds the specified number of contiguous, free, virtual pages.
+        ///     Finds the specified number of contiguous, free, virtual pages.
         /// </summary>
         /// <remarks>
-        /// Unlike physical pages, virtual pages requested in blocks do normally need to be contiguous (since the contiguous to non-contiguous 
-        /// mapping is part of the point of virtual memory). As a result, it would not be worth optimising calls to this function as most of the
-        /// time they will need contiguous pages.
+        ///     Unlike physical pages, virtual pages requested in blocks do normally need to be contiguous (since the contiguous to
+        ///     non-contiguous
+        ///     mapping is part of the point of virtual memory). As a result, it would not be worth optimising calls to this
+        ///     function as most of the
+        ///     time they will need contiguous pages.
         /// </remarks>
         /// <param name="num">The number of virtual pages to find.</param>
         /// <returns>The address of the first page.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public override uint FindFreeVirtPageAddrs(int num)
         {
             int result = UsedVirtPages.FindContiguousClearEntries(num);
@@ -219,18 +241,19 @@ namespace Kernel.VirtualMemory.Implementations
             {
                 BasicConsole.WriteLine("Error finding free virtual pages!");
                 BasicConsole.DelayOutput(10);
-                
-                ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free virtual pages."));
+
+                ExceptionMethods.Throw(new OutOfMemoryException("Could not find any more free virtual pages."));
             }
 
-            return (uint)(result * 4096);
+            return (uint) (result*4096);
         }
+
         /// <summary>
-        /// Finds the specified number of contiguous, free, virtual pages that are suitable for use by the kernel.
+        ///     Finds the specified number of contiguous, free, virtual pages that are suitable for use by the kernel.
         /// </summary>
         /// <param name="num">The number of virtual pages to find.</param>
         /// <returns>The address of the first page.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public override uint FindFreeVirtPageAddrsForKernel(int num)
         {
             int result = AllUsedVirtPages.FindContiguousClearEntries(num);
@@ -239,23 +262,25 @@ namespace Kernel.VirtualMemory.Implementations
                 BasicConsole.WriteLine("Error finding free virtual pages for the kernel!");
                 BasicConsole.DelayOutput(10);
 
-                ExceptionMethods.Throw(new FOS_System.Exceptions.OutOfMemoryException("Could not find any more free virtual pages for the kernel."));
+                ExceptionMethods.Throw(
+                    new OutOfMemoryException("Could not find any more free virtual pages for the kernel."));
             }
 
-            return (uint)(result * 4096);
+            return (uint) (result*4096);
         }
 
         //public static bool Unmap_Print = false;
 
         /// <summary>
-        /// Maps the specified virtual address to the specified physical address.
+        ///     Maps the specified virtual address to the specified physical address.
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public override void Map(uint pAddr, uint vAddr, PageFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
+        [NoDebug]
+        public override void Map(uint pAddr, uint vAddr, PageFlags flags,
+            UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             PTEFlags pteFlags = PTEFlags.None;
             if ((flags & PageFlags.Present) != 0)
@@ -272,15 +297,17 @@ namespace Kernel.VirtualMemory.Implementations
             }
             Map(pAddr, vAddr, pteFlags, UpdateUsedPages);
         }
+
         /// <summary>
-        /// Maps the specified virtual address to the specified physical address.
+        ///     Maps the specified virtual address to the specified physical address.
         /// </summary>
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        private void Map(uint pAddr, uint vAddr, PTEFlags flags, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
+        [NoDebug]
+        private void Map(uint pAddr, uint vAddr, PTEFlags flags,
+            UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
 #if PAGING_TRACE
             BasicConsole.WriteLine("Mapping addresses...");
@@ -312,9 +339,9 @@ namespace Kernel.VirtualMemory.Implementations
 #endif
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
-                UsedPhysPages.Set((int)((physPDIdx * 1024) + physPTIdx));
+                UsedPhysPages.Set((int) (physPDIdx*1024 + physPTIdx));
             }
-            int virtIndex = (int)((virtPDIdx * 1024) + virtPTIdx);
+            int virtIndex = (int) (virtPDIdx*1024 + virtPTIdx);
             AllUsedVirtPages.Set(virtIndex);
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
             {
@@ -351,14 +378,14 @@ namespace Kernel.VirtualMemory.Implementations
 
             //Set the page table entry
             SetPageEntry(virtPTPtr, virtPTIdx, pAddr, flags);
-            
+
             //if (Processes.Scheduler.OutputMessages)
             //{
             //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.5");
             //}
 
             //Set directory table entry
-            SetDirectoryEntry(virtPDIdx, (uint*)GetPhysicalAddress((uint)virtPTPtr));
+            SetDirectoryEntry(virtPDIdx, (uint*) GetPhysicalAddress((uint) virtPTPtr));
 
             //if (Processes.Scheduler.OutputMessages)
             //{
@@ -373,21 +400,23 @@ namespace Kernel.VirtualMemory.Implementations
             //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.7");
             //}
         }
+
         /// <summary>
-        /// Unmaps the specified page of virtual memory.
+        ///     Unmaps the specified page of virtual memory.
         /// </summary>
         /// <remarks>
-        /// <para>
-        /// Unmaps means it sets the address to 0 and marks the page as not present.
-        /// </para>
-        /// <para>
-        /// It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes available for use
-        /// but the physical page remains reserved (though unmapped).
-        /// </para>
+        ///     <para>
+        ///         Unmaps means it sets the address to 0 and marks the page as not present.
+        ///     </para>
+        ///     <para>
+        ///         It is common to call this with just UpdateUsedPages set to Virtual, since then the virtual page becomes
+        ///         available for use
+        ///         but the physical page remains reserved (though unmapped).
+        ///     </para>
         /// </remarks>
         /// <param name="vAddr">The virtual address of the page to unmap.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             //if (Unmap_Print)
@@ -437,11 +466,11 @@ namespace Kernel.VirtualMemory.Implementations
             //}
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
-                UsedPhysPages.Clear((int)((physPDIdx * 1024) + physPTIdx));
+                UsedPhysPages.Clear((int) (physPDIdx*1024 + physPTIdx));
             }
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
             {
-                UsedVirtPages.Clear((int)((virtPDIdx * 1024) + virtPTIdx));
+                UsedVirtPages.Clear((int) (virtPDIdx*1024 + virtPTIdx));
             }
 
 
@@ -490,15 +519,16 @@ namespace Kernel.VirtualMemory.Implementations
             //    BasicConsole.WriteLine("Debug Point 9.1.2-5.1.9");
             //}
         }
+
         /// <summary>
-        /// Gets the physical address for the specified virtual address.
+        ///     Gets the physical address for the specified virtual address.
         /// </summary>
         /// <param name="vAddr">The virtual address to get the physical address of.</param>
         /// <returns>The physical address.</returns>
         /// <remarks>
-        /// This has an undefined return value and behaviour if the virtual address is not mapped.
+        ///     This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public override uint GetPhysicalAddress(uint vAddr)
         {
             //Calculate page directory and page table indices
@@ -511,7 +541,7 @@ namespace Kernel.VirtualMemory.Implementations
             //  plus the offset from the virtual address which will be the same 
             //  as the offset from the phys address (page-aligned addresses and 
             //  all that).
-            return ((ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF));
+            return (ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF);
         }
 
         public override bool IsVirtualMapped(uint vAddr)
@@ -519,8 +549,9 @@ namespace Kernel.VirtualMemory.Implementations
             uint virtPDIdx = vAddr >> 22;
             uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
-            return UsedVirtPages.IsSet((int)((virtPDIdx * 1024) + virtPTIdx));
+            return UsedVirtPages.IsSet((int) (virtPDIdx*1024 + virtPTIdx));
         }
+
         public override bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd)
         {
             uint physPDIdx = pAddrStart >> 22;
@@ -529,8 +560,8 @@ namespace Kernel.VirtualMemory.Implementations
             uint physEndPDIdx = pAddrEnd >> 22;
             uint physEndPTIdx = (pAddrEnd >> 12) & 0x03FF;
 
-            int entry = (int)((physPDIdx * 1024) + physPTIdx);
-            int endEntry = (int)((physEndPDIdx * 1024) + physEndPTIdx);
+            int entry = (int) (physPDIdx*1024 + physPTIdx);
+            int endEntry = (int) (physEndPDIdx*1024 + physEndPTIdx);
 
             for (; entry < endEntry; entry++)
             {
@@ -543,9 +574,9 @@ namespace Kernel.VirtualMemory.Implementations
         }
 
         /// <summary>
-        /// Maps in the main kernel memory.
+        ///     Maps in the main kernel memory.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public override void MapKernel()
         {
 #if PAGING_TRACE
@@ -564,7 +595,7 @@ namespace Kernel.VirtualMemory.Implementations
             }
 
             Unmap(0, UpdateUsedPagesFlags.None);
-             
+
 #if PAGING_TRACE
             BasicConsole.WriteLine("Done.");
             BasicConsole.WriteLine("Mapping kernel...");
@@ -573,32 +604,32 @@ namespace Kernel.VirtualMemory.Implementations
             //Map in the main kernel memory
 
             //Map all the required pages in between these two pointers.
-            uint KernelMemStartPtr = (uint)GetKernelMemStartPtr();
-            uint KernelMemEndPtr = (uint)GetKernelMemEndPtr();
-            
+            uint KernelMemStartPtr = (uint) GetKernelMemStartPtr();
+            uint KernelMemEndPtr = (uint) GetKernelMemEndPtr();
+
 #if PAGING_TRACE
             BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
             BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
 #endif
 
             // Round the start pointer down to nearest page
-            KernelMemStartPtr = ((KernelMemStartPtr / 4096) * 4096);
+            KernelMemStartPtr = KernelMemStartPtr/4096*4096;
 
             // Round the end pointer up to nearest page
-            KernelMemEndPtr = (((KernelMemEndPtr / 4096) + 1) * 4096);
-            
+            KernelMemEndPtr = (KernelMemEndPtr/4096 + 1)*4096;
+
 //#if PAGING_TRACE
-            BasicConsole.WriteLine("VM: Start pointer : " + (FOS_System.String)KernelMemStartPtr);
-            BasicConsole.WriteLine("VM: End pointer : " + (FOS_System.String)KernelMemEndPtr);
+            BasicConsole.WriteLine("VM: Start pointer : " + (String) KernelMemStartPtr);
+            BasicConsole.WriteLine("VM: End pointer : " + (String) KernelMemEndPtr);
 //#endif
-            
+
             physAddr = KernelMemStartPtr - VirtToPhysOffset;
-            
+
 #if PAGING_TRACE
             BasicConsole.WriteLine("Phys addr : " + (FOS_System.String)physAddr);
             BasicConsole.DelayOutput(5);
 #endif
-            
+
             for (; KernelMemStartPtr <= KernelMemEndPtr; KernelMemStartPtr += 4096, physAddr += 4096)
             {
                 Map(physAddr, KernelMemStartPtr, PageFlags.Present | PageFlags.Writeable | PageFlags.KernelOnly);
@@ -608,27 +639,27 @@ namespace Kernel.VirtualMemory.Implementations
             BasicConsole.WriteLine("Done.");
             BasicConsole.DelayOutput(5);
 #endif
-
         }
 
         /// <summary>
-        /// Gets the specified built-in, pre-allocated page table. 
-        /// These page tables are not on the heap, they are part of the kernel pre-allocated memory.
+        ///     Gets the specified built-in, pre-allocated page table.
+        ///     These page tables are not on the heap, they are part of the kernel pre-allocated memory.
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the page table to get.</param>
         /// <returns>A uint pointer to the page table.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         private uint* GetFixedPage(uint pageNum)
         {
-            return GetFirstPageTablePtr() + (1024 * pageNum);
+            return GetFirstPageTablePtr() + 1024*pageNum;
         }
+
         /// <summary>
-        /// Sets the specified page table entry.
+        ///     Sets the specified page table entry.
         /// </summary>
         /// <param name="pageTablePtr">The page table to set the value in.</param>
         /// <param name="entry">The entry index (page table index) of the entry to set.</param>
         /// <param name="addr">The physical address to map the entry to.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         private void SetPageEntry(uint* pageTablePtr, uint entry, uint addr, PTEFlags flags)
         {
 #if PAGING_TRACE
@@ -638,7 +669,7 @@ namespace Kernel.VirtualMemory.Implementations
             BasicConsole.WriteLine(((FOS_System.String)"addr=") + addr);
 #endif
 
-            pageTablePtr[entry] = addr | (uint)flags;
+            pageTablePtr[entry] = addr | (uint) flags;
 
 #if PAGING_TRACE
             if(pageTablePtr[entry] != (addr | 3))
@@ -647,12 +678,13 @@ namespace Kernel.VirtualMemory.Implementations
             }
 #endif
         }
+
         /// <summary>
-        /// Sets the specified page directory entry.
+        ///     Sets the specified page directory entry.
         /// </summary>
         /// <param name="pageNum">The page number (directory index) of the entry to set.</param>
         /// <param name="pageTablePhysPtr">The physical address of the page table to set the entry to point at.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         private void SetDirectoryEntry(uint pageNum, uint* pageTablePhysPtr)
         {
             uint* dirPtr = GetPageDirectoryPtr();
@@ -663,7 +695,7 @@ namespace Kernel.VirtualMemory.Implementations
             BasicConsole.WriteLine(((FOS_System.String)"pageNum=") + pageNum);
 #endif
 
-            dirPtr[pageNum] = (uint)pageTablePhysPtr | 7;
+            dirPtr[pageNum] = (uint) pageTablePhysPtr | 7;
 #if PAGING_TRACE
             if (dirPtr[pageNum] != ((uint)pageTablePhysPtr | 3))
             {
@@ -671,116 +703,127 @@ namespace Kernel.VirtualMemory.Implementations
             }
 #endif
         }
+
         /// <summary>
-        /// Invalidates the cache of the specified page table entry.
+        ///     Invalidates the cache of the specified page table entry.
         /// </summary>
         /// <param name="entry">The entry to invalidate.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\VirtualMemory\x86VirtualMemoryImplementation")]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 100)]
+        [PluggedMethod(ASMFilePath = @"ASM\VirtualMemory\x86VirtualMemoryImplementation")]
+        [SequencePriority(Priority = long.MinValue + 100)]
         private void InvalidatePTE(uint entry)
         {
-
         }
 
         /// <summary>
-        /// Gets the virtual to physical offset for the main kernel memory.
+        ///     Gets the virtual to physical offset for the main kernel memory.
         /// </summary>
         /// <returns>The offset.</returns>
         /// <remarks>
-        /// This is the difference between the virtual address and the 
-        /// physical address at which the bootloader loaded the kernel.
+        ///     This is the difference between the virtual address and the
+        ///     physical address at which the bootloader loaded the kernel.
         /// </remarks>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         public static uint GetKernelVirtToPhysOffset()
         {
             return 0;
         }
+
         /// <summary>
-        /// Gets the page directory memory pointer.
+        ///     Gets the page directory memory pointer.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetPageDirectoryPtr()
         {
             return null;
         }
+
         /// <summary>
-        /// Gets a pointer to the page table that is the first page table.
+        ///     Gets a pointer to the page table that is the first page table.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetFirstPageTablePtr()
         {
             return null;
         }
+
         /// <summary>
-        /// Gets a pointer to the start of the kernel in memory.
+        ///     Gets a pointer to the start of the kernel in memory.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetKernelMemStartPtr()
         {
             return null;
         }
+
         /// <summary>
-        /// Gets a pointer to the end of the kernel in memory.
+        ///     Gets a pointer to the end of the kernel in memory.
         /// </summary>
         /// <returns>The pointer.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetKernelMemEndPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetStaticFields_StartPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetStaticFields_EndPtr()
         {
             return null;
         }
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetIsolatedKernelPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetIsolatedKernel_Hardware_MultiprocessingPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetIsolatedKernel_Hardware_DevicesPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetIsolatedKernel_VirtualMemoryPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetIsolatedKernel_FOS_SystemPtr()
         {
             return null;
         }
 
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetBSS_StartPtr()
         {
             return null;
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private static uint* GetBSS_EndPtr()
         {
             return null;
         }
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         public static uint GetCR3()
         {
             return 0;
@@ -788,8 +831,8 @@ namespace Kernel.VirtualMemory.Implementations
 
         public override void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout)
         {
-            uint cPtr = (uint)GetBSS_StartPtr();
-            uint endPtr = (uint)GetBSS_EndPtr();
+            uint cPtr = (uint) GetBSS_StartPtr();
+            uint endPtr = (uint) GetBSS_EndPtr();
             uint cPhysPtr = GetPhysicalAddress(cPtr);
 
             for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
@@ -797,38 +840,40 @@ namespace Kernel.VirtualMemory.Implementations
                 TheLayout.AddDataPage(cPhysPtr, cPtr);
             }
         }
+
         public override void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
         {
-            uint cPtr = (uint)GetStaticFields_StartPtr();
-            uint endPtr = (uint)GetStaticFields_EndPtr();
-            uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
-            uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
-            uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
-            uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
-            uint isolatedKFSPtr = (uint)GetIsolatedKernel_FOS_SystemPtr();
+            uint cPtr = (uint) GetStaticFields_StartPtr();
+            uint endPtr = (uint) GetStaticFields_EndPtr();
+            uint isolatedKPtr = (uint) GetIsolatedKernelPtr();
+            uint isolatedKH_MPPtr = (uint) GetIsolatedKernel_Hardware_MultiprocessingPtr();
+            uint isolatedKH_DPtr = (uint) GetIsolatedKernel_Hardware_DevicesPtr();
+            uint isolatedKVMPtr = (uint) GetIsolatedKernel_VirtualMemoryPtr();
+            uint isolatedKFSPtr = (uint) GetIsolatedKernel_FOS_SystemPtr();
 
             uint cPhysPtr = GetPhysicalAddress(cPtr);
 
             for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
             {
-                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
+                    cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
                 {
                     TheLayout.AddDataPage(cPhysPtr, cPtr);
                 }
             }
         }
-        uint[] BuiltInProcessVAddrs = null;
+
         public override uint[] GetBuiltInProcessVAddrs()
         {
             if (BuiltInProcessVAddrs == null)
             {
-                uint startPtr = (uint)GetStaticFields_StartPtr();
-                uint endPtr = (uint)GetStaticFields_EndPtr();
-                uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
-                uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
-                uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
-                uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
-                uint isolatedKFSPtr = (uint)GetIsolatedKernel_FOS_SystemPtr();
+                uint startPtr = (uint) GetStaticFields_StartPtr();
+                uint endPtr = (uint) GetStaticFields_EndPtr();
+                uint isolatedKPtr = (uint) GetIsolatedKernelPtr();
+                uint isolatedKH_MPPtr = (uint) GetIsolatedKernel_Hardware_MultiprocessingPtr();
+                uint isolatedKH_DPtr = (uint) GetIsolatedKernel_Hardware_DevicesPtr();
+                uint isolatedKVMPtr = (uint) GetIsolatedKernel_VirtualMemoryPtr();
+                uint isolatedKFSPtr = (uint) GetIsolatedKernel_FOS_SystemPtr();
 
                 uint startPhysPtr = GetPhysicalAddress(startPtr);
 
@@ -838,7 +883,8 @@ namespace Kernel.VirtualMemory.Implementations
                 uint cPhysPtr = startPhysPtr;
                 for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
                 {
-                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
+                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
                     {
                         count++;
                     }
@@ -850,7 +896,8 @@ namespace Kernel.VirtualMemory.Implementations
                 cPhysPtr = startPhysPtr;
                 for (int i = 0; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
                 {
-                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
+                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
                     {
                         BuiltInProcessVAddrs[i++] = cPtr;
                     }

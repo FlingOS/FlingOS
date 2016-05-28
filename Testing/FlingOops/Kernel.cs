@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,47 +23,46 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
+using FlingOops.Interfaces;
 
 namespace FlingOops
 {
     public static class Kernel
     {
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = "ASM\\Kernel")]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue)]
+        [PluggedMethod(ASMFilePath = "ASM\\Kernel")]
+        [SequencePriority(Priority = long.MinValue)]
         public static void Boot()
         {
         }
 
-        [Drivers.Compiler.Attributes.MainMethod]
-        [Drivers.Compiler.Attributes.NoGC]
+        [MainMethod]
+        [NoGC]
         public static void Main()
         {
 #if MIPS
             FlingOops.MIPS.CI20.Kernel.Start();
 #elif x86
-            FlingOops.x86.Kernel.Start();
+            x86.Kernel.Start();
 #endif
 
             BasicConsole.Init();
             BasicConsole.WriteLine("Kernel executing...");
 
-            Interfaces.InterfaceTests.RunTests();
+            InterfaceTests.RunTests();
             CompilerTests.RunTests();
 
 #if MIPS
             FlingOops.MIPS.CI20.Kernel.End();
 #elif x86
-            FlingOops.x86.Kernel.End();
+            x86.Kernel.End();
 #endif
         }
 
-        [Drivers.Compiler.Attributes.CallStaticConstructorsMethod]
+        [CallStaticConstructorsMethod]
         public static void CallStaticConstructors()
         {
         }

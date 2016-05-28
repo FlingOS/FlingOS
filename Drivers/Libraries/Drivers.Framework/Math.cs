@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,69 +23,73 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
 
 namespace Drivers.Framework
 {
     /// <summary>
-    /// Provides constants and static methods for common mathematical functions and some operations not supported by 
-    /// IL code.
+    ///     Provides constants and static methods for common mathematical functions and some operations not supported by
+    ///     IL code.
     /// </summary>
     public static class Math
     {
         /// <summary>
-        /// Divides a UInt64 by a UInt32.
+        ///     Divides a UInt64 by a UInt32.
         /// </summary>
         /// <param name="dividend">The UInt64 to be divided.</param>
         /// <param name="divisor">The UInt32 to divide by.</param>
         /// <returns>The quotient of the division.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
+        [PluggedMethod(ASMFilePath = @"ASM\Math\Divide")]
         public static ulong Divide(ulong dividend, uint divisor)
         {
             return 0;
         }
 
         /// <summary>
-        /// Returns the lower of the two inputs.
+        ///     Returns the lower of the two inputs.
         /// </summary>
         /// <param name="x">Input 1.</param>
         /// <param name="y">Input 2.</param>
         /// <returns>The lower of the two inputs.</returns>
         public static ushort Min(ushort x, ushort y)
         {
-            return (x < y ? x : y);
+            return x < y ? x : y;
         }
+
         /// <summary>
-        /// Returns the lower of the two inputs.
+        ///     Returns the lower of the two inputs.
         /// </summary>
         /// <param name="x">Input 1.</param>
         /// <param name="y">Input 2.</param>
         /// <returns>The lower of the two inputs.</returns>
         public static uint Min(uint x, uint y)
         {
-            return (x < y ? x : y);
+            return x < y ? x : y;
         }
+
         /// <summary>
-        /// Returns the lower of the two inputs.
+        ///     Returns the lower of the two inputs.
         /// </summary>
         /// <param name="x">Input 1.</param>
         /// <param name="y">Input 2.</param>
         /// <returns>The lower of the two inputs.</returns>
         public static int Min(int x, int y)
         {
-            return (x < y ? x : y);
+            return x < y ? x : y;
         }
+
         /// <summary>
-        /// Returns the higher of the two inputs.
+        ///     Returns the higher of the two inputs.
         /// </summary>
         /// <param name="x">Input 1.</param>
         /// <param name="y">Input 2.</param>
         /// <returns>The higher of the two inputs.</returns>
         public static int Max(int x, int y)
         {
-            return (x > y ? x : y);
+            return x > y ? x : y;
         }
     }
 }

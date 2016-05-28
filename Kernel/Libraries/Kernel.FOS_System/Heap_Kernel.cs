@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,14 +23,20 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
 
 namespace Kernel.FOS_System
 {
     public static unsafe class Heap_Kernel
     {
+        /// <summary>
+        ///     Whether the kernel's fixed heap has been initialised or not.
+        /// </summary>
+        private static bool FixedHeapInitialised = false;
+
         static Heap_Kernel()
         {
             InitFixedHeap();
@@ -37,26 +44,22 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        /// Whether the kernel's fixed heap has been initialised or not.
-        /// </summary>
-        private static bool FixedHeapInitialised = false;
-
-        /// <summary>
-        /// Gets a pointer to the block of memory to allocate to the kernel's fixed heap.
+        ///     Gets a pointer to the block of memory to allocate to the kernel's fixed heap.
         /// </summary>
         /// <returns>The pointer to the block of memory.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Heap\GetFixedHeapPtr")]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 101)]
-        public static UInt32* GetFixedHeapPtr()
+        [PluggedMethod(ASMFilePath = @"ASM\Heap\GetFixedHeapPtr")]
+        [SequencePriority(Priority = long.MinValue + 101)]
+        public static uint* GetFixedHeapPtr()
         {
             return null;
         }
+
         /// <summary>
-        /// Gets the size of the block of memory to allocate to the kernel's fixed heap.
+        ///     Gets the size of the block of memory to allocate to the kernel's fixed heap.
         /// </summary>
         /// <returns>The size of the block of memory.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static UInt32 GetFixedHeapSize()
+        [PluggedMethod(ASMFilePath = null)]
+        public static uint GetFixedHeapSize()
         {
             //Stub for use by testing framework
             //Exact 0.5MB
@@ -64,23 +67,22 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        /// Intialises the kernel's fixed heap.
+        ///     Intialises the kernel's fixed heap.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static void InitFixedHeap()
         {
             if (!FixedHeapInitialised)
             {
                 Heap.InitForKernel();
 
-                HeapBlock* heapPtr = (HeapBlock*)GetFixedHeapPtr();
+                HeapBlock* heapPtr = (HeapBlock*) GetFixedHeapPtr();
                 Heap.InitBlock(heapPtr, GetFixedHeapSize(), 32);
                 Heap.AddBlock(heapPtr);
 
                 FixedHeapInitialised = true;
             }
         }
-
     }
 }

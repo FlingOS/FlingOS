@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,64 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Framework.Exceptions;
 
 namespace Drivers.Framework.Collections
 {
     public unsafe class UInt32Dictionary : Object
     {
-        public struct KeyValuePair
-        {
-            public UInt32 Key;
-            public UInt32 Value;
-            internal KeyValuePair* Prev;
-            internal KeyValuePair* Next;
-            internal bool Empty;
-        }
-
-        public sealed class Iterator : Object
-        {
-            private KeyValuePair* list;
-            private KeyValuePair* storedList;
-
-            public Iterator(KeyValuePair* aList)
-            {
-                list = aList;
-            }
-
-            internal void Reset(KeyValuePair* aList)
-            {
-                list = aList;
-            }
-
-            public void StoreState()
-            {
-                storedList = list;
-            }
-            public void RestoreState()
-            {
-                list = storedList;
-            }
-
-            public bool HasNext()
-            {
-                return list != null && !list->Empty;
-            }
-            public KeyValuePair Next()
-            {
-                KeyValuePair result = *list;
-                list = list->Prev;
-                return result;
-            }
-        }
+        protected Iterator iterator;
 
         protected KeyValuePair* list;
-        protected Iterator iterator;
 
         public UInt32Dictionary()
         {
@@ -88,11 +43,48 @@ namespace Drivers.Framework.Collections
 
             Prefill(25);
         }
+
+        public uint this[uint key]
+        {
+            get
+            {
+                KeyValuePair* cPair = list;
+                while (cPair != null)
+                {
+                    if (cPair->Key == key)
+                    {
+                        return cPair->Value;
+                    }
+                    cPair = cPair->Prev;
+                }
+                ExceptionMethods.Throw(new ArgumentException("Key not found in dictionary!"));
+                return 0;
+            }
+            set
+            {
+                KeyValuePair* cPair = list;
+                while (cPair != null)
+                {
+                    if (cPair->Key == key)
+                    {
+                        cPair->Value = value;
+                        break;
+                    }
+                    cPair = cPair->Prev;
+                }
+                if (cPair == null)
+                {
+                    Add(key, value);
+                }
+            }
+        }
+
         private void Prefill(int capacity)
         {
             while (capacity-- > 0)
             {
-                KeyValuePair* newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt32Dictionary.Prefill");
+                KeyValuePair* newItem =
+                    (KeyValuePair*) Heap.Alloc((uint) sizeof(KeyValuePair), "UInt32Dictionary.Prefill");
                 newItem->Empty = true;
                 newItem->Key = 0;
                 newItem->Value = 0;
@@ -110,14 +102,14 @@ namespace Drivers.Framework.Collections
                 }
             }
         }
-        
-        public void Add(UInt32 key, UInt32 value, bool SkipCheck = false)
+
+        public void Add(uint key, uint value, bool SkipCheck = false)
         {
             if (!SkipCheck)
             {
                 if (ContainsKey(key))
                 {
-                    ExceptionMethods.Throw(new Framework.Exception("Cannot add duplicate key to the dictionary!"));
+                    ExceptionMethods.Throw(new Exception("Cannot add duplicate key to the dictionary!"));
                 }
             }
 
@@ -149,9 +141,9 @@ namespace Drivers.Framework.Collections
                     Alloc = true;
                 }
             }
-            if(Alloc)
+            if (Alloc)
             {
-                newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt32Dictionary.Add");
+                newItem = (KeyValuePair*) Heap.Alloc((uint) sizeof(KeyValuePair), "UInt32Dictionary.Add");
                 newNext = null;
                 newPrev = list;
                 newListNext = newItem;
@@ -169,14 +161,15 @@ namespace Drivers.Framework.Collections
             }
             list = newItem;
         }
-        public void AddRange(UInt32 keyStart, UInt32 keyStep, UInt32[] values)
+
+        public void AddRange(uint keyStart, uint keyStep, uint[] values)
         {
-            if (ContainsAnyKeyInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
+            if (ContainsAnyKeyInRange(keyStart, keyStart + (uint) values.Length*keyStep))
             {
-                ExceptionMethods.Throw(new Framework.Exception("Cannot add duplicate key to the dictionary!"));
+                ExceptionMethods.Throw(new Exception("Cannot add duplicate key to the dictionary!"));
             }
-            
-            UInt32 keyVal = keyStart;
+
+            uint keyVal = keyStart;
             for (uint i = 0; i < values.Length; i++)
             {
                 Add(keyVal, values[i], true);
@@ -184,12 +177,13 @@ namespace Drivers.Framework.Collections
                 keyVal += keyStep;
             }
         }
-        public void Remove(UInt32 key)
+
+        public void Remove(uint key)
         {
             KeyValuePair* cPair = list;
-            while(cPair != null)
+            while (cPair != null)
             {
-                if(cPair->Key == key)
+                if (cPair->Key == key)
                 {
                     KeyValuePair* prev = cPair->Prev;
                     KeyValuePair* next = cPair->Next;
@@ -236,16 +230,17 @@ namespace Drivers.Framework.Collections
                 cPair = cPair->Prev;
             }
         }
-        public void RemoveRange(UInt32 keyStart, UInt32 keyStep, UInt32 numKeys)
+
+        public void RemoveRange(uint keyStart, uint keyStep, uint numKeys)
         {
-            for (int i = (int)(numKeys - 1); i >= 0; i--)
+            for (int i = (int) (numKeys - 1); i >= 0; i--)
             {
-                UInt32 currKey = (keyStart + ((UInt32)i * keyStep));
+                uint currKey = keyStart + (uint) i*keyStep;
                 Remove(currKey);
             }
         }
 
-        public bool ContainsKey(UInt32 key)
+        public bool ContainsKey(uint key)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -258,7 +253,8 @@ namespace Drivers.Framework.Collections
             }
             return false;
         }
-        public bool ContainsValue(UInt32 value)
+
+        public bool ContainsValue(uint value)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -271,7 +267,8 @@ namespace Drivers.Framework.Collections
             }
             return false;
         }
-        public bool ContainsAnyKeyInRange(UInt32 startKey, UInt32 endKey)
+
+        public bool ContainsAnyKeyInRange(uint startKey, uint endKey)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -284,7 +281,8 @@ namespace Drivers.Framework.Collections
             }
             return false;
         }
-        public bool ContainsAnyValueInRange(UInt32 startValue, UInt32 endValue)
+
+        public bool ContainsAnyValueInRange(uint startValue, uint endValue)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -298,7 +296,7 @@ namespace Drivers.Framework.Collections
             return false;
         }
 
-        public UInt32 GetFirstKeyOfValue(UInt32 value)
+        public uint GetFirstKeyOfValue(uint value)
         {
             KeyValuePair* cPair = list;
             while (cPair != null)
@@ -312,7 +310,79 @@ namespace Drivers.Framework.Collections
             return 0;
         }
 
-        public UInt32 this[UInt32 key]
+        public Iterator GetIterator()
+        {
+            iterator.StoreState();
+            iterator.Reset(list);
+            return iterator;
+        }
+
+        public Iterator GetNewIterator()
+        {
+            return new Iterator(list);
+        }
+
+        public struct KeyValuePair
+        {
+            public uint Key;
+            public uint Value;
+            internal KeyValuePair* Prev;
+            internal KeyValuePair* Next;
+            internal bool Empty;
+        }
+
+        public sealed class Iterator : Object
+        {
+            private KeyValuePair* list;
+            private KeyValuePair* storedList;
+
+            public Iterator(KeyValuePair* aList)
+            {
+                list = aList;
+            }
+
+            internal void Reset(KeyValuePair* aList)
+            {
+                list = aList;
+            }
+
+            public void StoreState()
+            {
+                storedList = list;
+            }
+
+            public void RestoreState()
+            {
+                list = storedList;
+            }
+
+            public bool HasNext()
+            {
+                return list != null && !list->Empty;
+            }
+
+            public KeyValuePair Next()
+            {
+                KeyValuePair result = *list;
+                list = list->Prev;
+                return result;
+            }
+        }
+    }
+
+    public unsafe class UInt64Dictionary : Object
+    {
+        protected Iterator iterator;
+
+        protected KeyValuePair* list;
+
+        public UInt64Dictionary()
+        {
+            list = null;
+            iterator = new Iterator(list);
+        }
+
+        public ulong this[ulong key]
         {
             get
             {
@@ -325,7 +395,7 @@ namespace Drivers.Framework.Collections
                     }
                     cPair = cPair->Prev;
                 }
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
+                ExceptionMethods.Throw(new ArgumentException("Key not found in dictionary!"));
                 return 0;
             }
             set
@@ -340,31 +410,128 @@ namespace Drivers.Framework.Collections
                     }
                     cPair = cPair->Prev;
                 }
-                if(cPair == null)
+                if (cPair == null)
                 {
                     Add(key, value);
                 }
             }
         }
 
+        public void Add(ulong key, ulong value, bool SkipCheck = false)
+        {
+            if (!SkipCheck)
+            {
+                if (Contains(key))
+                {
+                    ExceptionMethods.Throw(new Exception("Cannot add duplicate key to the dictionary!"));
+                }
+            }
+
+            KeyValuePair* newItem = (KeyValuePair*) Heap.Alloc((uint) sizeof(KeyValuePair), "UInt64Dictionary.Add");
+            newItem->Key = key;
+            newItem->Value = value;
+            newItem->Next = null;
+            newItem->Prev = list;
+            if (list != null)
+            {
+                list->Next = newItem;
+            }
+            list = newItem;
+        }
+
+        public void AddRange(ulong keyStart, ulong keyStep, ulong[] values)
+        {
+            if (ContainsItemInRange(keyStart, keyStart + (uint) values.Length*keyStep))
+            {
+                ExceptionMethods.Throw(new Exception("Cannot add duplicate key to the dictionary!"));
+            }
+
+            ulong keyVal = keyStart;
+            for (uint i = 0; i < values.Length; i++)
+            {
+                Add(keyVal, values[i], true);
+
+                keyVal += keyStep;
+            }
+        }
+
+        public void Remove(ulong key)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (cPair->Key == key)
+                {
+                    KeyValuePair* prev = cPair->Prev;
+                    KeyValuePair* next = cPair->Next;
+
+                    if (prev != null)
+                    {
+                        prev->Next = next;
+                    }
+                    if (next != null)
+                    {
+                        next->Prev = prev;
+                    }
+
+                    Heap.Free(cPair);
+                }
+                cPair = cPair->Prev;
+            }
+        }
+
+        public void RemoveRange(ulong keyStart, ulong keyStep, ulong numKeys)
+        {
+            for (int i = (int) (numKeys - 1); i >= 0; i--)
+            {
+                ulong currKey = keyStart + (ulong) i*keyStep;
+                Remove(currKey);
+            }
+        }
+
+        public bool Contains(ulong key)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (cPair->Key == key)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
+        }
+
+        public bool ContainsItemInRange(ulong startKey, ulong endKey)
+        {
+            KeyValuePair* cPair = list;
+            while (cPair != null)
+            {
+                if (cPair->Key >= startKey && cPair->Key < endKey)
+                {
+                    return true;
+                }
+                cPair = cPair->Prev;
+            }
+            return false;
+        }
+
         public Iterator GetIterator()
         {
-            iterator.StoreState();
             iterator.Reset(list);
             return iterator;
         }
+
         public Iterator GetNewIterator()
         {
             return new Iterator(list);
         }
-    }
 
-    public unsafe class UInt64Dictionary : Object
-    {
         public struct KeyValuePair
         {
-            public UInt64 Key;
-            public UInt64 Value;
+            public ulong Key;
+            public ulong Value;
             internal KeyValuePair* Prev;
             internal KeyValuePair* Next;
         }
@@ -388,6 +555,7 @@ namespace Drivers.Framework.Collections
             {
                 storedList = list;
             }
+
             public void RestoreState()
             {
                 list = storedList;
@@ -397,162 +565,13 @@ namespace Drivers.Framework.Collections
             {
                 return list != null;
             }
+
             public KeyValuePair Next()
             {
                 KeyValuePair result = *list;
                 list = list->Prev;
                 return result;
             }
-        }
-
-        protected KeyValuePair* list;
-        protected Iterator iterator;
-
-        public UInt64Dictionary()
-        {
-            list = null;
-            iterator = new Iterator(list);
-        }
-
-        public void Add(UInt64 key, UInt64 value, bool SkipCheck = false)
-        {
-            if (!SkipCheck)
-            {
-                if (Contains(key))
-                {
-                    ExceptionMethods.Throw(new Framework.Exception("Cannot add duplicate key to the dictionary!"));
-                }
-            }
-
-            KeyValuePair* newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt64Dictionary.Add");
-            newItem->Key = key;
-            newItem->Value = value;
-            newItem->Next = null;
-            newItem->Prev = list; 
-            if (list != null)
-            {
-                list->Next = newItem;
-            }
-            list = newItem;
-        }
-        public void AddRange(UInt64 keyStart, UInt64 keyStep, UInt64[] values)
-        {
-            if (ContainsItemInRange(keyStart, keyStart + ((uint)values.Length * keyStep)))
-            {
-                ExceptionMethods.Throw(new Framework.Exception("Cannot add duplicate key to the dictionary!"));
-            }
-
-            UInt64 keyVal = keyStart;
-            for (uint i = 0; i < values.Length; i++)
-            {
-                Add(keyVal, values[i], true);
-
-                keyVal += keyStep;
-            }
-        }
-        public void Remove(UInt64 key)
-        {
-            KeyValuePair* cPair = list;
-            while (cPair != null)
-            {
-                if (cPair->Key == key)
-                {
-                    KeyValuePair* prev = cPair->Prev;
-                    KeyValuePair* next = cPair->Next;
-                    
-                    if (prev != null)
-                    {
-                        prev->Next = next;
-                    }
-                    if (next != null)
-                    {
-                        next->Prev = prev;
-                    }
-
-                    Heap.Free(cPair);
-                }
-                cPair = cPair->Prev;
-            }
-        }
-        public void RemoveRange(UInt64 keyStart, UInt64 keyStep, UInt64 numKeys)
-        {
-            for (int i = (int)(numKeys - 1); i >= 0; i--)
-            {
-                UInt64 currKey = (keyStart + ((UInt64)i * keyStep));
-                Remove(currKey);
-            }
-        }
-
-        public bool Contains(UInt64 key)
-        {
-            KeyValuePair* cPair = list;
-            while (cPair != null)
-            {
-                if (cPair->Key == key)
-                {
-                    return true;
-                }
-                cPair = cPair->Prev;
-            }
-            return false;
-        }
-        public bool ContainsItemInRange(UInt64 startKey, UInt64 endKey)
-        {
-            KeyValuePair* cPair = list;
-            while (cPair != null)
-            {
-                if (cPair->Key >= startKey && cPair->Key < endKey)
-                {
-                    return true;
-                }
-                cPair = cPair->Prev;
-            }
-            return false;
-        }
-
-        public UInt64 this[UInt64 key]
-        {
-            get
-            {
-                KeyValuePair* cPair = list;
-                while (cPair != null)
-                {
-                    if (cPair->Key == key)
-                    {
-                        return cPair->Value;
-                    }
-                    cPair = cPair->Prev;
-                }
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("Key not found in dictionary!"));
-                return 0;
-            }
-            set
-            {
-                KeyValuePair* cPair = list;
-                while (cPair != null)
-                {
-                    if (cPair->Key == key)
-                    {
-                        cPair->Value = value;
-                        break;
-                    }
-                    cPair = cPair->Prev;
-                }
-                if (cPair == null)
-                {
-                    Add(key, value);
-                }
-            }
-        }
-
-        public Iterator GetIterator()
-        {
-            iterator.Reset(list);
-            return iterator;
-        }
-        public Iterator GetNewIterator()
-        {
-            return new Iterator(list);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class StackSwitch : IL.ILOps.StackSwitch
     {
@@ -44,7 +44,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -58,18 +58,54 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 if (i == 0)
                 {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = bytesShift.ToString() + "($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (bytesShift + 4).ToString() + "($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = bytesShift.ToString() + "($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = bytesShift.ToString() + "($sp)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = (bytesShift + 4).ToString() + "($sp)",
+                        Dest = "$t1",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "$t1",
+                        Dest = bytesShift.ToString() + "($sp)",
+                        MoveType = Mov.MoveTypes.SrcRegToDestMemory
+                    });
                 }
                 else if (i == dwordsToRotate - 1)
                 {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t0", Dest = bytesShift + "($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "$t0",
+                        Dest = bytesShift + "($sp)",
+                        MoveType = Mov.MoveTypes.SrcRegToDestMemory
+                    });
                 }
                 else
                 {
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (bytesShift + 4).ToString() + "($sp)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = bytesShift.ToString() + "($sp)", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = (bytesShift + 4).ToString() + "($sp)",
+                        Dest = "$t1",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "$t1",
+                        Dest = bytesShift.ToString() + "($sp)",
+                        MoveType = Mov.MoveTypes.SrcRegToDestMemory
+                    });
                 }
                 bytesShift += 4;
             }
@@ -97,6 +133,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 state.CurrentStackFrame.GetStack(theOp).Push(poppedItems[i]);
             }
         }
+
         private static void rotateStackItems(ILConversionState state, ILOp theOp, int items, int distance)
         {
             if (distance >= items)

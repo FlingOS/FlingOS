@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,29 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Processes;
 using Kernel.FOS_System.Processes;
+using Kernel.Hardware.Processes;
+using Kernel.Hardware.Timers;
 
 namespace Kernel.Hardware.Tasks
 {
     public static unsafe class PlayNotesTask
     {
-        public class NoteState : FOS_System.Object
-        {
-            public int dur_ms;
-            public int handlerId;
-        }
-        public class NoteRequest : FOS_System.Object
-        {
-            public Hardware.Timers.PIT.MusicalNote note;
-            public Hardware.Timers.PIT.MusicalNoteValue duration;
-            public int bpm;
-        }
-
         public static Thread OwnerThread = null;
         public static bool Awake = true;
 
         public static bool Terminate = false;
 
-        private static CircularBuffer LiveNoteRequests;
-        private static CircularBuffer DeadNoteRequests;
+        private static readonly CircularBuffer LiveNoteRequests;
+        private static readonly CircularBuffer DeadNoteRequests;
+
+        private static bool Playing = false;
+
         static PlayNotesTask()
         {
             DeadNoteRequests = new CircularBuffer(256, false);
@@ -62,19 +56,20 @@ namespace Kernel.Hardware.Tasks
             }
         }
 
-        public static void RequestNote(Hardware.Timers.PIT.MusicalNote note, Hardware.Timers.PIT.MusicalNoteValue duration, uint bpm)
+        public static void RequestNote(PIT.MusicalNote note, PIT.MusicalNoteValue duration, uint bpm)
         {
-            NoteRequest next = (NoteRequest)DeadNoteRequests.Pop();
+            NoteRequest next = (NoteRequest) DeadNoteRequests.Pop();
             if (next == null)
             {
-                BasicConsole.WriteLine("Cannot set note request because a null object was returned from the circular buffer. Buffer may be full.");
+                BasicConsole.WriteLine(
+                    "Cannot set note request because a null object was returned from the circular buffer. Buffer may be full.");
                 BasicConsole.DelayOutput(10);
             }
             else
             {
                 next.note = note;
                 next.duration = duration;
-                next.bpm = (int)bpm;
+                next.bpm = (int) bpm;
 
                 LiveNoteRequests.Push(next);
 
@@ -85,7 +80,6 @@ namespace Kernel.Hardware.Tasks
             }
         }
 
-        private static bool Playing = false;
         public static void Main()
         {
             OwnerThread = ProcessManager.CurrentThread;
@@ -103,15 +97,15 @@ namespace Kernel.Hardware.Tasks
                 {
                     //BasicConsole.WriteLine("Playing note...");
 
-                    NoteRequest theReq = (NoteRequest)LiveNoteRequests.Pop();
+                    NoteRequest theReq = (NoteRequest) LiveNoteRequests.Pop();
 
                     try
                     {
-                        Hardware.Timers.PIT.MusicalNote note = theReq.note;
-                        Hardware.Timers.PIT.MusicalNoteValue duration = theReq.duration;
+                        PIT.MusicalNote note = theReq.note;
+                        PIT.MusicalNoteValue duration = theReq.duration;
                         int bpm = theReq.bpm;
 
-                        int dur_ms = (int)duration * 60 * 1000 / (bpm * 16);
+                        int dur_ms = (int) duration*60*1000/(bpm*16);
                         long do_ms = dur_ms;
                         if (dur_ms >= 2000)
                         {
@@ -127,14 +121,16 @@ namespace Kernel.Hardware.Tasks
                             dur_ms = dur_ms
                         };
 
-                        if (note != Timers.PIT.MusicalNote.Silent)
+                        if (note != PIT.MusicalNote.Silent)
                         {
-                            Hardware.Timers.PIT.ThePIT.PlaySound((int)note);
+                            PIT.ThePIT.PlaySound((int) note);
                         }
 
                         Playing = true;
 
-                        state.handlerId = Hardware.Timers.PIT.ThePIT.RegisterHandler(new Hardware.Timers.PITHandler(SysCall_StopNoteHandler, state, 1000000L * do_ms, true));
+                        state.handlerId =
+                            PIT.ThePIT.RegisterHandler(new PITHandler(SysCall_StopNoteHandler, state, 1000000L*do_ms,
+                                true));
 
                         while (Playing)
                         {
@@ -150,7 +146,7 @@ namespace Kernel.Hardware.Tasks
                         }
                         BasicConsole.WriteLine();
                         Playing = false;
-                        Hardware.Timers.PIT.ThePIT.MuteSound();
+                        PIT.ThePIT.MuteSound();
                         BasicConsole.DelayOutput(15);
                     }
                     finally
@@ -176,9 +172,9 @@ namespace Kernel.Hardware.Tasks
             }
         }
 
-        private static void SysCall_StopNoteHandler(FOS_System.IObject objState)
+        private static void SysCall_StopNoteHandler(IObject objState)
         {
-            NoteState state = (NoteState)objState;
+            NoteState state = (NoteState) objState;
             if (state.dur_ms >= 0)
             {
                 state.dur_ms -= 2000;
@@ -189,9 +185,22 @@ namespace Kernel.Hardware.Tasks
 
                 Playing = false;
 
-                Hardware.Timers.PIT.ThePIT.MuteSound();
-                Hardware.Timers.PIT.ThePIT.UnregisterHandler(state.handlerId);
+                PIT.ThePIT.MuteSound();
+                PIT.ThePIT.UnregisterHandler(state.handlerId);
             }
+        }
+
+        public class NoteState : Object
+        {
+            public int dur_ms;
+            public int handlerId;
+        }
+
+        public class NoteRequest : Object
+        {
+            public int bpm;
+            public PIT.MusicalNoteValue duration;
+            public PIT.MusicalNote note;
         }
     }
 }

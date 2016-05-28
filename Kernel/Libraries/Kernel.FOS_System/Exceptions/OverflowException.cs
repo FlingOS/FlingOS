@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Exceptions
 {
     /// <summary>
-    /// Represents an overflow exception.
-    /// Usually thrown by the hardware interrupt.
+    ///     Represents an overflow exception.
+    ///     Usually thrown by the hardware interrupt.
     /// </summary>
-    public class OverflowException : FOS_System.Exception
+    public class OverflowException : Exception
     {
         /// <summary>
-        /// Sets the message to "Overflow exception."
+        ///     Sets the message to "Overflow exception."
         /// </summary>
-        public OverflowException(FOS_System.String message)
+        public OverflowException(String message)
             : base("Overflow exception. " + message)
         {
         }

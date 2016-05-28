@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,25 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
 
 namespace Drivers.Utilities
 {
     /// <summary>
-    /// Static utility methods for constant values.
+    ///     Static utility methods for constant values.
     /// </summary>
     public static class ConstantsUtils
     {
         /// <summary>
-        /// Creates a mask for the specified bit index.
+        ///     Creates a mask for the specified bit index.
         /// </summary>
         /// <param name="bitNum">The bit index to mask.</param>
         /// <returns>The mask.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static uint BIT(int bitNum)
         {
             return 1u << bitNum;

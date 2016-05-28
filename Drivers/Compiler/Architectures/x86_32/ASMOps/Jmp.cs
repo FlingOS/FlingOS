@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Jmp : ASM.ASMOp
+    public class Jmp : ASMOp
     {
-        public JmpOp JumpType;
-        public bool UnsignedTest;
         public int DestILPosition;
         public string Extension;
-        
-        public override string Convert(ASM.ASMBlock theBlock)
+        public JmpOp JumpType;
+        public bool UnsignedTest;
+
+        public override string Convert(ASMBlock theBlock)
         {
             string jmpOp = "";
             switch (JumpType)
@@ -104,6 +102,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             return jmpOp + " " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
         }
     }
+
     public enum JmpOp
     {
         None,

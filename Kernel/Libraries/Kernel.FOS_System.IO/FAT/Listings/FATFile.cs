@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,39 +23,40 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define FATFILE_TRACE
 #undef FATFILE_TRACE
 
-using System;
-
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 
 namespace Kernel.FOS_System.IO.FAT
 {
     /// <summary>
-    /// Represents a file in a FAT file system.
+    ///     Represents a file in a FAT file system.
     /// </summary>
     public sealed class FATFile : File
     {
         /// <summary>
-        /// Indicates whether the FATFile instance is being used to read/write FATDirectory data. 
-        /// This is subtly different from IsDirectory.
+        ///     The first cluster number of the file.
+        /// </summary>
+        public readonly uint FirstClusterNum;
+
+        /// <summary>
+        ///     The FAT file system to which the file belongs.
+        /// </summary>
+        public readonly FATFileSystem TheFATFileSystem;
+
+        /// <summary>
+        ///     Indicates whether the FATFile instance is being used to read/write FATDirectory data.
+        ///     This is subtly different from IsDirectory.
         /// </summary>
         internal bool IsDirectoryFile = false;
 
         /// <summary>
-        /// The FAT file system to which the file belongs.
-        /// </summary>
-        public readonly FATFileSystem TheFATFileSystem;
-        /// <summary>
-        /// The first cluster number of the file.
-        /// </summary>
-        public readonly UInt32 FirstClusterNum;
-
-        /// <summary>
-        /// Initializes a new FAT file.
+        ///     Initializes a new FAT file.
         /// </summary>
         /// <param name="aFileSystem">The FAT file system to which the file belongs.</param>
         /// <param name="parent">The parent directory of the file.</param>
@@ -62,9 +64,9 @@ namespace Kernel.FOS_System.IO.FAT
         /// <param name="aSize">The size of the file.</param>
         /// <param name="aFirstCluster">The first cluster number of the file.</param>
         /// <remarks>
-        /// Size is UInt32 because FAT doesn't support bigger. Don't change to UInt64.
+        ///     Size is UInt32 because FAT doesn't support bigger. Don't change to UInt64.
         /// </remarks>
-        public FATFile(FATFileSystem aFileSystem, FATDirectory parent, FOS_System.String aName, UInt32 aSize, UInt32 aFirstCluster)
+        public FATFile(FATFileSystem aFileSystem, FATDirectory parent, String aName, uint aSize, uint aFirstCluster)
             : base(aFileSystem, parent, aName, aSize)
         {
             TheFATFileSystem = aFileSystem;
@@ -72,14 +74,14 @@ namespace Kernel.FOS_System.IO.FAT
         }
 
         /// <summary>
-        /// Deletes the listing from the file system.
+        ///     Deletes the listing from the file system.
         /// </summary>
         /// <returns>True if the listing was deleted. Otherwise, false.</returns>
         public override bool Delete()
         {
             if (TheFATFileSystem.FATType != FATFileSystem.FATTypeEnum.FAT32)
             {
-                ExceptionMethods.Throw(new Exceptions.NotSupportedException("FATFile.Delete for non-FAT32 not supported!"));
+                ExceptionMethods.Throw(new NotSupportedException("FATFile.Delete for non-FAT32 not supported!"));
             }
 
 #if FATFILE_TRACE
@@ -96,7 +98,7 @@ namespace Kernel.FOS_System.IO.FAT
 #endif
                 //Write 0s (null) to clusters
                 TheFATFileSystem.WriteCluster(clusters[i], null);
-            
+
 #if FATFILE_TRACE
                 BasicConsole.WriteLine("FATFile.Delete : Setting FAT entry...");
 #endif

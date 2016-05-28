@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,453 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
+using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Hardware.Devices;
+using Kernel.Hardware.IO;
 
 namespace Kernel.Hardware.Timers
 {
     /// <summary>
-    /// Represents the programmable interval timer.
+    ///     Represents the programmable interval timer.
     /// </summary>
-    public class PIT : Devices.Timer
+    public class PIT : Timer
     {
-        /// <summary>
-        /// The interrupt handler Id returned when the interrupt handler is set.
-        /// Use to remove the interrupt handler when disabling.
-        /// </summary>
-        protected int InterruptHandlerId;
-        /// <summary>
-        /// The PIT command port.
-        /// </summary>
-        protected IO.IOPort Command = new IO.IOPort(0x43);
-        /// <summary>
-        /// The PIT Data0 port used to send data about timer 0.
-        /// </summary>
-        protected IO.IOPort Data0 = new IO.IOPort(0x40);
-        /*<summary>
-        /// The PIT Data1 port used to send data about timer 1.
-        /// Timer 1 is outdated and "probably doesn't exist on most modern hardware".
-        /// Hence this port is pointless and so commented out.
-        /// </summary>
-        //protected IO.IOPort Data1 = new IO.IOPort(0x41);*/
-
-        /// <summary>
-        /// The PIT Data2 port used to send data about timer 2.
-        /// Timer 2 is used to drive the PC speaker e.g. speaker beep.
-        /// </summary>
-        protected IO.IOPort Data2 = new IO.IOPort(0x42);
-        /// <summary>
-        /// The PC speaker port used to turn it on/off.
-        /// </summary>
-        protected IO.IOPort SpeakerPort = new IO.IOPort(0x61);
-
-        /// <summary>
-        /// Currently active handlers for when the timer interrupt occurs.
-        /// </summary>
-        private List ActiveHandlers = new List();
-        
-        /// <summary>
-        /// The reload value for timer 0. Sets the frequency of timer 0.
-        /// </summary>
-        //private ushort _T0Reload = 32; // Produces ~0.0268ms delay between interrupts
-        private ushort _T0Reload = 0x1000; // ~3.43284333ms
-        /// <summary>
-        /// The reload value for timer 2. Sets the frequency of timer 2 hence 
-        /// the frequency of the PC speaker beep.
-        /// </summary>
-        private ushort _T2Reload = 1024;
-        /// <summary>
-        /// Incremented endlessly to create a unique timer id.
-        /// </summary>
-        private int TimerIdGenerator = 0;
-        /// <summary>
-        /// Set to true when the current wait timer elapses.
-        /// </summary>
-        private bool WaitSignaled = false;
-        /// <summary>
-        /// The known frequency at which the PIT decrements the timer counters (reload values).
-        /// </summary>
-        public const uint PITFrequency = 1193180;
-        /// <summary>
-        /// The known time between PIT decrements of the timer counters (reload values).
-        /// </summary>
-        public const uint PITDelayNS = 838;
-        /// <summary>
-        /// Whether timer 0 should be in rate generator mode or not. Set to true to 
-        /// have timer 0 reload from the reload value after the count hits 0.
-        /// Essentially, set to true to make timer 0 repeat endlessly.
-        /// </summary>
-        public bool T0RateGen = false;
-
-        /// <summary>
-        /// The timer 0 reload value.
-        /// </summary>
-        public ushort T0Reload
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return _T0Reload;
-            }
-            set
-            {
-                _T0Reload = value;
-
-                Command.Write_Byte((byte)(T0RateGen ? 0x34 : 0x30));
-                Data0.Write_Byte((byte)(value & 0xFF));
-                Data0.Write_Byte((byte)(value >> 8));
-            }
-        }
-        /// <summary>
-        /// The timer 0 frequency.
-        /// </summary>
-        public uint T0Frequency
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return (PITFrequency / ((uint)_T0Reload));
-            }
-            set
-            {
-                if (value < 19 || value > 1193180)
-                {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException(
-                        "Frequency must be between 19 and 1193180!"));
-                }
-
-                T0Reload = (ushort)(PITFrequency / value);
-            }
-        }
-        /// <summary>
-        /// The timer 0 delay in nanoseconds.
-        /// </summary>
-        public uint T0DelyNS
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return (PITDelayNS * _T0Reload);
-            }
-            set
-            {
-                if (value > 54918330)
-                {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException(
-                        "Delay must be no greater that 54918330"));
-                }
-
-                T0Reload = (ushort)(value / PITDelayNS);
-            }
-        }
-
-        /// <summary>
-        /// The timer 2 reload value.
-        /// </summary>
-        public ushort T2Reload
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return _T2Reload;
-            }
-            set
-            {
-                _T2Reload = value;
-
-                Command.Write_Byte(0xB6);
-                Data2.Write_Byte((byte)(value & 0xFF));
-                Data2.Write_Byte((byte)(value >> 8));
-            }
-        }
-        /// <summary>
-        /// The timer 2 frequency.
-        /// </summary>
-        public uint T2Frequency
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return (PITFrequency / ((uint)_T2Reload));
-            }
-            set
-            {
-                if (value < 19 || value > 1193180)
-                {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException(
-                        "Frequency must be between 19 and 1193180!"));
-                }
-
-                T2Reload = (ushort)(PITFrequency / value);
-            }
-        }
-        /// <summary>
-        /// The timer 2 delay in nanoseconds.
-        /// </summary>
-        public uint T2DelyNS
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return (PITDelayNS * _T2Reload);
-            }
-            set
-            {
-                if (value > 54918330)
-                {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException(
-                        "Delay must be no greater than 54918330"));
-                }
-
-                T2Reload = (ushort)(value / PITDelayNS);
-            }
-        }
-
-        /// <summary>
-        /// Enables the PC speaker sound.
-        /// </summary>
-        public void EnableSound()
-        {
-            //OR with 0x03 to enable sound
-            SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() | 0x03));
-        }
-        /// <summary>
-        /// Disables the PC speaker sound.
-        /// </summary>
-        public void DisableSound()
-        {
-            //AND with 0xFC to disable sound
-            SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() & 0xFC));
-        }
-        /// <summary>
-        /// Plays the PC speaker at the specified frequency (tone).
-        /// </summary>
-        /// <param name="aFreq">The frequency to play.</param>
-        public void PlaySound(int aFreq)
-        {
-            T2Frequency = (uint)aFreq;
-            EnableSound();
-        }
-        /// <summary>
-        /// Mutes the PC speaker.
-        /// </summary>
-        public void MuteSound()
-        {
-            DisableSound();
-        }
-
-        /// <summary>
-        /// The internal wait interrupt handler static wrapper.
-        /// </summary>
-        /// <param name="state">The PIT object state.</param>
-        private static void SignalWait(FOS_System.IObject state)
-        {
-            ((PIT)state).SignalWait();
-        }
-        /// <summary>
-        /// The internal wait interrupt handler.
-        /// </summary>
-        private void SignalWait()
-        {
-            WaitSignaled = true;
-        }
-
-        /// <summary>
-        /// Blocks the caller for the specified length of time (in milliseconds).
-        /// </summary>
-        /// <param name="TimeoutMS">The length of time to wait in milliseconds.</param>
-        public override void Wait(uint TimeoutMS)
-        {
-            WaitNS(1000000L * TimeoutMS);
-        }
-        /// <summary>
-        /// Blocks the caller for the specified length of time (in nanoseconds).
-        /// </summary>
-        /// <param name="TimeoutNS">The length of time to wait in nanoseconds.</param>
-        public override void WaitNS(long TimeoutNS)
-        {
-            WaitSignaled = false;
-
-            RegisterHandler(new PITHandler(PIT.SignalWait, this, TimeoutNS, false));
-
-            while (!WaitSignaled)
-            {
-                Devices.CPU.Default.Halt();
-            }
-        }
-
-        [Drivers.Compiler.Attributes.NoDebug]
-        public override int RegisterHandler(Devices.TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.IObject state)
-        {
-            return RegisterHandler(new PITHandler(handler, state, TimeoutNS, Recurring));
-        }
-        /// <summary>
-        /// Registers the specified handler for the timer 0 interrupt.
-        /// </summary>
-        /// <param name="handler">The handler to register.</param>
-        /// <returns>The Id of the registered handler.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public int RegisterHandler(PITHandler handler)
-        {
-            if (handler.id != -1)
-            {
-                ExceptionMethods.Throw(new FOS_System.Exception("Timer has already been registered!"));
-            }
-
-            handler.id = (TimerIdGenerator++);
-            ActiveHandlers.Add(handler);
-
-            return handler.id;
-        }
-        /// <summary>
-        /// Unregisters the handler with the specified id.
-        /// </summary>
-        /// <param name="handlerId">The Id of the handler to unregister.</param>
-        public override void UnregisterHandler(int handlerId)
-        {
-            for (int i = 0; i < ActiveHandlers.Count; i++)
-            {
-                if (((PITHandler)ActiveHandlers[i]).id == handlerId)
-                {
-                    ((PITHandler)ActiveHandlers[i]).id = -1;
-                    ActiveHandlers.RemoveAt(i);
-                    return;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The internal timer 0 interrupt handler.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void InterruptHandler()
-        {
-            //if (Processes.ProcessManager.Processes.Count > 1)
-            //    BasicConsole.WriteLine("PIT: 1");
-
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 2");
-            //}
-
-            uint T0Delay = T0DelyNS;
-            PITHandler hndlr = null;
-            for (int i = ActiveHandlers.Count - 1; i >= 0; i--)
-            {
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //    BasicConsole.WriteLine("PIT: 2");
-                
-                hndlr = (PITHandler)ActiveHandlers[i];
-
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //    BasicConsole.WriteLine("PIT: 3");
-
-                hndlr.NSRemaining -= T0Delay;
-
-                //if (Processes.ProcessManager.Processes.Count > 1)
-                //    BasicConsole.WriteLine("PIT: 4");
-
-                if (hndlr.NSRemaining < T0Delay)
-                {
-                    //if (Processes.ProcessManager.Processes.Count > 1)
-                    //    BasicConsole.WriteLine("PIT: 5");
-
-                    if (hndlr.Recurring)
-                    {
-                        hndlr.NSRemaining = hndlr.NanosecondsTimeout;
-                    }
-                    else
-                    {
-                        hndlr.id = -1;
-
-                        //if (Processes.ProcessManager.Processes.Count > 1)
-                        //    BasicConsole.WriteLine("PIT: 6");
-
-                        ActiveHandlers.RemoveAt(i);
-                    }
-
-                    //if (Processes.ProcessManager.Processes.Count > 1)
-                    //    BasicConsole.WriteLine("PIT: 7");
-
-                    hndlr.HandleTrigger(hndlr.state);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Enables the PIT.
-        /// </summary>
-        public override void Enable()
-        {
-            if (!enabled)
-            {
-                //Ignore the process state for timer interrupts. Timer interrupts occur so frequently
-                //  that to continually switch state would be massively inefficient. Also, switching
-                //  state isn't necessary for the handlers queued in the timer.
-                
-                enabled = true;
-                
-                T0RateGen = true;
-                T0Reload = _T0Reload;
-
-                Interrupts.Interrupts.EnableIRQ(0);
-            }
-        }
-        /// <summary>
-        /// Disables the PIT.
-        /// </summary>
-        public override void Disable()
-        {
-            if (enabled)
-            {
-                //TODO: This should be done through a DeviceManager.Deregister system call.
-                //TODO: This needs un-commenting and fixing
-                //DeviceManager.Devices.Remove(this);
-                //As per requirements, set temp sote store of id to 0 to prevent
-                //  accidental multiple removal.
-                InterruptHandlerId = 0;
-                enabled = false;
-
-                Interrupts.Interrupts.DisableIRQ(0);
-            }
-        }
-
-        public PIT()
-            : base(DeviceGroup.System, DeviceSubClass.Timer, "Programmable Interval Timer", new uint[0], true)
-        {
-        }
-
-        /// <summary>
-        /// The (only) PIT device instance.
-        /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
-        public static PIT ThePIT;
-        /// <summary>
-        /// Initialises the (only) PIT device instance.
-        /// </summary>
-        public static void Init()
-        {
-            if(ThePIT == null)
-            {
-                ThePIT = new PIT();
-                Devices.DeviceManager.RegisterDevice(ThePIT);
-            }
-            ThePIT.Enable();
-        }
-        /// <summary>
-        /// Cleans up the (only) PIT device instance.
-        /// </summary>
-        public static void Clean()
-        {
-            if(ThePIT != null)
-            {
-                ThePIT.Disable();
-            }
-        }
-
         public enum MusicalNote : int
         {
             Silent = 0,
@@ -626,20 +198,456 @@ namespace Kernel.Hardware.Timers
             Bb8 = 7458,
             B8 = 7902
         }
+
         public enum MusicalNoteValue : uint
         {
-            Semiquaver = 1,     //  1/16
-            Quaver = 2,         //  1/8
-            Crotchet = 4,       //  1/4
-            Minim = 8,          //  1/2
-            Semibreve = 16,     //  1
-            Breve = 32,         //  2
-            Longa = 64,         //  4
-            Maxima = 128        //  8
+            Semiquaver = 1, //  1/16
+            Quaver = 2, //  1/8
+            Crotchet = 4, //  1/4
+            Minim = 8, //  1/2
+            Semibreve = 16, //  1
+            Breve = 32, //  2
+            Longa = 64, //  4
+            Maxima = 128 //  8
         }
+
+        /// <summary>
+        ///     The known frequency at which the PIT decrements the timer counters (reload values).
+        /// </summary>
+        public const uint PITFrequency = 1193180;
+
+        /// <summary>
+        ///     The known time between PIT decrements of the timer counters (reload values).
+        /// </summary>
+        public const uint PITDelayNS = 838;
+
+        /// <summary>
+        ///     The (only) PIT device instance.
+        /// </summary>
+        [Group(Name = "IsolatedKernel_Hardware_Devices")] public static PIT ThePIT;
+
+        /// <summary>
+        ///     The reload value for timer 0. Sets the frequency of timer 0.
+        /// </summary>
+        //private ushort _T0Reload = 32; // Produces ~0.0268ms delay between interrupts
+        private ushort _T0Reload = 0x1000; // ~3.43284333ms
+
+        /// <summary>
+        ///     The reload value for timer 2. Sets the frequency of timer 2 hence
+        ///     the frequency of the PC speaker beep.
+        /// </summary>
+        private ushort _T2Reload = 1024;
+
+        /// <summary>
+        ///     Currently active handlers for when the timer interrupt occurs.
+        /// </summary>
+        private readonly List ActiveHandlers = new List();
+
+        /// <summary>
+        ///     The PIT command port.
+        /// </summary>
+        protected IOPort Command = new IOPort(0x43);
+
+        /// <summary>
+        ///     The PIT Data0 port used to send data about timer 0.
+        /// </summary>
+        protected IOPort Data0 = new IOPort(0x40);
+
+        /*<summary>
+        /// The PIT Data1 port used to send data about timer 1.
+        /// Timer 1 is outdated and "probably doesn't exist on most modern hardware".
+        /// Hence this port is pointless and so commented out.
+        /// </summary>
+        //protected IO.IOPort Data1 = new IO.IOPort(0x41);*/
+
+        /// <summary>
+        ///     The PIT Data2 port used to send data about timer 2.
+        ///     Timer 2 is used to drive the PC speaker e.g. speaker beep.
+        /// </summary>
+        protected IOPort Data2 = new IOPort(0x42);
+
+        /// <summary>
+        ///     The interrupt handler Id returned when the interrupt handler is set.
+        ///     Use to remove the interrupt handler when disabling.
+        /// </summary>
+        protected int InterruptHandlerId;
+
+        /// <summary>
+        ///     The PC speaker port used to turn it on/off.
+        /// </summary>
+        protected IOPort SpeakerPort = new IOPort(0x61);
+
+        /// <summary>
+        ///     Whether timer 0 should be in rate generator mode or not. Set to true to
+        ///     have timer 0 reload from the reload value after the count hits 0.
+        ///     Essentially, set to true to make timer 0 repeat endlessly.
+        /// </summary>
+        public bool T0RateGen = false;
+
+        /// <summary>
+        ///     Incremented endlessly to create a unique timer id.
+        /// </summary>
+        private int TimerIdGenerator = 0;
+
+        /// <summary>
+        ///     Set to true when the current wait timer elapses.
+        /// </summary>
+        private bool WaitSignaled = false;
+
+        public PIT()
+            : base(DeviceGroup.System, DeviceSubClass.Timer, "Programmable Interval Timer", new uint[0], true)
+        {
+        }
+
+        /// <summary>
+        ///     The timer 0 reload value.
+        /// </summary>
+        public ushort T0Reload
+        {
+            [NoGC] get { return _T0Reload; }
+            set
+            {
+                _T0Reload = value;
+
+                Command.Write_Byte((byte) (T0RateGen ? 0x34 : 0x30));
+                Data0.Write_Byte((byte) (value & 0xFF));
+                Data0.Write_Byte((byte) (value >> 8));
+            }
+        }
+
+        /// <summary>
+        ///     The timer 0 frequency.
+        /// </summary>
+        public uint T0Frequency
+        {
+            [NoGC] get { return PITFrequency/(uint) _T0Reload; }
+            set
+            {
+                if (value < 19 || value > 1193180)
+                {
+                    ExceptionMethods.Throw(new ArgumentException(
+                        "Frequency must be between 19 and 1193180!"));
+                }
+
+                T0Reload = (ushort) (PITFrequency/value);
+            }
+        }
+
+        /// <summary>
+        ///     The timer 0 delay in nanoseconds.
+        /// </summary>
+        public uint T0DelyNS
+        {
+            [NoGC] get { return PITDelayNS*_T0Reload; }
+            set
+            {
+                if (value > 54918330)
+                {
+                    ExceptionMethods.Throw(new ArgumentException(
+                        "Delay must be no greater that 54918330"));
+                }
+
+                T0Reload = (ushort) (value/PITDelayNS);
+            }
+        }
+
+        /// <summary>
+        ///     The timer 2 reload value.
+        /// </summary>
+        public ushort T2Reload
+        {
+            [NoGC] get { return _T2Reload; }
+            set
+            {
+                _T2Reload = value;
+
+                Command.Write_Byte(0xB6);
+                Data2.Write_Byte((byte) (value & 0xFF));
+                Data2.Write_Byte((byte) (value >> 8));
+            }
+        }
+
+        /// <summary>
+        ///     The timer 2 frequency.
+        /// </summary>
+        public uint T2Frequency
+        {
+            [NoGC] get { return PITFrequency/(uint) _T2Reload; }
+            set
+            {
+                if (value < 19 || value > 1193180)
+                {
+                    ExceptionMethods.Throw(new ArgumentException(
+                        "Frequency must be between 19 and 1193180!"));
+                }
+
+                T2Reload = (ushort) (PITFrequency/value);
+            }
+        }
+
+        /// <summary>
+        ///     The timer 2 delay in nanoseconds.
+        /// </summary>
+        public uint T2DelyNS
+        {
+            [NoGC] get { return PITDelayNS*_T2Reload; }
+            set
+            {
+                if (value > 54918330)
+                {
+                    ExceptionMethods.Throw(new ArgumentException(
+                        "Delay must be no greater than 54918330"));
+                }
+
+                T2Reload = (ushort) (value/PITDelayNS);
+            }
+        }
+
+        /// <summary>
+        ///     Enables the PC speaker sound.
+        /// </summary>
+        public void EnableSound()
+        {
+            //OR with 0x03 to enable sound
+            SpeakerPort.Write_Byte((byte) (SpeakerPort.Read_Byte() | 0x03));
+        }
+
+        /// <summary>
+        ///     Disables the PC speaker sound.
+        /// </summary>
+        public void DisableSound()
+        {
+            //AND with 0xFC to disable sound
+            SpeakerPort.Write_Byte((byte) (SpeakerPort.Read_Byte() & 0xFC));
+        }
+
+        /// <summary>
+        ///     Plays the PC speaker at the specified frequency (tone).
+        /// </summary>
+        /// <param name="aFreq">The frequency to play.</param>
+        public void PlaySound(int aFreq)
+        {
+            T2Frequency = (uint) aFreq;
+            EnableSound();
+        }
+
+        /// <summary>
+        ///     Mutes the PC speaker.
+        /// </summary>
+        public void MuteSound()
+        {
+            DisableSound();
+        }
+
+        /// <summary>
+        ///     The internal wait interrupt handler static wrapper.
+        /// </summary>
+        /// <param name="state">The PIT object state.</param>
+        private static void SignalWait(IObject state)
+        {
+            ((PIT) state).SignalWait();
+        }
+
+        /// <summary>
+        ///     The internal wait interrupt handler.
+        /// </summary>
+        private void SignalWait()
+        {
+            WaitSignaled = true;
+        }
+
+        /// <summary>
+        ///     Blocks the caller for the specified length of time (in milliseconds).
+        /// </summary>
+        /// <param name="TimeoutMS">The length of time to wait in milliseconds.</param>
+        public override void Wait(uint TimeoutMS)
+        {
+            WaitNS(1000000L*TimeoutMS);
+        }
+
+        /// <summary>
+        ///     Blocks the caller for the specified length of time (in nanoseconds).
+        /// </summary>
+        /// <param name="TimeoutNS">The length of time to wait in nanoseconds.</param>
+        public override void WaitNS(long TimeoutNS)
+        {
+            WaitSignaled = false;
+
+            RegisterHandler(new PITHandler(SignalWait, this, TimeoutNS, false));
+
+            while (!WaitSignaled)
+            {
+                CPU.Default.Halt();
+            }
+        }
+
+        [NoDebug]
+        public override int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, IObject state)
+        {
+            return RegisterHandler(new PITHandler(handler, state, TimeoutNS, Recurring));
+        }
+
+        /// <summary>
+        ///     Registers the specified handler for the timer 0 interrupt.
+        /// </summary>
+        /// <param name="handler">The handler to register.</param>
+        /// <returns>The Id of the registered handler.</returns>
+        [NoDebug]
+        public int RegisterHandler(PITHandler handler)
+        {
+            if (handler.id != -1)
+            {
+                ExceptionMethods.Throw(new Exception("Timer has already been registered!"));
+            }
+
+            handler.id = TimerIdGenerator++;
+            ActiveHandlers.Add(handler);
+
+            return handler.id;
+        }
+
+        /// <summary>
+        ///     Unregisters the handler with the specified id.
+        /// </summary>
+        /// <param name="handlerId">The Id of the handler to unregister.</param>
+        public override void UnregisterHandler(int handlerId)
+        {
+            for (int i = 0; i < ActiveHandlers.Count; i++)
+            {
+                if (((PITHandler) ActiveHandlers[i]).id == handlerId)
+                {
+                    ((PITHandler) ActiveHandlers[i]).id = -1;
+                    ActiveHandlers.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        ///     The internal timer 0 interrupt handler.
+        /// </summary>
+        [NoDebug]
+        [NoGC]
+        public void InterruptHandler()
+        {
+            //if (Processes.ProcessManager.Processes.Count > 1)
+            //    BasicConsole.WriteLine("PIT: 1");
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 2");
+            //}
+
+            uint T0Delay = T0DelyNS;
+            PITHandler hndlr = null;
+            for (int i = ActiveHandlers.Count - 1; i >= 0; i--)
+            {
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //    BasicConsole.WriteLine("PIT: 2");
+
+                hndlr = (PITHandler) ActiveHandlers[i];
+
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //    BasicConsole.WriteLine("PIT: 3");
+
+                hndlr.NSRemaining -= T0Delay;
+
+                //if (Processes.ProcessManager.Processes.Count > 1)
+                //    BasicConsole.WriteLine("PIT: 4");
+
+                if (hndlr.NSRemaining < T0Delay)
+                {
+                    //if (Processes.ProcessManager.Processes.Count > 1)
+                    //    BasicConsole.WriteLine("PIT: 5");
+
+                    if (hndlr.Recurring)
+                    {
+                        hndlr.NSRemaining = hndlr.NanosecondsTimeout;
+                    }
+                    else
+                    {
+                        hndlr.id = -1;
+
+                        //if (Processes.ProcessManager.Processes.Count > 1)
+                        //    BasicConsole.WriteLine("PIT: 6");
+
+                        ActiveHandlers.RemoveAt(i);
+                    }
+
+                    //if (Processes.ProcessManager.Processes.Count > 1)
+                    //    BasicConsole.WriteLine("PIT: 7");
+
+                    hndlr.HandleTrigger(hndlr.state);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Enables the PIT.
+        /// </summary>
+        public override void Enable()
+        {
+            if (!enabled)
+            {
+                //Ignore the process state for timer interrupts. Timer interrupts occur so frequently
+                //  that to continually switch state would be massively inefficient. Also, switching
+                //  state isn't necessary for the handlers queued in the timer.
+
+                enabled = true;
+
+                T0RateGen = true;
+                T0Reload = _T0Reload;
+
+                Interrupts.Interrupts.EnableIRQ(0);
+            }
+        }
+
+        /// <summary>
+        ///     Disables the PIT.
+        /// </summary>
+        public override void Disable()
+        {
+            if (enabled)
+            {
+                //TODO: This should be done through a DeviceManager.Deregister system call.
+                //TODO: This needs un-commenting and fixing
+                //DeviceManager.Devices.Remove(this);
+                //As per requirements, set temp sote store of id to 0 to prevent
+                //  accidental multiple removal.
+                InterruptHandlerId = 0;
+                enabled = false;
+
+                Interrupts.Interrupts.DisableIRQ(0);
+            }
+        }
+
+        /// <summary>
+        ///     Initialises the (only) PIT device instance.
+        /// </summary>
+        public static void Init()
+        {
+            if (ThePIT == null)
+            {
+                ThePIT = new PIT();
+                DeviceManager.RegisterDevice(ThePIT);
+            }
+            ThePIT.Enable();
+        }
+
+        /// <summary>
+        ///     Cleans up the (only) PIT device instance.
+        /// </summary>
+        public static void Clean()
+        {
+            if (ThePIT != null)
+            {
+                ThePIT.Disable();
+            }
+        }
+
         public void PlayNote(MusicalNote note, MusicalNoteValue duration, uint bpm)
         {
-            uint dur_ms = (uint)duration * 60 * 1000 / (bpm * 16);
+            uint dur_ms = (uint) duration*60*1000/(bpm*16);
 
             if (note == MusicalNote.Silent)
             {
@@ -647,62 +655,56 @@ namespace Kernel.Hardware.Timers
             }
             else
             {
-                PlaySound((int)note);
+                PlaySound((int) note);
                 Wait(dur_ms);
                 MuteSound();
             }
         }
     }
+
     /// <summary>
-    /// Represents a PIT timer 0 handler.
+    ///     Represents a PIT timer 0 handler.
     /// </summary>
-    public class PITHandler : FOS_System.Object
+    public class PITHandler : Object
     {
         /// <summary>
-        /// The remaining time for this handler, in nanoseconds.
+        ///     The method to call when the handler timeout expires.
         /// </summary>
-        internal long NSRemaining;
+        public TimerHandler HandleTrigger;
+
         /// <summary>
-        /// The timeout for the handler in nanoseconds. Used as a reload value if the timer is recursive.
-        /// </summary>
-        public long NanosecondsTimeout;
-        /// <summary>
-        /// Whether the handler should recur or not.
-        /// </summary>
-        public bool Recurring;
-        /// <summary>
-        /// The Id of the handler.
+        ///     The Id of the handler.
         /// </summary>
         internal int id = -1;
-        /// <summary>
-        /// The state object to use when caller the handler callback.
-        /// </summary>
-        internal FOS_System.IObject state;
 
         /// <summary>
-        /// The handler Id.
+        ///     The timeout for the handler in nanoseconds. Used as a reload value if the timer is recursive.
         /// </summary>
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-        }
+        public long NanosecondsTimeout;
 
         /// <summary>
-        /// The method to call when the handler timeout expires.
+        ///     The remaining time for this handler, in nanoseconds.
         /// </summary>
-        public Devices.TimerHandler HandleTrigger;
+        internal long NSRemaining;
 
         /// <summary>
-        /// Initialises a new PIT handler.
+        ///     Whether the handler should recur or not.
+        /// </summary>
+        public bool Recurring;
+
+        /// <summary>
+        ///     The state object to use when caller the handler callback.
+        /// </summary>
+        internal IObject state;
+
+        /// <summary>
+        ///     Initialises a new PIT handler.
         /// </summary>
         /// <param name="HandleOnTrigger">The method to call when the timeout expires.</param>
         /// <param name="aState">The state object to pass to the handler.</param>
         /// <param name="NanosecondsTimeout">The timeout, in nanoseconds.</param>
         /// <param name="Recurring">Whether the handler should repeat or not.</param>
-        public PITHandler(Devices.TimerHandler HandleOnTrigger, FOS_System.IObject aState, long NanosecondsTimeout, bool Recurring)
+        public PITHandler(TimerHandler HandleOnTrigger, IObject aState, long NanosecondsTimeout, bool Recurring)
         {
             this.HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
@@ -710,20 +712,29 @@ namespace Kernel.Hardware.Timers
             this.Recurring = Recurring;
             this.state = aState;
         }
+
         /// <summary>
-        /// Initialises a recurring new PIT handler.
+        ///     Initialises a recurring new PIT handler.
         /// </summary>
         /// <param name="HandleOnTrigger">The method to call when the timeout expires.</param>
         /// <param name="aState">The state object to pass to the handler.</param>
         /// <param name="NanosecondsTimeout">The timeout, in nanoseconds.</param>
         /// <param name="NanosecondsLeft">The intial timeout value, in nanoseconds.</param>
-        public PITHandler(Devices.TimerHandler HandleOnTrigger, FOS_System.IObject aState, long NanosecondsTimeout, uint NanosecondsLeft)
+        public PITHandler(TimerHandler HandleOnTrigger, IObject aState, long NanosecondsTimeout, uint NanosecondsLeft)
         {
             this.HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
             this.NSRemaining = NanosecondsLeft;
             this.Recurring = true;
             this.state = aState;
+        }
+
+        /// <summary>
+        ///     The handler Id.
+        /// </summary>
+        public int Id
+        {
+            get { return id; }
         }
     }
 }

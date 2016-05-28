@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,33 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
-    [ASMOpTarget(Target=OpCodes.TypeTable)]
+    [ASMOpTarget(Target = OpCodes.TypeTable)]
     public abstract class ASMTypeTable : ASMOp
     {
-        public string TypeId;
-        public string SizeVal;
+        public string BaseTypeIdVal;
+        public List<Tuple<string, TypeInfo>> FieldInformation;
+        public string FieldTablePointer;
         public string IdVal;
-        public string StackSizeVal;
+        public string IsPointerTypeVal;
         public string IsValueTypeVal;
         public string MethodTablePointer;
-        public string IsPointerTypeVal;
-        public string BaseTypeIdVal;
-        public string FieldTablePointer;
-        public string TypeSignatureLiteralLabel;
+        public string SizeVal;
+        public string StackSizeVal;
+        public string TypeId;
         public string TypeIdLiteralLabel;
-        public List<Tuple<string, Types.TypeInfo>> FieldInformation;
+        public string TypeSignatureLiteralLabel;
 
-        public ASMTypeTable(string typeId, string sizeVal, string idVal, string stackSizeVal, string isValueTypeVal, string methodTablePointer, string isPointerTypeVal, string baseTypeIdVal, string fieldTablePointer, string typeSignatureLiteralLabel, string typeIdLiteralLabel, List<Tuple<string, Types.TypeInfo>> fieldInformation)
+        public ASMTypeTable(string typeId, string sizeVal, string idVal, string stackSizeVal, string isValueTypeVal,
+            string methodTablePointer, string isPointerTypeVal, string baseTypeIdVal, string fieldTablePointer,
+            string typeSignatureLiteralLabel, string typeIdLiteralLabel, List<Tuple<string, TypeInfo>> fieldInformation)
         {
             TypeId = typeId;
             SizeVal = sizeVal;

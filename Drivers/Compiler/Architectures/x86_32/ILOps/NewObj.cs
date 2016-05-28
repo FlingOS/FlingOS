@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using MethodInfo = Drivers.Compiler.Types.MethodInfo;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Newobj : IL.ILOps.Newobj
     {
@@ -46,13 +46,14 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
-                StackItem funcPtrItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop(); ;
+                StackItem funcPtrItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                ;
                 conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(funcPtrItem);
                 return;
             }
 
-            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
+            MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
 
             ParameterInfo[] allParams = constructorMethod.GetParameters();
             foreach (ParameterInfo aParam in allParams)
@@ -71,7 +72,7 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -89,20 +90,21 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (typeof(Delegate).IsAssignableFrom(objectType))
             {
-                conversionState.Append(new ASMOps.Comment("Ignore newobj calls for Delegates"));
+                conversionState.Append(new Comment("Ignore newobj calls for Delegates"));
                 //Still need to: 
                 // - Remove the "object" param but preserve the "function pointer"
-                StackItem funcPtrItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop(); ;
+                StackItem funcPtrItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
+                ;
                 conversionState.CurrentStackFrame.GetStack(theOp).Pop();
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(funcPtrItem);
 
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[ESP+4]" });
-                conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "[ESP+4]"});
+                conversionState.Append(new ASMOps.Add() {Src = "4", Dest = "ESP"});
                 return;
             }
 
-            Types.MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
+            MethodInfo constructorMethodInfo = conversionState.TheILLibrary.GetMethodInfo(constructorMethod);
 
             conversionState.AddExternalLabel(conversionState.GetNewObjMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
@@ -119,21 +121,26 @@ namespace Drivers.Compiler.Architectures.x86
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(objectType).ID;
             conversionState.AddExternalLabel(typeIdStr);
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = typeIdStr });
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = typeIdStr});
             //Push a dword for return value (i.e. new object pointer)
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
             //Get the GC.NewObj method ID (i.e. ASM label)
             string methodLabel = conversionState.GetNewObjMethodInfo().ID;
             //Call GC.NewObj
-            conversionState.Append(new ASMOps.Call() { Target = methodLabel });
+            conversionState.Append(new ASMOps.Call() {Target = methodLabel});
             //Pop the return value (i.e. new object pointer)
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
             //Remove arg 0 from stack
-            conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "ESP" });
+            conversionState.Append(new ASMOps.Add() {Src = "4", Dest = "ESP"});
             //Check if pointer == 0?
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
+            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
             //If it isn't 0, not out of memory so continue execution
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "NotNullMem" });
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpNotZero,
+                DestILPosition = currOpPosition,
+                Extension = "NotNullMem"
+            });
             //If we are out of memory, we have a massive problem
             //Because it means we don't have space to create a new exception object
             //So ultimately we just have to throw a kernel panic
@@ -150,11 +157,14 @@ namespace Drivers.Compiler.Architectures.x86
             //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_Heap_PreventAllocation], 0");
             //result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
-            conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
+            conversionState.Append(new ASMOps.Call()
+            {
+                Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
+            });
             //Insert the not null label
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotNullMem"});
 
             //Call the specified constructor
             //This involves:
@@ -162,33 +172,38 @@ namespace Drivers.Compiler.Architectures.x86
             // - Move all args down by one dword
             // - Move object reference into dword as first arg
             // - Call constructor
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
             int sizeOfArgs = 0;
             ParameterInfo[] allParams = constructorMethod.GetParameters();
-            foreach(ParameterInfo aParam in allParams)
+            foreach (ParameterInfo aParam in allParams)
             {
                 sizeOfArgs += conversionState.TheILLibrary.GetTypeInfo(aParam.ParameterType).SizeOnStackInBytes;
                 conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ESP", Dest = "EBX" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "ESP", Dest = "EBX"});
             if (sizeOfArgs > 0)
             {
-                if (sizeOfArgs % 4 != 0)
+                if (sizeOfArgs%4 != 0)
                 {
                     throw new InvalidOperationException("sizeOfArgs not exact multiple of 4!");
                 }
 
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = (sizeOfArgs / 4).ToString(), Dest = "ECX" });
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+4]", Dest = "EDX" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBX]", Src = "EDX" });
-                conversionState.Append(new ASMOps.Add() { Src = "4", Dest = "EBX" });
-                conversionState.Append(new ASMOps.Loop() { ILPosition = currOpPosition, Extension = "ShiftArgsLoop" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Dword,
+                    Src = (sizeOfArgs/4).ToString(),
+                    Dest = "ECX"
+                });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ShiftArgsLoop"});
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[EBX+4]", Dest = "EDX"});
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Dest = "[EBX]", Src = "EDX"});
+                conversionState.Append(new ASMOps.Add() {Src = "4", Dest = "EBX"});
+                conversionState.Append(new Loop() {ILPosition = currOpPosition, Extension = "ShiftArgsLoop"});
             }
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Dest = "[EBX]", Src = "EAX" });
-            conversionState.Append(new ASMOps.Call() { Target = constructorMethodInfo.ID });    
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Dest = "[EBX]", Src = "EAX"});
+            conversionState.Append(new ASMOps.Call() {Target = constructorMethodInfo.ID});
             //Only remove args from stack - we want the object pointer to remain on the stack
-            conversionState.Append(new ASMOps.Add() { Src = sizeOfArgs.ToString(), Dest = "ESP" });
+            conversionState.Append(new ASMOps.Add() {Src = sizeOfArgs.ToString(), Dest = "ESP"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {

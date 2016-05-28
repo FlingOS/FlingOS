@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,26 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     public static class GlobalMethods
     {
-        public static string PageFaultDetectionMethod = "method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___";
+        public static string PageFaultDetectionMethod =
+            "method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___";
+
         public static bool PageFaultDetectionEnabled = false;
 
-        public static void InsertPageFaultDetection(ILConversionState conversionState, string reg, int offset, ILOp.OpCodes opCode)
+        public static void InsertPageFaultDetection(ILConversionState conversionState, string reg, int offset,
+            ILOp.OpCodes opCode)
         {
             if (PageFaultDetectionEnabled)
             {
-                conversionState.Append(new ASMOps.Call() { Target = PageFaultDetectionMethod });
+                conversionState.Append(new ASMOps.Call() {Target = PageFaultDetectionMethod});
             }
         }
     }

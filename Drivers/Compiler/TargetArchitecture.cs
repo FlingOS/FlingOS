@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,61 +23,66 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Drivers.Compiler.IL.ILOps;
+using System.IO;
+using System.Reflection;
+using Drivers.Compiler.ASM;
 using Drivers.Compiler.ASM.ASMOps;
+using Drivers.Compiler.IL;
+using Drivers.Compiler.IL.ILOps;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Static class for loading and accessing the target architecture library.
+    ///     Static class for loading and accessing the target architecture library.
     /// </summary>
     public static class TargetArchitecture
     {
         /// <summary>
-        /// The target architecture library.
+        ///     The target architecture library.
         /// </summary>
         /// <remarks>
-        /// Used for loading IL and ASM ops used to convert IL to ASM and ASM to machine code
-        /// for the target architecture.
+        ///     Used for loading IL and ASM ops used to convert IL to ASM and ASM to machine code
+        ///     for the target architecture.
         /// </remarks>
-        private static System.Reflection.Assembly TargetArchitectureAssembly = null;
+        private static Assembly TargetArchitectureAssembly = null;
 
         public static TargetArchitectureFunctions TargetFunctions;
 
         /// <summary>
-        /// Map of op codes to IL ops which are loaded from the target architecture.
+        ///     Map of op codes to IL ops which are loaded from the target architecture.
         /// </summary>
-        public static Dictionary<IL.ILOp.OpCodes, IL.ILOp> TargetILOps = new Dictionary<IL.ILOp.OpCodes, IL.ILOp>();
-        /// <summary>
-        /// Map of op codes to ASM op classes which are loaded from the target architecture.
-        /// </summary>
-        public static Dictionary<ASM.OpCodes, Type> TargetASMOps = new Dictionary<ASM.OpCodes, Type>();
+        public static Dictionary<ILOp.OpCodes, ILOp> TargetILOps = new Dictionary<ILOp.OpCodes, ILOp>();
 
         /// <summary>
-        /// The method start IL op. This is a fake IL op used by the Drivers Compiler.
+        ///     Map of op codes to ASM op classes which are loaded from the target architecture.
+        /// </summary>
+        public static Dictionary<OpCodes, Type> TargetASMOps = new Dictionary<OpCodes, Type>();
+
+        /// <summary>
+        ///     The method start IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
         public static MethodStart MethodStartOp;
+
         /// <summary>
-        /// The method end IL op. This is a fake IL op used by the Drivers Compiler.
+        ///     The method end IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
         public static MethodEnd MethodEndOp;
+
         /// <summary>
-        /// The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
+        ///     The stack switch IL op. This is a fake IL op used by the Drivers Compiler.
         /// </summary>
         public static StackSwitch StackSwitchOp;
-        
+
         /// <summary>
-        /// Initialises the IL scanner.
+        ///     Initialises the IL scanner.
         /// </summary>
         /// <remarks>
-        /// Loads the target architecture library.
+        ///     Loads the target architecture library.
         /// </remarks>
         /// <returns>True if initialisation was successful. Otherwise, false.</returns>
         public static bool Init()
@@ -87,9 +93,10 @@ namespace Drivers.Compiler
 
             return OK;
         }
+
         /// <summary>
-        /// Loads the target architecture library and fills in the TargetILOps, MethodStartOp, MethodEndOp and StackSwitchOp
-        /// fields.
+        ///     Loads the target architecture library and fills in the TargetILOps, MethodStartOp, MethodEndOp and StackSwitchOp
+        ///     fields.
         /// </summary>
         /// <returns>True if fully loaded without error. Otherwise, false.</returns>
         private static bool LoadTargetArchitecture()
@@ -98,21 +105,21 @@ namespace Drivers.Compiler
 
             try
             {
-                string CurrentAssemblyDir = System.IO.Path.GetDirectoryName(typeof(TargetArchitecture).Assembly.Location);
+                string CurrentAssemblyDir = Path.GetDirectoryName(typeof(TargetArchitecture).Assembly.Location);
                 string fileName = null;
                 switch (Options.TargetArchitecture)
                 {
                     case "x86":
-                        {
-                            fileName = System.IO.Path.Combine(CurrentAssemblyDir, @"Drivers.Compiler.Architectures.x86.dll");
-                            OK = true;
-                        }
+                    {
+                        fileName = Path.Combine(CurrentAssemblyDir, @"Drivers.Compiler.Architectures.x86.dll");
+                        OK = true;
+                    }
                         break;
                     case "mips":
-                        {
-                            fileName = System.IO.Path.Combine(CurrentAssemblyDir, @"Drivers.Compiler.Architectures.MIPS32.dll");
-                            OK = true;
-                        }
+                    {
+                        fileName = Path.Combine(CurrentAssemblyDir, @"Drivers.Compiler.Architectures.MIPS32.dll");
+                        OK = true;
+                    }
                         break;
                     default:
                         OK = false;
@@ -121,48 +128,51 @@ namespace Drivers.Compiler
 
                 if (OK)
                 {
-                    fileName = System.IO.Path.GetFullPath(fileName);
-                    TargetArchitectureAssembly = System.Reflection.Assembly.LoadFrom(fileName);
+                    fileName = Path.GetFullPath(fileName);
+                    TargetArchitectureAssembly = Assembly.LoadFrom(fileName);
                 }
-                
+
                 if (OK)
                 {
                     Type[] AllTypes = TargetArchitectureAssembly.GetTypes();
                     foreach (Type aType in AllTypes)
                     {
-                        if (aType.IsSubclassOf(typeof(IL.ILOp)))
+                        if (aType.IsSubclassOf(typeof(ILOp)))
                         {
                             if (aType.IsSubclassOf(typeof(MethodStart)))
                             {
-                                MethodStartOp = (MethodStart)Activator.CreateInstance(aType);
+                                MethodStartOp = (MethodStart) Activator.CreateInstance(aType);
                             }
                             else if (aType.IsSubclassOf(typeof(MethodEnd)))
                             {
-                                MethodEndOp = (MethodEnd)Activator.CreateInstance(aType);
+                                MethodEndOp = (MethodEnd) Activator.CreateInstance(aType);
                             }
                             else if (aType.IsSubclassOf(typeof(StackSwitch)))
                             {
-                                StackSwitchOp = (StackSwitch)Activator.CreateInstance(aType);
+                                StackSwitchOp = (StackSwitch) Activator.CreateInstance(aType);
                             }
                             else
                             {
-                                IL.ILOps.ILOpTargetAttribute[] targetAttrs = (IL.ILOps.ILOpTargetAttribute[])aType.GetCustomAttributes(typeof(IL.ILOps.ILOpTargetAttribute), true);
+                                ILOpTargetAttribute[] targetAttrs =
+                                    (ILOpTargetAttribute[]) aType.GetCustomAttributes(typeof(ILOpTargetAttribute), true);
                                 if (targetAttrs == null || targetAttrs.Length == 0)
                                 {
-                                    throw new Exception("ILScanner could not load target architecture ILOp because target attribute was not specified!");
+                                    throw new Exception(
+                                        "ILScanner could not load target architecture ILOp because target attribute was not specified!");
                                 }
                                 else
                                 {
-                                    foreach (IL.ILOps.ILOpTargetAttribute targetAttr in targetAttrs)
+                                    foreach (ILOpTargetAttribute targetAttr in targetAttrs)
                                     {
-                                        TargetILOps.Add(targetAttr.Target, (IL.ILOp)Activator.CreateInstance(aType));
+                                        TargetILOps.Add(targetAttr.Target, (ILOp) Activator.CreateInstance(aType));
                                     }
                                 }
                             }
                         }
-                        else if (aType.IsSubclassOf(typeof(ASM.ASMOp)))
+                        else if (aType.IsSubclassOf(typeof(ASMOp)))
                         {
-                            ASMOpTargetAttribute[] targetAttrs = (ASMOpTargetAttribute[])aType.GetCustomAttributes(typeof(ASMOpTargetAttribute), true);
+                            ASMOpTargetAttribute[] targetAttrs =
+                                (ASMOpTargetAttribute[]) aType.GetCustomAttributes(typeof(ASMOpTargetAttribute), true);
                             foreach (ASMOpTargetAttribute targetAttr in targetAttrs)
                             {
                                 TargetASMOps.Add(targetAttr.Target, aType);
@@ -170,7 +180,7 @@ namespace Drivers.Compiler
                         }
                         else if (aType.IsSubclassOf(typeof(TargetArchitectureFunctions)))
                         {
-                            TargetFunctions = (TargetArchitectureFunctions)Activator.CreateInstance(aType);
+                            TargetFunctions = (TargetArchitectureFunctions) Activator.CreateInstance(aType);
                         }
                     }
                 }
@@ -180,33 +190,34 @@ namespace Drivers.Compiler
                 OK = false;
                 Logger.LogError(Errors.ILCompiler_LoadTargetArchError_ErrorCode, "", 0,
                     string.Format(Errors.ErrorMessages[Errors.ILCompiler_LoadTargetArchError_ErrorCode],
-                                    ex.Message));
+                        ex.Message));
             }
 
             return OK;
         }
 
-        public static ASM.ASMOp CreateASMOp(ASM.OpCodes ASMOpCode, params object[] ConstructorArgs)
+        public static ASMOp CreateASMOp(OpCodes ASMOpCode, params object[] ConstructorArgs)
         {
-            return (ASM.ASMOp)Activator.CreateInstance(TargetASMOps[ASMOpCode], ConstructorArgs);
+            return (ASMOp) Activator.CreateInstance(TargetASMOps[ASMOpCode], ConstructorArgs);
         }
     }
 
     public abstract class TargetArchitectureFunctions
     {
-        public abstract void CleanUpAssemblyCode(ASM.ASMBlock TheBlock, ref string ASMText);
+        public abstract void CleanUpAssemblyCode(ASMBlock TheBlock, ref string ASMText);
 
         /// <summary>
-        /// Executes the assembly code compiler (e.g. NASM) for the specified file.
+        ///     Executes the assembly code compiler (e.g. NASM) for the specified file.
         /// </summary>
         /// <param name="inputFilePath">Path to the ASM file to process.</param>
         /// <param name="outputFilePath">Path to output the object file to.</param>
         /// <param name="OnComplete">Handler to call once the external tool has completed. Default: null.</param>
         /// <param name="state">The state object to use when calling the OnComplete handler. Default: null.</param>
         /// <returns>True if execution completed successfully. Otherwise false.</returns>
-        public abstract bool ExecuteAssemblyCodeCompiler(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null);
+        public abstract bool ExecuteAssemblyCodeCompiler(string inputFilePath, string outputFilePath,
+            VoidDelegate OnComplete = null, object state = null);
 
-        public abstract bool LinkELF(IL.ILLibrary TheLibrary, LinkInformation LinkInfo);
-        public abstract bool LinkISO(IL.ILLibrary TheLibrary, LinkInformation LinkInfo);
+        public abstract bool LinkELF(ILLibrary TheLibrary, LinkInformation LinkInfo);
+        public abstract bool LinkISO(ILLibrary TheLibrary, LinkInformation LinkInfo);
     }
 }

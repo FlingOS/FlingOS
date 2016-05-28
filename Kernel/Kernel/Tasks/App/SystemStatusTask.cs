@@ -1,16 +1,18 @@
-﻿using Kernel.FOS_System;
+﻿using Kernel.Consoles;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Hardware.Processes;
 
 namespace Kernel.Tasks.App
 {
     public static class SystemStatusTask
     {
-        private static Consoles.VirtualConsole console;
+        private static VirtualConsole console;
 
         private static uint GCThreadId;
 
-        private static bool Terminating = false;
+        private static readonly bool Terminating = false;
 
         public static void Main()
         {
@@ -19,7 +21,7 @@ namespace Kernel.Tasks.App
             try
             {
                 BasicConsole.WriteLine("System Status > Creating virtual console...");
-                console = new Consoles.VirtualConsole();
+                console = new VirtualConsole();
 
                 BasicConsole.WriteLine("System Status > Connecting virtual console...");
                 console.Connect();
@@ -28,16 +30,19 @@ namespace Kernel.Tasks.App
 
                 try
                 {
-                    while(!Terminating)
+                    while (!Terminating)
                     {
                         int NumProcesses;
                         if (SystemCalls.GetNumProcesses(out NumProcesses) == SystemCallResults.OK)
                         {
-                            console.WriteLine("Number of processes: " + FOS_System.Int32.ToDecimalString(NumProcesses));
+                            console.WriteLine("Number of processes: " + Int32.ToDecimalString(NumProcesses));
 
                             unsafe
                             {
-                                ProcessDescriptor* ProcessList = (ProcessDescriptor*)Heap.AllocZeroed((uint)(sizeof(ProcessDescriptor) * NumProcesses), "System Status Task : Main : ProcessList");
+                                ProcessDescriptor* ProcessList =
+                                    (ProcessDescriptor*)
+                                        Heap.AllocZeroed((uint) (sizeof(ProcessDescriptor)*NumProcesses),
+                                            "System Status Task : Main : ProcessList");
                                 try
                                 {
                                     if (SystemCalls.GetProcessList(ProcessList, NumProcesses) == SystemCallResults.OK)
@@ -48,18 +53,18 @@ namespace Kernel.Tasks.App
                                             console.Write_AsDecimal(descriptor->Id);
                                             console.Write(":");
 
-                                            switch ((Hardware.Processes.Scheduler.Priority)descriptor->Priority)
+                                            switch ((Scheduler.Priority) descriptor->Priority)
                                             {
-                                                case Hardware.Processes.Scheduler.Priority.High:
+                                                case Scheduler.Priority.High:
                                                     console.Write("High");
                                                     break;
-                                                case Hardware.Processes.Scheduler.Priority.Low:
+                                                case Scheduler.Priority.Low:
                                                     console.Write("Low");
                                                     break;
-                                                case Hardware.Processes.Scheduler.Priority.Normal:
+                                                case Scheduler.Priority.Normal:
                                                     console.Write("Normal");
                                                     break;
-                                                case Hardware.Processes.Scheduler.Priority.ZeroTimed:
+                                                case Scheduler.Priority.ZeroTimed:
                                                     console.Write("Zero Timed");
                                                     break;
                                             }
@@ -91,22 +96,30 @@ namespace Kernel.Tasks.App
                         int FSCount;
                         if (SystemCalls.StatFS(out FSCount) == SystemCallResults.OK)
                         {
-                            console.WriteLine("Number of file systems: " + FOS_System.Int32.ToDecimalString(FSCount));
+                            console.WriteLine("Number of file systems: " + Int32.ToDecimalString(FSCount));
 
                             if (FSCount > 0)
                             {
                                 unsafe
                                 {
-                                    char* MappingsPtr = (char*)Heap.AllocZeroed((uint)(sizeof(char) * FSCount * 10), "System Status Task : Main : Mappings");
+                                    char* MappingsPtr =
+                                        (char*)
+                                            Heap.AllocZeroed((uint) (sizeof(char)*FSCount*10),
+                                                "System Status Task : Main : Mappings");
                                     try
                                     {
-                                        uint* ProcessesPtr = (uint*)Heap.AllocZeroed((uint)(sizeof(uint) * FSCount), "System Status Task : Main : FS Processes");
-                                        if (SystemCalls.StatFS(ref FSCount, MappingsPtr, ProcessesPtr) == SystemCallResults.OK)
+                                        uint* ProcessesPtr =
+                                            (uint*)
+                                                Heap.AllocZeroed((uint) (sizeof(uint)*FSCount),
+                                                    "System Status Task : Main : FS Processes");
+                                        if (SystemCalls.StatFS(ref FSCount, MappingsPtr, ProcessesPtr) ==
+                                            SystemCallResults.OK)
                                         {
                                             String[] Mappings = new String[FSCount];
                                             for (int i = 0; i < FSCount; i++)
                                             {
-                                                Mappings[i] = ByteConverter.GetASCIIStringFromUTF16((byte*)MappingsPtr, (uint)(i * 10 * sizeof(char)), 10);
+                                                Mappings[i] = ByteConverter.GetASCIIStringFromUTF16(
+                                                    (byte*) MappingsPtr, (uint) (i*10*sizeof(char)), 10);
                                                 console.Write(Mappings[i] + "@" + ProcessesPtr[i]);
                                                 if (i < FSCount - 1)
                                                 {

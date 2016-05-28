@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,42 +23,43 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
+using Kernel.Pipes.Standard;
 
 namespace Kernel.Consoles
 {
     /// <summary>
-    /// Implements the more advanced Console class. This is used by processes to handle outputting to the Window Manager Task.
+    ///     Implements the more advanced Console class. This is used by processes to handle outputting to the Window Manager
+    ///     Task.
     /// </summary>
     public class VirtualConsole : Console
     {
         /// <summary>
-        /// The output pipe to the Window Manager Task.
+        ///     The output pipe to the Window Manager Task.
         /// </summary>
-        protected Pipes.Standard.StandardOutpoint StdOut;
+        protected StandardOutpoint StdOut;
+
         /// <summary>
-        /// The Id of the main output pipe.
+        ///     The Id of the main output pipe.
         /// </summary>
         protected int StdOutPipeId;
 
         protected uint StdOutRemoteProcessId;
 
         /// <summary>
-        /// Creates the output pipe and waits for the Window Manager to connect.
+        ///     Creates the output pipe and waits for the Window Manager to connect.
         /// </summary>
         public void Connect()
         {
-            StdOut = new Pipes.Standard.StandardOutpoint(true);
+            StdOut = new StandardOutpoint(true);
             StdOutPipeId = StdOut.WaitForConnect(out StdOutRemoteProcessId);
         }
 
         /// <summary>
-        /// Clears the screen (currently by outputting 25 new lines, meaning scrolling back is still possible).
+        ///     Clears the screen (currently by outputting 25 new lines, meaning scrolling back is still possible).
         /// </summary>
         public override void Clear()
         {
@@ -66,7 +68,7 @@ namespace Kernel.Consoles
         }
 
         /// <summary>
-        /// Required override. Does nothing at the moment.
+        ///     Required override. Does nothing at the moment.
         /// </summary>
         public override void Update()
         {
@@ -74,15 +76,16 @@ namespace Kernel.Consoles
         }
 
         /// <summary>
-        /// Writes the specified text to the output.
+        ///     Writes the specified text to the output.
         /// </summary>
         /// <param name="str">The string to write.</param>
-        public override void Write(FOS_System.String str)
+        public override void Write(String str)
         {
             StdOut.Write(StdOutPipeId, str, true);
         }
+
         /// <summary>
-        /// Writes a new line to the output.
+        ///     Writes a new line to the output.
         /// </summary>
         public override void WriteLine()
         {
@@ -90,15 +93,16 @@ namespace Kernel.Consoles
         }
 
         /// <summary>
-        /// Meaningless for a virtual console. Always returns 0.
+        ///     Meaningless for a virtual console. Always returns 0.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Char()
         {
             return 0;
         }
+
         /// <summary>
-        /// Meaningless for a virtual console. Always returns 0.
+        ///     Meaningless for a virtual console. Always returns 0.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Line()
@@ -107,10 +111,10 @@ namespace Kernel.Consoles
         }
 
         /// <summary>
-        /// Currently does not.
+        ///     Currently does not.
         /// </summary>
         /// <remarks>
-        /// This requires implementation. Need to use messages to command the Window Manager.
+        ///     This requires implementation. Need to use messages to command the Window Manager.
         /// </remarks>
         /// <param name="character">The offset from the start of the line to the cursor.</param>
         /// <param name="line">The line number (from the display perspective, not the buffer perspective) of the cursor.</param>

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,67 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Basic delegate for a void method with a single state object.
+    ///     Basic delegate for a void method with a single state object.
     /// </summary>
     /// <remarks>
-    /// This is used in various places within the compiler. The most obvious example
-    /// is in executing external processes asynchronously. The delegate is used as 
-    /// completion handler.
+    ///     This is used in various places within the compiler. The most obvious example
+    ///     is in executing external processes asynchronously. The delegate is used as
+    ///     completion handler.
     /// </remarks>
     /// <param name="state">The object supplied with the handler.</param>
     public delegate void VoidDelegate(object state);
 
     /// <summary>
-    /// Contains static utility methods used in various places in the compiler.
+    ///     Contains static utility methods used in various places in the compiler.
     /// </summary>
     public static class Utilities
     {
         /// <summary>
-        /// Determiens whether the specified type is a floating point number type or not.
+        ///     Treated as a character array of all identifiers that are illegal to use in a label name.
+        /// </summary>
+        /// <remarks>
+        ///     <para>
+        ///         One or two of the characters may be valid but by eliminating them, labels in the FlingOS
+        ///         output have much more consistency.
+        ///     </para>
+        ///     <para>
+        ///         The invalid characters are "&amp;,+$&lt;&gt;{}-`\'/\\ ()[]*!=."
+        ///     </para>
+        /// </remarks>
+        public const string IllegalIdentifierChars = "&,+$<>{}-`\'/\\ ()[]*!=.";
+
+        /// <summary>
+        ///     A list of all processes started by the compiler.
+        /// </summary>
+        /// <remarks>
+        ///     Maps processes' unique identifiers to the process objects themselves.
+        /// </remarks>
+        private static readonly Dictionary<int, Process> Processes = new Dictionary<int, Process>();
+
+        /// <summary>
+        ///     Callbacks to be called when processes finish executing.
+        /// </summary>
+        private static readonly Dictionary<int, Tuple<VoidDelegate, object>> OnCompleteCallbacks =
+            new Dictionary<int, Tuple<VoidDelegate, object>>();
+
+        /// <summary>
+        ///     Lock used to prevent multiple threads updating the OnCompleteCallbacks dictionary simultaneously.
+        /// </summary>
+        private static readonly object CallbacksLock = new object();
+
+        /// <summary>
+        ///     Determiens whether the specified type is a floating point number type or not.
         /// </summary>
         /// <param name="aType">The type to check.</param>
         /// <returns>True if the type is a floating point number type. Otherwise, false.</returns>
@@ -69,74 +101,79 @@ namespace Drivers.Compiler
         }
 
         /// <summary>
-        /// Reads a signed integer 16 from the specified bytes starting at the specified offset.
+        ///     Reads a signed integer 16 from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>
         /// <param name="offset">The offset in the bytes to read from.</param>
         /// <returns>The number.</returns>
-        public static Int16 ReadInt16(byte[] bytes, int offset)
+        public static short ReadInt16(byte[] bytes, int offset)
         {
             return BitConverter.ToInt16(bytes, offset);
         }
+
         /// <summary>
-        /// Reads a signed integer 32 from the specified bytes starting at the specified offset.
+        ///     Reads a signed integer 32 from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>
         /// <param name="offset">The offset in the bytes to read from.</param>
         /// <returns>The number.</returns>
-        public static Int32 ReadInt32(byte[] bytes, int offset)
+        public static int ReadInt32(byte[] bytes, int offset)
         {
             return BitConverter.ToInt32(bytes, offset);
         }
+
         /// <summary>
-        /// Reads an unsigned integer 32 from the specified bytes starting at the specified offset.
+        ///     Reads an unsigned integer 32 from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>
         /// <param name="offset">The offset in the bytes to read from.</param>
         /// <returns>The number.</returns>
-        public static UInt32 ReadUInt32(byte[] bytes, int offset)
+        public static uint ReadUInt32(byte[] bytes, int offset)
         {
             return BitConverter.ToUInt32(bytes, offset);
         }
+
         /// <summary>
-        /// Reads a signed integer 64 from the specified bytes starting at the specified offset.
+        ///     Reads a signed integer 64 from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>
         /// <param name="offset">The offset in the bytes to read from.</param>
         /// <returns>The number.</returns>
-        public static Int64 ReadInt64(byte[] bytes, int offset)
+        public static long ReadInt64(byte[] bytes, int offset)
         {
             return BitConverter.ToInt64(bytes, offset);
         }
+
         /// <summary>
-        /// Reads a single-precision (32-bit) floating point number from the specified bytes starting at the specified offset.
+        ///     Reads a single-precision (32-bit) floating point number from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>
         /// <param name="offset">The offset in the bytes to read from.</param>
         /// <returns>The number.</returns>
         public static float ReadFloat32(byte[] bytes, int offset)
         {
-            return (float)(BitConverter.ToSingle(bytes, 0));
+            return (float) BitConverter.ToSingle(bytes, 0);
         }
+
         /// <summary>
-        /// Reads a double-precision (64-bit) floating point number from the specified bytes starting at the specified offset.
+        ///     Reads a double-precision (64-bit) floating point number from the specified bytes starting at the specified offset.
         /// </summary>
         /// <param name="bytes">The bytes to read from.</param>
         /// <param name="offset">The offset in the bytes to read from.</param>
         /// <returns>The number.</returns>
         public static double ReadFloat64(byte[] bytes, int offset)
         {
-            return (double)(BitConverter.ToDouble(bytes, 0));
+            return (double) BitConverter.ToDouble(bytes, 0);
         }
 
         /// <summary>
-        /// Cleans up the specified file name of any illegal characters.
+        ///     Cleans up the specified file name of any illegal characters.
         /// </summary>
         /// <param name="filename">The file name to clean up.</param>
         /// <returns>The cleaned up file name.</returns>
         public static string CleanFileName(string filename)
         {
-            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            foreach (char c in Path.GetInvalidFileNameChars())
             {
                 filename = filename.Replace(c, '_');
             }
@@ -144,23 +181,10 @@ namespace Drivers.Compiler
         }
 
         /// <summary>
-        /// Treated as a character array of all identifiers that are illegal to use in a label name.
+        ///     Filters the specified identifier (/assembly code label) for invalid characters.
         /// </summary>
         /// <remarks>
-        /// <para>
-        /// One or two of the characters may be valid but by eliminating them, labels in the FlingOS
-        /// output have much more consistency.
-        /// </para>
-        /// <para>
-        /// The invalid characters are "&amp;,+$&lt;&gt;{}-`\'/\\ ()[]*!=."
-        /// </para>
-        /// </remarks>
-        public const string IllegalIdentifierChars = "&,+$<>{}-`\'/\\ ()[]*!=.";
-        /// <summary>
-        /// Filters the specified identifier (/assembly code label) for invalid characters.
-        /// </summary>
-        /// <remarks>
-        /// Imvalid characters are replaced by underscores.
+        ///     Imvalid characters are replaced by underscores.
         /// </remarks>
         /// <param name="x">The string to filter.</param>
         /// <returns>The filtered string.</returns>
@@ -174,37 +198,23 @@ namespace Drivers.Compiler
             {
                 xTempResult = xTempResult.Replace(c, '_');
             }
-            return String.Intern(xTempResult);
+            return string.Intern(xTempResult);
         }
 
         /// <summary>
-        /// A list of all processes started by the compiler.
-        /// </summary>
-        /// <remarks>
-        /// Maps processes' unique identifiers to the process objects themselves.
-        /// </remarks>
-        private static Dictionary<int, Process> Processes = new Dictionary<int, Process>();
-        /// <summary>
-        /// Callbacks to be called when processes finish executing.
-        /// </summary>
-        private static Dictionary<int, Tuple<VoidDelegate, object>> OnCompleteCallbacks = new Dictionary<int, Tuple<VoidDelegate, object>>();
-        /// <summary>
-        /// Lock used to prevent multiple threads updating the OnCompleteCallbacks dictionary simultaneously.
-        /// </summary>
-        private static Object CallbacksLock = new Object();
-
-        /// <summary>
-        /// Uses Process class to start a new instance of the specified process on the machine with specified start arguments.
-        /// Note: This is a blocking function.
-        /// Note: Waits a maximum of 15 minutes before assuming the process has failed to execute.
+        ///     Uses Process class to start a new instance of the specified process on the machine with specified start arguments.
+        ///     Note: This is a blocking function.
+        ///     Note: Waits a maximum of 15 minutes before assuming the process has failed to execute.
         /// </summary>
         /// <param name="workingDir">The working directory for the new process instance.</param>
         /// <param name="processFile">The process file (.EXE file)</param>
         /// <param name="args">The start arguments to pass the process.</param>
         /// <param name="displayName">The display name of the process to show in messages.</param>
         /// <param name="ignoreErrors">Whether to ignore messages and errors from the process or not.</param>
-        /// <param name="outputMessagesToFileName">A file path to output error and standard messages to instead of the console window. 
-        /// Ignore errors should be set to false.</param>
+        /// <param name="outputMessagesToFileName">
+        ///     A file path to output error and standard messages to instead of the console window.
+        ///     Ignore errors should be set to false.
+        /// </param>
         /// <param name="OnComplete">Callback to call when the process finishes executing.</param>
         /// <param name="state">The state object to use when calling the OnComplete callback.</param>
         /// <returns>True if process executed successfully without errors. Otherwise false.</returns>
@@ -259,7 +269,7 @@ namespace Drivers.Compiler
                         {
                             Logger.LogError(Errors.Utilities_ExternalError_ErrorCode, "", 0,
                                 string.Format(Errors.ErrorMessages[Errors.Utilities_ExternalError_ErrorCode],
-                                displayName + ": " + e.Data));
+                                    displayName + ": " + e.Data));
                         }
                     };
                     process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
@@ -285,7 +295,7 @@ namespace Drivers.Compiler
                         Tuple<VoidDelegate, object> Callback = null;
                         lock (CallbacksLock)
                         {
-                            Process theProc = (Process)sender;
+                            Process theProc = (Process) sender;
                             Callback = OnCompleteCallbacks[theProc.Id];
                             OnCompleteCallbacks.Remove(theProc.Id);
                             Processes.Remove(theProc.Id);
@@ -298,9 +308,7 @@ namespace Drivers.Compiler
                         Logger.LogError("", "", 0, ex.Message);
                     }
                 };
-                process.Disposed += delegate(object sender, EventArgs e)
-                {
-                };
+                process.Disposed += delegate(object sender, EventArgs e) { };
 
                 process.Start();
                 lock (CallbacksLock)
@@ -318,7 +326,7 @@ namespace Drivers.Compiler
                     process.BeginErrorReadLine();
                     process.BeginOutputReadLine();
                 }
-                process.WaitForExit(4 * 60 * 60 * 1000); // wait 4 hours max. for process to exit
+                process.WaitForExit(4*60*60*1000); // wait 4 hours max. for process to exit
                 if (process.ExitCode != 0)
                 {
                     if (!process.HasExited)
@@ -326,13 +334,13 @@ namespace Drivers.Compiler
                         process.Kill();
                         Logger.LogError(Errors.Utilities_ExternalError_ErrorCode, "", 0,
                             string.Format(Errors.ErrorMessages[Errors.Utilities_ExternalError_ErrorCode],
-                            displayName + ": Timed out."));
+                                displayName + ": Timed out."));
                     }
                     else
                     {
                         Logger.LogError(Errors.Utilities_ExternalError_ErrorCode, "", 0,
                             string.Format(Errors.ErrorMessages[Errors.Utilities_ExternalError_ErrorCode],
-                            displayName + ": Error occurred while invoking the process."));
+                                displayName + ": Error occurred while invoking the process."));
                     }
                 }
                 if (outputStream != null)
@@ -345,6 +353,5 @@ namespace Drivers.Compiler
             }
             return OK;
         }
-
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Kernel.FOS_System;
 
 namespace Kernel.Hardware.Exceptions
 {
-    public class NoDiskException : FOS_System.Exception
+    public class NoDiskException : Exception
     {
-        public NoDiskException(FOS_System.String message)
+        public NoDiskException(String message)
             : base("No disk in drive. " + message)
         {
         }

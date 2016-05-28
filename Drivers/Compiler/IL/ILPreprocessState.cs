@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,39 +23,39 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.IL
 {
     /// <summary>
-    /// Represents the current state of the IL Preprocessor during compilation of a single, non-plugged IL block.
+    ///     Represents the current state of the IL Preprocessor during compilation of a single, non-plugged IL block.
     /// </summary>
     /// <remarks>
-    /// This is essentially a stripped-down version of the ILConversionState.
+    ///     This is essentially a stripped-down version of the ILConversionState.
     /// </remarks>
     public class ILPreprocessState
     {
         /// <summary>
-        /// The IL library being compiled.
-        /// </summary>
-        public ILLibrary TheILLibrary;
-        /// <summary>
-        /// The IL block being compiled.
-        /// </summary>
-        public ILBlock Input;
-        /// <summary>
-        /// The output ASM block being produced from the Input IL block.
+        ///     The output ASM block being produced from the Input IL block.
         /// </summary>
         public StackFrame CurrentStackFrame = new StackFrame();
 
         /// <summary>
-        /// Gets the position (index) of the specified IL op.
+        ///     The IL block being compiled.
+        /// </summary>
+        public ILBlock Input;
+
+        /// <summary>
+        ///     The IL library being compiled.
+        /// </summary>
+        public ILLibrary TheILLibrary;
+
+        /// <summary>
+        ///     Gets the position (index) of the specified IL op.
         /// </summary>
         /// <param name="anOp">The op to get the position of.</param>
         /// <returns>The position.</returns>
@@ -64,16 +65,15 @@ namespace Drivers.Compiler.IL
         }
 
         /// <summary>
-        /// Gets the field info by name for the specified field of the specified type.
+        ///     Gets the field info by name for the specified field of the specified type.
         /// </summary>
         /// <param name="aType">The type to which the field belongs.</param>
         /// <param name="FieldName">The name of the field to get.</param>
         /// <returns>The field information.</returns>
-        public Types.FieldInfo GetFieldInfo(Type aType, string FieldName)
+        public FieldInfo GetFieldInfo(Type aType, string FieldName)
         {
-            Types.TypeInfo aTypeInfo = TheILLibrary.GetTypeInfo(aType);
+            TypeInfo aTypeInfo = TheILLibrary.GetTypeInfo(aType);
             return TheILLibrary.GetFieldInfo(aTypeInfo, FieldName);
         }
-        
     }
 }

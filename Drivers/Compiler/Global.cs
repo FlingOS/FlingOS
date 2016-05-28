@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,31 +23,28 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Possible compilation results used throughout the compiler.
+    ///     Possible compilation results used throughout the compiler.
     /// </summary>
     public enum CompileResult
     {
         /// <summary>
-        /// A compilation operation failed and compilation should stop.
+        ///     A compilation operation failed and compilation should stop.
         /// </summary>
         Fail,
+
         /// <summary>
-        /// Compilation succeeded without error.
+        ///     Compilation succeeded without error.
         /// </summary>
         OK,
+
         /// <summary>
-        /// A compilation operation failed but compilation should continue.
+        ///     A compilation operation failed but compilation should continue.
         /// </summary>
         PartialFailure
     }

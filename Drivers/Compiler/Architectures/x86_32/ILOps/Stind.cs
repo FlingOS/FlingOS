@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Stind : IL.ILOps.Stind
     {
@@ -45,16 +44,16 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if the value to store is floating point.
+        ///     Thrown if the value to store is floating point.
         /// </exception>
         /// <exception cref="System.NotImplementedException">
-        /// Thrown if the op is 'StIndRef'.
+        ///     Thrown if the op is 'StIndRef'.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -67,7 +66,7 @@ namespace Drivers.Compiler.Architectures.x86
             int bytesToStore = 0;
             bool isFloat = false;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Stind_I:
                     bytesToStore = 4;
@@ -106,49 +105,49 @@ namespace Drivers.Compiler.Architectures.x86
             if (bytesToStore == 8)
             {
                 //Pop value low bits
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
                 //Pop value high bits
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
 
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EDX", Dest = "[EBX+4]" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[EBX]" });
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EDX", Dest = "[EBX+4]"});
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "[EBX]"});
             }
             else if (bytesToStore == 4)
             {
                 //Pop value
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[EBX]" });
+                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "[EBX]"});
             }
             else if (bytesToStore == 2)
             {
                 //Pop value
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[EBX]" });
+                conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "AX", Dest = "[EBX]"});
             }
             else if (bytesToStore == 1)
             {
                 //Pop value
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-            
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[EBX]" });
+                conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "AL", Dest = "[EBX]"});
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,38 +23,35 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
-    /// Represents a label in assembly code.
+    ///     Represents a label in assembly code.
     /// </summary>
     [ASMOpTarget(Target = OpCodes.Label)]
     public abstract class ASMLabel : ASMOp
     {
         /// <summary>
-        /// Whether the label is a method label or not. If it is not a method label, the IL position and 
-        /// extension are added to the label.
-        /// </summary>
-        public bool MethodLabel = false;
-        /// <summary>
-        /// The offset of the IL op to which the label refers, from the start of the method. Only used if
-        /// MethodLabel is set to false.
-        /// </summary>
-        public int ILPosition;
-        /// <summary>
-        /// The extension to append to the label. Only used if MethodLabel is set to false.
+        ///     The extension to append to the label. Only used if MethodLabel is set to false.
         /// </summary>
         public string Extension;
 
+        /// <summary>
+        ///     The offset of the IL op to which the label refers, from the start of the method. Only used if
+        ///     MethodLabel is set to false.
+        /// </summary>
+        public int ILPosition;
+
         public bool IsDebugOp = false;
+
+        /// <summary>
+        ///     Whether the label is a method label or not. If it is not a method label, the IL position and
+        ///     extension are added to the label.
+        /// </summary>
+        public bool MethodLabel = false;
 
         public ASMLabel()
         {

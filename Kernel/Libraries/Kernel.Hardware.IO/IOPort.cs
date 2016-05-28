@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,325 +23,345 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
 
 namespace Kernel.Hardware.IO
 {
     /// <summary>
-    /// Represents an IO port.
+    ///     Represents an IO port.
     /// </summary>
-    public class IOPort : FOS_System.Object
+    public class IOPort : Object
     {
         /// <summary>
-        /// The port number.
+        ///     The port number.
         /// </summary>
-        public readonly UInt16 Port;
-        
+        public readonly ushort Port;
+
         /// <summary>
-        /// Initialises a new IO port with specified port number.
+        ///     Initialises a new IO port with specified port number.
         /// </summary>
         /// <param name="aPort">The port number.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public IOPort(UInt16 aPort)
+        [NoDebug]
+        public IOPort(ushort aPort)
         {
             Port = aPort;
         }
+
         /// <summary>
-        /// Initialises a new IO port with specified port number and 
-        /// offset from that port number.
+        ///     Initialises a new IO port with specified port number and
+        ///     offset from that port number.
         /// </summary>
         /// <param name="aBase">The port base number.</param>
         /// <param name="anOffset">The offset from the base port number.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public IOPort(UInt16 aBase, UInt16 anOffset)
+        [NoDebug]
+        public IOPort(ushort aBase, ushort anOffset)
         {
-            Port = (UInt16)(aBase + anOffset);
+            Port = (ushort) (aBase + anOffset);
         }
 
         /// <summary>
-        /// Reads a byte from the specified port.
+        ///     Reads a byte from the specified port.
         /// </summary>
         /// <param name="port">The port to read.</param>
         /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Read")]
-        public static byte doRead_Byte(UInt16 port)
-        {
-            return 0;
-        }
-        /// <summary>
-        /// Reads a UInt16 from the specified port.
-        /// </summary>
-        /// <param name="port">The port to read.</param>
-        /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static UInt16 doRead_UInt16(UInt16 port)
-        {
-            return 0;
-        }
-        /// <summary>
-        /// Reads a UInt32 from the specified port.
-        /// </summary>
-        /// <param name="port">The port to read.</param>
-        /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static UInt32 doRead_UInt32(UInt16 port)
-        {
-            return 0;
-        }
-        /// <summary>
-        /// Reads a UInt64 from the specified port.
-        /// </summary>
-        /// <param name="port">The port to read.</param>
-        /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static UInt64 doRead_UInt64(UInt16 port)
+        [PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Read")]
+        public static byte doRead_Byte(ushort port)
         {
             return 0;
         }
 
         /// <summary>
-        /// Reads a byte from the port.
+        ///     Reads a UInt16 from the specified port.
+        /// </summary>
+        /// <param name="port">The port to read.</param>
+        /// <returns>The value read.</returns>
+        [PluggedMethod(ASMFilePath = null)]
+        public static ushort doRead_UInt16(ushort port)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        ///     Reads a UInt32 from the specified port.
+        /// </summary>
+        /// <param name="port">The port to read.</param>
+        /// <returns>The value read.</returns>
+        [PluggedMethod(ASMFilePath = null)]
+        public static uint doRead_UInt32(ushort port)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        ///     Reads a UInt64 from the specified port.
+        /// </summary>
+        /// <param name="port">The port to read.</param>
+        /// <returns>The value read.</returns>
+        [PluggedMethod(ASMFilePath = null)]
+        public static ulong doRead_UInt64(ushort port)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        ///     Reads a byte from the port.
         /// </summary>
         /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public byte Read_Byte()
         {
             return doRead_Byte(this.Port);
         }
+
         /// <summary>
-        /// Reads a UInt16 from the port.
+        ///     Reads a UInt16 from the port.
         /// </summary>
         /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt16 Read_UInt16()
+        [NoDebug]
+        [NoGC]
+        public ushort Read_UInt16()
         {
             return doRead_UInt16(this.Port);
         }
+
         /// <summary>
-        /// Reads a UInt32 from the port.
+        ///     Reads a UInt32 from the port.
         /// </summary>
         /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt32 Read_UInt32()
+        [NoDebug]
+        [NoGC]
+        public uint Read_UInt32()
         {
             return doRead_UInt32(this.Port);
         }
+
         /// <summary>
-        /// Reads a UInt64 from the port.
+        ///     Reads a UInt64 from the port.
         /// </summary>
         /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt64 Read_UInt64()
+        [NoDebug]
+        [NoGC]
+        public ulong Read_UInt64()
         {
             return doRead_UInt64(this.Port);
         }
 
         /// <summary>
-        /// Reads a byte from the port at the specified offset from this port.
+        ///     Reads a byte from the port at the specified offset from this port.
         /// </summary>
         /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt16 Read_Byte(UInt16 offset)
+        [NoDebug]
+        [NoGC]
+        public ushort Read_Byte(ushort offset)
         {
-            return doRead_Byte((UInt16)(this.Port + offset));
+            return doRead_Byte((ushort) (this.Port + offset));
         }
-        /// <summary>
-        /// Reads a UInt16 from the port at the specified offset from this port.
-        /// </summary>
-        /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt16 Read_UInt16(UInt16 offset)
-        {
-            return doRead_UInt16((UInt16)(this.Port + offset));
-        }
-        /// <summary>
-        /// Reads a UInt32 from the port at the specified offset from this port.
-        /// </summary>
-        /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt32 Read_UInt32(UInt16 offset)
-        {
-            return doRead_UInt32((UInt16)(this.Port + offset));
-        }
-        /// <summary>
-        /// Reads a UInt64 from the port at the specified offset from this port.
-        /// </summary>
-        /// <returns>The value read.</returns>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public UInt64 Read_UInt64(UInt16 offset)
-        {
-            return doRead_UInt64((UInt16)(this.Port + offset));
-        }
-        
 
         /// <summary>
-        /// Writes a byte to the specified port.
+        ///     Reads a UInt16 from the port at the specified offset from this port.
         /// </summary>
-        /// <param name="port">The port to write to.</param>
-        /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Write")]
-        public static void doWrite_Byte(UInt16 port, byte aVal)
+        /// <returns>The value read.</returns>
+        [NoDebug]
+        [NoGC]
+        public ushort Read_UInt16(ushort offset)
         {
+            return doRead_UInt16((ushort) (this.Port + offset));
         }
+
         /// <summary>
-        /// Writes a UInt16 to the specified port.
+        ///     Reads a UInt32 from the port at the specified offset from this port.
         /// </summary>
-        /// <param name="port">The port to write to.</param>
-        /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static void doWrite_UInt16(UInt16 port, UInt16 aVal)
+        /// <returns>The value read.</returns>
+        [NoDebug]
+        [NoGC]
+        public uint Read_UInt32(ushort offset)
         {
+            return doRead_UInt32((ushort) (this.Port + offset));
         }
+
         /// <summary>
-        /// Writes a UInt32 to the specified port.
+        ///     Reads a UInt64 from the port at the specified offset from this port.
         /// </summary>
-        /// <param name="port">The port to write to.</param>
-        /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static void doWrite_UInt32(UInt16 port, UInt32 aVal)
+        /// <returns>The value read.</returns>
+        [NoDebug]
+        [NoGC]
+        public ulong Read_UInt64(ushort offset)
         {
+            return doRead_UInt64((ushort) (this.Port + offset));
         }
+
+
         /// <summary>
-        /// Writes a UInt64 to the specified port.
+        ///     Writes a byte to the specified port.
         /// </summary>
         /// <param name="port">The port to write to.</param>
         /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        public static void doWrite_UInt64(UInt16 port, UInt64 aVal)
+        [PluggedMethod(ASMFilePath = @"ASM\IO\IOPort\Write")]
+        public static void doWrite_Byte(ushort port, byte aVal)
         {
         }
 
         /// <summary>
-        /// Writes a byte to the port.
+        ///     Writes a UInt16 to the specified port.
+        /// </summary>
+        /// <param name="port">The port to write to.</param>
+        /// <param name="aVal">The value to write.</param>
+        [PluggedMethod(ASMFilePath = null)]
+        public static void doWrite_UInt16(ushort port, ushort aVal)
+        {
+        }
+
+        /// <summary>
+        ///     Writes a UInt32 to the specified port.
+        /// </summary>
+        /// <param name="port">The port to write to.</param>
+        /// <param name="aVal">The value to write.</param>
+        [PluggedMethod(ASMFilePath = null)]
+        public static void doWrite_UInt32(ushort port, uint aVal)
+        {
+        }
+
+        /// <summary>
+        ///     Writes a UInt64 to the specified port.
+        /// </summary>
+        /// <param name="port">The port to write to.</param>
+        /// <param name="aVal">The value to write.</param>
+        [PluggedMethod(ASMFilePath = null)]
+        public static void doWrite_UInt64(ushort port, ulong aVal)
+        {
+        }
+
+        /// <summary>
+        ///     Writes a byte to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public virtual void Write_Byte(byte aVal)
         {
             doWrite_Byte(this.Port, aVal);
         }
+
         /// <summary>
-        /// Writes a UInt16 to the port.
+        ///     Writes a UInt16 to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Write_UInt16(UInt16 aVal)
+        [NoDebug]
+        [NoGC]
+        public void Write_UInt16(ushort aVal)
         {
             doWrite_UInt16(this.Port, aVal);
         }
+
         /// <summary>
-        /// Writes a UInt32 to the port.
+        ///     Writes a UInt32 to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Write_UInt32(UInt32 aVal)
+        [NoDebug]
+        [NoGC]
+        public void Write_UInt32(uint aVal)
         {
             doWrite_UInt32(this.Port, aVal);
         }
+
         /// <summary>
-        /// Writes a UInt64 to the port.
+        ///     Writes a UInt64 to the port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Write_UInt64(UInt64 aVal)
+        [NoDebug]
+        [NoGC]
+        public void Write_UInt64(ulong aVal)
         {
             doWrite_UInt64(this.Port, aVal);
         }
 
         /// <summary>
-        /// Writes a byte to the port at the specified offset from this port.
+        ///     Writes a byte to the port at the specified offset from this port.
         /// </summary>
         /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public virtual void Write_Byte(byte aVal, UInt16 offset)
+        [NoDebug]
+        [NoGC]
+        public virtual void Write_Byte(byte aVal, ushort offset)
         {
-            doWrite_Byte((UInt16)(this.Port + offset), aVal);
-        }
-        /// <summary>
-        /// Writes a UInt16 to the port at the specified offset from this port.
-        /// </summary>
-        /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public virtual void Write_UInt16(UInt16 aVal, UInt16 offset)
-        {
-            doWrite_UInt16((UInt16)(this.Port + offset), aVal);
-        }
-        /// <summary>
-        /// Writes a UInt32 to the port at the specified offset from this port.
-        /// </summary>
-        /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public virtual void Write_UInt32(UInt32 aVal, UInt16 offset)
-        {
-            doWrite_UInt32((UInt16)(this.Port + offset), aVal);
-        }
-        /// <summary>
-        /// Writes a UInt64 to the port at the specified offset from this port.
-        /// </summary>
-        /// <param name="aVal">The value to write.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public virtual void Write_UInt64(UInt64 aVal, UInt16 offset)
-        {
-            doWrite_UInt64((UInt16)(this.Port + offset), aVal);
+            doWrite_Byte((ushort) (this.Port + offset), aVal);
         }
 
         /// <summary>
-        /// Reads bytes into the specified byte array.
+        ///     Writes a UInt16 to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [NoDebug]
+        [NoGC]
+        public virtual void Write_UInt16(ushort aVal, ushort offset)
+        {
+            doWrite_UInt16((ushort) (this.Port + offset), aVal);
+        }
+
+        /// <summary>
+        ///     Writes a UInt32 to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [NoDebug]
+        [NoGC]
+        public virtual void Write_UInt32(uint aVal, ushort offset)
+        {
+            doWrite_UInt32((ushort) (this.Port + offset), aVal);
+        }
+
+        /// <summary>
+        ///     Writes a UInt64 to the port at the specified offset from this port.
+        /// </summary>
+        /// <param name="aVal">The value to write.</param>
+        [NoDebug]
+        [NoGC]
+        public virtual void Write_UInt64(ulong aVal, ushort offset)
+        {
+            doWrite_UInt64((ushort) (this.Port + offset), aVal);
+        }
+
+        /// <summary>
+        ///     Reads bytes into the specified byte array.
         /// </summary>
         /// <param name="aData">The byte array to read data into.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public void Read_Bytes(byte[] aData)
         {
-            UInt16 xValue;
-            for (int i = 0; i < aData.Length / 2; i++)
+            ushort xValue;
+            for (int i = 0; i < aData.Length/2; i++)
             {
                 xValue = Read_UInt16();
-                aData[i * 2] = (byte)xValue;
-                aData[i * 2 + 1] = (byte)(xValue >> 8);
+                aData[i*2] = (byte) xValue;
+                aData[i*2 + 1] = (byte) (xValue >> 8);
             }
         }
+
         /// <summary>
-        /// Reads UInt16s into the specified UInt16 array.
+        ///     Reads UInt16s into the specified UInt16 array.
         /// </summary>
         /// <param name="aData">The UInt16 array to read data into.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Read_UInt16s(UInt16[] aData)
+        [NoDebug]
+        [NoGC]
+        public void Read_UInt16s(ushort[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
             {
                 aData[i] = Read_UInt16();
             }
         }
+
         /// <summary>
-        /// Reads UInt32s into the specified UInt32 array.
+        ///     Reads UInt32s into the specified UInt32 array.
         /// </summary>
         /// <param name="aData">The UInt32 array to read data into.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Read_UInt32s(UInt32[] aData)
+        [NoDebug]
+        [NoGC]
+        public void Read_UInt32s(uint[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
             {
@@ -349,25 +370,26 @@ namespace Kernel.Hardware.IO
         }
 
         /// <summary>
-        /// Writes UInt16s from the specified byte array. Length of byte array must be multiple of 2.
+        ///     Writes UInt16s from the specified byte array. Length of byte array must be multiple of 2.
         /// </summary>
         /// <param name="aData">The byte array to write data from.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public void Write_UInt16s(byte[] aData)
         {
             for (int i = 0; i < aData.Length; i += 2)
             {
-                Write_UInt16((UInt16)(aData[i] | (aData[i+1] << 8)));
+                Write_UInt16((ushort) (aData[i] | (aData[i + 1] << 8)));
             }
         }
+
         /// <summary>
-        /// Writes UInt16s from the specified UInt16 array.
+        ///     Writes UInt16s from the specified UInt16 array.
         /// </summary>
         /// <param name="aData">The UInt16 array to write data from.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Write_UInt16s(UInt16[] aData)
+        [NoDebug]
+        [NoGC]
+        public void Write_UInt16s(ushort[] aData)
         {
             for (int i = 0; i < aData.Length; i++)
             {

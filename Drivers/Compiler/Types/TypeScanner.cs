@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,28 +23,28 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Reflection;
+using Drivers.Compiler.Attributes;
+using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Types
 {
     /// <summary>
-    /// Manages scanning the types in an IL library.
+    ///     Manages scanning the types in an IL library.
     /// </summary>
     public static class TypeScanner
     {
         /// <summary>
-        /// Scans the library for types.
+        ///     Scans the library for types.
         /// </summary>
         /// <param name="TheLibrary">The library to scan.</param>
-        public static void ScanTypes(IL.ILLibrary TheLibrary)
+        public static void ScanTypes(ILLibrary TheLibrary)
         {
             if (TheLibrary == null)
             {
@@ -55,7 +56,7 @@ namespace Drivers.Compiler.Types
                 return;
             }
 
-            foreach (IL.ILLibrary aDependency in TheLibrary.Dependencies)
+            foreach (ILLibrary aDependency in TheLibrary.Dependencies)
             {
                 ScanTypes(aDependency);
             }
@@ -120,15 +121,15 @@ namespace Drivers.Compiler.Types
         }
 
         /// <summary>
-        /// Scans a type to generate type info for the type. Also scans methods and constructors of the type
-        /// amongst some other information.
+        ///     Scans a type to generate type info for the type. Also scans methods and constructors of the type
+        ///     amongst some other information.
         /// </summary>
         /// <param name="TheLibrary">The library from which the type originated.</param>
         /// <param name="aType">The type to scan.</param>
         /// <returns>The new type info.</returns>
-        public static TypeInfo ScanType(IL.ILLibrary TheLibrary, Type aType)
+        public static TypeInfo ScanType(ILLibrary TheLibrary, Type aType)
         {
-            if(TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).Count() > 0)
+            if (TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).Count() > 0)
             {
                 return TheLibrary.TypeInfos.Where(x => x.UnderlyingType.Equals(aType)).First();
             }
@@ -147,11 +148,11 @@ namespace Drivers.Compiler.Types
                 {
                     if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                     {
-                        if (!IL.ILLibrary.SpecialClasses.ContainsKey(aCustAttr.GetType()))
+                        if (!ILLibrary.SpecialClasses.ContainsKey(aCustAttr.GetType()))
                         {
-                            IL.ILLibrary.SpecialClasses.Add(aCustAttr.GetType(), new List<TypeInfo>());
+                            ILLibrary.SpecialClasses.Add(aCustAttr.GetType(), new List<TypeInfo>());
                         }
-                        IL.ILLibrary.SpecialClasses[aCustAttr.GetType()].Add(newTypeInfo);
+                        ILLibrary.SpecialClasses[aCustAttr.GetType()].Add(newTypeInfo);
                     }
                 }
             }
@@ -161,7 +162,9 @@ namespace Drivers.Compiler.Types
             if (!aType.AssemblyQualifiedName.Contains("mscorlib"))
             {
                 // All Fields
-                System.Reflection.FieldInfo[] allFields = aType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                System.Reflection.FieldInfo[] allFields =
+                    aType.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic |
+                                    BindingFlags.Public);
                 foreach (System.Reflection.FieldInfo aFieldInfo in allFields)
                 {
                     if (aFieldInfo.DeclaringType.Equals(newTypeInfo.UnderlyingType))
@@ -174,7 +177,9 @@ namespace Drivers.Compiler.Types
                 }
 
                 // Plugged / Unplugged Methods
-                System.Reflection.MethodInfo[] allMethods = aType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static).ToArray();
+                System.Reflection.MethodInfo[] allMethods =
+                    aType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
+                                     BindingFlags.Static).ToArray();
 
                 foreach (System.Reflection.MethodInfo aMethodInfo in allMethods)
                 {
@@ -183,7 +188,8 @@ namespace Drivers.Compiler.Types
                         MethodInfo newMethodInfo = new MethodInfo()
                         {
                             UnderlyingInfo = aMethodInfo,
-                            PlugAttribute = (Attributes.PluggedMethodAttribute)aMethodInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
+                            PlugAttribute =
+                                (PluggedMethodAttribute) aMethodInfo.GetCustomAttribute(typeof(PluggedMethodAttribute))
                         };
                         newTypeInfo.MethodInfos.Add(newMethodInfo);
 
@@ -192,19 +198,21 @@ namespace Drivers.Compiler.Types
                         {
                             if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                             {
-                                if (!IL.ILLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                                if (!ILLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
                                 {
-                                    IL.ILLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                    ILLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
                                 }
-                                IL.ILLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                                ILLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                             }
                         }
                     }
                 }
 
                 // Plugged / unplugged Constructors
-                ConstructorInfo[] allConstructors = aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                                               .ToArray();
+                ConstructorInfo[] allConstructors =
+                    aType.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
+                                          BindingFlags.NonPublic)
+                        .ToArray();
                 foreach (ConstructorInfo aConstructorInfo in allConstructors)
                 {
                     if (aConstructorInfo.DeclaringType.Equals(aType))
@@ -212,7 +220,9 @@ namespace Drivers.Compiler.Types
                         MethodInfo newMethodInfo = new MethodInfo()
                         {
                             UnderlyingInfo = aConstructorInfo,
-                            PlugAttribute = (Attributes.PluggedMethodAttribute)aConstructorInfo.GetCustomAttribute(typeof(Attributes.PluggedMethodAttribute))
+                            PlugAttribute =
+                                (PluggedMethodAttribute)
+                                    aConstructorInfo.GetCustomAttribute(typeof(PluggedMethodAttribute))
                         };
                         newTypeInfo.MethodInfos.Add(newMethodInfo);
 
@@ -221,11 +231,11 @@ namespace Drivers.Compiler.Types
                         {
                             if (!aCustAttr.GetType().AssemblyQualifiedName.Contains("mscorlib"))
                             {
-                                if (!IL.ILLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
+                                if (!ILLibrary.SpecialMethods.ContainsKey(aCustAttr.GetType()))
                                 {
-                                    IL.ILLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
+                                    ILLibrary.SpecialMethods.Add(aCustAttr.GetType(), new List<MethodInfo>());
                                 }
-                                IL.ILLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
+                                ILLibrary.SpecialMethods[aCustAttr.GetType()].Add(newMethodInfo);
                             }
                         }
                     }
@@ -234,14 +244,15 @@ namespace Drivers.Compiler.Types
 
             return newTypeInfo;
         }
+
         /// <summary>
-        /// Processes the specified type info to fill in the required data.
+        ///     Processes the specified type info to fill in the required data.
         /// </summary>
         /// <param name="TheLibrary">The library from which the type originated.</param>
         /// <param name="theTypeInfo">The type info to process.</param>
-        public static void ProcessType(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
+        public static void ProcessType(ILLibrary TheLibrary, TypeInfo theTypeInfo)
         {
-            if(theTypeInfo.Processed)
+            if (theTypeInfo.Processed)
             {
                 return;
             }
@@ -258,7 +269,7 @@ namespace Drivers.Compiler.Types
             else
             {
                 theTypeInfo.SizeOnStackInBytes = GetSizeOnStackInBytes(theTypeInfo.UnderlyingType);
-                
+
                 theTypeInfo.SizeOnHeapInBytes = 0;
                 if (theTypeInfo.UnderlyingType.BaseType != null)
                 {
@@ -279,17 +290,20 @@ namespace Drivers.Compiler.Types
                         {
                             ProcessType(TheLibrary, fieldTypeInfo);
                         }
-                        theTypeInfo.SizeOnHeapInBytes += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : Options.AddressSizeInBytes;
+                        theTypeInfo.SizeOnHeapInBytes += fieldTypeInfo.IsValueType
+                            ? fieldTypeInfo.SizeOnHeapInBytes
+                            : Options.AddressSizeInBytes;
                     }
                 }
             }
         }
+
         /// <summary>
-        /// Processes the specified type's fields to fill in required data.
+        ///     Processes the specified type's fields to fill in required data.
         /// </summary>
         /// <param name="TheLibrary">The library from which the type originated.</param>
         /// <param name="theTypeInfo">The type info to process.</param>
-        public static void ProcessTypeFields(IL.ILLibrary TheLibrary, TypeInfo theTypeInfo)
+        public static void ProcessTypeFields(ILLibrary TheLibrary, TypeInfo theTypeInfo)
         {
             if (theTypeInfo.ProcessedFields)
             {
@@ -316,13 +330,15 @@ namespace Drivers.Compiler.Types
                 {
                     aFieldInfo.OffsetInBytes = totalOffset;
                     TypeInfo fieldTypeInfo = TheLibrary.GetTypeInfo(aFieldInfo.FieldType);
-                    totalOffset += fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes;
+                    totalOffset += fieldTypeInfo.IsValueType
+                        ? fieldTypeInfo.SizeOnHeapInBytes
+                        : fieldTypeInfo.SizeOnStackInBytes;
                 }
             }
         }
 
         /// <summary>
-        /// Gets the size, in bytes, of the specified type when it is represented on the stack.
+        ///     Gets the size, in bytes, of the specified type when it is represented on the stack.
         /// </summary>
         /// <param name="theType">The type to determine the stack size of.</param>
         /// <returns>The size in bytes.</returns>
@@ -344,18 +360,18 @@ namespace Drivers.Compiler.Types
                 {
                     result = 4;
                 }
-                else if (theType.AssemblyQualifiedName == typeof(UInt16).AssemblyQualifiedName ||
-                         theType.AssemblyQualifiedName == typeof(Int16).AssemblyQualifiedName)
+                else if (theType.AssemblyQualifiedName == typeof(ushort).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(short).AssemblyQualifiedName)
                 {
                     result = 4;
                 }
-                else if (theType.AssemblyQualifiedName == typeof(UInt32).AssemblyQualifiedName ||
-                         theType.AssemblyQualifiedName == typeof(Int32).AssemblyQualifiedName)
+                else if (theType.AssemblyQualifiedName == typeof(uint).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(int).AssemblyQualifiedName)
                 {
                     result = 4;
                 }
-                else if (theType.AssemblyQualifiedName == typeof(UInt64).AssemblyQualifiedName ||
-                         theType.AssemblyQualifiedName == typeof(Int64).AssemblyQualifiedName)
+                else if (theType.AssemblyQualifiedName == typeof(ulong).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(long).AssemblyQualifiedName)
                 {
                     result = 8;
                 }
@@ -389,7 +405,8 @@ namespace Drivers.Compiler.Types
                 }
                 else
                 {
-                    List<System.Reflection.FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+                    List<System.Reflection.FieldInfo> AllFields =
+                        theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
 
                     //This is a value type from a struct
                     result = 0;
@@ -402,17 +419,18 @@ namespace Drivers.Compiler.Types
                     result = Math.Max(result, 4);
 
                     // Round struct size up to multiple of 4 (ensures 4-byte stack alignment)
-                    if (result % 4 != 0)
+                    if (result%4 != 0)
                     {
-                        result += 4 - (result % 4);
+                        result += 4 - result%4;
                     }
                 }
             }
 
             return result;
         }
+
         /// <summary>
-        /// Gets the size, in bytes, of the specified type when it is allocated on the heap.
+        ///     Gets the size, in bytes, of the specified type when it is allocated on the heap.
         /// </summary>
         /// <param name="theType">The type to determine the heap size of.</param>
         /// <returns>The size in bytes.</returns>
@@ -433,18 +451,18 @@ namespace Drivers.Compiler.Types
                 {
                     result = 1;
                 }
-                else if (theType.AssemblyQualifiedName == typeof(UInt16).AssemblyQualifiedName ||
-                         theType.AssemblyQualifiedName == typeof(Int16).AssemblyQualifiedName)
+                else if (theType.AssemblyQualifiedName == typeof(ushort).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(short).AssemblyQualifiedName)
                 {
                     result = 2;
                 }
-                else if (theType.AssemblyQualifiedName == typeof(UInt32).AssemblyQualifiedName ||
-                         theType.AssemblyQualifiedName == typeof(Int32).AssemblyQualifiedName)
+                else if (theType.AssemblyQualifiedName == typeof(uint).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(int).AssemblyQualifiedName)
                 {
                     result = 4;
                 }
-                else if (theType.AssemblyQualifiedName == typeof(UInt64).AssemblyQualifiedName ||
-                         theType.AssemblyQualifiedName == typeof(Int64).AssemblyQualifiedName)
+                else if (theType.AssemblyQualifiedName == typeof(ulong).AssemblyQualifiedName ||
+                         theType.AssemblyQualifiedName == typeof(long).AssemblyQualifiedName)
                 {
                     result = 8;
                 }
@@ -486,7 +504,8 @@ namespace Drivers.Compiler.Types
                 }
                 else
                 {
-                    List<System.Reflection.FieldInfo> AllFields = theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
+                    List<System.Reflection.FieldInfo> AllFields =
+                        theType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).ToList();
 
                     //This is a value type from a struct
                     result = 0;
@@ -503,8 +522,9 @@ namespace Drivers.Compiler.Types
 
             return result;
         }
+
         /// <summary>
-        /// Determines whether the specified type is managed by the garbage collector or not.
+        ///     Determines whether the specified type is managed by the garbage collector or not.
         /// </summary>
         /// <param name="theType">The type to check.</param>
         /// <returns>True if it is managed by the GC. Otherwise, false.</returns>
@@ -513,8 +533,8 @@ namespace Drivers.Compiler.Types
             bool isGCManaged = true;
 
             if (theType != null && (theType.IsValueType ||
-                                   theType.IsPointer ||
-                                   typeof(Delegate).IsAssignableFrom(theType)))
+                                    theType.IsPointer ||
+                                    typeof(Delegate).IsAssignableFrom(theType)))
             {
                 isGCManaged = false;
             }

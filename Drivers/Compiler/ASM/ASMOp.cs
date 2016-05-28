@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,13 +23,8 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM
 {
@@ -48,31 +44,32 @@ namespace Drivers.Compiler.ASM
     }
 
     /// <summary>
-    /// Represents an ASM op which will be translated into assembly language (i.e. assembly text).
+    ///     Represents an ASM op which will be translated into assembly language (i.e. assembly text).
     /// </summary>
     /// <remarks>
-    /// Specific ASM op implementations are found in a target architecture library.
+    ///     Specific ASM op implementations are found in a target architecture library.
     /// </remarks>
     public abstract class ASMOp
     {
         /// <summary>
-        /// The IL Position of the IL op which generated this ASM op. Default: -1 i.e. no position.
+        ///     The IL Position of the IL op which generated this ASM op. Default: -1 i.e. no position.
         /// </summary>
         /// <remarks>
-        /// Not all ASM ops will originate from an IL op. Also, a position of -1 is invalid so ASM ops
-        /// with IL Position -1 will not have a related label.
+        ///     Not all ASM ops will originate from an IL op. Also, a position of -1 is invalid so ASM ops
+        ///     with IL Position -1 will not have a related label.
         /// </remarks>
         internal int ILLabelPosition = -1;
+
         /// <summary>
-        /// Whether the ASM op needs to be preceded by a label for the IL op to which it relates. This
-        /// is used, for example, when an IL branch instruction causes jump ASM operations to be 
-        /// inserted. The jump ASM ops set RequiresILLabel on the first ASM op of the target IL op as 
-        /// the reference point to jump to.
+        ///     Whether the ASM op needs to be preceded by a label for the IL op to which it relates. This
+        ///     is used, for example, when an IL branch instruction causes jump ASM operations to be
+        ///     inserted. The jump ASM ops set RequiresILLabel on the first ASM op of the target IL op as
+        ///     the reference point to jump to.
         /// </summary>
         internal bool RequiresILLabel = false;
-        
+
         /// <summary>
-        /// Converts the ASM op into assembly code.
+        ///     Converts the ASM op into assembly code.
         /// </summary>
         /// <param name="theBlock">The ASM block to which the ASM op belongs.</param>
         /// <returns>The assembly code text.</returns>

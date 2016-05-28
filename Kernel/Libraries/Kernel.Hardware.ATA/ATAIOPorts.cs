@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,105 +23,112 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
+using Kernel.Hardware.IO;
 
 namespace Kernel.Hardware.ATA
 {
     /// <summary>
-    /// Wraps the IO Ports for communicating with ATA devices.
+    ///     Wraps the IO Ports for communicating with ATA devices.
     /// </summary>
-    public class ATAIOPorts : FOS_System.Object
+    public class ATAIOPorts : Object
     {
         /// <summary>
-        /// The data port.
+        ///     Command port.
         /// </summary>
-        public readonly IO.IOPort Data;
+        public readonly IOPort Command;
 
         /// <summary>
-        /// Error register - read only.
+        ///     Control port. Read only.
         /// </summary>
-        public readonly IO.IOPort Error;
+        /// <remarks>
+        ///     Control port is also the Alternate Status Register: BAR1 + 2.
+        /// </remarks>
+        public readonly IOPort Control;
+
         /// <summary>
-        /// Features register - write only.
+        ///     The data port.
         /// </summary>
-        public readonly IO.IOPort Features;
-        
+        public readonly IOPort Data;
+
+        // ATA_REG_LBA3       0x09 - HOB
+        // ATA_REG_LBA4       0x0A - HOB
+        // ATA_REG_LBA5       0x0B - HOB
         /// <summary>
-        /// The sector count.
+        ///     Device select port.
         /// </summary>
-        public readonly IO.IOPort SectorCount;
+        public readonly IOPort DeviceSelect;
+
+        /// <summary>
+        ///     Error register - read only.
+        /// </summary>
+        public readonly IOPort Error;
+
+        /// <summary>
+        ///     Features register - write only.
+        /// </summary>
+        public readonly IOPort Features;
 
         /********* HOB = High Order Byte = LBA48 mode *********/
 
         // ATA_REG_SECCOUNT1  0x08 - HOB
         /// <summary>
-        /// LBA0 port.
+        ///     LBA0 port.
         /// </summary>
-        public readonly IO.IOPort LBA0;
+        public readonly IOPort LBA0;
+
         /// <summary>
-        /// LBA1 port.
+        ///     LBA1 port.
         /// </summary>
-        public readonly IO.IOPort LBA1;
+        public readonly IOPort LBA1;
+
         /// <summary>
-        /// LBA2 port.
+        ///     LBA2 port.
         /// </summary>
-        public readonly IO.IOPort LBA2;
-        // ATA_REG_LBA3       0x09 - HOB
-        // ATA_REG_LBA4       0x0A - HOB
-        // ATA_REG_LBA5       0x0B - HOB
+        public readonly IOPort LBA2;
+
         /// <summary>
-        /// Device select port.
+        ///     The sector count.
         /// </summary>
-        public readonly IO.IOPort DeviceSelect;
+        public readonly IOPort SectorCount;
+
         /// <summary>
-        /// Command port.
+        ///     Status port.
         /// </summary>
-        public readonly IO.IOPort Command;
-        /// <summary>
-        /// Status port.
-        /// </summary>
-        public readonly IO.IOPort Status;
-        
-        /// <summary>
-        /// Control port. Read only.
-        /// </summary>
-        /// <remarks>
-        /// Control port is also the Alternate Status Register: BAR1 + 2.
-        /// </remarks>
-        public readonly IO.IOPort Control;
+        public readonly IOPort Status;
+
         //* DEVADDRESS: BAR1 + 3; //Don't know what this register is for
 
         /// <summary>
-        /// Initialises a new ATA IO device including the various ports.
+        ///     Initialises a new ATA IO device including the various ports.
         /// </summary>
         /// <param name="isSecondary">Whether the device is a secondary ATA device.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         internal ATAIOPorts(bool isSecondary)
         {
             //BAR of main registers
-            UInt16 xBAR0 = (UInt16)(isSecondary ? 0x0170 : 0x01F0);
+            ushort xBAR0 = (ushort) (isSecondary ? 0x0170 : 0x01F0);
             //BAR of alternative registers
-            UInt16 xBAR1 = (UInt16)(isSecondary ? 0x0374 : 0x03F4);
-            Data = new IO.IOPort(xBAR0);
-            Error = new IO.IOPort(xBAR0, 1);
-            Features = new IO.IOPort(xBAR0, 1);
-            SectorCount = new IO.IOPort(xBAR0, 2);
+            ushort xBAR1 = (ushort) (isSecondary ? 0x0374 : 0x03F4);
+            Data = new IOPort(xBAR0);
+            Error = new IOPort(xBAR0, 1);
+            Features = new IOPort(xBAR0, 1);
+            SectorCount = new IOPort(xBAR0, 2);
             //Logical block address
-            LBA0 = new IO.IOPort(xBAR0, 3); //Lo-bits
-            LBA1 = new IO.IOPort(xBAR0, 4); //Mid-bits
-            LBA2 = new IO.IOPort(xBAR0, 5); //Hi-bits
-            DeviceSelect = new IO.IOPort(xBAR0, 6);
+            LBA0 = new IOPort(xBAR0, 3); //Lo-bits
+            LBA1 = new IOPort(xBAR0, 4); //Mid-bits
+            LBA2 = new IOPort(xBAR0, 5); //Hi-bits
+            DeviceSelect = new IOPort(xBAR0, 6);
             //Write - command
-            Command = new IO.IOPort(xBAR0, 7);
+            Command = new IOPort(xBAR0, 7);
             //Read - status
-            Status = new IO.IOPort(xBAR0, 7);
+            Status = new IOPort(xBAR0, 7);
 
-            Control = new IO.IOPort(xBAR1, 2);
+            Control = new IOPort(xBAR1, 2);
         }
     }
 }

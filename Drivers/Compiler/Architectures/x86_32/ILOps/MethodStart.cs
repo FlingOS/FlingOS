@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class MethodStart : IL.ILOps.MethodStart
     {
@@ -44,7 +43,7 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -52,20 +51,20 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Push the previous method's ebp
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EBP" });
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBP"});
             //Set ebp for this method
             //See calling convention spec - this allows easy access of
             //args and locals within the method without having to track
             //temporary values (which would be a nightmare with the
             //exception handling implementation that the kernel uses!)
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "ESP", Dest = "EBP" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "ESP", Dest = "EBP"});
 
             //Allocate stack space for locals
             //Only bother if there are any locals
             if (conversionState.Input.TheMethodInfo.LocalInfos.Count > 0)
             {
                 int totalBytes = 0;
-                foreach (Types.VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
+                foreach (VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
                 {
                     totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
                 }
@@ -73,9 +72,9 @@ namespace Drivers.Compiler.Architectures.x86
                 //junk memory - we need memory to be "initialised" to 0 
                 //so that local variables are null unless properly initialised.
                 //This prevents errors in the GC.
-                for (int i = 0; i < totalBytes / 4; i++)
+                for (int i = 0; i < totalBytes/4; i++)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
                 }
                 //result.AppendLine(string.Format("sub esp, {0}", totalBytes));
             }

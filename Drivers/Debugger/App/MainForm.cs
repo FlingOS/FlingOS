@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,13 +23,14 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,54 +38,57 @@ using System.Windows.Forms;
 
 namespace Drivers.Debugger.App
 {
-    delegate void VoidDelegate();
-    delegate int IntDelegate();
-    delegate uint UIntDelegate();
-    delegate bool BoolDelegate();
+    internal delegate void VoidDelegate();
+
+    internal delegate int IntDelegate();
+
+    internal delegate uint UIntDelegate();
+
+    internal delegate bool BoolDelegate();
 
     public partial class MainForm : Form
     {
-        Debugger TheDebugger;
+        private List<VariableData> ArgumentDatas = new List<VariableData>();
 
-        bool performingAction = false;
-        bool PerformingAction
+        private int ArgumentsDepthLoaded = 1;
+
+        private readonly List<KeyValuePair<string, List<string>>> Breakpoints =
+            new List<KeyValuePair<string, List<string>>>();
+
+        private string CurrentMethodASM;
+        private string CurrentMethodLabel;
+        private uint EIP = 0xFFFFFFFF;
+
+        private string FileToLoadBreakpointsFrom;
+
+        private List<KeyValuePair<string, List<string>>> FilteredLabels = new List<KeyValuePair<string, List<string>>>();
+
+        private string FullLabelToStepTo;
+        private List<VariableData> LocalDatas = new List<VariableData>();
+        private int LocalsDepthLoaded = 1;
+        private Tuple<uint, string> NearestLabel;
+
+        private bool performingAction = false;
+
+        private Dictionary<uint, Process> Processes;
+        private Dictionary<string, uint> Registers = new Dictionary<string, uint>();
+        private KeyValuePair<string, string> SelectedBreakpointFullLabel;
+        private KeyValuePair<string, string> SelectedDebugPointFullLabel;
+        private Debugger TheDebugger;
+
+        public MainForm()
         {
-            get
-            {
-                return performingAction;
-            }
+            InitializeComponent();
+        }
+
+        private bool PerformingAction
+        {
+            get { return performingAction; }
             set
             {
                 performingAction = value;
                 UpdateEnableStates();
             }
-        }
-
-        Dictionary<uint, Process> Processes;
-        Dictionary<string, uint> Registers = new Dictionary<string,uint>();
-        uint EIP = 0xFFFFFFFF;
-        Tuple<uint, string> NearestLabel;
-        string CurrentMethodLabel;
-        string CurrentMethodASM;
-
-        string FullLabelToStepTo;
-
-        List<KeyValuePair<string, List<string>>> FilteredLabels = new List<KeyValuePair<string,List<string>>>();
-        List<KeyValuePair<string, List<string>>> Breakpoints = new List<KeyValuePair<string, List<string>>>();
-        KeyValuePair<string, string> SelectedDebugPointFullLabel;
-        KeyValuePair<string, string> SelectedBreakpointFullLabel;
-
-        List<VariableData> ArgumentDatas = new List<VariableData>();
-        List<VariableData> LocalDatas = new List<VariableData>();
-
-        int ArgumentsDepthLoaded = 1;
-        int LocalsDepthLoaded = 1;
-
-        string FileToLoadBreakpointsFrom;
-
-        public MainForm()
-        {
-            InitializeComponent();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -94,8 +99,9 @@ namespace Drivers.Debugger.App
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             ConnectButton.Enabled = false;
-            Task.Run((Action)Connect);
+            Task.Run((Action) Connect);
         }
+
         private void DestroyButton_Click(object sender, EventArgs e)
         {
             TheDebugger.AbortCommand();
@@ -109,37 +115,44 @@ namespace Drivers.Debugger.App
             UpdateBreakpoints();
             PerformingAction = false;
         }
+
         private void AbortButton_Click(object sender, EventArgs e)
         {
             TheDebugger.AbortCommand();
 
             PerformingAction = false;
         }
+
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)RefreshThreads);
+            Task.Run((Action) RefreshThreads);
         }
+
         private void DebugButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)SuspendThread);
+            Task.Run((Action) SuspendThread);
         }
+
         private void ResumeButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)ResumeThread);
+            Task.Run((Action) ResumeThread);
         }
+
         private void StepButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)StepThread);
+            Task.Run((Action) StepThread);
         }
+
         private void SingleStepButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)SingleStepThread);
+            Task.Run((Action) SingleStepThread);
         }
+
         private void StepThreadToLabelButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
@@ -156,13 +169,15 @@ namespace Drivers.Debugger.App
                 }
             }
 
-            Task.Run((Action)StepThreadToLabel);
+            Task.Run((Action) StepThreadToLabel);
         }
+
         private void ProcessesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)RefreshRegisters);
+            Task.Run((Action) RefreshRegisters);
         }
+
         private void FilterBox_TextChanged(object sender, EventArgs e)
         {
             if (FilterBox.Text.Length > 10)
@@ -170,16 +185,20 @@ namespace Drivers.Debugger.App
                 RefreshBreakpoints();
             }
         }
+
         private void BreakpointsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (BreakpointsTreeView.SelectedNode != null &&
                 BreakpointsTreeView.SelectedNode.Parent != null)
             {
-                SelectedBreakpointFullLabel = new KeyValuePair<string,string>(BreakpointsTreeView.SelectedNode.Parent.Text, BreakpointsTreeView.SelectedNode.Text);
+                SelectedBreakpointFullLabel =
+                    new KeyValuePair<string, string>(BreakpointsTreeView.SelectedNode.Parent.Text,
+                        BreakpointsTreeView.SelectedNode.Text);
             }
 
             UpdateEnableStates();
         }
+
         private void LabelsTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (LabelsTreeView.SelectedNode != null &&
@@ -187,48 +206,55 @@ namespace Drivers.Debugger.App
             {
                 if (TheDebugger.IsDebugLabel(LabelsTreeView.SelectedNode.Parent.Text, LabelsTreeView.SelectedNode.Text))
                 {
-                    SelectedDebugPointFullLabel = new KeyValuePair<string, string>(LabelsTreeView.SelectedNode.Parent.Text, LabelsTreeView.SelectedNode.Text);
+                    SelectedDebugPointFullLabel =
+                        new KeyValuePair<string, string>(LabelsTreeView.SelectedNode.Parent.Text,
+                            LabelsTreeView.SelectedNode.Text);
                 }
             }
 
             UpdateEnableStates();
         }
+
         private void ClearBreakpointButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)ClearBreakpoint);
+            Task.Run((Action) ClearBreakpoint);
         }
+
         private void SetBreakpointButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)SetBreakpoint);
+            Task.Run((Action) SetBreakpoint);
         }
+
         private void LoadLayerButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action)LoadNextStackDataLayer);
+            Task.Run((Action) LoadNextStackDataLayer);
         }
+
         private void SetFromFileListButton_Click(object sender, EventArgs e)
         {
             TheOpenFileDialog.Filter = "Breakpoints List (.txt)|*.txt|All Files (*.*)|*.*";
             TheOpenFileDialog.InitialDirectory = BinPathBox.Text;
 
-            if (TheOpenFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (TheOpenFileDialog.ShowDialog() == DialogResult.OK)
             {
                 FileToLoadBreakpointsFrom = TheOpenFileDialog.FileName;
 
                 PerformingAction = true;
-                Task.Run((Action)SetBreakpointsFromFile);
+                Task.Run((Action) SetBreakpointsFromFile);
             }
         }
+
         private void SaveToFileListButton_Click(object sender, EventArgs e)
         {
             TheSaveFileDialog.Filter = "Breakpoints List (.txt)|*.txt|All Files (*.*)|*.*";
             TheSaveFileDialog.FileName = FileToLoadBreakpointsFrom;
 
-            if (TheSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (TheSaveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                using (System.IO.StreamWriter Str = new System.IO.StreamWriter(TheSaveFileDialog.FileName, false))
+                using (StreamWriter Str = new StreamWriter(TheSaveFileDialog.FileName, false))
                 {
                     foreach (KeyValuePair<string, List<string>> MethodOfBPS in Breakpoints)
                     {
@@ -241,11 +267,12 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void ViewBPASMCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             LoadASMPreview();
         }
-        
+
         private void LoadASMPreview()
         {
             if (ViewBPASMCheckBox.Checked)
@@ -287,7 +314,7 @@ namespace Drivers.Debugger.App
             TheDebugger = new Debugger();
             TheDebugger.NotificationEvent += TheDebugger_NotificationEvent;
             UpdateEnableStates();
-            
+
             if (!TheDebugger.Init(PipeNameBox.Text, BinPathBox.Text, AssemblyNameBox.Text))
             {
                 TheDebugger.Dispose();
@@ -309,42 +336,51 @@ namespace Drivers.Debugger.App
 
             UpdateEnableStates();
         }
+
         private void SuspendThread()
         {
             TheDebugger.SuspendThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
+
             RefreshThreads();
         }
+
         private void ResumeThread()
         {
             TheDebugger.ResumeThread(GetSelectedProcessId(), GetSelectedThreadId());
-            
+
             RefreshThreads();
         }
+
         private void StepThread()
         {
             TheDebugger.StepThread(GetSelectedProcessId(), GetSelectedThreadId());
 
             PerformingAction = false;
         }
+
         private void SingleStepThread()
         {
             TheDebugger.SingleStepThread(GetSelectedProcessId(), GetSelectedThreadId());
 
             PerformingAction = false;
         }
+
         private void StepThreadToLabel()
         {
-            TheDebugger.SingleStepThreadToAddress(GetSelectedProcessId(), GetSelectedThreadId(), TheDebugger.GetLabelAddress(FullLabelToStepTo));
+            TheDebugger.SingleStepThreadToAddress(GetSelectedProcessId(), GetSelectedThreadId(),
+                TheDebugger.GetLabelAddress(FullLabelToStepTo));
 
             PerformingAction = false;
         }
+
         private void ClearBreakpoint()
         {
-            uint BPAddress = TheDebugger.GetLabelAddress(SelectedBreakpointFullLabel.Key + SelectedBreakpointFullLabel.Value);
+            uint BPAddress =
+                TheDebugger.GetLabelAddress(SelectedBreakpointFullLabel.Key + SelectedBreakpointFullLabel.Value);
             if (TheDebugger.ClearBreakpoint(BPAddress))
             {
-                KeyValuePair<string, List<string>> BP = Breakpoints.Where(x => x.Key == SelectedBreakpointFullLabel.Key).First();
+                KeyValuePair<string, List<string>> BP =
+                    Breakpoints.Where(x => x.Key == SelectedBreakpointFullLabel.Key).First();
                 BP.Value.Remove(SelectedBreakpointFullLabel.Value);
                 if (BP.Value.Count == 0)
                 {
@@ -356,6 +392,7 @@ namespace Drivers.Debugger.App
 
             PerformingAction = false;
         }
+
         private void SetBreakpoint()
         {
             DoSetBreakpoint(SelectedDebugPointFullLabel.Key + SelectedDebugPointFullLabel.Value);
@@ -364,29 +401,33 @@ namespace Drivers.Debugger.App
 
             PerformingAction = false;
         }
+
         private void DoSetBreakpoint(string FullLabel)
         {
             uint DPAddress = TheDebugger.GetLabelAddress(FullLabel);
             if (TheDebugger.SetBreakpoint(DPAddress))
             {
-                List<KeyValuePair<string, List<string>>> BPs = Breakpoints.Where(x => x.Key == FullLabel.Split('.')[0]).ToList();
+                List<KeyValuePair<string, List<string>>> BPs =
+                    Breakpoints.Where(x => x.Key == FullLabel.Split('.')[0]).ToList();
                 if (BPs.Count > 0)
                 {
                     BPs.First().Value.Add("." + FullLabel.Split('.')[1]);
                 }
                 else
                 {
-                    KeyValuePair<string, List<string>> NewBP = new KeyValuePair<string, List<string>>(FullLabel.Split('.')[0], new List<string>());
+                    KeyValuePair<string, List<string>> NewBP =
+                        new KeyValuePair<string, List<string>>(FullLabel.Split('.')[0], new List<string>());
                     Breakpoints.Add(NewBP);
                     NewBP.Value.Add("." + FullLabel.Split('.')[1]);
                 }
             }
         }
+
         private void SetBreakpointsFromFile()
         {
             if (FileToLoadBreakpointsFrom != null)
             {
-                string[] LabelsOfBreakpointsToSet = System.IO.File.ReadAllLines(FileToLoadBreakpointsFrom);
+                string[] LabelsOfBreakpointsToSet = File.ReadAllLines(FileToLoadBreakpointsFrom);
                 foreach (string FullLabel in LabelsOfBreakpointsToSet)
                 {
                     if (!string.IsNullOrWhiteSpace(FullLabel))
@@ -415,11 +456,12 @@ namespace Drivers.Debugger.App
 
             UpdateProcessTree();
         }
+
         private void RefreshRegisters()
         {
             if (IsSelectionDebugging())
             {
-                Registers = TheDebugger.GetRegisters(GetSelectedProcessId(), (uint)GetSelectedThreadId());
+                Registers = TheDebugger.GetRegisters(GetSelectedProcessId(), (uint) GetSelectedThreadId());
             }
             else
             {
@@ -430,6 +472,7 @@ namespace Drivers.Debugger.App
 
             RefreshNearestLabel();
         }
+
         private void RefreshNearestLabel()
         {
             if (Registers.ContainsKey("EIP"))
@@ -451,10 +494,11 @@ namespace Drivers.Debugger.App
 
             RefreshStackData();
         }
+
         private void RefreshStackData()
         {
             uint ProcessId = GetSelectedProcessId();
-            
+
             ArgumentDatas.Clear();
             LocalDatas.Clear();
 
@@ -475,18 +519,25 @@ namespace Drivers.Debugger.App
                         try
                         {
                             int MaxOffset = TheMethod.Arguments.Select(x => x.Value.Offset).Max();
-                            string MaxTypeID = TheMethod.Arguments.Where(x => x.Value.Offset == MaxOffset).Select(x => x.Value.TypeID).First();
+                            string MaxTypeID =
+                                TheMethod.Arguments.Where(x => x.Value.Offset == MaxOffset)
+                                    .Select(x => x.Value.TypeID)
+                                    .First();
                             TypeInfo MaxArgType = TheDebugger.GetTypeInfo(MaxTypeID);
-                            
-                            string ArgumentValuesStr = TheDebugger.GetMemoryValues(ProcessId, EBP, MaxOffset + MaxArgType.SizeOnStackInBytes, 1);
-                            byte[] ArgumentValuesArr = ArgumentValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+
+                            string ArgumentValuesStr = TheDebugger.GetMemoryValues(ProcessId, EBP,
+                                MaxOffset + MaxArgType.SizeOnStackInBytes, 1);
+                            byte[] ArgumentValuesArr =
+                                ArgumentValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(x => byte.Parse(x.Substring(2), NumberStyles.HexNumber))
+                                    .ToArray();
                             List<VariableInfo> ArgInfos = TheMethod.Arguments.Values.OrderBy(x => x.Offset).ToList();
                             foreach (VariableInfo AnArgInfo in ArgInfos)
                             {
                                 TypeInfo ArgType = TheDebugger.GetTypeInfo(AnArgInfo.TypeID);
                                 VariableData NewVarData = new VariableData()
                                 {
-                                    Address = (uint)(EBP + AnArgInfo.Offset),
+                                    Address = (uint) (EBP + AnArgInfo.Offset),
                                     OffsetFromParent = AnArgInfo.Offset,
                                     Info = ArgType,
                                     Value = new byte[ArgType.SizeOnStackInBytes]
@@ -513,23 +564,35 @@ namespace Drivers.Debugger.App
 
                         try
                         {
-                            int MaxOffset = TheMethod.Locals.Count == 0 ? 0 : TheMethod.Locals.Select(x => x.Value.Offset).Max();
-                            string MaxTypeID = TheMethod.Locals.Count == 0 ? "" : TheMethod.Locals.Where(x => x.Value.Offset == MaxOffset).Select(x => x.Value.TypeID).First();
-                            TypeInfo MaxLocType = TheMethod.Locals.Count == 0 ? null : TheDebugger.GetTypeInfo(MaxTypeID);
+                            int MaxOffset = TheMethod.Locals.Count == 0
+                                ? 0
+                                : TheMethod.Locals.Select(x => x.Value.Offset).Max();
+                            string MaxTypeID = TheMethod.Locals.Count == 0
+                                ? ""
+                                : TheMethod.Locals.Where(x => x.Value.Offset == MaxOffset)
+                                    .Select(x => x.Value.TypeID)
+                                    .First();
+                            TypeInfo MaxLocType = TheMethod.Locals.Count == 0
+                                ? null
+                                : TheDebugger.GetTypeInfo(MaxTypeID);
 
                             uint ESP = Registers["ESP"];
-                            int NumLocalBytes = (int)(EBP - ESP);
+                            int NumLocalBytes = (int) (EBP - ESP);
                             string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes, 1);
-                            byte[] LocalValuesArr = LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                            byte[] LocalValuesArr =
+                                LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(x => byte.Parse(x.Substring(2), NumberStyles.HexNumber))
+                                    .ToArray();
 
                             if (LocalValuesArr.Length > 0)
                             {
-                                int max = LocalValuesArr.Length - (MaxOffset + (TheMethod.Locals.Count == 0 ? 0 : MaxLocType.SizeOnStackInBytes));
-                                for (int i = 0; i < max;  )
+                                int max = LocalValuesArr.Length -
+                                          (MaxOffset + (TheMethod.Locals.Count == 0 ? 0 : MaxLocType.SizeOnStackInBytes));
+                                for (int i = 0; i < max;)
                                 {
                                     VariableData NewVarData = new VariableData()
                                     {
-                                        Address = (uint)(ESP + i),
+                                        Address = (uint) (ESP + i),
                                         Temporary = true,
                                         Value = new byte[4],
                                         OffsetFromParent = i
@@ -547,7 +610,7 @@ namespace Drivers.Debugger.App
                                     }
                                     else
                                     {
-                                        for (int j = 0; j < (max - i); j++)
+                                        for (int j = 0; j < max - i; j++)
                                         {
                                             NewVarData.Value[j] = LocalValuesArr[j + i];
                                         }
@@ -555,15 +618,16 @@ namespace Drivers.Debugger.App
                                         i = max;
                                     }
                                 }
-                                
+
                                 List<VariableInfo> LocInfos = TheMethod.Locals.Values.OrderBy(x => x.Offset).ToList();
                                 foreach (VariableInfo ALocInfo in LocInfos)
                                 {
                                     TypeInfo LocType = TheDebugger.GetTypeInfo(ALocInfo.TypeID);
-                                    int position = (LocalValuesArr.Length - (-ALocInfo.Offset + LocType.SizeOnStackInBytes));
+                                    int position = LocalValuesArr.Length -
+                                                   (-ALocInfo.Offset + LocType.SizeOnStackInBytes);
                                     VariableData NewVarData = new VariableData()
                                     {
-                                        Address = (uint)(EBP + ALocInfo.Offset),
+                                        Address = (uint) (EBP + ALocInfo.Offset),
                                         OffsetFromParent = position,
                                         Info = LocType,
                                         Value = new byte[LocType.SizeOnStackInBytes]
@@ -595,9 +659,12 @@ namespace Drivers.Debugger.App
                         try
                         {
                             uint ESP = Registers["ESP"];
-                            int NumLocalBytes = (int)(EBP - ESP);
-                            string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes / 4, 4);
-                            uint[] LocalValuesArr = LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => uint.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                            int NumLocalBytes = (int) (EBP - ESP);
+                            string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes/4, 4);
+                            uint[] LocalValuesArr =
+                                LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(x => uint.Parse(x.Substring(2), NumberStyles.HexNumber))
+                                    .ToArray();
                             int offset = 0;
                             foreach (uint ALocalVal in LocalValuesArr)
                             {
@@ -627,6 +694,7 @@ namespace Drivers.Debugger.App
 
             PerformingAction = false;
         }
+
         private void RefreshBreakpoints()
         {
             string Filter = FilterBox.Text;
@@ -645,7 +713,7 @@ namespace Drivers.Debugger.App
                 ArgData.LoadFields(TheDebugger, ProcessId, ArgumentsDepthLoaded);
             }
             ArgumentsDepthLoaded++;
-            
+
             foreach (VariableData LocData in LocalDatas)
             {
                 LocData.LoadFields(TheDebugger, ProcessId, LocalsDepthLoaded);
@@ -661,7 +729,7 @@ namespace Drivers.Debugger.App
         {
             if (this.InvokeRequired)
             {
-                return (bool)this.Invoke(new BoolDelegate(IsSelectionDebugging));
+                return (bool) this.Invoke(new BoolDelegate(IsSelectionDebugging));
             }
             else
             {
@@ -670,16 +738,19 @@ namespace Drivers.Debugger.App
                 {
                     uint SelectedProcessId = GetSelectedProcessId();
                     int SelectedThreadId = GetSelectedThreadId();
-                    NodeSuspended = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Debugging;
+                    NodeSuspended = SelectedThreadId != -1 &&
+                                    Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
+                                    Thread.States.Debugging;
                 }
                 return NodeSuspended;
             }
         }
+
         private bool IsSelectionSuspended()
         {
             if (this.InvokeRequired)
             {
-                return (bool)this.Invoke(new BoolDelegate(IsSelectionSuspended));
+                return (bool) this.Invoke(new BoolDelegate(IsSelectionSuspended));
             }
             else
             {
@@ -688,11 +759,14 @@ namespace Drivers.Debugger.App
                 {
                     uint SelectedProcessId = GetSelectedProcessId();
                     int SelectedThreadId = GetSelectedThreadId();
-                    NodeSuspended = SelectedThreadId != -1 && Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State == Thread.States.Suspended;
+                    NodeSuspended = SelectedThreadId != -1 &&
+                                    Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
+                                    Thread.States.Suspended;
                 }
                 return NodeSuspended;
             }
         }
+
         private void UpdateEnableStates()
         {
             if (this.InvokeRequired)
@@ -723,14 +797,17 @@ namespace Drivers.Debugger.App
                         ResumeButton.Enabled = NodeSelected && NodeDebugging;
                         StepButton.Enabled = NodeSelected && NodeDebugging;
                         SingleStepButton.Enabled = NodeSelected && NodeDebugging;
-                        StepThreadToLabelButton.Enabled = NodeSelected && NodeDebugging && LabelsTreeView.SelectedNode != null;
+                        StepThreadToLabelButton.Enabled = NodeSelected && NodeDebugging &&
+                                                          LabelsTreeView.SelectedNode != null;
 
-                        NodeSelected = LabelsTreeView.SelectedNode != null && 
-                            LabelsTreeView.SelectedNode.Parent != null &&
-                            TheDebugger.IsDebugLabel(LabelsTreeView.SelectedNode.Parent.Text, LabelsTreeView.SelectedNode.Text);
+                        NodeSelected = LabelsTreeView.SelectedNode != null &&
+                                       LabelsTreeView.SelectedNode.Parent != null &&
+                                       TheDebugger.IsDebugLabel(LabelsTreeView.SelectedNode.Parent.Text,
+                                           LabelsTreeView.SelectedNode.Text);
                         SetBreakpointButton.Enabled = NodeSelected;
 
-                        NodeSelected = BreakpointsTreeView.SelectedNode != null && BreakpointsTreeView.SelectedNode.Parent != null;
+                        NodeSelected = BreakpointsTreeView.SelectedNode != null &&
+                                       BreakpointsTreeView.SelectedNode.Parent != null;
                         ClearBreakpointButton.Enabled = NodeSelected;
                     }
                     else
@@ -753,6 +830,7 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void UpdateProcessTree()
         {
             if (this.InvokeRequired)
@@ -776,7 +854,8 @@ namespace Drivers.Debugger.App
                 {
                     foreach (Process AProcess in Processes.Values)
                     {
-                        TreeNode NewProcessNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(), AProcess.Id.ToString() + ": " + AProcess.Name + " (" + AProcess.Priority + ")");
+                        TreeNode NewProcessNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(),
+                            AProcess.Id.ToString() + ": " + AProcess.Name + " (" + AProcess.Priority + ")");
                         if (AProcess.Id == SelectedProcessId && SelectedThreadId == -1)
                         {
                             NodeToSelect = NewProcessNode;
@@ -784,7 +863,8 @@ namespace Drivers.Debugger.App
 
                         foreach (Thread AThread in AProcess.Threads.Values)
                         {
-                            TreeNode NewThreadNode = NewProcessNode.Nodes.Add(AThread.Id.ToString(), AThread.Id.ToString() + ": " + AThread.Name + " : " + AThread.State);
+                            TreeNode NewThreadNode = NewProcessNode.Nodes.Add(AThread.Id.ToString(),
+                                AThread.Id.ToString() + ": " + AThread.Name + " : " + AThread.State);
                             if (AProcess.Id == SelectedProcessId && AThread.Id == SelectedThreadId)
                             {
                                 NodeToSelect = NewThreadNode;
@@ -801,6 +881,7 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void UpdateRegisters()
         {
             if (this.InvokeRequired)
@@ -846,6 +927,7 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void UpdateNearestLabel()
         {
             if (this.InvokeRequired)
@@ -856,7 +938,7 @@ namespace Drivers.Debugger.App
             {
                 if (NearestLabel != null)
                 {
-                    if (TheDebugger.IsBreakpointAddress(EIP-1))
+                    if (TheDebugger.IsBreakpointAddress(EIP - 1))
                     {
                         NearestLabelAddessBox.BackColor = Color.Pink;
                     }
@@ -878,7 +960,7 @@ namespace Drivers.Debugger.App
                     if (NearestLabel.Item2.Contains("."))
                     {
                         string LocalLabel = "." + NearestLabel.Item2.Split('.')[1];
-                        
+
                         string OffsetStr = "??";
 
                         try
@@ -913,6 +995,7 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void UpdateBreakpoints()
         {
             if (this.InvokeRequired)
@@ -963,6 +1046,7 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void UpdateDebugPoints()
         {
             if (this.InvokeRequired)
@@ -1013,6 +1097,7 @@ namespace Drivers.Debugger.App
                 }
             }
         }
+
         private void UpdateStackData()
         {
             if (this.InvokeRequired)
@@ -1043,7 +1128,7 @@ namespace Drivers.Debugger.App
         {
             if (this.InvokeRequired)
             {
-                return (uint)this.Invoke(new UIntDelegate(GetSelectedProcessId));
+                return (uint) this.Invoke(new UIntDelegate(GetSelectedProcessId));
             }
             else
             {
@@ -1055,11 +1140,12 @@ namespace Drivers.Debugger.App
                 return uint.Parse(ProcessNode.Text.Split(':')[0]);
             }
         }
+
         private int GetSelectedThreadId()
         {
             if (this.InvokeRequired)
             {
-                return (int)this.Invoke(new IntDelegate(GetSelectedThreadId));
+                return (int) this.Invoke(new IntDelegate(GetSelectedThreadId));
             }
             else
             {
@@ -1075,14 +1161,14 @@ namespace Drivers.Debugger.App
 
     public class VariableData
     {
-        public TypeInfo Info;
-        public bool Temporary;
         public uint Address;
-        public byte[] Value;
-        public int OffsetFromParent;
-        public string Name = "";
 
         public List<VariableData> Fields = new List<VariableData>();
+        public TypeInfo Info;
+        public string Name = "";
+        public int OffsetFromParent;
+        public bool Temporary;
+        public byte[] Value;
 
         public void LoadFields(Debugger TheDebugger, uint ProcessId, int Depth)
         {
@@ -1116,7 +1202,7 @@ namespace Drivers.Debugger.App
                             // Find the length field
                             int length = 0;
                             bool found = false;
-                            foreach(VariableData AField in Fields)
+                            foreach (VariableData AField in Fields)
                             {
                                 if (AField.Name == "length")
                                 {
@@ -1129,12 +1215,16 @@ namespace Drivers.Debugger.App
                             // Load string bytes
                             //                                                              +8 for bytes for string fields
                             //                                                                                      *2 - 2 bytes/char
-                            string StringBytesStr = TheDebugger.GetMemoryValues(ProcessId, AddressFromValue + 8, length*2, 1);
-                            byte[] StringBytesArr = StringBytesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                            string StringBytesStr = TheDebugger.GetMemoryValues(ProcessId, AddressFromValue + 8,
+                                length*2, 1);
+                            byte[] StringBytesArr =
+                                StringBytesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(x => byte.Parse(x.Substring(2), NumberStyles.HexNumber))
+                                    .ToArray();
                             string StringVal = Encoding.Unicode.GetString(StringBytesArr);
                             Fields.Add(new VariableData()
                             {
-                                Address = AddressFromValue+8,
+                                Address = AddressFromValue + 8,
                                 Info = null,
                                 OffsetFromParent = 8,
                                 Value = new byte[0],
@@ -1153,19 +1243,27 @@ namespace Drivers.Debugger.App
                 }
             }
         }
-        private void ProcessFields(Debugger TheDebugger, uint ProcessId, uint BaseAddress, List<FieldInfo> FieldsToProcess)
+
+        private void ProcessFields(Debugger TheDebugger, uint ProcessId, uint BaseAddress,
+            List<FieldInfo> FieldsToProcess)
         {
             foreach (FieldInfo AFieldInfo in FieldsToProcess)
             {
                 if (!AFieldInfo.IsStatic)
                 {
-                    uint FieldAddress = (uint)(BaseAddress + AFieldInfo.OffsetInBytes);
+                    uint FieldAddress = (uint) (BaseAddress + AFieldInfo.OffsetInBytes);
                     TypeInfo FieldTypeInfo = TheDebugger.GetTypeInfo(AFieldInfo.TypeID);
 
                     if (FieldTypeInfo.SizeOnHeapInBytes > 0)
                     {
-                        string FieldValueStr = TheDebugger.GetMemoryValues(ProcessId, FieldAddress, FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes, 1);
-                        byte[] FieldValueArr = FieldValueStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).Select(x => byte.Parse(x.Substring(2), System.Globalization.NumberStyles.HexNumber)).ToArray();
+                        string FieldValueStr = TheDebugger.GetMemoryValues(ProcessId, FieldAddress,
+                            FieldTypeInfo.IsValueType
+                                ? FieldTypeInfo.SizeOnHeapInBytes
+                                : FieldTypeInfo.SizeOnStackInBytes, 1);
+                        byte[] FieldValueArr =
+                            FieldValueStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                                .Select(x => byte.Parse(x.Substring(2), NumberStyles.HexNumber))
+                                .ToArray();
                         Fields.Add(new VariableData()
                         {
                             Address = FieldAddress,
@@ -1212,7 +1310,10 @@ namespace Drivers.Debugger.App
                 ValueStr = "[NULL]";
             }
 
-            TreeNode NewNode = new TreeNode((!string.IsNullOrEmpty(ValueStr) ? ValueStr + " : " : "") + (!string.IsNullOrWhiteSpace(Name) ? Name : "") + (Temporary ? " : Temp" : (Info != null ? " : " + Info.ID : "")));
+            TreeNode NewNode =
+                new TreeNode((!string.IsNullOrEmpty(ValueStr) ? ValueStr + " : " : "") +
+                             (!string.IsNullOrWhiteSpace(Name) ? Name : "") +
+                             (Temporary ? " : Temp" : (Info != null ? " : " + Info.ID : "")));
 
             Fields = Fields.OrderBy(x => x.OffsetFromParent).ToList();
             foreach (VariableData Field in Fields)

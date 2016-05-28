@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,14 +23,12 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
@@ -43,18 +42,24 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Save return address
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$ra" });
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$ra"});
             //Push the previous method's fp
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$fp" });
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$fp"});
             //Set fp for this method
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$sp", Dest = "$fp", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Word,
+                Src = "$sp",
+                Dest = "$fp",
+                MoveType = Mov.MoveTypes.RegToReg
+            });
 
             //Allocate stack space for locals
             //Only bother if there are any locals
             if (conversionState.Input.TheMethodInfo.LocalInfos.Count > 0)
             {
                 int totalBytes = 0;
-                foreach (Types.VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
+                foreach (VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
                 {
                     totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
                 }
@@ -62,9 +67,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //junk memory - we need memory to be "initialised" to 0 
                 //so that local variables are null unless properly initialised.
                 //This prevents errors in the GC.
-                for (int i = 0; i < totalBytes / 4; i++)
+                for (int i = 0; i < totalBytes/4; i++)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                 }
                 //result.AppendLine(string.Format("sub esp, {0}", totalBytes));
             }

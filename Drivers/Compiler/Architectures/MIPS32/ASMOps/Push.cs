@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
-    class Push : ASM.ASMOp
+    internal class Push : ASMOp
     {
         public OperandSize Size;
         public string Src;
 
-        public override string Convert(ASM.ASMBlock theBlock)
+        public override string Convert(ASMBlock theBlock)
         {
-            int numBytes = -(int)Size;
+            int numBytes = -(int) Size;
             string storeOp = "";
             switch (Size)
             {
@@ -53,8 +51,8 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                     storeOp = "sw";
                     break;
             }
-            return @"addi $sp, $sp, " + numBytes + "\r\n" + 
-                storeOp + " " + Src + @", 0($sp)";
+            return @"addi $sp, $sp, " + numBytes + "\r\n" +
+                   storeOp + " " + Src + @", 0($sp)";
         }
     }
 }

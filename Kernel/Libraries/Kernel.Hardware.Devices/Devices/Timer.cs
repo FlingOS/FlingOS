@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,69 +23,71 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.Devices
 {
-    public delegate void TimerHandler(FOS_System.IObject state);
+    public delegate void TimerHandler(IObject state);
 
     /// <summary>
-    /// Represents a timer device. Also contains static methods for handling the default timer.
+    ///     Represents a timer device. Also contains static methods for handling the default timer.
     /// </summary>
-    /// <seealso cref="Kernel.Hardware.Timers.PIT"/>
+    /// <seealso cref="Kernel.Hardware.Timers.PIT" />
     public abstract class Timer : Device
     {
         /// <summary>
-        /// Whether the timer is enabled or not.
+        ///     The default timer device for the core kernel.
+        /// </summary>
+        public static Timer Default;
+
+        /// <summary>
+        ///     Whether the timer is enabled or not.
         /// </summary>
         protected bool enabled;
-        /// <summary>
-        /// Whether the timer is enabled or not.
-        /// </summary>
-        public bool Enabled
-        {
-            get
-            {
-                return enabled;
-            }
-        }
-        
-        /// <summary>
-        /// Enables the timer.
-        /// </summary>
-        public abstract void Enable();
-        /// <summary>
-        /// Disables the timer.
-        /// </summary>
-        public abstract void Disable();
 
-        /// <summary>
-        /// Blocks the caller for the specified number of milliseconds.
-        /// </summary>
-        /// <param name="ms">The number of milliseconds to block.</param>
-        public abstract void Wait(uint ms);
-        /// <summary>
-        /// Blocks the caller for the specified number of nanoseconds.
-        /// </summary>
-        /// <param name="ns">The number of nanoseconds to block.</param>
-        public abstract void WaitNS(long ns);
-
-        public Timer(DeviceGroup AGroup, DeviceSubClass ASubClass, FOS_System.String AName, uint[] SomeInfo, bool IsClaimed)
+        public Timer(DeviceGroup AGroup, DeviceSubClass ASubClass, String AName, uint[] SomeInfo, bool IsClaimed)
             : base(AGroup, DeviceClass.Timer, ASubClass, AName, SomeInfo, IsClaimed)
         {
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.IObject state);
-        public abstract void UnregisterHandler(int handlerId);
+        /// <summary>
+        ///     Whether the timer is enabled or not.
+        /// </summary>
+        public bool Enabled
+        {
+            get { return enabled; }
+        }
 
         /// <summary>
-        /// The default timer device for the core kernel.
+        ///     Enables the timer.
         /// </summary>
-        public static Timer Default;
+        public abstract void Enable();
+
+        /// <summary>
+        ///     Disables the timer.
+        /// </summary>
+        public abstract void Disable();
+
+        /// <summary>
+        ///     Blocks the caller for the specified number of milliseconds.
+        /// </summary>
+        /// <param name="ms">The number of milliseconds to block.</param>
+        public abstract void Wait(uint ms);
+
+        /// <summary>
+        ///     Blocks the caller for the specified number of nanoseconds.
+        /// </summary>
+        /// <param name="ns">The number of nanoseconds to block.</param>
+        public abstract void WaitNS(long ns);
+
+        [NoDebug]
+        public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, IObject state);
+
+        public abstract void UnregisterHandler(int handlerId);
     }
 }

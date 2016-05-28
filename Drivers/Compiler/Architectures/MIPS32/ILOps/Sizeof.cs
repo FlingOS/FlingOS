@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Sizeof : IL.ILOps.Sizeof
     {
@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -59,11 +59,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
-            conversionState.Append(new ASMOps.Mov() { 
-                Src = (theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes).ToString(), 
-                Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+            TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            conversionState.Append(new Mov()
+            {
+                Src =
+                    (theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes).ToString(),
+                Dest = "$t4",
+                MoveType = Mov.MoveTypes.ImmediateToReg
+            });
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {

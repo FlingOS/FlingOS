@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,60 +23,64 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using System.Reflection.Emit;
+using Drivers.Compiler.Types;
+using FieldInfo = System.Reflection.FieldInfo;
+using MethodInfo = Drivers.Compiler.Types.MethodInfo;
 
 namespace Drivers.Compiler.IL
 {
     /// <summary>
-    /// The IL Reader manages reading in both plugged and non-plugged methods from an IL library.
+    ///     The IL Reader manages reading in both plugged and non-plugged methods from an IL library.
     /// </summary>
     public static class ILReader
     {
         /// <summary>
-        /// List of all the possible IL op codes (whether supported or not).
+        ///     List of all the possible IL op codes (whether supported or not).
         /// </summary>
         public static OpCode[] AllOpCodes = new OpCode[ushort.MaxValue];
+
         /// <summary>
-        /// Initialises the IL reader.
+        ///     Initialises the IL reader.
         /// </summary>
         /// <remarks>
-        /// Calls <see cref="LoadILOpTypes"/>.
+        ///     Calls <see cref="LoadILOpTypes" />.
         /// </remarks>
         static ILReader()
         {
             LoadILOpTypes();
         }
+
         /// <summary>
-        /// Loads all the possible IL ops (whether supported by the Drivers Compiler or not).
+        ///     Loads all the possible IL ops (whether supported by the Drivers Compiler or not).
         /// </summary>
         private static void LoadILOpTypes()
         {
             //Get the list of ILOps from the fields in OpCodes (all the fields in OpCodes are the ILOps)
-            foreach (FieldInfo aField in typeof(OpCodes).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public))
+            foreach (
+                FieldInfo aField in
+                    typeof(OpCodes).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public))
             {
                 //Get an instance of the op code
-                var anOpCode = (OpCode)aField.GetValue(null);
+                var anOpCode = (OpCode) aField.GetValue(null);
                 //Get the op code's identifying value and use it as the index in our array
-                ushort index = (ushort)anOpCode.Value;
+                ushort index = (ushort) anOpCode.Value;
                 //Set the op code in our array
                 AllOpCodes[index] = anOpCode;
             }
         }
-        
+
         /// <summary>
-        /// Reads the specified method.
+        ///     Reads the specified method.
         /// </summary>
         /// <param name="aMethodInfo">The method to read.</param>
         /// <returns>The new IL block for the method.</returns>
-        public static ILBlock Read(Types.MethodInfo aMethodInfo)
+        public static ILBlock Read(MethodInfo aMethodInfo)
         {
             if (aMethodInfo.IsPlugged)
             {
@@ -88,11 +93,11 @@ namespace Drivers.Compiler.IL
         }
 
         /// <summary>
-        /// Reads a plugged method.
+        ///     Reads a plugged method.
         /// </summary>
         /// <param name="aMethodInfo">The method to read.</param>
         /// <returns>The new IL block for the method.</returns>
-        public static ILBlock ReadPlugged(Types.MethodInfo aMethodInfo)
+        public static ILBlock ReadPlugged(MethodInfo aMethodInfo)
         {
             string PlugPath = aMethodInfo.PlugAttribute.ASMFilePath;
             return new ILBlock()
@@ -101,12 +106,13 @@ namespace Drivers.Compiler.IL
                 TheMethodInfo = aMethodInfo
             };
         }
+
         /// <summary>
-        /// Reads a non-plugged method.
+        ///     Reads a non-plugged method.
         /// </summary>
         /// <param name="aMethodInfo">The method to read.</param>
         /// <returns>The new IL block for the method.</returns>
-        public static ILBlock ReadNonPlugged(Types.MethodInfo aMethodInfo)
+        public static ILBlock ReadNonPlugged(MethodInfo aMethodInfo)
         {
             ILBlock result = new ILBlock()
             {
@@ -120,7 +126,7 @@ namespace Drivers.Compiler.IL
             {
                 foreach (LocalVariableInfo aLocal in methodBody.LocalVariables)
                 {
-                    aMethodInfo.LocalInfos.Add(new Types.VariableInfo()
+                    aMethodInfo.LocalInfos.Add(new VariableInfo()
                     {
                         UnderlyingType = aLocal.LocalType,
                         Position = aLocal.LocalIndex
@@ -138,12 +144,12 @@ namespace Drivers.Compiler.IL
 
                     if (ILBytes[ILBytesPos] == 0xFE)
                     {
-                        currOpCodeID = (ushort)(0xFE00 + (short)ILBytes[ILBytesPos + 1]);
+                        currOpCodeID = (ushort) (0xFE00 + (short) ILBytes[ILBytesPos + 1]);
                         currOpBytesSize += 2;
                     }
                     else
                     {
-                        currOpCodeID = (ushort)ILBytes[ILBytesPos];
+                        currOpCodeID = (ushort) ILBytes[ILBytesPos];
                         currOpBytesSize++;
                     }
                     currOpCode = AllOpCodes[currOpCodeID];
@@ -151,7 +157,7 @@ namespace Drivers.Compiler.IL
                     int operandSize = 0;
                     switch (currOpCode.OperandType)
                     {
-                        #region Operands
+                            #region Operands
 
                         case OperandType.InlineBrTarget:
                             operandSize = 4;
@@ -181,11 +187,11 @@ namespace Drivers.Compiler.IL
                             operandSize = 4;
                             break;
                         case OperandType.InlineSwitch:
-                            {
-                                uint count = Utilities.ReadUInt32(ILBytes, ILBytesPos + currOpBytesSize);
-                                currOpBytesSize += 4;
-                                operandSize = (int)(count * 4);
-                            }
+                        {
+                            uint count = Utilities.ReadUInt32(ILBytes, ILBytesPos + currOpBytesSize);
+                            currOpBytesSize += 4;
+                            operandSize = (int) (count*4);
+                        }
                             break;
                         case OperandType.InlineTok:
                             operandSize = 4;
@@ -211,7 +217,7 @@ namespace Drivers.Compiler.IL
                         default:
                             throw new Exception("Unrecognised operand type!");
 
-                        #endregion
+                            #endregion
                     }
 
                     MethodBase methodToCall = null;
@@ -258,26 +264,26 @@ namespace Drivers.Compiler.IL
                     {
                         case ExceptionHandlingClauseOptions.Fault:
                         case ExceptionHandlingClauseOptions.Clause:
+                        {
+                            CatchBlock catchBlock = new CatchBlock()
                             {
-                                CatchBlock catchBlock = new CatchBlock()
-                                {
-                                    Offset = aClause.HandlerOffset,
-                                    Length = aClause.HandlerLength,
-                                    //Though not used, we may as well set it anyway
-                                    FilterType = aClause.CatchType
-                                };
-                                exBlock.CatchBlocks.Add(catchBlock);
-                            }
+                                Offset = aClause.HandlerOffset,
+                                Length = aClause.HandlerLength,
+                                //Though not used, we may as well set it anyway
+                                FilterType = aClause.CatchType
+                            };
+                            exBlock.CatchBlocks.Add(catchBlock);
+                        }
                             break;
                         case ExceptionHandlingClauseOptions.Finally:
+                        {
+                            FinallyBlock finallyBlock = new FinallyBlock()
                             {
-                                FinallyBlock finallyBlock = new FinallyBlock()
-                                {
-                                    Offset = aClause.HandlerOffset,
-                                    Length = aClause.HandlerLength
-                                };
-                                exBlock.FinallyBlocks.Add(finallyBlock);
-                            }
+                                Offset = aClause.HandlerOffset,
+                                Length = aClause.HandlerLength
+                            };
+                            exBlock.FinallyBlocks.Add(finallyBlock);
+                        }
                             break;
                         default:
                             Logger.LogError("IL0010", "", 0,

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,12 +23,15 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
+
+using Drivers.Compiler.Attributes;
 
 namespace FlingOops
 {
     /// <summary>
-    /// All objects (that are GC managed) should derive from this type.
+    ///     All objects (that are GC managed) should derive from this type.
     /// </summary>
     public class Object
     {
@@ -35,13 +39,7 @@ namespace FlingOops
 
         public Type _Type
         {
-            [Drivers.Compiler.Attributes.GetObjectTypeMethod]
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return _type;
-            }
+            [GetObjectTypeMethod] [NoGC] [NoDebug] get { return _type; }
         }
     }
 }

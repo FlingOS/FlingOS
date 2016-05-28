@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,46 +23,46 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
+using Kernel.Hardware.IO;
 
 namespace Kernel.Consoles
 {
     /// <summary>
-    /// Implements the more advanced Console class. This is a more advanced alternative to the BasicConsole
-    /// VGA text-mode implementation. This implementation of the Console class outputs text in VGA text-mode 
-    /// directly to the VGA memory.
+    ///     Implements the more advanced Console class. This is a more advanced alternative to the BasicConsole
+    ///     VGA text-mode implementation. This implementation of the Console class outputs text in VGA text-mode
+    ///     directly to the VGA memory.
     /// </summary>
     public unsafe class AdvancedConsole : Console
     {
         /// <summary>
-        /// The command port for manipulating the VGA text-mode cursor.
+        ///     The command port for manipulating the VGA text-mode cursor.
         /// </summary>
-        protected Hardware.IO.IOPort CursorCmdPort = new Hardware.IO.IOPort(0x3D4);
-        /// <summary>
-        /// The data port for manipulating the VGA text-mode cursor.
-        /// </summary>
-        protected Hardware.IO.IOPort CursorDataPort = new Hardware.IO.IOPort(0x3D5);
+        protected IOPort CursorCmdPort = new IOPort(0x3D4);
 
         /// <summary>
-        /// A pointer to the start of the (character-based) video memory.
+        ///     The data port for manipulating the VGA text-mode cursor.
         /// </summary>
-        protected char* vidMemBasePtr 
-        {
-            get
-            {
-                return ((char*)0xB8000) + (ScreenStartLine * ScreenLineWidth) + ScreenStartLineOffset;
-            }
-        }
-        
+        protected IOPort CursorDataPort = new IOPort(0x3D5);
+
         /// <summary>
-        /// Update the display.
+        ///     A pointer to the start of the (character-based) video memory.
+        /// </summary>
+        protected char* vidMemBasePtr
+        {
+            get { return (char*) 0xB8000 + ScreenStartLine*ScreenLineWidth + ScreenStartLineOffset; }
+        }
+
+        /// <summary>
+        ///     Update the display.
         /// </summary>
         public override void Update()
         {
             //Start at beginning of first line at the bottom of the screen
-            char* vidMemPtr = vidMemBasePtr + ((ScreenHeight - 1) * ScreenLineWidth);
+            char* vidMemPtr = vidMemBasePtr + (ScreenHeight - 1)*ScreenLineWidth;
             //Start at the current line then move backwards through the buffer
             //  until we've either outputted 25 lines or reached the start of 
             //  the buffer.
@@ -70,7 +71,7 @@ namespace Kernel.Consoles
                 //Get a pointer to the start of the current line
                 //  We could index into the string each time, but using a pointer
                 //  is much faster.
-                char* cLinePtr = ((FOS_System.String)Buffer[i]).GetCharPointer();
+                char* cLinePtr = ((String) Buffer[i]).GetCharPointer();
                 //Loop through the entire length of the line. All lines will be of
                 //  LineLength even if nothing is written in them because blank
                 //  lines are created as a LineLength of spaces.
@@ -84,22 +85,22 @@ namespace Kernel.Consoles
             }
 
             //Clear out the rest of the screen
-            while(vidMemPtr >= vidMemBasePtr)
+            while (vidMemPtr >= vidMemBasePtr)
             {
                 for (int j = 0; j < LineLength; j++)
                 {
-                    vidMemPtr[j] = (char)(' ' | CurrentAttr);
+                    vidMemPtr[j] = (char) (' ' | CurrentAttr);
                 }
                 vidMemPtr -= ScreenLineWidth;
             }
-            
+
             //Update the cursor position
-            SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
-                              (ushort)(CurrentLine - GetDisplayOffset_Line()));
+            SetCursorPosition((ushort) (CurrentChar - GetDisplayOffset_Char()),
+                (ushort) (CurrentLine - GetDisplayOffset_Line()));
         }
 
         /// <summary>
-        /// Gets the offset from the current character to the screen-relative position where the cursor should be displayed.
+        ///     Gets the offset from the current character to the screen-relative position where the cursor should be displayed.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Char()
@@ -107,8 +108,9 @@ namespace Kernel.Consoles
             // Fixed offset: Current Char Location (relative to console) + Position of edge of console (relative to screen)
             return -ScreenStartLineOffset;
         }
+
         /// <summary>
-        /// Gets the offset from the current line to the screen-relative position where the cursor should be displayed.
+        ///     Gets the offset from the current line to the screen-relative position where the cursor should be displayed.
         /// </summary>
         /// <returns>The offset to be subtracted.</returns>
         protected override int GetDisplayOffset_Line()
@@ -119,14 +121,16 @@ namespace Kernel.Consoles
         }
 
         /// <summary>
-        /// Sets the displayed position of the cursor.
+        ///     Sets the displayed position of the cursor.
         /// </summary>
         /// <param name="character">
-        /// The 0-based offset from the start of a line to the character to display the cursor on. This should be a screen-relative value
-        /// not a console-relative value.
+        ///     The 0-based offset from the start of a line to the character to display the cursor on. This should be a
+        ///     screen-relative value
+        ///     not a console-relative value.
         /// </param>
         /// <param name="line">
-        /// The 0-based index of the line to display the cursor on. This should be a screen-relative value not a console-relative value.
+        ///     The 0-based index of the line to display the cursor on. This should be a screen-relative value not a
+        ///     console-relative value.
         /// </param>
         public override void SetCursorPosition(ushort character, ushort line)
         {
@@ -134,39 +138,40 @@ namespace Kernel.Consoles
             {
                 //Offset is in number of characters from start of video memory 
                 //  (not number of bytes).
-                ushort offset = (ushort)((line * ScreenLineWidth) + character);
+                ushort offset = (ushort) (line*ScreenLineWidth + character);
                 //Output the high-byte
-                CursorCmdPort.Write_Byte((byte)14);
-                CursorDataPort.Write_Byte((byte)(offset >> 8));
+                CursorCmdPort.Write_Byte((byte) 14);
+                CursorDataPort.Write_Byte((byte) (offset >> 8));
                 //Output the low-byte
-                CursorCmdPort.Write_Byte((byte)15);
-                CursorDataPort.Write_Byte((byte)(offset));
+                CursorCmdPort.Write_Byte((byte) 15);
+                CursorDataPort.Write_Byte((byte) offset);
             }
         }
 
         /// <summary>
-        /// Draws a border on the bottom edge of the console.
+        ///     Draws a border on the bottom edge of the console.
         /// </summary>
         public void DrawBottomBorder()
         {
-            char* vidMemPtr = vidMemBasePtr + (ScreenHeight * ScreenLineWidth);
+            char* vidMemPtr = vidMemBasePtr + ScreenHeight*ScreenLineWidth;
             for (int j = 0; j < LineLength; j++)
             {
-                vidMemPtr[j] = (char)('-' | CurrentAttr);
+                vidMemPtr[j] = (char) ('-' | CurrentAttr);
             }
         }
+
         /// <summary>
-        /// Draws a border on the left edge of the console (including one extra line down to line up with bottom border).
+        ///     Draws a border on the left edge of the console (including one extra line down to line up with bottom border).
         /// </summary>
         public void DrawLeftBorder()
         {
             char* vidMemPtr = vidMemBasePtr - 1;
             for (int j = 0; j < ScreenHeight; j++)
             {
-                *vidMemPtr = (char)('|' | CurrentAttr);
+                *vidMemPtr = (char) ('|' | CurrentAttr);
                 vidMemPtr += ScreenLineWidth;
             }
-            *vidMemPtr = (char)('-' | CurrentAttr);
+            *vidMemPtr = (char) ('-' | CurrentAttr);
         }
     }
 }

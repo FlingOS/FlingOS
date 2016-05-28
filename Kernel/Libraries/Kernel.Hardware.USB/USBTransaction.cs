@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,42 +23,48 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
+using Kernel.USB.HCIs;
 
 namespace Kernel.USB
 {
     /// <summary>
-    /// The types of USB transaction.
+    ///     The types of USB transaction.
     /// </summary>
     public enum USBTransactionType
     {
         /// <summary>
-        /// Indicates the transaction is a SETUP transaction.
+        ///     Indicates the transaction is a SETUP transaction.
         /// </summary>
         SETUP,
+
         /// <summary>
-        /// Indicates the transaction is an IN transaction.
+        ///     Indicates the transaction is an IN transaction.
         /// </summary>
         IN,
+
         /// <summary>
-        /// Indicates the transaction is an OUT transaction.
+        ///     Indicates the transaction is an OUT transaction.
         /// </summary>
         OUT
     }
+
     /// <summary>
-    /// Represents a transaction from the high-level USB perspective.
+    ///     Represents a transaction from the high-level USB perspective.
     /// </summary>
-    public class USBTransaction : FOS_System.Object
+    public class USBTransaction : Object
     {
         /// <summary>
-        /// The implementation-specific transaction that can actually be sent by a specific host controller type.
-        /// </summary>
-        public HCIs.HCTransaction underlyingTz;
-        /// <summary>
-        /// The type of the transaction.
+        ///     The type of the transaction.
         /// </summary>
         public USBTransactionType type;
+
+        /// <summary>
+        ///     The implementation-specific transaction that can actually be sent by a specific host controller type.
+        /// </summary>
+        public HCTransaction underlyingTz;
     }
 }

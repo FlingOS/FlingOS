@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,22 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Drivers.Compiler.ASM;
+using Drivers.Compiler.ASM.ASMOps;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class ExternalLabel : ASM.ASMOps.ASMExternalLabel
+    public class ExternalLabel : ASMExternalLabel
     {
         public ExternalLabel(string label) : base(label)
         {
         }
+
         /// <summary>
-        /// Generates the line of assembly for the external label.
+        ///     Generates the line of assembly for the external label.
         /// </summary>
         /// <param name="theBlock">The block for which the comment is to be generated.</param>
         /// <returns>The complete line of assembly code.</returns>

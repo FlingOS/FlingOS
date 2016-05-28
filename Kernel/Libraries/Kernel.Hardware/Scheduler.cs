@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,15 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define SCHEDULER_TRACE
 //#define SCHEDULER_HANDLER_TRACE
 //#define SCHEDULER_HANDLER_MIN_TRACE
 //#define SCHEDULER_UPDATE_LIST_TRACE
 
-using System;
-using Kernel.FOS_System.Collections;
+using System.Runtime.InteropServices;
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
+using Kernel.Hardware.Processes.Scheduling;
 
 namespace Kernel.Hardware.Processes
 {
@@ -44,45 +48,42 @@ namespace Kernel.Hardware.Processes
             High = 5
         }
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        private static Scheduling.IScheduler TheScheduler;
-        
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private static IScheduler TheScheduler;
+
         public static long PreemptionPeriod
         {
-            get
-            {
-                return TheScheduler.PreemptionPeriod;
-            }
+            get { return TheScheduler.PreemptionPeriod; }
         }
-        public static FOS_System.IObject PreemptionState
+
+        public static IObject PreemptionState
         {
-            get
-            {
-                return TheScheduler;
-            }
+            get { return TheScheduler; }
         }
 
         public static void Init()
         {
             ExceptionMethods.ThePageFaultHandler = HandlePageFault;
 
-            TheScheduler = new Scheduling.PriorityQueueScheduler();
+            TheScheduler = new PriorityQueueScheduler();
             TheScheduler.Init();
         }
-        public static Scheduling.PreemptionHandler Start()
+
+        public static PreemptionHandler Start()
         {
             return TheScheduler.Start();
         }
 
 
-        public static void InitProcess(Process process, Scheduler.Priority priority)
+        public static void InitProcess(Process process, Priority priority)
         {
             TheScheduler.InitProcess(process, priority);
         }
+
         public static void InitThread(Process process, Thread t)
         {
             TheScheduler.InitThread(process, t);
         }
+
         public static void UpdateList(Thread t)
         {
             TheScheduler.UpdateList(t);
@@ -92,22 +93,24 @@ namespace Kernel.Hardware.Processes
         public static void UpdateCurrentState()
         {
             TheScheduler.UpdateCurrentState();
-        } 
+        }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static void Enable()
         {
             TheScheduler.Enable();
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         public static void Disable()
         {
             TheScheduler.Disable();
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         public static bool IsEnabled()
         {
             return TheScheduler.IsEnabled();
@@ -119,19 +122,20 @@ namespace Kernel.Hardware.Processes
             TheScheduler.HandlePageFault(eip, errorCode, address);
         }
 
-        
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
+
+        [PluggedMethod(ASMFilePath = @"ASM\Processes\Scheduler")]
         public static void LoadTR()
         {
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         public static unsafe TSS* GetTSSPointer()
         {
             return null;
         }
     }
-    
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct TSS
     {
         /* For obvious reasons, do not reorder the fields. */

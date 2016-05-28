@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL.ILOps
 {
     /// <summary>
-    /// Handles the <see cref="System.Reflection.Emit.OpCodes.Stsfld"/> IL op.
+    ///     Handles the <see cref="System.Reflection.Emit.OpCodes.Stsfld" /> IL op.
     /// </summary>
     /// <remarks>
-    /// See MSDN for details of these ops.
+    ///     See MSDN for details of these ops.
     /// </remarks>
-    /// <seealso cref="System.Reflection.Emit.OpCodes.Stsfld"/>
-    [ILOpTarget(Target = ILOp.OpCodes.Stsfld)]
+    /// <seealso cref="System.Reflection.Emit.OpCodes.Stsfld" />
+    [ILOpTarget(Target = OpCodes.Stsfld)]
     public abstract class Stsfld : ILOp
     {
     }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
     [ASMOpTarget(Target = OpCodes.MethodTable)]
     public abstract class ASMMethodTable : ASMOp
     {
+        public List<Tuple<string, string>> AllMethodInfos;
         public string CurrentTypeId;
         public string CurrentTypeName;
-        public List<Tuple<string, string>> AllMethodInfos;
         public List<Tuple<string, int>> TableEntryFieldInfos;
 
-        public ASMMethodTable(string currentTypeId, string currentTypeName, List<Tuple<string, string>> allMethodInfos, List<Tuple<string, int>> tableEntryFieldInfos)
+        public ASMMethodTable(string currentTypeId, string currentTypeName, List<Tuple<string, string>> allMethodInfos,
+            List<Tuple<string, int>> tableEntryFieldInfos)
         {
             CurrentTypeId = currentTypeId;
             CurrentTypeName = currentTypeName;

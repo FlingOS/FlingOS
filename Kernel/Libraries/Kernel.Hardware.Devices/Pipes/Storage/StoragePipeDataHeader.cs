@@ -4,6 +4,7 @@
     {
         public int Count;
     }
+
     public struct StoragePipeDataDiskInfo
     {
         public ulong Id;

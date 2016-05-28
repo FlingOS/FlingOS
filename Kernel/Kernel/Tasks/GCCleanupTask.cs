@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,18 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define GCTASK_TRACE
 
-using System;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
     public static class GCCleanupTask
     {
-
         public static bool Terminating = false;
 
         public static void Main()
@@ -55,14 +56,13 @@ namespace Kernel.Tasks
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
 
-                    FOS_System.GC.Cleanup();
-                
+                    GC.Cleanup();
+
 #if GCTASK_TRACE
                     BasicConsole.SetTextColour(BasicConsole.warning_colour);
                     BasicConsole.WriteLine("GC stopped (1).");
                     BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
-
                 }
                 catch
                 {

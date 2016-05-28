@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// Represents a double fault exception.
-    /// Usually thrown by the hardware interrupt.
+    ///     Represents a double fault exception.
+    ///     Usually thrown by the hardware interrupt.
     /// </summary>
-    public class DoubleFaultException : Framework.Exception
+    public class DoubleFaultException : Exception
     {
         public uint ErrorCode = 0;
 
         /// <summary>
-        /// Sets the message to "Double fault exception."
+        ///     Sets the message to "Double fault exception."
         /// </summary>
         public DoubleFaultException(uint errorCode)
             : base("Double fault exception.")

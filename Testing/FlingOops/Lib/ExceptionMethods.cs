@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,29 +23,33 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using System;
+using System.Runtime.InteropServices;
+using Drivers.Compiler.Attributes;
+using FlingOops.Utilities;
 
 namespace FlingOops
 {
     /// <summary>
-    /// Implements the lowest-level kernel exception handling.
+    ///     Implements the lowest-level kernel exception handling.
     /// </summary>
     public static unsafe class ExceptionMethods
     {
         /// <summary>
-        /// The reason the kernel is halting. Useful for debugging purposes in case an exception causes
-        /// an immediate halt.
+        ///     The reason the kernel is halting. Useful for debugging purposes in case an exception causes
+        ///     an immediate halt.
         /// </summary>
-        public static FlingOops.String HaltReason = "";
+        public static String HaltReason = "";
 
         /// <summary>
-        /// The message to display when the Throw method panics.
+        ///     The message to display when the Throw method panics.
         /// </summary>
         public static string Throw_PanicMessage = "Throw Panicked!";
+
         /// <summary>
-        /// The message to display when the kernel panics.
+        ///     The message to display when the kernel panics.
         /// </summary>
         public static string UnhandledException_PanicMessage = "Unhandled exception! Panic!";
 
@@ -55,10 +60,19 @@ namespace FlingOops
 
         public static ExceptionState* state;
         public static ExceptionState* kernel_state;
+
+        private static bool HasErrored = false;
+
+        [NoGC]
+        [NoDebug]
+        static ExceptionMethods()
+        {
+        }
+
         public static ExceptionState* State
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            [Drivers.Compiler.Attributes.NoGC]
+            [NoDebug]
+            [NoGC]
             get
             {
                 if (UseCurrentState)
@@ -70,8 +84,8 @@ namespace FlingOops
                     return kernel_state;
                 }
             }
-            [Drivers.Compiler.Attributes.NoDebug]
-            [Drivers.Compiler.Attributes.NoGC]
+            [NoDebug]
+            [NoGC]
             set
             {
                 if (UseCurrentState)
@@ -85,44 +99,45 @@ namespace FlingOops
             }
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
-        static ExceptionMethods()
+        public static Exception CurrentException
         {
-        }
-
-        public static FlingOops.Exception CurrentException
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
+            [NoGC]
+            [NoDebug]
             get
             {
                 if (State != null &&
                     State->CurrentHandlerPtr != null)
                 {
-                    return (FlingOops.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                    return (Exception) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                 }
                 return null;
             }
         }
 
-        private struct AddExceptionHandlerInfo_EntryStackState
+        public static unsafe byte* StackPointer
         {
-            public uint EBP;
-            public uint RetAddr;
-            public uint FilterPtr;
-            public uint HandlerPtr;
+            [PluggedMethod(ASMFilePath = @"ASM\Exceptions\StackPointer")] get { return null; }
+            [PluggedMethod(ASMFilePath = null)] set { }
         }
+
+        public static unsafe byte* BasePointer
+        {
+            [PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")] get { return null; }
+            [PluggedMethod(ASMFilePath = null)] set { }
+        }
+
         /// <summary>
-        /// Adds a new Exception Handler Info structure to the stack and sets 
-        /// it as the current handler.
+        ///     Adds a new Exception Handler Info structure to the stack and sets
+        ///     it as the current handler.
         /// </summary>
         /// <param name="handlerPtr">A pointer to the first op of the catch or finally handler.</param>
-        /// <param name="filterPtr">0 = finally handler, 0xFFFFFFFF = catch handler with no filter. 
-        /// Original intended use was as a pointer to the first op of the catch filter but never implemented like this.</param>
-        [Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        /// <param name="filterPtr">
+        ///     0 = finally handler, 0xFFFFFFFF = catch handler with no filter.
+        ///     Original intended use was as a pointer to the first op of the catch filter but never implemented like this.
+        /// </param>
+        [AddExceptionHandlerInfoMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void AddExceptionHandlerInfo(
             void* handlerPtr,
             void* filterPtr)
@@ -146,26 +161,26 @@ namespace FlingOops
             //    BasicConsole.WriteLine("Enter try-finally block");
             //}
 
-            AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
+            AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*) BasePointer;
 
-            uint LocalsSize = (uint)BasePtr - (uint)StackPointer;
+            uint LocalsSize = (uint) BasePtr - (uint) StackPointer;
 
             // Create space for setting up handler info
             StackPointer -= sizeof(ExceptionHandlerInfo);
 
             // Setup handler info
-            ExceptionHandlerInfo* ExHndlrPtr = (ExceptionHandlerInfo*)StackPointer;
+            ExceptionHandlerInfo* ExHndlrPtr = (ExceptionHandlerInfo*) StackPointer;
             ExHndlrPtr->EBP = BasePtr->EBP;
             //                  EBP + 8 (for ret addr, ebp) + 8 (for args) - sizeof(ExceptionHandlerInfo)
-            ExHndlrPtr->ESP = (uint)BasePtr + 8 + 8 - (uint)sizeof(ExceptionHandlerInfo);
-            ExHndlrPtr->FilterAddress = (byte*)filterPtr;
-            ExHndlrPtr->HandlerAddress = (byte*)handlerPtr;
+            ExHndlrPtr->ESP = (uint) BasePtr + 8 + 8 - (uint) sizeof(ExceptionHandlerInfo);
+            ExHndlrPtr->FilterAddress = (byte*) filterPtr;
+            ExHndlrPtr->HandlerAddress = (byte*) handlerPtr;
             ExHndlrPtr->PrevHandlerPtr = State->CurrentHandlerPtr;
             ExHndlrPtr->InHandler = 0;
             ExHndlrPtr->ExPending = 0;
             ExHndlrPtr->Ex = null;
 
-            State->CurrentHandlerPtr = (ExceptionHandlerInfo*)((byte*)ExHndlrPtr + (LocalsSize + 12));
+            State->CurrentHandlerPtr = (ExceptionHandlerInfo*) ((byte*) ExHndlrPtr + (LocalsSize + 12));
 
             StackPointer -= 8; // For duplicate (empty) args
             StackPointer -= 8; // For duplicate ebp, ret addr
@@ -173,11 +188,11 @@ namespace FlingOops
             // Setup the duplicate stack data
             //  - Nothing to do for args - duplicate values don't matter
             //  - Copy over ebp and return address
-            uint* DuplicateValsStackPointer = (uint*)StackPointer;
+            uint* DuplicateValsStackPointer = (uint*) StackPointer;
             *DuplicateValsStackPointer = BasePtr->EBP;
             *(DuplicateValsStackPointer + 1) = BasePtr->RetAddr;
 
-            ShiftStack((byte*)ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
+            ShiftStack((byte*) ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
 
             // Shift stack pointer to correct position - eliminates "empty space" of duplicates
             StackPointer += 16;
@@ -192,16 +207,16 @@ namespace FlingOops
         }
 
         /// <summary>
-        /// Throws the specified exception.
+        ///     Throws the specified exception.
         /// </summary>
         /// <param name="ex">The exception to throw.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static unsafe void Throw(FlingOops.Exception ex)
+        [NoDebug]
+        [NoGC]
+        public static unsafe void Throw(Exception ex)
         {
             if (ex != null)
             {
-                FlingOops.GC.IncrementRefCount(ex);
+                GC.IncrementRefCount(ex);
 
                 //BasicConsole.WriteLine("Exception thrown:");
                 //BasicConsole.WriteLine(ex.Message);
@@ -211,17 +226,17 @@ namespace FlingOops
                     //GC ref count remains consistent because the Ex pointer below is going to be replaced but
                     //  same pointer stored in InnerException.
                     // Result is ref count goes: +1 here, -1 below
-                    ex.InnerException = (FlingOops.Exception)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                    ex.InnerException = (Exception) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                 }
                 if (ex.InstructionAddress == 0)
                 {
-                    ex.InstructionAddress = *((uint*)BasePointer + 1);
+                    ex.InstructionAddress = *((uint*) BasePointer + 1);
                 }
-                State->CurrentHandlerPtr->Ex = Utilities.ObjectUtilities.GetHandle(ex);
+                State->CurrentHandlerPtr->Ex = ObjectUtilities.GetHandle(ex);
             }
             else
             {
-                FlingOops.GC.DecrementRefCount((FlingOops.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                GC.DecrementRefCount((Object) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
                 State->CurrentHandlerPtr->Ex = null;
             }
             State->CurrentHandlerPtr->ExPending = 1;
@@ -232,32 +247,31 @@ namespace FlingOops
             HaltReason = "HandleException returned!";
             BasicConsole.WriteLine(HaltReason);
             // Try to cause fault
-            *((byte*)0x800000000) = 0;
+            *(byte*) 0x800000000 = 0;
         }
+
         /// <summary>
-        /// Throws the specified exception. Implementation used is exactly the 
-        /// same as Throw (exact same plug used) just allows another way to 
-        /// throw an exception.
+        ///     Throws the specified exception. Implementation used is exactly the
+        ///     same as Throw (exact same plug used) just allows another way to
+        ///     throw an exception.
         /// </summary>
         /// <param name="exPtr">The pointer to the exception to throw.</param>
         //        //[Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void ThrowFromPtr(UInt32* exPtr)
+        [NoDebug]
+        [NoGC]
+        public static void ThrowFromPtr(uint* exPtr)
         {
-            FlingOops.Exception ex = (FlingOops.Exception)Utilities.ObjectUtilities.GetObject(exPtr);
-            ex.InstructionAddress = *((uint*)BasePointer + 1);
+            Exception ex = (Exception) ObjectUtilities.GetObject(exPtr);
+            ex.InstructionAddress = *((uint*) BasePointer + 1);
             Throw(ex);
         }
 
-        private static bool HasErrored = false;
-
         /// <summary>
-        /// Handles the current pending exception.
+        ///     Handles the current pending exception.
         /// </summary>
-        [Drivers.Compiler.Attributes.HandleExceptionMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [HandleExceptionMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void HandleException()
         {
             //BasicConsole.WriteLine("Handle exception");
@@ -282,9 +296,9 @@ namespace FlingOops
                 ExceptionHandlerInfo* CurrHandlerPtr = State->CurrentHandlerPtr;
                 if (CurrHandlerPtr != null)
                 {
-                    if ((uint)CurrHandlerPtr->HandlerAddress != 0x00000000u)
+                    if ((uint) CurrHandlerPtr->HandlerAddress != 0x00000000u)
                     {
-                        if ((uint)CurrHandlerPtr->FilterAddress != 0x00000000u)
+                        if ((uint) CurrHandlerPtr->FilterAddress != 0x00000000u)
                         {
                             //Catch handler
                             CurrHandlerPtr->ExPending = 0;
@@ -301,15 +315,16 @@ namespace FlingOops
             HaltReason = "Unhandled / improperly handled exception!";
             BasicConsole.WriteLine(HaltReason);
             // Try to cause fault
-            *((byte*)0x800000000) = 0;
+            *(byte*) 0x800000000 = 0;
         }
+
         /// <summary>
-        /// Handles cleanly leaving a critical section (i.e. try or catch block)
+        ///     Handles cleanly leaving a critical section (i.e. try or catch block)
         /// </summary>
         /// <param name="continuePtr">A pointer to the instruction to continue execution at.</param>
-        [Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [ExceptionsHandleLeaveMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void HandleLeave(void* continuePtr)
         {
             if (State == null ||
@@ -331,9 +346,11 @@ namespace FlingOops
                 }
 
 
-                uint y = *((uint*)(BasePointer + 4));
+                uint y = *(uint*) (BasePointer + 4);
                 int offset = 48;
+
                 #region Address
+
                 while (offset > 40)
                 {
                     uint rem = y & 0xFu;
@@ -422,14 +439,13 @@ namespace FlingOops
                         {
                             pos = 31;
                         }
-                    }
-                    while (pos != State->history_pos);
+                    } while (pos != State->history_pos);
                 }
 
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
-                *((byte*)0x800000000) = 0;
+                *(byte*) 0x800000000 = 0;
             }
 
             // Leaving a critical section cleanly
@@ -437,14 +453,14 @@ namespace FlingOops
             // Case 1 : Leaving "try" or "catch" of a try-catch
             // Case 2 : Leaving the "try" of a try-finally
 
-            if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
+            if ((uint) State->CurrentHandlerPtr->FilterAddress != 0x0u)
             {
                 // Case 1 : Leaving "try" or "catch" of a try-catch
                 //BasicConsole.WriteLine("Leave try or catch of try-catch");
 
                 if (State->CurrentHandlerPtr->Ex != null)
                 {
-                    FlingOops.GC.DecrementRefCount((FlingOops.Object)Utilities.ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                    GC.DecrementRefCount((Object) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
                     State->CurrentHandlerPtr->Ex = null;
                 }
 
@@ -455,7 +471,7 @@ namespace FlingOops
 
                 MoveToPreviousHandler();
 
-                ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
+                ArbitaryReturn(EBP, ESP + (uint) sizeof(ExceptionHandlerInfo), (byte*) continuePtr);
             }
             else
             {
@@ -471,21 +487,21 @@ namespace FlingOops
                 //BasicConsole.Write("Continue ptr: ");
                 //BasicConsole.WriteLine((uint)continuePtr);
 
-                State->CurrentHandlerPtr->HandlerAddress = (byte*)continuePtr;
+                State->CurrentHandlerPtr->HandlerAddress = (byte*) continuePtr;
 
                 ArbitaryReturn(State->CurrentHandlerPtr->EBP,
-                               State->CurrentHandlerPtr->ESP,
-                               handlerAddress);
+                    State->CurrentHandlerPtr->ESP,
+                    handlerAddress);
             }
-
         }
+
         /// <summary>
-        /// Handles cleanly leaving a "finally" critical section (i.e. finally block). 
-        /// This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
+        ///     Handles cleanly leaving a "finally" critical section (i.e. finally block).
+        ///     This may result in an exception being passed to the next handler if it has not been caught &amp; handled yet.
         /// </summary>
-        [Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [ExceptionsHandleEndFinallyMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void HandleEndFinally()
         {
             if (State == null ||
@@ -508,7 +524,7 @@ namespace FlingOops
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
-                *((byte*)0x800000000) = 0;
+                *(byte*) 0x800000000 = 0;
             }
 
             // Leaving a "finally" critical section cleanly
@@ -559,7 +575,7 @@ namespace FlingOops
                 //    BasicConsole.WriteLine("EndFinally: DP 3");
                 //}
 
-                byte* retAddr = State->CurrentHandlerPtr->HandlerAddress;//(byte*)*((uint*)(BasePointer + 4));
+                byte* retAddr = State->CurrentHandlerPtr->HandlerAddress; //(byte*)*((uint*)(BasePointer + 4));
 
                 //if (PrintMessages)
                 //{
@@ -582,16 +598,16 @@ namespace FlingOops
                 //}
 
                 ArbitaryReturn(EBP,
-                    ESP + (uint)sizeof(ExceptionHandlerInfo),
+                    ESP + (uint) sizeof(ExceptionHandlerInfo),
                     retAddr);
             }
         }
 
         /// <summary>
-        /// Sets the current handler pointer to the previous pointer and updates the relevant state info safely.
+        ///     Sets the current handler pointer to the previous pointer and updates the relevant state info safely.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         private static unsafe void MoveToPreviousHandler()
         {
             State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
@@ -602,7 +618,7 @@ namespace FlingOops
             }
             else
             {
-                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
+                State->history[State->history_pos++] = (uint) State->CurrentHandlerPtr->HandlerAddress;
             }
             if (State->history_pos > 31)
             {
@@ -610,57 +626,33 @@ namespace FlingOops
             }
         }
 
-        public static unsafe byte* StackPointer
-        {
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\StackPointer")]
-            get
-            {
-                return null;
-            }
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-            set
-            {
-            }
-        }
-        public static unsafe byte* BasePointer
-        {
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")]
-            get
-            {
-                return null;
-            }
-            [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-            set
-            {
-            }
-        }
-
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
+        [PluggedMethod(ASMFilePath = @"ASM\Exceptions\ShiftStack")]
         private static void ShiftStack(byte* From_High, uint Dist)
         {
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
+
+        [PluggedMethod(ASMFilePath = @"ASM\Exceptions\ArbitaryReturn")]
         private static void ArbitaryReturn(uint EBP, uint ESP, byte* RetAddr)
         {
         }
 
         /// <summary>
-        /// Rethrows the current exception.
+        ///     Rethrows the current exception.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public static void Rethrow()
         {
             Throw(CurrentException);
         }
 
         /// <summary>
-        /// Throws a Null Reference exception.
+        ///     Throws a Null Reference exception.
         /// </summary>
         /// <remarks>
-        /// Used by compiler to handle the creation of the exception object and calling Throw.
+        ///     Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        [Drivers.Compiler.Attributes.ThrowNullReferenceExceptionMethod]
+        [ThrowNullReferenceExceptionMethod]
         public static void Throw_NullReferenceException(uint address)
         {
             HaltReason = "Null reference exception. Instruction: 0x        ";
@@ -668,19 +660,20 @@ namespace FlingOops
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine(HaltReason);
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            
+
             PrintStackTrace();
             PrintExceptionState();
-            
+
             Throw(null);
         }
+
         /// <summary>
-        /// Throws a Index Out Of Range exception.
+        ///     Throws a Index Out Of Range exception.
         /// </summary>
         /// <remarks>
-        /// Used by compiler to handle the creation of the exception object and calling Throw.
+        ///     Used by compiler to handle the creation of the exception object and calling Throw.
         /// </remarks>
-        [Drivers.Compiler.Attributes.ThrowIndexOutOfRangeExceptionMethod]
+        [ThrowIndexOutOfRangeExceptionMethod]
         public static void Throw_IndexOutOfRangeException()
         {
             HaltReason = "Index out of range exception.";
@@ -690,33 +683,33 @@ namespace FlingOops
             Throw(null);
         }
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\GetEIP")]
+        [PluggedMethod(ASMFilePath = @"ASM\GetEIP")]
         public static void GetEIP()
         {
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoGC]
+        [NoDebug]
         public static void PrintStackTrace()
         {
-            uint* EBP = (uint*)BasePointer;
-            while ((uint)EBP % 4096 < 4092 && (uint)EBP % 4096 != 0 && (uint)EBP > 4096)
+            uint* EBP = (uint*) BasePointer;
+            while ((uint) EBP%4096 < 4092 && (uint) EBP%4096 != 0 && (uint) EBP > 4096)
             {
-                FlingOops.String msg = "EBP: 0x        , Return Address: 0x        , Prev EBP: 0x        ";
+                String msg = "EBP: 0x        , Return Address: 0x        , Prev EBP: 0x        ";
                 //EBP: 14
                 //Return address: 42
                 //Prev EBP: 64
 
                 uint ReturnAddress = *(EBP + 1);
-                uint PrevEBP = *(EBP);
-                FillString((uint)EBP, 14, msg);
+                uint PrevEBP = *EBP;
+                FillString((uint) EBP, 14, msg);
                 FillString(ReturnAddress, 42, msg);
                 FillString(PrevEBP, 64, msg);
                 BasicConsole.WriteLine(msg);
 
-                if (PrevEBP > (uint)EBP - 2048 && PrevEBP < (uint)EBP + 2048)
+                if (PrevEBP > (uint) EBP - 2048 && PrevEBP < (uint) EBP + 2048)
                 {
-                    EBP = (uint*)PrevEBP;
+                    EBP = (uint*) PrevEBP;
                 }
                 else
                 {
@@ -724,52 +717,54 @@ namespace FlingOops
                 }
             }
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public static void PrintStack()
         {
-            uint* ESP = (uint*)StackPointer;
+            uint* ESP = (uint*) StackPointer;
 
             {
-                FlingOops.String msg = "ESP: 0x        ";
-                FillString((uint)ESP, 14, msg);
+                String msg = "ESP: 0x        ";
+                FillString((uint) ESP, 14, msg);
                 BasicConsole.WriteLine(msg);
             }
 
-            while ((uint)ESP % 4096 < 4092 && (uint)ESP % 4096 != 0)
+            while ((uint) ESP%4096 < 4092 && (uint) ESP%4096 != 0)
             {
-                FlingOops.String msg = "ESP: 0x        , Value: 0x        ";
+                String msg = "ESP: 0x        , Value: 0x        ";
                 //ESP: 14
                 //Value: 33
 
                 uint Value = *ESP;
-                FillString((uint)ESP, 14, msg);
+                FillString((uint) ESP, 14, msg);
                 FillString(Value, 33, msg);
                 BasicConsole.WriteLine(msg);
 
                 ESP++;
             }
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public static void PrintExceptionState()
         {
             if (state != null)
             {
-                FlingOops.String valStr = "0x        ";
+                String valStr = "0x        ";
 
                 BasicConsole.WriteLine("Exception state:");
 
                 BasicConsole.Write("    > Current handler pointer : ");
-                FillString((uint)state->CurrentHandlerPtr, 9, valStr);
+                FillString((uint) state->CurrentHandlerPtr, 9, valStr);
                 BasicConsole.WriteLine(valStr);
 
                 BasicConsole.Write("    > Depth : ");
-                FillString((uint)state->depth, 9, valStr);
+                FillString((uint) state->depth, 9, valStr);
                 BasicConsole.WriteLine(valStr);
 
                 BasicConsole.Write("    > History position : ");
-                FillString((uint)state->history_pos, 9, valStr);
+                FillString((uint) state->history_pos, 9, valStr);
                 BasicConsole.WriteLine(valStr);
 
                 int pos = State->history_pos;
@@ -777,7 +772,7 @@ namespace FlingOops
                 do
                 {
                     BasicConsole.Write("        [");
-                    FillString((uint)counter, 9, valStr);
+                    FillString((uint) counter, 9, valStr);
                     BasicConsole.Write(valStr);
                     BasicConsole.Write("] = ");
                     FillString(state->history[pos], 9, valStr);
@@ -790,8 +785,7 @@ namespace FlingOops
                     }
 
                     counter++;
-                }
-                while (pos != State->history_pos);
+                } while (pos != State->history_pos);
             }
             else
             {
@@ -799,9 +793,9 @@ namespace FlingOops
             }
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public static void FillString(uint value, int offset, FlingOops.String str)
+        [NoDebug]
+        [NoGC]
+        public static void FillString(uint value, int offset, String str)
         {
             int end = offset - 8;
             while (offset > end)
@@ -862,62 +856,77 @@ namespace FlingOops
                 offset--;
             }
         }
+
+        private struct AddExceptionHandlerInfo_EntryStackState
+        {
+            public uint EBP;
+            public uint RetAddr;
+            public uint FilterPtr;
+            public uint HandlerPtr;
+        }
     }
 
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ExceptionState
     {
         public ExceptionHandlerInfo* CurrentHandlerPtr;
         public int depth;
-        public fixed uint history[32];
+        public fixed uint history [32];
         public int history_pos;
     }
+
     /// <summary>
-    /// Represents an Exception Handler Info.
+    ///     Represents an Exception Handler Info.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// This structure is so closely linked to the ASM code that modifying it is a big NO!
-    /// </para>
-    /// <para>
-    /// It is created by the AddExceptionHandlerInfo method on the stack but could technically be put 
-    /// anywhere in memory. The order of the fields in the structure matters!
-    /// </para>
+    ///     <para>
+    ///         This structure is so closely linked to the ASM code that modifying it is a big NO!
+    ///     </para>
+    ///     <para>
+    ///         It is created by the AddExceptionHandlerInfo method on the stack but could technically be put
+    ///         anywhere in memory. The order of the fields in the structure matters!
+    ///     </para>
     /// </remarks>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ExceptionHandlerInfo
     {
         /// <summary>
-        /// The value of ESP when the handler info was created. This value of 
-        /// ESP is also a pointer to the first byte of this Exception Handler Info structure.
-        /// The ESP register is restored to this value when a handler is entered or re-entered.
+        ///     The value of ESP when the handler info was created. This value of
+        ///     ESP is also a pointer to the first byte of this Exception Handler Info structure.
+        ///     The ESP register is restored to this value when a handler is entered or re-entered.
         /// </summary>
-        public UInt32 ESP;
+        public uint ESP;
+
         /// <summary>
-        /// The value of EBP when the handler info was created.
-        /// The EBP register is restored to this value when a handler is entered or re-entered.
+        ///     The value of EBP when the handler info was created.
+        ///     The EBP register is restored to this value when a handler is entered or re-entered.
         /// </summary>
-        public UInt32 EBP;
+        public uint EBP;
+
         /// <summary>
-        /// The address of the first op of the handler / a pointer to the first op of the handler.
+        ///     The address of the first op of the handler / a pointer to the first op of the handler.
         /// </summary>
         public byte* HandlerAddress;
+
         /// <summary>
-        /// 0x00000000 = indicates this is a finally handler. 
-        /// 0xFFFFFFFF = indicates this is a catch handler with no filter.
-        /// 0xXXXXXXXX = The address of the first op of the filter - has not actually been implemented! Behaviour for such values is undetermined.
+        ///     0x00000000 = indicates this is a finally handler.
+        ///     0xFFFFFFFF = indicates this is a catch handler with no filter.
+        ///     0xXXXXXXXX = The address of the first op of the filter - has not actually been implemented! Behaviour for such
+        ///     values is undetermined.
         /// </summary>
         public byte* FilterAddress;
+
         /// <summary>
-        /// A pointer to the previous exception handler info (i.e. the address of the previous info).
+        ///     A pointer to the previous exception handler info (i.e. the address of the previous info).
         /// </summary>
         public ExceptionHandlerInfo* PrevHandlerPtr;
-        /// <summary>
-        /// Whether execution is currently inside the try-section or the handler-section of this exception handler info.
-        /// </summary>
-        public UInt32 InHandler;
 
-        public UInt32 ExPending;
+        /// <summary>
+        ///     Whether execution is currently inside the try-section or the handler-section of this exception handler info.
+        /// </summary>
+        public uint InHandler;
+
+        public uint ExPending;
 
         public void* Ex;
     }

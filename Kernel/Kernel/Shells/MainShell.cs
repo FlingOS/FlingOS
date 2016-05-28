@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,49 +23,69 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define PERIODIC_REBOOT
 
-using System;
+using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.IO;
-using Kernel.Hardware.Devices;
+using Kernel.FOS_System.IO.Disk;
+using Kernel.FOS_System.IO.FAT;
+using Kernel.FOS_System.IO.ISO9660;
+using Kernel.FOS_System.IO.Streams;
 using Kernel.FOS_System.Processes;
+using Kernel.Hardware;
+using Kernel.Hardware.Devices;
+using Kernel.Hardware.Exceptions;
+using Kernel.Hardware.Interrupts;
+using Kernel.Hardware.Keyboards;
+using Kernel.Hardware.PCI;
+using Kernel.Hardware.Processes;
+using Kernel.Hardware.Testing;
+using Kernel.Hardware.Timers;
+using Kernel.Processes;
+using Kernel.Tasks;
+using Kernel.USB;
+using Kernel.Utilities;
+using Kernel.VirtualMemory;
 
 namespace Kernel.Shells
 {
     /// <summary>
-    /// Implementation of the main shell for the core kernel.
+    ///     Implementation of the main shell for the core kernel.
     /// </summary>
     public class MainShell : Shell
     {
         /// <summary>
-        /// The current directory to prepend to relative paths.
+        ///     The current directory to prepend to relative paths.
         /// </summary>
-        protected FOS_System.String CurrentDir = "";
-        
+        protected String CurrentDir = "";
+
         public MainShell()
             : base()
         {
         }
+
         public MainShell(Console AConsole, Keyboard AKeyboard)
             : base(AConsole, AKeyboard)
         {
         }
-        
+
         /// <summary>
-        /// See base class.
+        ///     See base class.
         /// </summary>
         public override void Execute()
         {
             try
             {
                 //Hardware.DeviceManager.AddDeviceAddedListener(MainShell.DeviceManager_DeviceAdded, this);
-                
+
 #if PERIODIC_REBOOT
-                // 60 seconds
+    // 60 seconds
                 Hardware.Timers.PIT.Default.RegisterHandler(TriggerPeriodicReboot, 60000000000L, true, this);
 #endif
 
@@ -104,7 +125,7 @@ namespace Kernel.Shells
                          */
 
                         //Get the current input line from the user
-                        FOS_System.String line = ReadLine();
+                        String line = ReadLine();
                         //Split the input into command, arguments and options
                         //  All parts are in lower case
                         List cmdParts = SplitCommand(line);
@@ -112,7 +133,7 @@ namespace Kernel.Shells
                         if (cmdParts.Count > 0)
                         {
                             //Get the command to run - first part of the command
-                            FOS_System.String cmd = (FOS_System.String)cmdParts[0];
+                            String cmd = (String) cmdParts[0];
                             //Determine which command we are to run
                             if (cmd == "halt")
                             {
@@ -127,11 +148,11 @@ namespace Kernel.Shells
                             }
                             else if (cmd == "time")
                             {
-                                UInt64 UTCTime;
+                                ulong UTCTime;
                                 SystemCallResults TimeResult = SystemCalls.GetTime(out UTCTime);
                                 if (TimeResult == SystemCallResults.OK)
                                 {
-                                    FOS_System.DateTime time = new FOS_System.DateTime(UTCTime);
+                                    DateTime time = new DateTime(UTCTime);
                                     console.WriteLine(time.ToString());
                                 }
                                 else
@@ -145,7 +166,7 @@ namespace Kernel.Shells
                                 SystemCallResults TimeResult = SystemCalls.GetUpTime(out UpTimeSeconds);
                                 if (TimeResult == SystemCallResults.OK)
                                 {
-                                    FOS_System.TimeSpan time = new FOS_System.TimeSpan(UpTimeSeconds);
+                                    TimeSpan time = new TimeSpan(UpTimeSeconds);
                                     console.WriteLine("The system has been up for: " + time.ToLongString());
                                 }
                                 else
@@ -158,9 +179,10 @@ namespace Kernel.Shells
                                 //Initialise the specified sub-system.
 
                                 #region Init
+
                                 //The user may have forgotten to input an option. Assume they
                                 //  haven't, then fill in if they have.
-                                FOS_System.String opt1 = null;
+                                String opt1 = null;
                                 //We don't know how many extra options there might be, so we test 
                                 //  for greater-than instead of equal to. It should be noted that >
                                 //  is more efficient than >=. Also, the command is in the cmdParts 
@@ -170,7 +192,7 @@ namespace Kernel.Shells
                                 //  list.
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 //If the user gave us an option
@@ -200,16 +222,19 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify what to init. { PCI/ATA/USB/FS }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "output")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region Output
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -231,22 +256,24 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify what to output. { PCI/ATA/USB/FS }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "checkdisk" || cmd == "chkd")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region Check Disk
 
-                                FOS_System.String opt1 = null;
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
-                                    int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
+                                    int diskNum = (int) Int32.Parse_DecimalUnsigned(opt1, 0);
 
                                     //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     //{
@@ -271,17 +298,18 @@ namespace Kernel.Shells
                             else if (cmd == "formatdisk" || cmd == "fmtd")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region Format Disk
 
-                                FOS_System.String opt1 = null;
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
-                                    int diskNum = (int)FOS_System.Int32.Parse_DecimalUnsigned(opt1, 0);
+                                    int diskNum = (int) Int32.Parse_DecimalUnsigned(opt1, 0);
 
                                     //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     //{
@@ -315,18 +343,20 @@ namespace Kernel.Shells
                             else if (cmd == "gc")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region GC
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
                                     if (opt1 == "cleanup")
                                     {
-                                        FOS_System.GC.Cleanup();
+                                        GC.Cleanup();
                                     }
                                     else
                                     {
@@ -337,44 +367,47 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify what to do. { Cleanup }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "usb")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region USB
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
                                     if (opt1 == "update")
                                     {
-                                        USB.USBManager.Update();
+                                        USBManager.Update();
                                     }
                                     else if (opt1 == "eject")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
                                         {
                                             if (opt2 == "msd")
                                             {
-                                                FOS_System.String opt3 = null;
+                                                String opt3 = null;
                                                 if (cmdParts.Count > 3)
                                                 {
-                                                    opt3 = (FOS_System.String)cmdParts[3];
+                                                    opt3 = (String) cmdParts[3];
                                                 }
                                                 if (opt3 != null)
                                                 {
-                                                    EjectMSD(FOS_System.Int32.Parse_DecimalSigned(opt3));
+                                                    EjectMSD(Int32.Parse_DecimalSigned(opt3));
                                                 }
                                                 else
                                                 {
@@ -400,6 +433,7 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify what to do. { Update }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "dir")
@@ -409,21 +443,23 @@ namespace Kernel.Shells
                                 //Note: "./" prefix on a dir/file path means current 
                                 //      directory so it must be replaced by the 
                                 //      current directory.
+
                                 #region Dir
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
                                     if (opt1 == "list")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -442,10 +478,10 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "open")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -472,10 +508,10 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "new")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -494,10 +530,10 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "delete")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -516,10 +552,10 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "copy")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -529,10 +565,10 @@ namespace Kernel.Shells
                                                 opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
                                             }
 
-                                            FOS_System.String opt3 = null;
+                                            String opt3 = null;
                                             if (cmdParts.Count > 3)
                                             {
-                                                opt3 = (FOS_System.String)cmdParts[3];
+                                                opt3 = (String) cmdParts[3];
                                             }
 
                                             if (opt3 != null)
@@ -542,7 +578,8 @@ namespace Kernel.Shells
                                                     opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
                                                 }
 
-                                                console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
+                                                console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 +
+                                                                  "\"");
                                                 CopyDirectory(opt2, opt3);
                                             }
                                             else
@@ -564,6 +601,7 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify what to do. { List/Open/New/Delete/Copy }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "file")
@@ -573,21 +611,23 @@ namespace Kernel.Shells
                                 //Note: "./" prefix on a dir/file path means current 
                                 //      directory so it must be replaced by the 
                                 //      current directory.
+
                                 #region File
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
                                     if (opt1 == "open")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -606,10 +646,10 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "delete")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -628,10 +668,10 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "copy")
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -641,10 +681,10 @@ namespace Kernel.Shells
                                                 opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
                                             }
 
-                                            FOS_System.String opt3 = null;
+                                            String opt3 = null;
                                             if (cmdParts.Count > 3)
                                             {
-                                                opt3 = (FOS_System.String)cmdParts[3];
+                                                opt3 = (String) cmdParts[3];
                                             }
 
                                             if (opt3 != null)
@@ -654,7 +694,8 @@ namespace Kernel.Shells
                                                     opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
                                                 }
 
-                                                console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 + "\"");
+                                                console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 +
+                                                                  "\"");
                                                 CopyFile(opt2, opt3);
                                             }
                                             else
@@ -676,16 +717,19 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify what to do. { Open/Delete/Copy }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "test")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region Test
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -756,7 +800,7 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "virtmem")
                                     {
-                                        VirtualMemory.VirtualMemoryManager.Test();
+                                        VirtualMemoryManager.Test();
                                     }
                                     else if (opt1 == "longs")
                                     {
@@ -789,23 +833,27 @@ namespace Kernel.Shells
                                 }
                                 else
                                 {
-                                    console.WriteLine("You must specify which test. { Interrupts  /  Delegates    /  FileSystems /\n" +
-                                                      "                               ULLTComp    /  StringConcat /  ObjArray    /\n" +
-                                                      "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
-                                                      "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
-                                                      "                               Timer       /  Keyboard     /  FieldsTable /\n" +
-                                                      "                               IsInst      /  VirtMem                     }");
+                                    console.WriteLine(
+                                        "You must specify which test. { Interrupts  /  Delegates    /  FileSystems /\n" +
+                                        "                               ULLTComp    /  StringConcat /  ObjArray    /\n" +
+                                        "                               IntArray    /  DummyObj     /  DivideBy0   /\n" +
+                                        "                               Exceptions1 /  Exceptions2  /  PCBeep      /\n" +
+                                        "                               Timer       /  Keyboard     /  FieldsTable /\n" +
+                                        "                               IsInst      /  VirtMem                     }");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "start")
                             {
                                 //For details on how the code here works, see Init
+
                                 #region Start
-                                FOS_System.String opt1 = null;
+
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -818,35 +866,36 @@ namespace Kernel.Shells
                                     File aFile = File.Open(opt1);
                                     if (aFile != null)
                                     {
-                                        FOS_System.String opt2 = null;
+                                        String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (FOS_System.String)cmdParts[2];
+                                            opt2 = (String) cmdParts[2];
                                         }
 
                                         if (opt2 != null)
                                         {
                                             if (opt2 == "km")
                                             {
-                                                FOS_System.String opt3 = null;
+                                                String opt3 = null;
                                                 if (cmdParts.Count > 3)
                                                 {
-                                                    opt3 = (FOS_System.String)cmdParts[3];
+                                                    opt3 = (String) cmdParts[3];
                                                 }
 
                                                 if (opt3 != null)
                                                 {
                                                     if (opt3 == "raw")
                                                     {
-                                                        Hardware.Processes.ProcessManager.RegisterProcess(
-                                                            Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
-                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                        ProcessManager.RegisterProcess(
+                                                            DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                            Scheduler.Priority.Normal);
                                                     }
                                                     else if (opt3 == "elf")
                                                     {
-                                                        Hardware.Processes.ProcessManager.RegisterProcess(
-                                                            Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
-                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                        ProcessManager.RegisterProcess(
+                                                            DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false)
+                                                                .TheProcess,
+                                                            Scheduler.Priority.Normal);
                                                     }
                                                     else
                                                     {
@@ -856,32 +905,33 @@ namespace Kernel.Shells
                                                 else
                                                 {
                                                     //Run as RAW for now
-                                                    Hardware.Processes.ProcessManager.RegisterProcess(
-                                                        Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
-                                                        Hardware.Processes.Scheduler.Priority.Normal);
+                                                    ProcessManager.RegisterProcess(
+                                                        DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                                        Scheduler.Priority.Normal);
                                                 }
                                             }
                                             else if (opt2 == "um")
                                             {
-                                                FOS_System.String opt3 = null;
+                                                String opt3 = null;
                                                 if (cmdParts.Count > 3)
                                                 {
-                                                    opt3 = (FOS_System.String)cmdParts[3];
+                                                    opt3 = (String) cmdParts[3];
                                                 }
 
                                                 if (opt3 != null)
                                                 {
                                                     if (opt3 == "raw")
                                                     {
-                                                        Hardware.Processes.ProcessManager.RegisterProcess(
-                                                            Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
-                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                        ProcessManager.RegisterProcess(
+                                                            DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                                            Scheduler.Priority.Normal);
                                                     }
                                                     else if (opt3 == "elf")
                                                     {
-                                                        Hardware.Processes.ProcessManager.RegisterProcess(
-                                                            Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true).TheProcess,
-                                                            Hardware.Processes.Scheduler.Priority.Normal);
+                                                        ProcessManager.RegisterProcess(
+                                                            DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true)
+                                                                .TheProcess,
+                                                            Scheduler.Priority.Normal);
                                                     }
                                                     else
                                                     {
@@ -891,9 +941,9 @@ namespace Kernel.Shells
                                                 else
                                                 {
                                                     //Run as RAW for now
-                                                    Hardware.Processes.ProcessManager.RegisterProcess(
-                                                        Processes.DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
-                                                        Hardware.Processes.Scheduler.Priority.Normal);
+                                                    ProcessManager.RegisterProcess(
+                                                        DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                                        Scheduler.Priority.Normal);
                                                 }
                                             }
                                             else
@@ -904,9 +954,9 @@ namespace Kernel.Shells
                                         else
                                         {
                                             //Run as KM, ELF for now
-                                            Hardware.Processes.ProcessManager.RegisterProcess(
-                                                Processes.DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
-                                                Hardware.Processes.Scheduler.Priority.Normal);
+                                            ProcessManager.RegisterProcess(
+                                                DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
+                                                Scheduler.Priority.Normal);
                                         }
                                     }
                                     else
@@ -918,16 +968,17 @@ namespace Kernel.Shells
                                 {
                                     console.WriteLine("You must specify the file path.");
                                 }
+
                                 #endregion
                             }
                             else if (cmd == "show")
                             {
                                 #region Show
 
-                                FOS_System.String opt1 = null;
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
                                 ShowLicense(opt1);
 
@@ -937,10 +988,10 @@ namespace Kernel.Shells
                             {
                                 #region Help
 
-                                FOS_System.String opt1 = null;
+                                String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (FOS_System.String)cmdParts[1];
+                                    opt1 = (String) cmdParts[1];
                                 }
                                 ShowHelp(opt1);
 
@@ -958,7 +1009,7 @@ namespace Kernel.Shells
                             {
                                 #region Easter
 
-                                Hardware.Processes.ProcessManager.CurrentProcess.CreateThread(Tasks.EasterTask.Main, "Easter");
+                                ProcessManager.CurrentProcess.CreateThread(EasterTask.Main, "Easter");
 
                                 #endregion
                             }
@@ -989,14 +1040,14 @@ namespace Kernel.Shells
         }
 
         /// <summary>
-        /// Blocking. Reads all the next valid (i.e. not \0) characters from the keyboard and outputs them
-        /// until a new line is entered (using the Enter key). Also supports backspace and escape keys.
+        ///     Blocking. Reads all the next valid (i.e. not \0) characters from the keyboard and outputs them
+        ///     until a new line is entered (using the Enter key). Also supports backspace and escape keys.
         /// </summary>
         /// <returns>The line of text.</returns>
-        public FOS_System.String ReadLine()
+        public String ReadLine()
         {
             //Temp store for the result
-            FOS_System.String result = "";
+            String result = "";
             //Used to store the last key pressed
             KeyMapping c;
             //Loop through getting characters until the enter key is pressed
@@ -1018,8 +1069,8 @@ namespace Kernel.Shells
                 else if (c.Key == KeyboardKey.Escape)
                 {
                     //Clear output line
-                    console.Write(((FOS_System.String)"").PadLeft(result.length, '\b'));
-                
+                    console.Write(((String) "").PadLeft(result.length, '\b'));
+
                     //Clear out the result
                     result = "";
                 }
@@ -1054,24 +1105,25 @@ namespace Kernel.Shells
         }
 
         /// <summary>
-        /// Handler for the periodic reboot timer event.
+        ///     Handler for the periodic reboot timer event.
         /// </summary>
         /// <param name="state">The state object. Should be null.</param>
         private void TriggerPeriodicReboot(object state)
         {
-            ((MainShell)state).Reboot();
+            ((MainShell) state).Reboot();
         }
+
         /// <summary>
-        /// Reboots the computer
+        ///     Reboots the computer
         /// </summary>
         private void Reboot()
         {
-            if (Hardware.Keyboards.PS2.ThePS2 != null)
+            if (PS2.ThePS2 != null)
             {
                 console.WarningColour();
                 console.Write("Attempting 8042 reset...");
 
-                Hardware.Keyboards.PS2.ThePS2.Reset();
+                PS2.ThePS2.Reset();
 
                 console.ErrorColour();
                 console.WriteLine("failed.");
@@ -1086,12 +1138,15 @@ namespace Kernel.Shells
         }
 
         /// <summary>
-        /// Displays command
+        ///     Displays command
         /// </summary>
-        /// <param name="commandName">Name of the command to show help for or null to show general help / complete list of commands.</param>
-        private void ShowHelp(FOS_System.String commandName = null)
+        /// <param name="commandName">
+        ///     Name of the command to show help for or null to show general help / complete list of
+        ///     commands.
+        /// </param>
+        private void ShowHelp(String commandName = null)
         {
-            if(commandName != null)
+            if (commandName != null)
             {
                 console.WriteLine(CommandHelp.GetCommandDescription(commandName));
             }
@@ -1101,21 +1156,20 @@ namespace Kernel.Shells
                 console.WriteLine("Possible commands are: ");
                 for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
                 {
-                    CommandDescription cmdDesc = (CommandDescription)CommandHelp.CommandDescriptions[i];
+                    CommandDescription cmdDesc = (CommandDescription) CommandHelp.CommandDescriptions[i];
                     console.WriteLine(cmdDesc.CommandName);
                 }
             }
         }
 
         /// <summary>
-        /// Displayes license information on the console, also called at start of the shell session
+        ///     Displayes license information on the console, also called at start of the shell session
         /// </summary>
         /// <param name="option">if "c", displays license conditions and if "w" displayes warnings</param>
-        private void ShowLicense(FOS_System.String option = null)
+        private void ShowLicense(String option = null)
         {
-
             string LicenseConditions = "This program is distributed under GPL V2; See GPL V2 License for details.";
-            
+
             string LicenseCommandUnrecognized = @"Unrecognized option passed, to see the license, enter 'show'.
 To see license warnings, enter 'show w'.
 To see license conditions, enter 'show c'.";
@@ -1125,7 +1179,7 @@ but WITHOUT ANY WARRANTY without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details";
 
-            if(option == null) // If no options is passed, then just display the License
+            if (option == null) // If no options is passed, then just display the License
             {
                 console.WriteLine(@"Fling OS  Copyright (C) 2015  Edward Nutting
 This program comes with ABSOLUTELY NO WARRANTY.
@@ -1135,7 +1189,7 @@ which should have been provided with the executable.");
             }
             else
             {
-                if(option == "c")   // If option is conditions
+                if (option == "c") // If option is conditions
                 {
                     console.WriteLine(LicenseConditions); // Show conditions
                 }
@@ -1145,17 +1199,17 @@ which should have been provided with the executable.");
                 }
                 else
                 {
-                    console.WriteLine(LicenseCommandUnrecognized);  // In case it is not a valid option
+                    console.WriteLine(LicenseCommandUnrecognized); // In case it is not a valid option
                 }
             }
         }
 
         /// <summary>
-        /// Splits the input string into commands including handling quoted parts.
+        ///     Splits the input string into commands including handling quoted parts.
         /// </summary>
         /// <param name="input">The input to split.</param>
         /// <returns>The list of command parts.</returns>
-        private List SplitCommand(FOS_System.String input)
+        private List SplitCommand(String input)
         {
             //This method splits the input into parts separated by spaces
             //  However, it must then also search for grouped parts which
@@ -1167,22 +1221,22 @@ which should have been provided with the executable.");
             //  optimises the internal array creation a bit.
             List result = new List(4);
             //Stores the current part being constructed.
-            FOS_System.String currPart = "";
+            String currPart = "";
             //Indicates whether we are constructing a grouped part or not.
             bool waitingForCloseQuote = false;
             //Loop through all parts
-            for(int i = 0; i < parts.Count; i++)
+            for (int i = 0; i < parts.Count; i++)
             {
                 //If we are constructing a grouped part
                 if (waitingForCloseQuote)
                 {
                     //Add the part (including the space which was removed by split)
                     //  to the currently constructing part
-                    currPart += " " + (FOS_System.String)parts[i];
+                    currPart += " " + (String) parts[i];
 
                     //If the part ends with a quote, then we have found our closing quote
                     //  which terminates the group part
-                    if(currPart.EndsWith("\""))
+                    if (currPart.EndsWith("\""))
                     {
                         //Remove the closing quote
                         currPart = currPart.Substring(0, currPart.length - 1);
@@ -1195,10 +1249,10 @@ which should have been provided with the executable.");
                 else
                 {
                     //Set the current part
-                    currPart = (FOS_System.String)parts[i];
+                    currPart = (String) parts[i];
 
                     //If it starts with a quote, it is the start of a group part
-                    if(currPart.StartsWith("\""))
+                    if (currPart.StartsWith("\""))
                     {
                         //If it ends with a quote, it is also the end of the group part
                         //  so essentially the user grouped something which didn't 
@@ -1228,9 +1282,9 @@ which should have been provided with the executable.");
             }
             return result;
         }
-         
+
         /// <summary>
-        /// Cleans the caches of all known disk devices.
+        ///     Cleans the caches of all known disk devices.
         /// </summary>
         private void CleanDiskCaches()
         {
@@ -1245,11 +1299,12 @@ which should have been provided with the executable.");
             //    }
             //}
         }
+
         /// <summary>
-        /// Ejects the specified mass storage device.
+        ///     Ejects the specified mass storage device.
         /// </summary>
         /// <param name="deviceNum">The index of the MSD in the Hardware.DeviceManager.Devices list.</param>
-        /// <seealso cref="Kernel.USB.Devices.MassStorageDevice.Eject"/>
+        /// <seealso cref="Kernel.USB.Devices.MassStorageDevice.Eject" />
         private void EjectMSD(int deviceNum)
         {
             //Output info to the user...
@@ -1259,7 +1314,7 @@ which should have been provided with the executable.");
 
             //Get the device
             //Hardware.USB.Devices.MassStorageDevice msd = (Hardware.USB.Devices.MassStorageDevice)Hardware.DeviceManager.Devices[deviceNum];
-            
+
             //Eject the MSD
             //msd.Eject();
 
@@ -1268,27 +1323,28 @@ which should have been provided with the executable.");
         }
 
         /// <summary>
-        /// Copies the specified file.
+        ///     Copies the specified file.
         /// </summary>
         /// <param name="src">The path to the file to copy.</param>
         /// <param name="dst">The path to copy to.</param>
-        private void CopyFile(FOS_System.String src, FOS_System.String dst)
+        private void CopyFile(String src, String dst)
         {
             //Attempt to open the source file. If it is not found, null will be passed
             //  and the CopyFile method will catch the failure.
             CopyFile(File.Open(src), dst);
         }
+
         /// <summary>
-        /// Copies the specified file.
+        ///     Copies the specified file.
         /// </summary>
         /// <param name="srcFile">The file to copy.</param>
         /// <param name="dst">The path to copy to.</param>
-        private void CopyFile(File srcFile, FOS_System.String dst)
+        private void CopyFile(File srcFile, String dst)
         {
             //If source file is null, it means it wasn't found by the caller (or some
             //  other error but we will assume not found since that is the expected use 
             //  case from the other overload of CopyFile).
-            if(srcFile == null)
+            if (srcFile == null)
             {
                 console.WriteLine("Source file not found!");
                 return;
@@ -1313,8 +1369,8 @@ which should have been provided with the executable.");
 
                 //+1 to include the slash in dir name
                 int lastIdx = dst.LastIndexOf(FileSystemManager.PathDelimiter) + 1;
-                FOS_System.String dstDir = dst.Substring(0, lastIdx);
-                FOS_System.String dstName = dst.Substring(lastIdx, dst.length - lastIdx);
+                String dstDir = dst.Substring(0, lastIdx);
+                String dstName = dst.Substring(lastIdx, dst.length - lastIdx);
 
                 //console.WriteLine("dstDir: " + dstDir);
                 //console.WriteLine("dstName: " + dstName);
@@ -1344,8 +1400,8 @@ which should have been provided with the executable.");
             //Get full path resolves the path of the file without using short-hands
             //  such as ./ and .. which can be used in the arguments to this method.
             //  So, GetFullPath allows us to do a consistent comparison of the paths.
-            FOS_System.String srcFullPath = srcFile.GetFullPath();
-            FOS_System.String dstFullPath = dstFile.GetFullPath();
+            String srcFullPath = srcFile.GetFullPath();
+            String dstFullPath = dstFile.GetFullPath();
             //If we are about to copy a file onto itself, well that wouldn't technically
             //  give us an issue given our copy implementation, but it is pretty pointless.
             //  Also, it would give a more sofisticated copy algorithm (e.g. block copying
@@ -1361,12 +1417,12 @@ which should have been provided with the executable.");
             }
 
             //Get the streams to read from / write to
-            FOS_System.IO.Streams.FileStream srcStr = srcFile.GetStream();
-            FOS_System.IO.Streams.FileStream dstStr = dstFile.GetStream();
+            FileStream srcStr = srcFile.GetStream();
+            FileStream dstStr = dstFile.GetStream();
 
             //Temporary storage. Note: If the file is to big, this will just fail 
             //  as there won't be enough heap memory available
-            byte[] data = new byte[(uint)srcFile.TheFileSystem.ThePartition.BlockSize];
+            byte[] data = new byte[(uint) srcFile.TheFileSystem.ThePartition.BlockSize];
 
             //Force stream positions
             srcStr.Position = 0;
@@ -1374,9 +1430,9 @@ which should have been provided with the executable.");
 
             console.Write("[");
 
-            int percentile = (int)(uint)FOS_System.Math.Divide(srcFile.Size, 78u);
+            int percentile = (int) (uint) Math.Divide(srcFile.Size, 78u);
             int dist = 0;
-            while ((ulong)srcStr.Position < srcFile.Size)
+            while ((ulong) srcStr.Position < srcFile.Size)
             {
                 //Read in source data.
                 srcStr.Read(data, 0, data.Length);
@@ -1396,11 +1452,12 @@ which should have been provided with the executable.");
             console.WriteLine("]");
             console.WriteLine("Copied successfully.");
         }
+
         /// <summary>
-        /// Deletes the specified file.
+        ///     Deletes the specified file.
         /// </summary>
         /// <param name="fileName">The path to the file to delete.</param>
-        private void DeleteFile(FOS_System.String fileName)
+        private void DeleteFile(String fileName)
         {
             //Attempt to delete the file
             if (File.Delete(fileName))
@@ -1414,23 +1471,25 @@ which should have been provided with the executable.");
                 console.WriteLine("File not found: " + fileName);
             }
         }
+
         /// <summary>
-        /// Copies the specified directory.
+        ///     Copies the specified directory.
         /// </summary>
         /// <param name="src">The path to the directory to copy.</param>
         /// <param name="dst">The path to copy to.</param>
-        private void CopyDirectory(FOS_System.String src, FOS_System.String dst)
+        private void CopyDirectory(String src, String dst)
         {
             //Attempt to load the source directory. If it is not found, null will be passed
             //  and the CopyDirectory method will catch the failure.
             CopyDirectory(Directory.Find(src), dst);
         }
+
         /// <summary>
-        /// Copies the specified directory.
+        ///     Copies the specified directory.
         /// </summary>
         /// <param name="srcDir">The directory to copy.</param>
         /// <param name="dst">The path to copy to.</param>
-        private void CopyDirectory(Directory srcDir, FOS_System.String dst)
+        private void CopyDirectory(Directory srcDir, String dst)
         {
             //If source directory is null, it means it wasn't found by the caller (or some
             //  other error but we will assume not found since that is the expected use 
@@ -1442,7 +1501,7 @@ which should have been provided with the executable.");
             }
 
             //Add a trailing "/" to the destination path name
-            if(!dst.EndsWith(FileSystemManager.PathDelimiter))
+            if (!dst.EndsWith(FileSystemManager.PathDelimiter))
             {
                 dst += FileSystemManager.PathDelimiter;
             }
@@ -1452,8 +1511,8 @@ which should have been provided with the executable.");
             Directory dstDir = NewDirectory(dst);
 
             //For explanation of this, see CopyFile
-            FOS_System.String srcFullPath = srcDir.GetFullPath();
-            FOS_System.String dstFullPath = dstDir.GetFullPath();
+            String srcFullPath = srcDir.GetFullPath();
+            String dstFullPath = dstDir.GetFullPath();
             if (srcFullPath == dstFullPath)
             {
                 console.WriteLine("Atempted to copy a directory to itself! (" + srcFullPath + ")");
@@ -1469,27 +1528,28 @@ which should have been provided with the executable.");
             //  which could potentially overflow. It has the benefit though that 
             //  the entire sub-directory/sub-file tree will be copied.
             List listings = srcDir.GetListings();
-            for(int i = 0; i < listings.Count; i++)
+            for (int i = 0; i < listings.Count; i++)
             {
-                Base listing = (Base)listings[i];
-                if(listing.IsDirectory)
+                Base listing = (Base) listings[i];
+                if (listing.IsDirectory)
                 {
                     if (listing.Name != "." && listing.Name != "..")
                     {
-                        CopyDirectory((Directory)listing, dst + listing.Name + FileSystemManager.PathDelimiter);
+                        CopyDirectory((Directory) listing, dst + listing.Name + FileSystemManager.PathDelimiter);
                     }
                 }
                 else
                 {
-                    CopyFile((File)listing, dst + listing.Name);
+                    CopyFile((File) listing, dst + listing.Name);
                 }
             }
         }
+
         /// <summary>
-        /// Deletes the specified directory.
+        ///     Deletes the specified directory.
         /// </summary>
         /// <param name="path">The path to the directory to delete.</param>
-        private void DeleteDirectory(FOS_System.String path)
+        private void DeleteDirectory(String path)
         {
             //Attempt to delete the directory.
             if (Directory.Delete(path))
@@ -1503,12 +1563,13 @@ which should have been provided with the executable.");
                 console.WriteLine("Directory not found: " + path);
             }
         }
+
         /// <summary>
-        /// Creates a new directory (and parent directories). Used recursively.
+        ///     Creates a new directory (and parent directories). Used recursively.
         /// </summary>
         /// <param name="path">The full path of the directory (and parent directories) to create.</param>
         /// <returns>The new (or existing) directory.</returns>
-        private Directory NewDirectory(FOS_System.String path)
+        private Directory NewDirectory(String path)
         {
             //Output info to the user.
             console.WriteLine("Searching for directory: " + path);
@@ -1525,7 +1586,7 @@ which should have been provided with the executable.");
                 //Attempt to get the file system mapping for the new directory
                 FileSystemMapping mapping = FileSystemManager.GetMapping(path);
                 //If the mapping was found:
-                if(mapping != null)
+                if (mapping != null)
                 {
                     //Remove trailing "/" if there is one else the code below would end
                     //  up with a blank "new directory name"
@@ -1539,8 +1600,8 @@ which should have been provided with the executable.");
                     //  Note: It is important to include the path delimeter at the end of the parent dir name
                     //        as the parent dir name may be a FS root which requires the trailing path delimeter.
                     int lastIdx = path.LastIndexOf(FileSystemManager.PathDelimiter) + 1;
-                    FOS_System.String dirParentPath = path.Substring(0, lastIdx);
-                    FOS_System.String newDirName = path.Substring(lastIdx, path.length - lastIdx);
+                    String dirParentPath = path.Substring(0, lastIdx);
+                    String newDirName = path.Substring(lastIdx, path.length - lastIdx);
 
                     console.WriteLine("Checking parent path: " + dirParentPath);
                     //This causes NewDirectory to become a recursive, self-calling
@@ -1575,28 +1636,28 @@ which should have been provided with the executable.");
         }
 
         /// <summary>
-        /// Formats the specified disk.
+        ///     Formats the specified disk.
         /// </summary>
         /// <param name="disk">The disk to format.</param>
-        private void FormatDisk(Hardware.Devices.DiskDevice disk)
+        private void FormatDisk(DiskDevice disk)
         {
             List newPartitionInfos = new List(1);
-            
+
             console.WriteLine("Creating partition info...");
-            newPartitionInfos.Add(FOS_System.IO.Disk.MBR.CreateFAT32PartitionInfo(disk, false));
-            
+            newPartitionInfos.Add(MBR.CreateFAT32PartitionInfo(disk, false));
+
             console.WriteLine("Done. Doing MBR format...");
-            FOS_System.IO.Disk.MBR.FormatDisk(disk, newPartitionInfos);
-            
+            MBR.FormatDisk(disk, newPartitionInfos);
+
             console.WriteLine("Done. Initialising disk...");
             //FileSystemManager.InitDisk(disk);
-            
+
             console.WriteLine("Done. Finding partition...");
             Partition thePart = null;
             for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                Partition aPart = (Partition)PartitionManager.Partitions[i];
-                if(aPart.TheDiskDevice == disk)
+                Partition aPart = (Partition) PartitionManager.Partitions[i];
+                if (aPart.TheDiskDevice == disk)
                 {
                     thePart = aPart;
                     break;
@@ -1605,8 +1666,8 @@ which should have been provided with the executable.");
             if (thePart != null)
             {
                 console.WriteLine("Done. Formatting as FAT32...");
-                FOS_System.IO.FAT.FATFileSystem.FormatPartitionAsFAT32(thePart);
-                
+                FATFileSystem.FormatPartitionAsFAT32(thePart);
+
                 console.WriteLine("Done.");
                 console.WriteLine("Format completed successfully.");
             }
@@ -1616,11 +1677,12 @@ which should have been provided with the executable.");
                 console.WriteLine("Format failed.");
             }
         }
+
         /// <summary>
-        /// Checks the specified disk's formatting.
+        ///     Checks the specified disk's formatting.
         /// </summary>
         /// <param name="disk">The disk to check.</param>
-        private void CheckDiskFormatting(Hardware.Devices.DiskDevice disk)
+        private void CheckDiskFormatting(DiskDevice disk)
         {
             if (disk == null)
             {
@@ -1628,15 +1690,16 @@ which should have been provided with the executable.");
                 return;
             }
 
-            FOS_System.IO.Partition part = FOS_System.IO.Partition.GetFirstPartition(disk);
+            Partition part = Partition.GetFirstPartition(disk);
             if (part == null)
             {
                 console.WriteLine("Disk not formatted correctly! No partitions found on disk.");
                 return;
             }
-            else if (!FOS_System.IO.FileSystemManager.HasMapping(part))
+            else if (!FileSystemManager.HasMapping(part))
             {
-                console.WriteLine("Disk not formatted correctly! File system mapping not found. (Did you remember to initialise file systems?)");
+                console.WriteLine(
+                    "Disk not formatted correctly! File system mapping not found. (Did you remember to initialise file systems?)");
                 return;
             }
 
@@ -1644,10 +1707,10 @@ which should have been provided with the executable.");
         }
 
         /// <summary>
-        /// Outputs the contents of the specified file if it exists.
+        ///     Outputs the contents of the specified file if it exists.
         /// </summary>
         /// <param name="fileName">The file to try and output.</param>
-        private void OutputFileContents(FOS_System.String fileName)
+        private void OutputFileContents(String fileName)
         {
             OutputDivider();
             File aFile = File.Open(fileName);
@@ -1657,19 +1720,19 @@ which should have been provided with the executable.");
                 {
                     console.WriteLine(fileName);
 
-                    FOS_System.IO.Streams.FileStream fileStream = FOS_System.IO.Streams.FileStream.Create(aFile);
-                    
+                    FileStream fileStream = FileStream.Create(aFile);
+
                     byte[] DataBuffer = aFile.TheFileSystem.ThePartition.NewBlockArray(1);
                     //Tasks.SystemStatusTask.MainConsole.Write("[");
-                    ulong percentile = FOS_System.Math.Divide(aFile.Size, 53u);
+                    ulong percentile = Math.Divide(aFile.Size, 53u);
                     ulong pos = 0;
-                    while ((ulong)fileStream.Position < aFile.Size)
+                    while ((ulong) fileStream.Position < aFile.Size)
                     {
                         int actuallyRead = fileStream.Read(DataBuffer, 0, DataBuffer.Length);
-                        FOS_System.String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint)actuallyRead);
+                        String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint) actuallyRead);
                         console.Write(xText);
-                        
-                        pos += (ulong)actuallyRead;
+
+                        pos += (ulong) actuallyRead;
                         if (pos >= percentile)
                         {
                             pos -= percentile;
@@ -1694,11 +1757,12 @@ which should have been provided with the executable.");
             }
             OutputDivider();
         }
+
         /// <summary>
-        /// Outputs the contents of the specified directory if it exists.
+        ///     Outputs the contents of the specified directory if it exists.
         /// </summary>
         /// <param name="dir">The directory to try and output.</param>
-        private void OutputDirectoryContents(FOS_System.String dir)
+        private void OutputDirectoryContents(String dir)
         {
             OutputDivider();
             Directory aDir = Directory.Find(dir);
@@ -1711,16 +1775,16 @@ which should have been provided with the executable.");
                 {
                     for (int j = 0; j < Listings.Count; j++)
                     {
-                        FOS_System.IO.Base xItem = (FOS_System.IO.Base)Listings[j];
+                        Base xItem = (Base) Listings[j];
 
                         if (xItem.IsDirectory)
                         {
-                            console.WriteLine(((FOS_System.String)"<DIR> '") + ((FOS_System.IO.Directory)Listings[j]).Name + "'");
+                            console.WriteLine((String) "<DIR> '" + ((Directory) Listings[j]).Name + "'");
                         }
                         else
                         {
-                            FOS_System.IO.File file = (FOS_System.IO.File)Listings[j];
-                            console.WriteLine(((FOS_System.String)"<FILE> '") + file.Name + "' (" + file.Size + ")");
+                            File file = (File) Listings[j];
+                            console.WriteLine((String) "<FILE> '" + file.Name + "' (" + file.Size + ")");
                         }
                     }
                 }
@@ -1735,39 +1799,41 @@ which should have been provided with the executable.");
             }
             OutputDivider();
         }
+
         /// <summary>
-        /// Outputs the current memory information.
+        ///     Outputs the current memory information.
         /// </summary>
         private unsafe void OutputMemory()
         {
             console.Write("GC num objs: ");
-            console.WriteLine(FOS_System.GC.NumObjs);
-            
+            console.WriteLine(GC.NumObjs);
+
             console.Write("GC num strings: ");
-            console.WriteLine(FOS_System.GC.NumStrings);
-            
+            console.WriteLine(GC.NumStrings);
+
             console.Write("Heap memory use: ");
-            console.Write_AsDecimal(Heap.FBlock->used * Heap.FBlock->bsize);
+            console.Write_AsDecimal(Heap.FBlock->used*Heap.FBlock->bsize);
             console.Write(" / ");
             console.WriteLine_AsDecimal(Heap.FBlock->size);
         }
+
         /// <summary>
-        /// Outputs the file systems information.
+        ///     Outputs the file systems information.
         /// </summary>
         private void OutputFS()
         {
-            console.WriteLine(((FOS_System.String)"Num partitions: ") + PartitionManager.Partitions.Count);
+            console.WriteLine((String) "Num partitions: " + PartitionManager.Partitions.Count);
 
             for (int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
             {
-                FileSystemMapping fsMapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
-                if (fsMapping.TheFileSystem is FOS_System.IO.FAT.FATFileSystem)
+                FileSystemMapping fsMapping = (FileSystemMapping) FileSystemManager.FileSystemMappings[i];
+                if (fsMapping.TheFileSystem is FATFileSystem)
                 {
-                    FOS_System.IO.FAT.FATFileSystem fs = (FOS_System.IO.FAT.FATFileSystem)fsMapping.TheFileSystem;
-                    
-                    console.WriteLine(((FOS_System.String)"FAT file system detected. Volume ID: ") + fs.ThePartition.VolumeID);
+                    FATFileSystem fs = (FATFileSystem) fsMapping.TheFileSystem;
+
+                    console.WriteLine((String) "FAT file system detected. Volume ID: " + fs.ThePartition.VolumeID);
                 }
-                else if (fsMapping.TheFileSystem is FOS_System.IO.ISO9660.ISO9660FileSystem)
+                else if (fsMapping.TheFileSystem is ISO9660FileSystem)
                 {
                     console.WriteLine("ISO9660 file system detected.");
                 }
@@ -1780,7 +1846,7 @@ which should have been provided with the executable.");
         }
 
         /// <summary>
-        /// Initialises the file systems.
+        ///     Initialises the file systems.
         /// </summary>
         private void InitFS()
         {
@@ -1789,13 +1855,14 @@ which should have been provided with the executable.");
             //console.WriteLine("done.");
         }
 
-        private static void DeviceManager_DeviceAdded(FOS_System.Object state, Hardware.Device device)
+        private static void DeviceManager_DeviceAdded(Object state, Device device)
         {
-            ((MainShell)state)._DeviceManager_DeviceAdded(device);
+            ((MainShell) state)._DeviceManager_DeviceAdded(device);
         }
-        private void _DeviceManager_DeviceAdded(Hardware.Device device)
+
+        private void _DeviceManager_DeviceAdded(Device device)
         {
-            if (device is Hardware.Devices.DiskDevice)
+            if (device is DiskDevice)
             {
                 try
                 {
@@ -1804,8 +1871,8 @@ which should have been provided with the executable.");
                 }
                 catch
                 {
-                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException) &&
-                        !(ExceptionMethods.CurrentException is Hardware.Exceptions.NoDiskException))
+                    if (!(ExceptionMethods.CurrentException is NotSupportedException) &&
+                        !(ExceptionMethods.CurrentException is NoDiskException))
                     {
                         console.ErrorColour();
                         console.WriteLine("Error initialising disk device:");
@@ -1814,7 +1881,7 @@ which should have been provided with the executable.");
                     }
                 }
             }
-            else if (device is Hardware.PCI.PCIDeviceNormal)
+            else if (device is PCIDeviceNormal)
             {
                 try
                 {
@@ -1822,7 +1889,7 @@ which should have been provided with the executable.");
                 }
                 catch
                 {
-                    if (!(ExceptionMethods.CurrentException is FOS_System.Exceptions.NotSupportedException))
+                    if (!(ExceptionMethods.CurrentException is NotSupportedException))
                     {
                         console.ErrorColour();
                         console.WriteLine("Error initialising PCI device:");
@@ -1834,9 +1901,9 @@ which should have been provided with the executable.");
         }
 
         /// <summary>
-        /// Outputs a warning to the user indicating their input was unrecognised.
+        ///     Outputs a warning to the user indicating their input was unrecognised.
         /// </summary>
-        private void UnrecognisedOption(FOS_System.String value)
+        private void UnrecognisedOption(String value)
         {
             console.WarningColour();
             console.WriteLine("Unrecognised option: " + value);
@@ -1851,7 +1918,7 @@ which should have been provided with the executable.");
                 uint allocSize = 16;
                 while (Heap.GetTotalFreeMem() > 0x100000)
                 {
-                    byte* val = (byte*)Heap.Alloc(allocSize, "MainShell : HeapTest");
+                    byte* val = (byte*) Heap.Alloc(allocSize, "MainShell : HeapTest");
                     if (val == null)
                     {
                         break;
@@ -1879,6 +1946,7 @@ which should have been provided with the executable.");
             }
             console.WriteLine("Returning.");
         }
+
         private unsafe void GCTest()
         {
             try
@@ -1886,7 +1954,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Testing GC...");
                 while (Heap.GetTotalFreeMem() - 0x10000 > 0)
                 {
-                    FOS_System.GC.NewObj((FOS_System.Type)typeof(FOS_System.Object));
+                    GC.NewObj((Type) typeof(Object));
                 }
                 console.WriteLine("Complete without error.");
             }
@@ -1897,25 +1965,30 @@ which should have been provided with the executable.");
             }
             console.WriteLine("Returning.");
         }
+
         private void ATATest()
         {
-            new Hardware.Testing.ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
+            new ATATests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
+
         private void USBTest()
         {
-            new Hardware.Testing.USBTests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
+            new USBTests().Test_LongRead(OutputMessageFromTest, OutputWarningFromTest, OutputErrorFromTest);
         }
-        private static void OutputMessageFromTest(FOS_System.String TestName, FOS_System.String Message)
+
+        private static void OutputMessageFromTest(String TestName, String Message)
         {
             Console.Default.WriteLine(TestName + " : " + Message);
         }
-        private static void OutputWarningFromTest(FOS_System.String TestName, FOS_System.String Message)
+
+        private static void OutputWarningFromTest(String TestName, String Message)
         {
             Console.Default.WarningColour();
             OutputMessageFromTest(TestName, Message);
             Console.Default.DefaultColour();
         }
-        private static void OutputErrorFromTest(FOS_System.String TestName, FOS_System.String Message)
+
+        private static void OutputErrorFromTest(String TestName, String Message)
         {
             Console.Default.ErrorColour();
             OutputMessageFromTest(TestName, Message);
@@ -1923,25 +1996,26 @@ which should have been provided with the executable.");
         }
 
         /// <summary>
-        /// Tests all interrupts in the range 17 to 255 by firing them.
+        ///     Tests all interrupts in the range 17 to 255 by firing them.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoGC]
         private void InterruptsTest()
         {
             for (uint i = 17; i < 256; i++)
             {
-                console.WriteLine(((FOS_System.String)"Attempting to invoke interrupt: ") + i);
-                Hardware.Interrupts.Interrupts.InvokeInterrupt(i);
+                console.WriteLine((String) "Attempting to invoke interrupt: " + i);
+                Interrupts.InvokeInterrupt(i);
             }
         }
+
         /// <summary>
-        /// Tests delegates.
+        ///     Tests delegates.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoGC]
         private void DelegateTest()
         {
             IntDelegate del = CallbackMethod;
-            int x = del(new FOS_System.Object());
+            int x = del(new Object());
             if (x == -1)
             {
                 console.WriteLine("Delegate return value OK.");
@@ -1950,32 +2024,28 @@ which should have been provided with the executable.");
             {
                 console.WriteLine("Delegate return value NOT OK!");
             }
-            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+            Timer.Default.Wait(1000*10);
         }
+
         /// <summary>
-        /// Delegate used by delegates test.
-        /// </summary>
-        /// <param name="data">Test data to pass in.</param>
-        /// <returns>A test value.</returns>
-        private delegate int IntDelegate(object data);
-        /// <summary>
-        /// Method called by delegates test.
+        ///     Method called by delegates test.
         /// </summary>
         /// <param name="data">Test data to pass in.</param>
         /// <returns>A test value.</returns>
         private int CallbackMethod(object data)
         {
             console.WriteLine("Callback method executed!");
-            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+            Timer.Default.Wait(1000*10);
             return -1;
         }
+
         /// <summary>
-        /// Runs a series of tests on the file system, currently:
-        ///  - Finds or creates A:/ drive
-        ///  - Attempts to use FAT file system for A drive
-        ///  - Finds or creates a folder called "P1D2"
-        ///  - Finds or creates short and long name files in "P1D2"
-        ///  - Writes and reads from above test files.
+        ///     Runs a series of tests on the file system, currently:
+        ///     - Finds or creates A:/ drive
+        ///     - Attempts to use FAT file system for A drive
+        ///     - Finds or creates a folder called "P1D2"
+        ///     - Finds or creates short and long name files in "P1D2"
+        ///     - Writes and reads from above test files.
         /// </summary>
         private void FileSystemTests()
         {
@@ -1984,7 +2054,7 @@ which should have been provided with the executable.");
                 FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
                 if (A_FSMapping != null)
                 {
-                    FOS_System.IO.FAT.FATFileSystem A_FS = (FOS_System.IO.FAT.FATFileSystem)A_FSMapping.TheFileSystem;
+                    FATFileSystem A_FS = (FATFileSystem) A_FSMapping.TheFileSystem;
 
                     Directory P1D2Dir = Directory.Find("A:/P1D2");
                     if (P1D2Dir == null)
@@ -2024,9 +2094,9 @@ which should have been provided with the executable.");
                     if (longNameTestFile != null)
                     {
                         console.WriteLine("Opening stream...");
-                        FOS_System.IO.Streams.FileStream fileStream = longNameTestFile.GetStream();
+                        FileStream fileStream = longNameTestFile.GetStream();
 
-                        FOS_System.String testStr = "This is some test file contents.";
+                        String testStr = "This is some test file contents.";
                         byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
 
                         console.WriteLine("Writing data...");
@@ -2042,7 +2112,7 @@ which should have been provided with the executable.");
                         fileStream.Position = 0;
                         byte[] readBytes = new byte[size];
                         fileStream.Read(readBytes, 0, readBytes.Length);
-                        FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                        String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint) readBytes.Length);
                         console.WriteLine("\"" + readStr + "\"");
 
                         OutputDivider();
@@ -2055,14 +2125,14 @@ which should have been provided with the executable.");
                     if (shortNameTestFile != null)
                     {
                         console.WriteLine("Opening stream...");
-                        FOS_System.IO.Streams.FileStream fileStream = shortNameTestFile.GetStream();
+                        FileStream fileStream = shortNameTestFile.GetStream();
 
-                        FOS_System.String testStr = "This is some test file contents.";
+                        String testStr = "This is some test file contents.";
                         byte[] testStrBytes = ByteConverter.GetASCIIBytes(testStr);
 
                         console.WriteLine("Writing data...");
                         fileStream.Position = 0;
-                        uint size = (uint)shortNameTestFile.Size;
+                        uint size = (uint) shortNameTestFile.Size;
                         //for (int i = 0; i < 20; i++)
                         {
                             //fileStream.Write(testStrBytes, 0, testStrBytes.Length);
@@ -2073,7 +2143,7 @@ which should have been provided with the executable.");
                         fileStream.Position = 0;
                         byte[] readBytes = new byte[size];
                         fileStream.Read(readBytes, 0, readBytes.Length);
-                        FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                        String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint) readBytes.Length);
                         console.WriteLine("\"" + readStr + "\"");
 
                         OutputDivider();
@@ -2098,18 +2168,19 @@ which should have been provided with the executable.");
                         File shortNameTestFile = File.Open("A:/P1D2/ShrtTest.txt");
                         if (shortNameTestFile != null)
                         {
-                            FOS_System.IO.Streams.FileStream FromFileStream = FileToCopy.GetStream();
+                            FileStream FromFileStream = FileToCopy.GetStream();
 
                             if (shortNameTestFile != null)
                             {
-                                FOS_System.IO.Streams.FileStream ToFileStream = shortNameTestFile.GetStream();
+                                FileStream ToFileStream = shortNameTestFile.GetStream();
 
                                 console.WriteLine("Copying data...");
 
                                 FromFileStream.Position = 0;
-                                byte[] readBytes = new byte[(uint)FileToCopy.Size];
+                                byte[] readBytes = new byte[(uint) FileToCopy.Size];
                                 FromFileStream.Read(readBytes, 0, readBytes.Length);
-                                FOS_System.String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u,
+                                    (uint) readBytes.Length);
                                 console.WriteLine("\"" + readStr + "\"");
 
                                 ToFileStream.Position = 0;
@@ -2119,9 +2190,9 @@ which should have been provided with the executable.");
                                 console.WriteLine("Reading back data from target file...");
 
                                 ToFileStream.Position = 0;
-                                readBytes = new byte[(uint)FileToCopy.Size];
+                                readBytes = new byte[(uint) FileToCopy.Size];
                                 ToFileStream.Read(readBytes, 0, readBytes.Length);
-                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
+                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint) readBytes.Length);
                                 console.WriteLine("\"" + readStr + "\"");
                             }
                             else
@@ -2151,8 +2222,9 @@ which should have been provided with the executable.");
                 console.DefaultColour();
             }
         }
+
         /// <summary>
-        /// Tests unsigned less-than comparison of ulongs.
+        ///     Tests unsigned less-than comparison of ulongs.
         /// </summary>
         private void ULongLTComparisonTest()
         {
@@ -2175,50 +2247,52 @@ which should have been provided with the executable.");
             {
                 console.WriteLine("Test 3 failed.");
             }
-            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+            Timer.Default.Wait(1000*10);
         }
+
         /// <summary>
-        /// Tests multiplying two 64-bit numbers together
+        ///     Tests multiplying two 64-bit numbers together
         /// </summary>
         private void ULongMultiplicationTest()
         {
             ulong a = 0x00000000UL;
             ulong b = 0x00000000UL;
-            ulong c = a * b;
+            ulong c = a*b;
             bool test1OK = c == 0x0UL;
 
             a = 0x00000001UL;
             b = 0x00000001UL;
-            c = a * b;
+            c = a*b;
             bool test2OK = c == 0x1;
 
             a = 0x00000010UL;
             b = 0x00000010UL;
-            c = a * b;
+            c = a*b;
             bool test3OK = c == 0x100UL;
 
             a = 0x10000000UL;
             b = 0x00000010UL;
-            c = a * b;
+            c = a*b;
             bool test4OK = c == 0x100000000UL;
 
             a = 0x100000000UL;
             b = 0x00000011UL;
-            c = a * b;
+            c = a*b;
             bool test5OK = c == 0x1100000000UL;
 
             a = 0x100000000UL;
             b = 0x100000000UL;
-            c = a * b;
+            c = a*b;
             bool test6OK = c == 0x0UL;
 
-            console.WriteLine(((FOS_System.String)"Tests OK: ") + test1OK + ", " + test2OK +
-                                                                ", " + test3OK + ", " + test4OK +
-                                                                ", " + test5OK + ", " + test6OK);
-            Hardware.Devices.Timer.Default.Wait(1000 * 10);
+            console.WriteLine((String) "Tests OK: " + test1OK + ", " + test2OK +
+                              ", " + test3OK + ", " + test4OK +
+                              ", " + test5OK + ", " + test6OK);
+            Timer.Default.Wait(1000*10);
         }
+
         /// <summary>
-        /// Tests dynamic string creation and string concatentation.
+        ///     Tests dynamic string creation and string concatentation.
         /// </summary>
         private void StringConcatTest()
         {
@@ -2226,7 +2300,7 @@ which should have been provided with the executable.");
 
             try
             {
-                FOS_System.String testStr = FOS_System.String.Concat("test1", " test2");
+                String testStr = String.Concat("test1", " test2");
                 console.WriteLine(testStr);
             }
             catch
@@ -2238,8 +2312,9 @@ which should have been provided with the executable.");
 
             console.WriteLine("End string concat test.");
         }
+
         /// <summary>
-        /// Tests creating arrays where elements are reference-type and Gc managed.
+        ///     Tests creating arrays where elements are reference-type and Gc managed.
         /// </summary>
         private void ObjectArrayTest()
         {
@@ -2247,8 +2322,8 @@ which should have been provided with the executable.");
 
             try
             {
-                FOS_System.Object[] objArr = new FOS_System.Object[10];
-                objArr[0] = new FOS_System.Object();
+                Object[] objArr = new Object[10];
+                objArr[0] = new Object();
                 objArr[0]._Type.Size = 5;
                 if (objArr[0] != null)
                 {
@@ -2264,8 +2339,9 @@ which should have been provided with the executable.");
 
             console.WriteLine("End object array test.");
         }
+
         /// <summary>
-        /// Tests creating an array of integers (element of type from MSCorLib type and value type)
+        ///     Tests creating an array of integers (element of type from MSCorLib type and value type)
         /// </summary>
         private void IntArrayTest()
         {
@@ -2286,8 +2362,9 @@ which should have been provided with the executable.");
 
             console.WriteLine("Int array test.");
         }
+
         /// <summary>
-        /// Tests creating  GC-managed reference-type object and  setting properties and enums.
+        ///     Tests creating  GC-managed reference-type object and  setting properties and enums.
         /// </summary>
         private void DummyObjectTest()
         {
@@ -2324,8 +2401,9 @@ which should have been provided with the executable.");
             console.WriteLine("Dummy object test.");
             //console.WriteLine("Dummy object test disabled.");
         }
+
         /// <summary>
-        /// Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
+        ///     Tests managed exception sub-system by deliberately causing hardware-level divide-by-zero exception.
         /// </summary>
         private void DivideByZeroTest()
         {
@@ -2336,7 +2414,7 @@ which should have been provided with the executable.");
                 int x = 0;
                 int y = 0;
                 int z = 0;
-                z = x / y;
+                z = x/y;
             }
             catch
             {
@@ -2344,7 +2422,7 @@ which should have been provided with the executable.");
                 console.WriteLine(ExceptionMethods.CurrentException.Message);
                 console.DefaultColour();
 
-                if (ExceptionMethods.CurrentException is FOS_System.Exceptions.DivideByZeroException)
+                if (ExceptionMethods.CurrentException is DivideByZeroException)
                 {
                     console.WriteLine("Handled divide by zero exception.");
                 }
@@ -2352,47 +2430,50 @@ which should have been provided with the executable.");
 
             console.WriteLine("Divide by zero test.");
         }
+
         /// <summary>
-        /// Tests the exception handling sub-system.
+        ///     Tests the exception handling sub-system.
         /// </summary>
         /// <remarks>
-        /// If the mechanism appears to work but code in Main() stops working then
-        /// it is because one of the GC methods is calling a method / get-set property
-        /// that is not marked with [Comnpiler.NoGC]. Make sure all methods that the 
-        /// GC calls are marked with [Compiler.NoGC] attribute. See example.
+        ///     If the mechanism appears to work but code in Main() stops working then
+        ///     it is because one of the GC methods is calling a method / get-set property
+        ///     that is not marked with [Comnpiler.NoGC]. Make sure all methods that the
+        ///     GC calls are marked with [Compiler.NoGC] attribute. See example.
         /// </remarks>
         /// <example>
-        /// public int x
-        /// {
-        ///        ///     get
+        ///     public int x
         ///     {
-        ///         return 0;
+        ///     ///     get
+        ///     {
+        ///     return 0;
         ///     }
-        /// }
+        ///     }
         /// </example>
         private void ExceptionsTestP1()
         {
             ExceptionsTestP2();
         }
+
         /// <summary>
-        /// Secondary method used in testing the exception handling sub-system.
+        ///     Secondary method used in testing the exception handling sub-system.
         /// </summary>
         private void ExceptionsTestP2()
         {
-            FOS_System.Object obj = new FOS_System.Object();
+            Object obj = new Object();
 
             try
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("An inner exception."));
+                ExceptionMethods.Throw(new Exception("An inner exception."));
             }
             finally
             {
                 console.WriteLine("Finally ran.");
-                ExceptionMethods.Throw(new FOS_System.Exception("An outer exception."));
+                ExceptionMethods.Throw(new Exception("An outer exception."));
             }
         }
+
         /// <summary>
-        /// Tests the PC speaker beep feature (part of the PIT).
+        ///     Tests the PC speaker beep feature (part of the PIT).
         /// </summary>
         private void PCBeepTest()
         {
@@ -2401,11 +2482,11 @@ which should have been provided with the executable.");
             try
             {
                 console.WriteLine("Enabling beep...");
-                Hardware.Timers.PIT.ThePIT.PlaySound(247); //261 ~ B3
+                PIT.ThePIT.PlaySound(247); //261 ~ B3
                 console.WriteLine("Beep enabled. Waiting 10s...");
-                Hardware.Devices.Timer.Default.Wait(10000);
+                Timer.Default.Wait(10000);
                 console.WriteLine("Wait finished. Muting beep...");
-                Hardware.Timers.PIT.ThePIT.MuteSound();
+                PIT.ThePIT.MuteSound();
                 console.WriteLine("Muted beep.");
             }
             catch
@@ -2415,8 +2496,9 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended PC Beep test.");
         }
+
         /// <summary>
-        /// Tests the default timer device.
+        ///     Tests the default timer device.
         /// </summary>
         private void TimerTest()
         {
@@ -2427,7 +2509,7 @@ which should have been provided with the executable.");
                 console.Write("Waiting for 5 lot(s) of 1 second(s)");
                 for (int i = 0; i < 5; i++)
                 {
-                    Hardware.Devices.Timer.Default.Wait(1000);
+                    Timer.Default.Wait(1000);
                     console.Write(".");
                 }
                 console.WriteLine("completed.");
@@ -2436,7 +2518,7 @@ which should have been provided with the executable.");
                 console.Write("Waiting for 1 lot(s) of 5 second(s)");
                 //for (int i = 0; i < 5; i++)
                 {
-                    Hardware.Devices.Timer.Default.Wait(5000);
+                    Timer.Default.Wait(5000);
                     console.Write(".");
                 }
                 console.WriteLine("completed.");
@@ -2448,24 +2530,26 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended PIT test.");
         }
+
         /// <summary>
-        /// Tests the default keyboard device.
+        ///     Tests the default keyboard device.
         /// </summary>
         private void KeyboardTest()
         {
             try
             {
-                console.WriteLine("Running PS2 Keyboard test. Type for a bit, eventually it will end (if the keyboard works that is)...");
+                console.WriteLine(
+                    "Running PS2 Keyboard test. Type for a bit, eventually it will end (if the keyboard works that is)...");
 
                 int charsPrinted = 0;
                 char c;
                 for (int i = 0; i < 240; i++)
                 {
-                    c = Hardware.Devices.Keyboard.Default.ReadChar();
+                    c = Keyboard.Default.ReadChar();
                     if (c != '\0')
                     {
                         charsPrinted++;
-                        if (charsPrinted % 80 == 0)
+                        if (charsPrinted%80 == 0)
                         {
                             console.WriteLine(c);
                         }
@@ -2493,8 +2577,9 @@ which should have been provided with the executable.");
             console.WriteLine();
             console.WriteLine("Ended keyboard test.");
         }
+
         /// <summary>
-        /// Tests the advanced console class.
+        ///     Tests the advanced console class.
         /// </summary>
         private void AdvancedConsoleTest()
         {
@@ -2507,11 +2592,11 @@ which should have been provided with the executable.");
                 Console.Default.Beep();
                 Console.Default.WriteLine("Test write line.");
                 Console.Default.WriteLine("Please write a line: ");
-                FOS_System.String line = ReadLine();
+                String line = ReadLine();
                 Console.Default.WriteLine("Your wrote: " + line);
 
                 Console.Default.WriteLine("Pausing for 2 seconds...");
-                Hardware.Devices.Timer.Default.Wait(2000);
+                Timer.Default.Wait(2000);
 
                 for (int i = 0; i < 25; i++)
                 {
@@ -2522,7 +2607,7 @@ which should have been provided with the executable.");
                 Console.Default.WriteLine("Testing scrolling...");
                 for (int i = 0; i < 25; i++)
                 {
-                    Hardware.Devices.Timer.Default.Wait(500);
+                    Timer.Default.Wait(500);
                     Console.Default.Scroll(-1);
                 }
                 Console.Default.Scroll(25);
@@ -2544,11 +2629,12 @@ which should have been provided with the executable.");
             }
 
             console.WriteLine("Ended advanced console test. Pausing for 5 seconds.");
-            Hardware.Devices.Timer.Default.Wait(5000);
+            Timer.Default.Wait(5000);
         }
+
         /// <summary>
-        /// Tests the fields type table by outputting to the screen and 
-        /// letting the user decide if the output is correct.
+        ///     Tests the fields type table by outputting to the screen and
+        ///     letting the user decide if the output is correct.
         /// </summary>
         private unsafe void FieldsTableTest()
         {
@@ -2556,7 +2642,7 @@ which should have been provided with the executable.");
 
             try
             {
-                FOS_System.Type theType = (FOS_System.Type)typeof(FOS_System.Type);
+                Type theType = (Type) typeof(Type);
                 if (theType == null)
                 {
                     console.WriteLine("The type object is null!!");
@@ -2566,9 +2652,9 @@ which should have been provided with the executable.");
                     console.WriteLine("Type signature: " + theType.Signature);
                     console.WriteLine("Type id: " + theType.IdString);
 
-                    FOS_System.Type baseType = theType.TheBaseType;
+                    Type baseType = theType.TheBaseType;
                     int inset = 0;
-                    while(baseType != null)
+                    while (baseType != null)
                     {
                         console.WriteLine(baseType.Signature.PadLeft(baseType.Signature.length + inset, ' '));
                         inset += 4;
@@ -2578,7 +2664,7 @@ which should have been provided with the executable.");
                     FieldInfo* fieldInfoPtr = theType.FieldTablePtr;
                     while (fieldInfoPtr->Size != 0)
                     {
-                        FOS_System.Type fieldType = (FOS_System.Type)Utilities.ObjectUtilities.GetObject(fieldInfoPtr->FieldType);
+                        Type fieldType = (Type) ObjectUtilities.GetObject(fieldInfoPtr->FieldType);
 
                         try
                         {
@@ -2608,10 +2694,11 @@ which should have been provided with the executable.");
             }
 
             console.WriteLine("Ended fields table test. Pausing for 5 seconds.");
-            Hardware.Devices.Timer.Default.Wait(5000);
+            Timer.Default.Wait(5000);
         }
+
         /// <summary>
-        /// Tests the "is" operator (i.e. the IsInst IL op)
+        ///     Tests the "is" operator (i.e. the IsInst IL op)
         /// </summary>
         private void IsInstTest()
         {
@@ -2619,8 +2706,8 @@ which should have been provided with the executable.");
 
             try
             {
-                FOS_System.Object anStr = (FOS_System.String)"test";
-                if (anStr is FOS_System.String)
+                Object anStr = (String) "test";
+                if (anStr is String)
                 {
                     console.WriteLine("Is a String.");
                 }
@@ -2628,7 +2715,7 @@ which should have been provided with the executable.");
                 {
                     console.WriteLine("Is not a String.");
                 }
-                if (anStr is FOS_System.Object)
+                if (anStr is Object)
                 {
                     console.WriteLine("Is an Object.");
                 }
@@ -2636,7 +2723,7 @@ which should have been provided with the executable.");
                 {
                     console.WriteLine("Is not an Object.");
                 }
-                if (anStr is FOS_System.Exception)
+                if (anStr is Exception)
                 {
                     console.WriteLine("Is an Exception.");
                 }
@@ -2651,8 +2738,9 @@ which should have been provided with the executable.");
             }
 
             console.WriteLine("Ended IsInst test. Pausing for 5 seconds.");
-            Hardware.Devices.Timer.Default.Wait(5000);
+            Timer.Default.Wait(5000);
         }
+
         private void LongsTest()
         {
             console.WriteLine("Starting Longs test...");
@@ -2662,9 +2750,11 @@ which should have been provided with the executable.");
 
                 console.WriteLine("Unsigned tests...");
                 console.Colour(passColour);
+
                 #region Unsigned
 
                 #region Addition & Subtraction
+
                 {
                     ulong x = 0xEFFFFFFFFFFFFFFF;
                     ulong y = 1;
@@ -2695,13 +2785,15 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #region Multiplication, (DISABLED - division) operators
+
                 {
                     ulong x = 0x7000000000000082;
                     ulong y = 2;
-                    ulong z = x * y;
+                    ulong z = x*y;
                     if (z == 0xE000000000000104)
                     {
                         console.WriteLine("Pass: z == 0xE000000000000104");
@@ -2728,9 +2820,11 @@ which should have been provided with the executable.");
                 //        console.Colour(passColour);
                 //    }
                 //}
+
                 #endregion
 
                 #region DISABLED - Modulo (%) operator
+
                 //{
                 //    ulong x = 0x7000000000000000;
                 //    ulong y = 5;
@@ -2746,9 +2840,11 @@ which should have been provided with the executable.");
                 //        console.Colour(passColour);
                 //    }
                 //}
+
                 #endregion
 
                 #region Comparison operators (==, !=, >, <, >=, <=)
+
                 {
                     ulong x = 0xDEADBEEFDEADBEEF;
                     ulong y = 0xDEADBEEFDEADBEEF;
@@ -2861,9 +2957,11 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
-                
+
                 #region Shift operators (<<, >>) by less and more than 32 bits and 64 bits
+
                 {
                     ulong x = 0x2;
                     int y = 2;
@@ -2924,9 +3022,11 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
-                
+
                 #region Bitwise operators (&, |, ^, ~) 
+
                 {
                     ulong x = 0xFFFFFFFFFFFFFFFF;
                     ulong y = 0xF0FDFFF0FFFDFFFF;
@@ -2986,13 +3086,15 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #region Cast to FOS_System.String
+
                 {
                     ulong x = 0x8FFFFFFFFFFFF8FF;
-                    FOS_System.String casted = (FOS_System.String)x;
-                    FOS_System.String expected = "0x8FFFFFFF 0xFFFFF8FF";
+                    String casted = (String) x;
+                    String expected = "0x8FFFFFFF 0xFFFFF8FF";
                     if (casted == expected)
                     {
                         console.WriteLine("Pass: casted == expected");
@@ -3004,17 +3106,21 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #endregion
+
                 console.DefaultColour();
                 console.WriteLine("Unsigned tests ended.");
 
                 console.WriteLine("Signed tests...");
                 console.Colour(passColour);
+
                 #region Signed
 
                 #region Addition & Subtraction
+
                 {
                     long x = 0x6FFFFFFFFFFFFFFF;
                     long y = 1;
@@ -3105,13 +3211,15 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #region Multiplication, (DISABLED - division) operators
+
                 {
                     long x = 0x20FFFFFFFFFFFFFF;
                     long y = 2;
-                    long z = x * y;
+                    long z = x*y;
                     if (z == 0x41FFFFFFFFFFFFFE)
                     {
                         console.WriteLine("Pass: z == 0x41FFFFFFFFFFFFFE");
@@ -3138,9 +3246,11 @@ which should have been provided with the executable.");
                 //        console.Colour(passColour);
                 //    }
                 //}
+
                 #endregion
 
                 #region DISABLED - Modulo (%) operator
+
                 //{
                 //    long x = 0x7000000000000000;
                 //    long y = 5;
@@ -3156,9 +3266,11 @@ which should have been provided with the executable.");
                 //        console.Colour(passColour);
                 //    }
                 //}
+
                 #endregion
 
                 #region Comparison operators (==, !=, >, <, >=, <=)
+
                 {
                     long x = 0x6EADBEEFDEADBEEF;
                     long y = 0x6EADBEEFDEADBEEF;
@@ -3271,9 +3383,11 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #region Shift operators (<<, >>) by less and more than 32 bits and 64 bits
+
                 {
                     long x = 0x2;
                     int y = 2;
@@ -3334,9 +3448,11 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #region Bitwise operators (&, |, ^, ~)
+
                 {
                     long x = 0x0FFFFFFFFFFFFFFF;
                     long y = 0x00FDFFF0FFFDFFFF;
@@ -3396,13 +3512,15 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #region Cast to FOS_System.String
+
                 {
                     long x = -8070450532247930625;
-                    FOS_System.String casted = (FOS_System.String)x;
-                    FOS_System.String expected = "0x8FFFFFFF 0xFFFFF8FF";
+                    String casted = (String) x;
+                    String expected = "0x8FFFFFFF 0xFFFFF8FF";
                     if (casted == expected)
                     {
                         console.WriteLine("Pass: casted == expected");
@@ -3414,9 +3532,11 @@ which should have been provided with the executable.");
                         console.Colour(passColour);
                     }
                 }
+
                 #endregion
 
                 #endregion
+
                 console.DefaultColour();
                 console.WriteLine("Signed tests ended.");
             }
@@ -3426,6 +3546,7 @@ which should have been provided with the executable.");
             }
             console.WriteLine("Finished Longs test.");
         }
+
         private void ThreadSleepTest()
         {
             console.WriteLine("Running Thread Sleep test...");
@@ -3456,52 +3577,63 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended Thread Sleep test.");
         }
+
+        /// <summary>
+        ///     Delegate used by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private delegate int IntDelegate(object data);
     }
 
     /// <summary>
-    /// Dummy class used in Dummy Object test.
+    ///     Dummy class used in Dummy Object test.
     /// </summary>
-    public class Dummy : FOS_System.Object
+    public class Dummy : Object
     {
         /// <summary>
-        /// Test enumeration.
+        ///     Test enumeration.
         /// </summary>
         public enum TestEnum
         {
             /// <summary>
-            /// A test value.
+            ///     A test value.
             /// </summary>
             First = 1,
+
             /// <summary>
-            /// A test value.
+            ///     A test value.
             /// </summary>
             Second = 2,
+
             /// <summary>
-            /// A test value.
+            ///     A test value.
             /// </summary>
             Third = 3,
+
             /// <summary>
-            /// A test value.
+            ///     A test value.
             /// </summary>
             NULL = 0
         }
 
         /// <summary>
-        /// Test field.
+        ///     Test field.
         /// </summary>
         public TestEnum testEnum = TestEnum.First;
 
         /// <summary>
-        /// Test field.
+        ///     Test field.
         /// </summary>
         public int x = 10;
+
         /// <summary>
-        /// Test field.
+        ///     Test field.
         /// </summary>
         public int y = 11;
 
         /// <summary>
-        /// Test method.
+        ///     Test method.
         /// </summary>
         /// <returns>x + y</returns>
         public int Add()

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,31 +23,36 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.Hardware.Devices;
+using Kernel.Hardware.IO;
 
 namespace Kernel.Hardware.Keyboards
 {
     /// <summary>
-    /// Represents a PS2 keyboard device.
+    ///     Represents a PS2 keyboard device.
     /// </summary>
-    public class PS2 : Devices.Keyboard
+    public class PS2 : Keyboard
     {
         /// <summary>
-        /// The keyboard data port.
+        ///     The (only) PS2 keyboard instance.
         /// </summary>
-        protected IO.IOPort DataPort = new IO.IOPort(0x60);
+        public static PS2 ThePS2 = null;
+
         /// <summary>
-        /// The keyboard command port.
+        ///     The keyboard command port.
         /// </summary>
-        protected IO.IOPort CommandPort = new IO.IOPort(0x64);
-        
+        protected IOPort CommandPort = new IOPort(0x64);
+
         /// <summary>
-        /// Enables the PS2 keyboard.
+        ///     The keyboard data port.
+        /// </summary>
+        protected IOPort DataPort = new IOPort(0x60);
+
+        /// <summary>
+        ///     Enables the PS2 keyboard.
         /// </summary>
         public override void Enable()
         {
@@ -55,8 +61,9 @@ namespace Kernel.Hardware.Keyboards
                 enabled = true;
             }
         }
+
         /// <summary>
-        /// Disables the PS2 keyboard.
+        ///     Disables the PS2 keyboard.
         /// </summary>
         public override void Disable()
         {
@@ -71,15 +78,16 @@ namespace Kernel.Hardware.Keyboards
         }
 
         /// <summary>
-        /// The internal interrupt handler.
+        ///     The internal interrupt handler.
         /// </summary>
         public void InterruptHandler()
         {
-            byte scancode = DataPort.Read_Byte();            
+            byte scancode = DataPort.Read_Byte();
             HandleScancode(scancode);
         }
+
         /// <summary>
-        /// Handles the specified scancode.
+        ///     Handles the specified scancode.
         /// </summary>
         /// <param name="scancode">The scancode to handle.</param>
         /// <param name="released">Whether the key has been released or not.</param>
@@ -91,47 +99,47 @@ namespace Kernel.Hardware.Keyboards
             if (released)
             {
                 //Clear the released bit so we get the correct key scancode
-                scancode = (byte)(scancode ^ 0x80);
+                scancode = (byte) (scancode ^ 0x80);
             }
-            
+
             //And handle the (now corrected) scancode
             switch (scancode)
             {
                 //Left and right shift keys
                 case 0x36:
                 case 0x2A:
-                    {
-                        shiftPressed = !released;
-                        break;
-                    }
+                {
+                    shiftPressed = !released;
+                    break;
+                }
                 //Ctrl key
                 case 0x1D:
-                    {
-                        ctrlPressed = !released;
-                        break;
-                    }
+                {
+                    ctrlPressed = !released;
+                    break;
+                }
                 //Alt key
                 case 0x38:
-                    {
-                        altPressed = !released;
-                        break;
-                    }
+                {
+                    altPressed = !released;
+                    break;
+                }
                 //All other keys
                 default:
+                {
+                    //If the key was just pressed, enqueue it
+                    if (!released)
                     {
-                        //If the key was just pressed, enqueue it
-                        if (!released)
+                        //If shift pressed, adjust the scancode appropriately.
+                        if (shiftPressed)
                         {
-                            //If shift pressed, adjust the scancode appropriately.
-                            if (shiftPressed)
-                            {
-                                scancode = scancode << 16;
-                            }
-
-                            Enqueue(scancode);
+                            scancode = scancode << 16;
                         }
-                        break;
+
+                        Enqueue(scancode);
                     }
+                    break;
+                }
             }
         }
 
@@ -154,23 +162,20 @@ namespace Kernel.Hardware.Keyboards
         }
 
         /// <summary>
-        /// The (only) PS2 keyboard instance.
-        /// </summary>
-        public static PS2 ThePS2 = null;
-        /// <summary>
-        /// Initialises the (only) PS2 instance.
+        ///     Initialises the (only) PS2 instance.
         /// </summary>
         public static void Init()
         {
             if (ThePS2 == null)
             {
                 ThePS2 = new PS2();
-                Devices.DeviceManager.RegisterDevice(ThePS2);
+                DeviceManager.RegisterDevice(ThePS2);
             }
             ThePS2.Enable();
         }
+
         /// <summary>
-        /// Cleans up the (only) PS2 instance.
+        ///     Cleans up the (only) PS2 instance.
         /// </summary>
         public static void Clean()
         {

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,47 +23,50 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
+
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
 
 namespace Kernel.Hardware.PCI
 {
     /// <summary>
-    /// Represents a PCI base address.
+    ///     Represents a PCI base address.
     /// </summary>
-    public unsafe class PCIBaseAddress : FOS_System.Object
+    public unsafe class PCIBaseAddress : Object
     {
         /// <summary>
-        /// The underlying base address pointer.
+        ///     The underlying base address pointer.
         /// </summary>
-        private byte* baseAddress;
+        private readonly byte* baseAddress;
+
         /// <summary>
-        /// Whether the data is prefetchable or not.
+        ///     Whether the base address is an IO address.
+        /// </summary>
+        private readonly bool isIO = false;
+
+        /// <summary>
+        ///     Whether the data is prefetchable or not.
         /// </summary>
         private ushort prefetchable = 0;
-        /// <summary>
-        /// The base address type.
-        /// </summary>
-        private byte type = 0;
-        /// <summary>
-        /// Whether the base address is an IO address.
-        /// </summary>
-        private bool isIO = false;
 
         /// <summary>
-        /// The PCI device's required memory size.
+        ///     The PCI device's required memory size.
         /// </summary>
-        private uint size = 0;
+        private readonly uint size = 0;
 
         /// <summary>
-        /// Initialises a new PCI base address.
+        ///     The base address type.
+        /// </summary>
+        private readonly byte type = 0;
+
+        /// <summary>
+        ///     Initialises a new PCI base address.
         /// </summary>
         /// <param name="raw">The raw address value.</param>
         /// <param name="aSize">The size of the PCI registers pointed to by the base address.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         internal PCIBaseAddress(uint raw, uint aSize)
         {
             //Determine whether this is an IO port base address
@@ -74,7 +78,7 @@ namespace Kernel.Hardware.PCI
                 //Bit 0 is IO indicator
                 //Bit 1 is reserved
                 //4-byte aligned base port address
-                baseAddress = (byte*)(raw & 0xFFFFFFFC);
+                baseAddress = (byte*) (raw & 0xFFFFFFFC);
             }
             else
             {
@@ -91,17 +95,17 @@ namespace Kernel.Hardware.PCI
                  * the 16-bit Memory Space).                                                          *
                  *                                                                                    *
                  * Source: http://wiki.osdev.org/PCI#Base_Address_Registers, para 2, 1st Sep 2014     */
-                type = (byte)((raw >> 1) & 0x03);
+                type = (byte) ((raw >> 1) & 0x03);
                 //Bit 3 - Determines whether you can prefetch data from memory or not (in C this would
                 //  determine whether something is volatile or not.)
-                prefetchable = (ushort)((raw >> 3) & 0x01);
+                prefetchable = (ushort) ((raw >> 3) & 0x01);
                 switch (type)
                 {
                     case 0x00:
-                        baseAddress = (byte*)(raw & 0xFFFFFFF0);
+                        baseAddress = (byte*) (raw & 0xFFFFFFF0);
                         break;
                     case 0x01:
-                        baseAddress = (byte*)(raw & 0xFFFFFFF0);
+                        baseAddress = (byte*) (raw & 0xFFFFFFF0);
                         break;
                     //Type 0x2 - 64-bit address not supported
                 }
@@ -111,7 +115,7 @@ namespace Kernel.Hardware.PCI
         }
 
         /// <summary>
-        /// The base address byte pointer.
+        ///     The base address byte pointer.
         /// </summary>
         /// <returns>Returns the base address byte pointer.</returns>
         public byte* BaseAddress()
@@ -120,7 +124,7 @@ namespace Kernel.Hardware.PCI
         }
 
         /// <summary>
-        /// Whether the base address is IO or not.
+        ///     Whether the base address is IO or not.
         /// </summary>
         /// <returns>Whether the base address is IO or not.</returns>
         public bool IsIO()
@@ -129,7 +133,7 @@ namespace Kernel.Hardware.PCI
         }
 
         /// <summary>
-        /// The PCI device's required memory size.
+        ///     The PCI device's required memory size.
         /// </summary>
         /// <returns>The size.</returns>
         public uint Size()

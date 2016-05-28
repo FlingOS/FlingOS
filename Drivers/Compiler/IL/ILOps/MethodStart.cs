@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.IL.ILOps
 {
     /// <summary>
-    /// Custom IL op that is inserted as the first IL op in a method.
+    ///     Custom IL op that is inserted as the first IL op in a method.
     /// </summary>
     /// <remarks>
-    /// This must at least have an empty stub implementation or the compiler
-    /// will fail to execute. It was added so x86_32 architecture could
-    /// do some stack management at the start of the method (e.g. allocating
-    /// space for local variables).
+    ///     This must at least have an empty stub implementation or the compiler
+    ///     will fail to execute. It was added so x86_32 architecture could
+    ///     do some stack management at the start of the method (e.g. allocating
+    ///     space for local variables).
     /// </remarks>
     public class MethodStart : ILOp
     {

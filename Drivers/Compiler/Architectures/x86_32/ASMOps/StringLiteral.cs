@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
+
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.ASM;
+using Drivers.Compiler.ASM.ASMOps;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class StringLiteral : ASM.ASMOps.ASMStringLiteral
+    public class StringLiteral : ASMStringLiteral
     {
         public StringLiteral(string id, string stringTypeId, byte[] lengthBytes, char[] characters)
             : base(id, stringTypeId, lengthBytes, characters)
         {
         }
 
-        public override string Convert(ASM.ASMBlock theBlock)
+        public override string Convert(ASMBlock theBlock)
         {
             StringBuilder LiteralASM = new StringBuilder();
             //This is UTF-16 (Unicode)/ASCII text
@@ -60,12 +61,12 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             {
                 //Put in string characters (as words)
                 LiteralASM.Append("\ndw ");
-                for (int i = 0; i < (Characters.Length - 1); i++)
+                for (int i = 0; i < Characters.Length - 1; i++)
                 {
-                    LiteralASM.Append((uint)Characters[i]);
+                    LiteralASM.Append((uint) Characters[i]);
                     LiteralASM.Append(", ");
                 }
-                LiteralASM.Append((uint)Characters.Last());
+                LiteralASM.Append((uint) Characters.Last());
             }
 
             LiteralASM.AppendLine();

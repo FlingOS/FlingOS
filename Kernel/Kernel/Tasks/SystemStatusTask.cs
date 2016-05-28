@@ -23,7 +23,7 @@
 ////
 //// ------------------------------------------------------------------------------ //
 //#endregion
-    
+
 //using System;
 //using Kernel.FOS_System;
 //using Kernel.FOS_System.Collections;
@@ -46,7 +46,7 @@
 
 //            // Wait for other system startup to occur
 //            SystemCalls.SleepThread(1000);
-            
+
 //            MainConsole = new Consoles.AdvancedConsole();
 //            MainConsole.ScreenHeight = 7;
 //            MainConsole.LineLength = 55;
@@ -77,7 +77,7 @@
 //                    ((Consoles.AdvancedConsole)StatusConsole).DrawBottomBorder();
 //                    ((Consoles.AdvancedConsole)StatusConsole).DrawLeftBorder();
 //                    ((Consoles.AdvancedConsole)MainConsole).DrawBottomBorder();
-            
+
 //                    StatusConsole.Clear();
 //                    if (StatusLine1)
 //                    {
@@ -170,3 +170,4 @@
 //        }
 //    }
 //}
+

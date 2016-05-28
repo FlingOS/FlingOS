@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,28 +23,29 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
+using MethodInfo = System.Reflection.MethodInfo;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class MethodEnd : IL.ILOps.MethodEnd
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            Type retType = (conversionState.Input.TheMethodInfo.IsConstructor ?
-                typeof(void) : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType);
-            Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+            Type retType = conversionState.Input.TheMethodInfo.IsConstructor
+                ? typeof(void)
+                : ((MethodInfo) conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
+            TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
             if (retTypeInfo.SizeOnStackInBytes != 0)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Pop();
@@ -51,22 +53,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown when the return value is a float or the size on the stack
-        /// in bytes is not 4 or 8 bytes.
+        ///     Thrown when the return value is a float or the size on the stack
+        ///     in bytes is not 4 or 8 bytes.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Store the return value
             //Get the return type
-            Type retType = (conversionState.Input.TheMethodInfo.IsConstructor ?
-                typeof(void) : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType);
-            Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+            Type retType = conversionState.Input.TheMethodInfo.IsConstructor
+                ? typeof(void)
+                : ((MethodInfo) conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
+            TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
             //Get the size of the return type on stack
             int retSize = retTypeInfo.SizeOnStackInBytes;
             //If the size isn't 0 (i.e. isn't "void" which has no return value)
@@ -86,16 +89,34 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //      - read the calling convention spec
                 else if (retSize == 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "8($fp)", Src = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Dest = "8($fp)",
+                        Src = "$t0",
+                        MoveType = Mov.MoveTypes.SrcRegToDestMemory
+                    });
                 }
                 else if (retSize == 8)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "8($fp)", Src = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Dest = "8($fp)",
+                        Src = "$t0",
+                        MoveType = Mov.MoveTypes.SrcRegToDestMemory
+                    });
 
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "12($fp)", Src = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcRegToDestMemory });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Dest = "12($fp)",
+                        Src = "$t0",
+                        MoveType = Mov.MoveTypes.SrcRegToDestMemory
+                    });
                 }
                 else
                 {
@@ -110,16 +131,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 //Get the total size of all locals
                 int totalBytes = 0;
-                foreach (Types.VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
+                foreach (VariableInfo aLocal in conversionState.Input.TheMethodInfo.LocalInfos)
                 {
                     totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
                 }
                 //Move esp past the locals
-                conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = totalBytes.ToString(), Dest = "$sp" });
+                conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = totalBytes.ToString(), Dest = "$sp"});
             }
 
             //Restore ebp to previous method's ebp
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$fp" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$fp"});
             //This pop also takes last value off the stack which
             //means top item is the return address
             //So ret command can now be correctly executed.

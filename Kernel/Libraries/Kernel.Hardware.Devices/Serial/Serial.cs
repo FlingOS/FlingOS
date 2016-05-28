@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,63 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Processes;
+using String = Kernel.FOS_System.String;
 
 namespace Kernel.Hardware.IO.Serial
 {
     public class Serial : Device
     {
-        public enum COMPorts : ushort
-        {
-            COM1 = 0x3F8,
-            COM2 = 0x2F8,
-            COM3 = 0x3E8,
-            COM4 = 0x2E8
-        }
-        public enum ParityBits : byte
-        {
-            None = 0x00,
-            Odd = 0x08,
-            Even = 0x18,
-            Mark = 0x28,
-            Space = 0x38
-        }
-        [Flags]
-        public enum Interrupts : byte
-        {
-            None = 0x0,
-            DataAvailable = 0x1,
-            TransmitterEmpty = 0x2,
-            BreakOrError = 0x4,
-            StatusChange = 0x8
-        }
-
-        [Flags]
-        public enum LineControlFlags : byte
-        {
-            None = 0x0,
-            DivisorLatchAccessBit = 0x80
-        }
-
-        [Flags]
-        public enum LineStatusFlags : byte
-        {
-            DataAvailable = 0x1,
-            OverrunError = 0x2,
-            ParityError = 0x4,
-            FramingError = 0x8,
-            BreakSignalReceived = 0x10,
-            THREmpty = 0x20,
-            THREmptyAndLineIdel = 0x40,
-            ErronousDataInFIFO = 0x80
-        }
-
         public enum BaudRates : byte
         {
             _115200 = 0x1,
@@ -124,17 +80,20 @@ namespace Kernel.Hardware.IO.Serial
             _480 = 0xF0
         }
 
+        public enum COMPorts : ushort
+        {
+            COM1 = 0x3F8,
+            COM2 = 0x2F8,
+            COM3 = 0x3E8,
+            COM4 = 0x2E8
+        }
+
         public enum DataBits : byte
         {
             _5 = 0x0,
             _6 = 0x1,
             _7 = 0x2,
             _8 = 0x3
-        }
-        public enum StopBits : byte
-        {
-            One = 0x0,
-            OneAndHalf_Or_Two = 0x2
         }
 
         [Flags]
@@ -154,6 +113,36 @@ namespace Kernel.Hardware.IO.Serial
         }
 
         [Flags]
+        public enum Interrupts : byte
+        {
+            None = 0x0,
+            DataAvailable = 0x1,
+            TransmitterEmpty = 0x2,
+            BreakOrError = 0x4,
+            StatusChange = 0x8
+        }
+
+        [Flags]
+        public enum LineControlFlags : byte
+        {
+            None = 0x0,
+            DivisorLatchAccessBit = 0x80
+        }
+
+        [Flags]
+        public enum LineStatusFlags : byte
+        {
+            DataAvailable = 0x1,
+            OverrunError = 0x2,
+            ParityError = 0x4,
+            FramingError = 0x8,
+            BreakSignalReceived = 0x10,
+            THREmpty = 0x20,
+            THREmptyAndLineIdel = 0x40,
+            ErronousDataInFIFO = 0x80
+        }
+
+        [Flags]
         public enum ModemControlFlags : byte
         {
             DTR = 0x1,
@@ -161,45 +150,47 @@ namespace Kernel.Hardware.IO.Serial
             AutoFlowControl = 0x10
         }
 
-        protected COMPorts port;
-        protected DataBits dataBits;
-        protected ParityBits parityBits;
-        protected StopBits stopBits;
-        protected BaudRates baudRate;
-        protected Interrupts interrupts;
-        protected FIFOControlFlags FIFOTriggerLevel = FIFOControlFlags.TriggerLevel_14Byte;
+        public enum ParityBits : byte
+        {
+            None = 0x00,
+            Odd = 0x08,
+            Even = 0x18,
+            Mark = 0x28,
+            Space = 0x38
+        }
 
-        protected IOPort Data;
-        protected IOPort InterruptEnable;
+        public enum StopBits : byte
+        {
+            One = 0x0,
+            OneAndHalf_Or_Two = 0x2
+        }
+
+        [Group(Name = "IsolatedKernel_Hardware_Devices")] public static Serial COM1;
+
+        public static Serial COM2;
+        public static Serial COM3;
         protected IOPort BaudLSB;
         protected IOPort BaudMSB;
+        protected BaudRates baudRate;
+
+        protected IOPort Data;
+        protected DataBits dataBits;
         protected IOPort FIFOControl;
+        protected FIFOControlFlags FIFOTriggerLevel = FIFOControlFlags.TriggerLevel_14Byte;
+        protected IOPort InterruptEnable;
+        protected Interrupts interrupts;
         protected IOPort LineControl;
-        protected IOPort ModemControl;
         protected IOPort LineStatus;
+        protected IOPort ModemControl;
         protected IOPort ModemStatus;
+        protected ParityBits parityBits;
+
+        protected COMPorts port;
         protected IOPort Scratch;
+        protected StopBits stopBits;
 
-        protected bool TransmitReady
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return (LineStatus.Read_Byte() & (byte)LineStatusFlags.THREmpty) != 0;
-            }
-        }
-        protected bool ReceiveReady
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return (LineStatus.Read_Byte() & (byte)LineStatusFlags.DataAvailable) != 0;
-            }
-        }
-
-        public Serial(COMPorts port, DataBits dataBits, ParityBits parityBits, StopBits stopBits, BaudRates baudRate, Interrupts interrupts)
+        public Serial(COMPorts port, DataBits dataBits, ParityBits parityBits, StopBits stopBits, BaudRates baudRate,
+            Interrupts interrupts)
         {
             this.port = port;
             this.dataBits = dataBits;
@@ -211,35 +202,45 @@ namespace Kernel.Hardware.IO.Serial
             Init();
         }
 
-        protected void Init()
+        protected bool TransmitReady
         {
-            Data = new IOPort((ushort)(port + 0));
-            InterruptEnable = new IOPort((ushort)(port + 1));
-            BaudLSB = new IOPort((ushort)(port + 0));
-            BaudMSB = new IOPort((ushort)(port + 1));
-            FIFOControl = new IOPort((ushort)(port + 2));
-            LineControl = new IOPort((ushort)(port + 3));
-            ModemControl = new IOPort((ushort)(port + 4));
-            LineStatus = new IOPort((ushort)(port + 5));
-            ModemStatus = new IOPort((ushort)(port + 6));
-            Scratch = new IOPort((ushort)(port + 7));
-
-            InterruptEnable.Write_Byte((byte)interrupts);
-            
-            LineControl.Write_Byte((byte)LineControlFlags.DivisorLatchAccessBit);
-            BaudLSB.Write_Byte((byte)((byte)baudRate & 0x00FF));
-            BaudMSB.Write_Byte((byte)((byte)baudRate & 0xFF00));
-            
-            // This also clears the DLAB flag
-            LineControl.Write_Byte((byte)((byte)dataBits | (byte)stopBits | (byte)parityBits));
-            FIFOControl.Write_Byte((byte)(FIFOControlFlags.Enable | 
-                                          FIFOControlFlags.ClearReceive | FIFOControlFlags.ClearTransmit |
-                                          FIFOTriggerLevel));
-            ModemControl.Write_Byte((byte)(ModemControlFlags.DTR | ModemControlFlags.RTS));
+            [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte) LineStatusFlags.THREmpty) != 0; }
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+        protected bool ReceiveReady
+        {
+            [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte) LineStatusFlags.DataAvailable) != 0; }
+        }
+
+        protected void Init()
+        {
+            Data = new IOPort((ushort) (port + 0));
+            InterruptEnable = new IOPort((ushort) (port + 1));
+            BaudLSB = new IOPort((ushort) (port + 0));
+            BaudMSB = new IOPort((ushort) (port + 1));
+            FIFOControl = new IOPort((ushort) (port + 2));
+            LineControl = new IOPort((ushort) (port + 3));
+            ModemControl = new IOPort((ushort) (port + 4));
+            LineStatus = new IOPort((ushort) (port + 5));
+            ModemStatus = new IOPort((ushort) (port + 6));
+            Scratch = new IOPort((ushort) (port + 7));
+
+            InterruptEnable.Write_Byte((byte) interrupts);
+
+            LineControl.Write_Byte((byte) LineControlFlags.DivisorLatchAccessBit);
+            BaudLSB.Write_Byte((byte) ((byte) baudRate & 0x00FF));
+            BaudMSB.Write_Byte((byte) ((byte) baudRate & 0xFF00));
+
+            // This also clears the DLAB flag
+            LineControl.Write_Byte((byte) ((byte) dataBits | (byte) stopBits | (byte) parityBits));
+            FIFOControl.Write_Byte((byte) (FIFOControlFlags.Enable |
+                                           FIFOControlFlags.ClearReceive | FIFOControlFlags.ClearTransmit |
+                                           FIFOTriggerLevel));
+            ModemControl.Write_Byte((byte) (ModemControlFlags.DTR | ModemControlFlags.RTS));
+        }
+
+        [NoGC]
+        [NoDebug]
         public void Write(byte val)
         {
             while (!TransmitReady)
@@ -249,8 +250,9 @@ namespace Kernel.Hardware.IO.Serial
             }
             Data.Write_Byte(val);
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public byte Read()
         {
             while (!ReceiveReady)
@@ -261,39 +263,40 @@ namespace Kernel.Hardware.IO.Serial
             return Data.Read_Byte();
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
-        public void Write(FOS_System.String str)
+        [NoGC]
+        [NoDebug]
+        public void Write(String str)
         {
             for (int i = 0; i < str.length; i++)
             {
-                Write((byte)str[i]);
+                Write((byte) str[i]);
             }
         }
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Devices")]
-        public static Serial COM1;
         public static void InitCOM1()
         {
             if (COM1 == null)
             {
-                COM1 = new Serial(COMPorts.COM1, DataBits._8, ParityBits.None, StopBits.One, BaudRates._115200, Interrupts.None);
+                COM1 = new Serial(COMPorts.COM1, DataBits._8, ParityBits.None, StopBits.One, BaudRates._115200,
+                    Interrupts.None);
             }
         }
-        public static Serial COM2;
+
         public static void InitCOM2()
         {
             if (COM2 == null)
             {
-                COM2 = new Serial(COMPorts.COM2, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200, Interrupts.None);
+                COM2 = new Serial(COMPorts.COM2, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200,
+                    Interrupts.None);
             }
         }
-        public static Serial COM3;
+
         public static void InitCOM3()
         {
             if (COM3 == null)
             {
-                COM3 = new Serial(COMPorts.COM3, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200, Interrupts.None);
+                COM3 = new Serial(COMPorts.COM3, DataBits._8, ParityBits.None, StopBits.One, BaudRates._19200,
+                    Interrupts.None);
             }
         }
     }

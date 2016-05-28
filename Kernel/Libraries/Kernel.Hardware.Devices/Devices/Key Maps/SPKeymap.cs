@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,9 +23,8 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
 
 using Kernel.FOS_System.Collections;
 
@@ -33,7 +33,7 @@ namespace Kernel.Hardware.Devices
     public abstract partial class Keyboard : Device
     {
         /// <summary>
-        /// Creates the Spanish keyboard mapping
+        ///     Creates the Spanish keyboard mapping
         /// </summary>
         protected void CreateSPKeymap()
         {
@@ -49,6 +49,7 @@ namespace Kernel.Hardware.Devices
             //TODO: Alt special symbols
 
             #region Letters
+
             AddKey(0x10, 'q', KeyboardKey.Q);
             AddKey(0x100000, 'Q', KeyboardKey.Q);
             AddKey(0x11, 'w', KeyboardKey.W);
@@ -105,9 +106,11 @@ namespace Kernel.Hardware.Devices
             AddKey(0x310000, 'N', KeyboardKey.N);
             AddKey(0x32, 'm', KeyboardKey.M);
             AddKey(0x320000, 'M', KeyboardKey.M);
+
             #endregion
 
             #region Digits
+
             AddKey(0x29, 'º', KeyboardKey.NoName);
             AddKey(0x290000, 'ª', KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);
@@ -134,14 +137,15 @@ namespace Kernel.Hardware.Devices
             #endregion
 
             #region Special
-            AddKeyWithAndWithoutShift(0x0E, '\b', KeyboardKey.Backspace);         // Backspace
-            AddKeyWithAndWithoutShift(0x0F, '\t', KeyboardKey.Tab);               // Tabulator
-            AddKeyWithAndWithoutShift(0x1C, '\n', KeyboardKey.Enter);             // Enter
-            AddKeyWithAndWithoutShift(0x39, ' ', KeyboardKey.Spacebar);           // Space
-            AddKeyWithAndWithoutShift(0x4b, '\u2190', KeyboardKey.LeftArrow);     // Left arrow
-            AddKeyWithAndWithoutShift(0x48, '\u2191', KeyboardKey.UpArrow);       // Up arrow
-            AddKeyWithAndWithoutShift(0x4d, '\u2192', KeyboardKey.RightArrow);    // Right arrow
-            AddKeyWithAndWithoutShift(0x50, '\u2193', KeyboardKey.DownArrow);     // Down arrow
+
+            AddKeyWithAndWithoutShift(0x0E, '\b', KeyboardKey.Backspace); // Backspace
+            AddKeyWithAndWithoutShift(0x0F, '\t', KeyboardKey.Tab); // Tabulator
+            AddKeyWithAndWithoutShift(0x1C, '\n', KeyboardKey.Enter); // Enter
+            AddKeyWithAndWithoutShift(0x39, ' ', KeyboardKey.Spacebar); // Space
+            AddKeyWithAndWithoutShift(0x4b, '\u2190', KeyboardKey.LeftArrow); // Left arrow
+            AddKeyWithAndWithoutShift(0x48, '\u2191', KeyboardKey.UpArrow); // Up arrow
+            AddKeyWithAndWithoutShift(0x4d, '\u2192', KeyboardKey.RightArrow); // Right arrow
+            AddKeyWithAndWithoutShift(0x50, '\u2193', KeyboardKey.DownArrow); // Down arrow
 
             AddKeyWithShift(0x5b, KeyboardKey.LeftWindows);
             AddKeyWithShift(0x5c, KeyboardKey.RightWindows);
@@ -173,9 +177,11 @@ namespace Kernel.Hardware.Devices
             AddKeyWithShift(0x58, KeyboardKey.F12);
 
             AddKeyWithShift(0x1, KeyboardKey.Escape);
+
             #endregion
 
             #region Punctuation and Signs
+
             AddKey(0x2B, 'ç', KeyboardKey.NoName);
             AddKey(0x2B0000, 'Ç', KeyboardKey.NoName);
             //AddKey(0x29, '`', KeyboardKey.NoName);
@@ -201,8 +207,8 @@ namespace Kernel.Hardware.Devices
             AddKeyWithAndWithoutShift(0x4e, '+', KeyboardKey.OemPlus);
 
             AddKeyWithAndWithoutShift(0x37, '*', KeyboardKey.Multiply);
+
             #endregion
         }
-
     }
 }

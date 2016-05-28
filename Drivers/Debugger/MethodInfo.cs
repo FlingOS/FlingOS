@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,29 +23,26 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Debugger
 {
     public class MethodInfo
     {
-        public string ID;
         public bool ApplyDebug;
         public bool ApplyGC;
+
+        public Dictionary<int, VariableInfo> Arguments = new Dictionary<int, VariableInfo>();
+        public string ID;
         public int IDValue;
         public bool IsConstructor;
         public bool IsPlugged;
         public bool IsStatic;
-        public string Signature;
-        public int ReturnSize;
-
-        public Dictionary<int, VariableInfo> Arguments = new Dictionary<int, VariableInfo>();
         public Dictionary<int, VariableInfo> Locals = new Dictionary<int, VariableInfo>();
+        public int ReturnSize;
+        public string Signature;
     }
 }

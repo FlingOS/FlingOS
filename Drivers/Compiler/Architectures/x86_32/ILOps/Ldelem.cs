@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldelem : IL.ILOps.Ldelem
     {
@@ -45,22 +46,22 @@ namespace Drivers.Compiler.Architectures.x86
             int sizeToPush = 4;
             bool isFloat = false;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldelem:
-                    {
-                        int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
-                        elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-                    }
+                {
+                    int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                    elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                }
                     break;
 
                 case OpCodes.Ldelema:
-                    {
-                        int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
-                        elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                {
+                    int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                    elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
 
-                        pushValue = false;
-                    }
+                    pushValue = false;
+                }
                     break;
 
                 case OpCodes.Ldelem_R4:
@@ -73,7 +74,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ldelem_I2:
                     sizeToPush = 2;
-                    elementType = typeof(Int16);
+                    elementType = typeof(short);
                     break;
 
                 case OpCodes.Ldelem_U1:
@@ -82,7 +83,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ldelem_U2:
                     sizeToPush = 2;
-                    elementType = typeof(UInt16);
+                    elementType = typeof(ushort);
                     break;
 
                 case OpCodes.Ldelem_Ref:
@@ -90,20 +91,20 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
 
                 case OpCodes.Ldelem_U4:
-                    elementType = typeof(UInt32);
+                    elementType = typeof(uint);
                     break;
 
                 case OpCodes.Ldelem_I4:
-                    elementType = typeof(Int32);
+                    elementType = typeof(int);
                     break;
 
                 case OpCodes.Ldelem_I8:
                     sizeToPush = 8;
-                    elementType = typeof(Int64);
+                    elementType = typeof(long);
                     break;
             }
 
-            Types.TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
+            TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
 
             //      5.2. Pop index and array ref from our stack
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
@@ -114,19 +115,19 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue ? (elementType == null || elemTypeInfo.IsGCManaged) : false,
-                isValue = pushValue ? (elementType != null && elemTypeInfo.IsValueType) : false
+                isGCManaged = pushValue ? elementType == null || elemTypeInfo.IsGCManaged : false,
+                isValue = pushValue ? elementType != null && elemTypeInfo.IsValueType : false
             });
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if constant is a floating point number.
+        ///     Thrown if constant is a floating point number.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -136,40 +137,42 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.AddExternalLabel(conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID);
 
             Type elementType = null;
-            Types.TypeInfo elemTypeInfo = null;
+            TypeInfo elemTypeInfo = null;
             bool pushValue = true;
             int sizeToPush = 4;
             int sizeToLoad = 4;
             bool signExtend = true;
             bool isFloat = false;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldelem:
-                    {
-                        signExtend = false;
-                        //Load the metadata token used to get the type info
-                        int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
-                        //Get the type info for the element type
-                        elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-                        elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
-                        sizeToLoad = elemTypeInfo.IsValueType ? elemTypeInfo.SizeOnHeapInBytes : elemTypeInfo.SizeOnStackInBytes;
-                        sizeToPush = elemTypeInfo.SizeOnStackInBytes;
-                    }
+                {
+                    signExtend = false;
+                    //Load the metadata token used to get the type info
+                    int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                    //Get the type info for the element type
+                    elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
+                    sizeToLoad = elemTypeInfo.IsValueType
+                        ? elemTypeInfo.SizeOnHeapInBytes
+                        : elemTypeInfo.SizeOnStackInBytes;
+                    sizeToPush = elemTypeInfo.SizeOnStackInBytes;
+                }
                     break;
 
                 case OpCodes.Ldelema:
-                    {
-                        signExtend = false;
-                        //Load the metadata token used to get the type info
-                        int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
-                        //Get the type info for the element type
-                        elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-                        elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
-                        sizeToPush = 4;
-                        sizeToLoad = 0;
-                        pushValue = false;
-                    }
+                {
+                    signExtend = false;
+                    //Load the metadata token used to get the type info
+                    int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
+                    //Get the type info for the element type
+                    elementType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
+                    elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
+                    sizeToPush = 4;
+                    sizeToLoad = 0;
+                    pushValue = false;
+                }
                     break;
 
                 case OpCodes.Ldelem_R4:
@@ -186,7 +189,7 @@ namespace Drivers.Compiler.Architectures.x86
                 case OpCodes.Ldelem_I2:
                     sizeToPush = 4;
                     sizeToLoad = 2;
-                    elementType = typeof(Int16);
+                    elementType = typeof(short);
                     elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
 
@@ -201,7 +204,7 @@ namespace Drivers.Compiler.Architectures.x86
                     sizeToPush = 4;
                     sizeToLoad = 2;
                     signExtend = false;
-                    elementType = typeof(UInt16);
+                    elementType = typeof(ushort);
                     elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
 
@@ -215,14 +218,14 @@ namespace Drivers.Compiler.Architectures.x86
 
                 case OpCodes.Ldelem_U4:
                     signExtend = false;
-                    elementType = typeof(UInt32);
+                    elementType = typeof(uint);
                     elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     sizeToPush = 4;
                     sizeToLoad = 4;
                     break;
 
                 case OpCodes.Ldelem_I4:
-                    elementType = typeof(Int32);
+                    elementType = typeof(int);
                     elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     sizeToPush = 4;
                     sizeToLoad = 4;
@@ -231,7 +234,7 @@ namespace Drivers.Compiler.Architectures.x86
                 case OpCodes.Ldelem_I8:
                     sizeToPush = 8;
                     sizeToLoad = 8;
-                    elementType = typeof(Int64);
+                    elementType = typeof(long);
                     elemTypeInfo = conversionState.TheILLibrary.GetTypeInfo(elementType);
                     break;
             }
@@ -259,8 +262,8 @@ namespace Drivers.Compiler.Architectures.x86
             // 0. Index of element to get as Int32 (dword)
             // 1. Array object reference as address (dword)
 
-            Types.TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
-                
+            TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
+
             // 1. Check array reference is not null
             //      1.1. Move array ref into EAX
             //      1.2. Compare EAX (array ref) to 0
@@ -268,16 +271,24 @@ namespace Drivers.Compiler.Architectures.x86
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
 
             //      1.1. Move array ref into EAX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+4]", Dest = "EAX" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "EAX"});
             //      1.2. Compare EAX (array ref) to 0
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
+            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "Continue1" });
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpNotZero,
+                DestILPosition = currOpPosition,
+                Extension = "Continue1"
+            });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
-            conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue1" });
+            conversionState.Append(new ASMOps.Call()
+            {
+                Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
+            });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue1"});
 
             // 2. Check array element type is correct
             //      2.1. Move element type ref into EAX
@@ -321,30 +332,51 @@ namespace Drivers.Compiler.Architectures.x86
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
 
             //      3.1. Move index into EAX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
             //      3.2. Move array length into ECX
             //              - Calculate the offset of the field from the start of the array object
             int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
 
             //              - Move array ref into EBX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+4]", Dest = "EBX" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "EBX"});
             //              - Move length value ([EBX+offset]) into EBX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+" + lengthOffset.ToString() + "]", Dest = "EBX" });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Dword,
+                Src = "[EBX+" + lengthOffset.ToString() + "]",
+                Dest = "EBX"
+            });
             //      3.2. Compare EAX to 0
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
+            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
             //      3.3. Jump if greater than to next test condition (3.5)
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpGreaterThanEqual, DestILPosition = currOpPosition, Extension = "Continue3_1" });
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpGreaterThanEqual,
+                DestILPosition = currOpPosition,
+                Extension = "Continue3_1"
+            });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_1" });
+            conversionState.Append(new ASMOps.Call()
+            {
+                Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID
+            });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue3_1"});
             //      3.5. Compare EAX to EBX
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "EBX" });
+            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "EBX"});
             //      3.6. Jump if less than to continue execution further down
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpLessThan, DestILPosition = currOpPosition, Extension = "Continue3_2" });
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpLessThan,
+                DestILPosition = currOpPosition,
+                Extension = "Continue3_2"
+            });
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID });
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue3_2" });
-            
+            conversionState.Append(new ASMOps.Call()
+            {
+                Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID
+            });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue3_2"});
+
             // 4. Calculate address of element
             //      4.1. Pop index into EBX
             //      4.2. Pop array ref into EAX
@@ -360,44 +392,83 @@ namespace Drivers.Compiler.Architectures.x86
             //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
 
             //      4.1. Pop index into EBX
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
             //      4.2. Move array ref into EAX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP]", Dest = "EAX" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
             //      4.3. Move element type ref (from array ref) into EAX
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + elemTypeOffset.ToString() + "]", Dest = "EAX" });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Dword,
+                Src = "[EAX+" + elemTypeOffset.ToString() + "]",
+                Dest = "EAX"
+            });
             //      4.4. Move IsValueType (from element ref type) into ECX
             int isValueTypeOffset = conversionState.GetTypeFieldOffset("IsValueType");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "ECX" });
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + isValueTypeOffset.ToString() + "]", Dest = "CL" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "ECX"});
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Byte,
+                Src = "[EAX+" + isValueTypeOffset.ToString() + "]",
+                Dest = "CL"
+            });
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "ECX", Arg2 = "0" });
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpZero, DestILPosition = currOpPosition, Extension = "Continue4_1" });
+            conversionState.Append(new Cmp() {Arg1 = "ECX", Arg2 = "0"});
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpZero,
+                DestILPosition = currOpPosition,
+                Extension = "Continue4_1"
+            });
             //      4.6. Move Size (from element type ref) into EAX
             int sizeOffset = conversionState.GetTypeFieldOffset("Size");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + sizeOffset.ToString() + "]", Dest = "EAX" });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Dword,
+                Src = "[EAX+" + sizeOffset.ToString() + "]",
+                Dest = "EAX"
+            });
             //      4.7. Skip over 4.8.
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "Continue4_2" });
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.Jump,
+                DestILPosition = currOpPosition,
+                Extension = "Continue4_2"
+            });
             //      4.8. Move StackSize (from element type ref) into EAX
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_1" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue4_1"});
             int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + stackSizeOffset + "]", Dest = "EAX" });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Dword,
+                Src = "[EAX+" + stackSizeOffset + "]",
+                Dest = "EAX"
+            });
             //      4.9. Mulitply EAX by EBX (index by element size)
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Continue4_2" });
-            conversionState.Append(new ASMOps.Mul() { Arg = "EBX" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue4_2"});
+            conversionState.Append(new ASMOps.Mul() {Arg = "EBX"});
             //      4.10. Pop array ref into EBX
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
             //      4.11. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
+
             #region Offset calculation
+
             {
-                Types.FieldInfo highestOffsetFieldInfo = arrayTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderByDescending(x => x.OffsetInBytes).First();
-                Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(highestOffsetFieldInfo.UnderlyingInfo.FieldType);
-                allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes + (fieldTypeInfo.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : fieldTypeInfo.SizeOnStackInBytes);
+                FieldInfo highestOffsetFieldInfo =
+                    arrayTypeInfo.FieldInfos.Where(x => !x.IsStatic).OrderByDescending(x => x.OffsetInBytes).First();
+                TypeInfo fieldTypeInfo =
+                    conversionState.TheILLibrary.GetTypeInfo(highestOffsetFieldInfo.UnderlyingInfo.FieldType);
+                allFieldsOffset = highestOffsetFieldInfo.OffsetInBytes +
+                                  (fieldTypeInfo.IsValueType
+                                      ? fieldTypeInfo.SizeOnHeapInBytes
+                                      : fieldTypeInfo.SizeOnStackInBytes);
             }
+
             #endregion
-            conversionState.Append(new ASMOps.Add() { Src = allFieldsOffset.ToString(), Dest = "EBX" });
+
+            conversionState.Append(new ASMOps.Add() {Src = allFieldsOffset.ToString(), Dest = "EBX"});
             //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
-            conversionState.Append(new ASMOps.Add() { Src = "EBX", Dest = "EAX" });
+            conversionState.Append(new ASMOps.Add() {Src = "EBX", Dest = "EAX"});
 
             // 5. Push the element onto the stack
             //      5.1. Push value at [EAX] (except for LdElemA op in which case just push address)
@@ -406,26 +477,26 @@ namespace Drivers.Compiler.Architectures.x86
                 switch (sizeToLoad)
                 {
                     case 1:
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EBX" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX]", Dest = "BL" });
+                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
+                        conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "[EAX]", Dest = "BL"});
                         if (signExtend)
                         {
                             throw new NotSupportedException("Sign extend byte to 4 bytes in LdElem not supported!");
                         }
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EBX" });
+                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
                         break;
                     case 2:
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EBX" });
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EAX]", Dest = "BX" });
+                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
+                        conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "[EAX]", Dest = "BX"});
                         if (signExtend)
                         {
-                            conversionState.Append(new ASMOps.Cwde());
+                            conversionState.Append(new Cwde());
                         }
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EBX" });
+                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
                         break;
                     default:
                         int additionalSpace = sizeToPush - sizeToLoad;
-                        int overhangBytes = (4 - additionalSpace) % 4;
+                        int overhangBytes = (4 - additionalSpace)%4;
                         if (additionalSpace > 0)
                         {
                             // Note: The difference will always be < 4 because the only reason the two would be different is a value type
@@ -433,22 +504,42 @@ namespace Drivers.Compiler.Architectures.x86
                             switch (overhangBytes)
                             {
                                 case 1:
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
-                                    conversionState.Append(new ASMOps.Xor() { Src = "EBX", Dest = "EBX" });
-                                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + (sizeToLoad - 1) + "]", Dest = "BL" });
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
+                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "0"});
+                                    conversionState.Append(new ASMOps.Xor() {Src = "EBX", Dest = "EBX"});
+                                    conversionState.Append(new Mov()
+                                    {
+                                        Size = OperandSize.Byte,
+                                        Src = "[EAX+" + (sizeToLoad - 1) + "]",
+                                        Dest = "BL"
+                                    });
+                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
                                     break;
                                 case 2:
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "0" });
-                                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EAX+" + (sizeToLoad - 2) + "]", Dest = "BX" });
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
+                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "0"});
+                                    conversionState.Append(new Mov()
+                                    {
+                                        Size = OperandSize.Word,
+                                        Src = "[EAX+" + (sizeToLoad - 2) + "]",
+                                        Dest = "BX"
+                                    });
+                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
                                     break;
                                 case 3:
-                                    conversionState.Append(new ASMOps.Xor() { Src = "EBX", Dest = "EBX" });
-                                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EAX+" + (sizeToLoad - 1) + "]", Dest = "BL" });
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
-                                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EAX+" + (sizeToLoad - 3) + "]", Dest = "BX" });
-                                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "BX" });
+                                    conversionState.Append(new ASMOps.Xor() {Src = "EBX", Dest = "EBX"});
+                                    conversionState.Append(new Mov()
+                                    {
+                                        Size = OperandSize.Byte,
+                                        Src = "[EAX+" + (sizeToLoad - 1) + "]",
+                                        Dest = "BL"
+                                    });
+                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
+                                    conversionState.Append(new Mov()
+                                    {
+                                        Size = OperandSize.Word,
+                                        Src = "[EAX+" + (sizeToLoad - 3) + "]",
+                                        Dest = "BX"
+                                    });
+                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
                                     break;
                             }
                         }
@@ -456,15 +547,20 @@ namespace Drivers.Compiler.Architectures.x86
 
                         for (int i = sizeToLoad - overhangBytes - 4; i >= 0; i -= 4)
                         {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + i + "]", Dest = "EBX" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EBX" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Dword,
+                                Src = "[EAX+" + i + "]",
+                                Dest = "EBX"
+                            });
+                            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
                         }
                         break;
                 }
             }
             else
             {
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
             }
 
             //      5.2. Pop index and array ref from our stack
@@ -476,8 +572,8 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = sizeToPush,
                 isFloat = isFloat,
                 isNewGCObject = false,
-                isGCManaged = pushValue ? (elementType == null || elemTypeInfo.IsGCManaged) : false,
-                isValue = pushValue ? (elementType != null && elemTypeInfo.IsValueType) : false
+                isGCManaged = pushValue ? elementType == null || elemTypeInfo.IsGCManaged : false,
+                isValue = pushValue ? elementType != null && elemTypeInfo.IsValueType : false
             });
         }
     }

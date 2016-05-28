@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,23 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// Represents an invalid op-code exception.
-    /// Usually thrown by the hardware interrupt.
+    ///     Represents an invalid op-code exception.
+    ///     Usually thrown by the hardware interrupt.
     /// </summary>
-    public class InvalidOpCodeException : Framework.Exception
+    public class InvalidOpCodeException : Exception
     {
         /// <summary>
-        /// Sets the message to "Attempted to execute an invalid op code."
+        ///     Sets the message to "Attempted to execute an invalid op code."
         /// </summary>
         public InvalidOpCodeException()
             : base("Attempted to execute an invalid op code.")

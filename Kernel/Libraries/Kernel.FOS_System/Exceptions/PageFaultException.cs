@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,32 +23,29 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Exceptions
 {
     /// <summary>
-    /// Represents a page fault exception.
-    /// Usually thrown by the hardware interrupt.
+    ///     Represents a page fault exception.
+    ///     Usually thrown by the hardware interrupt.
     /// </summary>
-    public class PageFaultException : FOS_System.Exception
+    public class PageFaultException : Exception
     {
         /// <summary>
-        /// The error code passed with the exception.
-        /// </summary>
-        public uint errorCode;
-        /// <summary>
-        /// The (virtual) address that caused the exception.
+        ///     The (virtual) address that caused the exception.
         /// </summary>
         public uint address;
 
         /// <summary>
-        /// Sets the message to "Page fault"
+        ///     The error code passed with the exception.
+        /// </summary>
+        public uint errorCode;
+
+        /// <summary>
+        ///     Sets the message to "Page fault"
         /// </summary>
         /// <param name="anErrorCode">The error code associated with the page fault.</param>
         /// <param name="anAddress">The address which caused the fault.</param>

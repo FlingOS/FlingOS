@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,30 +23,28 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Isinst : IL.ILOps.Isinst
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             //Weirdly this is not a true/false returning op - it actually returns a null or object ref.
-        } 
+        }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -69,57 +68,77 @@ namespace Drivers.Compiler.Architectures.x86
             //      3.2.2.2   False: Jump back to (3)
 
             // 1. Pop object ref
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-            
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+
             // 1.1. Test if object ref is null:
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EAX", Arg2 = "0" });
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "False1" });
-            
+            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpNotEqual,
+                DestILPosition = currOpPosition,
+                Extension = "False1"
+            });
+
             // 1.1.1 True: Push null and continue
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End" });
-            
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+            conversionState.Append(new Jmp() {JumpType = JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End"});
+
             // 1.1.2 False: Go to 2
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "False1" });
-            
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "False1"});
+
             // 2. Load object type
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX]", Dest = "EBX" });
-            
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[EAX]", Dest = "EBX"});
+
             // 3. Test if object type == provided type:
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             string TestTypeId = theTypeInfo.ID;
             conversionState.AddExternalLabel(TestTypeId);
 
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = TestTypeId, Dest = "ECX" });
+            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = TestTypeId, Dest = "ECX"});
 
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Label3" });
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EBX", Arg2 = "ECX" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Label3"});
+            conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "ECX"});
 
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "False2" });
-            
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpNotEqual,
+                DestILPosition = currOpPosition,
+                Extension = "False2"
+            });
+
             //      3.1 True: Push object ref and continue
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End" });
-            
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+            conversionState.Append(new Jmp() {JumpType = JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End"});
+
             //      3.2 False: 
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "False2" });
-            
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "False2"});
+
             //      3.2.1. Move to base type
             int baseTypeOffset = conversionState.GetTypeFieldOffset("TheBaseType");
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+"+baseTypeOffset+"]", Dest = "EBX" });
-            
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Dword,
+                Src = "[EBX+" + baseTypeOffset + "]",
+                Dest = "EBX"
+            });
+
             //      3.2.2. Test if base type null:
-            conversionState.Append(new ASMOps.Cmp() { Arg1 = "EBX", Arg2 = "0" });
+            conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "0"});
 
             //      3.2.2.2   False: Jump back to (3)
-            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotEqual, DestILPosition = currOpPosition, Extension = "Label3" });
-            
-            //      3.2.2.1   True: Push null and continue
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "0" });
+            conversionState.Append(new Jmp()
+            {
+                JumpType = JmpOp.JumpNotEqual,
+                DestILPosition = currOpPosition,
+                Extension = "Label3"
+            });
 
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
+            //      3.2.2.1   True: Push null and continue
+            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,40 +23,40 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Globalization;
 using System.IO;
 
 namespace Drivers.Debugger
 {
     public class DebugDataReader
     {
-        public Dictionary<string, string> MethodFileMappings = new Dictionary<string, string>();
-        public Dictionary<string, List<string>> DebugOps = new Dictionary<string, List<string>>();
         public Dictionary<uint, List<string>> AddressMappings = new Dictionary<uint, List<string>>();
+        public Dictionary<string, List<string>> DebugOps = new Dictionary<string, List<string>>();
         public Dictionary<string, uint> LabelMappings = new Dictionary<string, uint>();
 
-        private Dictionary<string, string> MethodASMCache = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> MethodASMCache = new Dictionary<string, string>();
+        public Dictionary<string, string> MethodFileMappings = new Dictionary<string, string>();
 
         public Dictionary<string, MethodInfo> Methods = new Dictionary<string, MethodInfo>();
+        private readonly List<string> ProcessedAssemblies = new List<string>();
         public Dictionary<string, TypeInfo> Types = new Dictionary<string, TypeInfo>();
-        private List<string> ProcessedAssemblies = new List<string>();
 
         public void ReadDataFiles(string FolderPath, string AssemblyName)
         {
-            using (StreamReader MethodFileMappingsStr = new StreamReader(Path.Combine(FolderPath, AssemblyName + "_MethodFileMappings.txt")))
+            using (
+                StreamReader MethodFileMappingsStr =
+                    new StreamReader(Path.Combine(FolderPath, AssemblyName + "_MethodFileMappings.txt")))
             {
                 string line;
                 while ((line = MethodFileMappingsStr.ReadLine()) != null)
                 {
                     line = line.Trim();
-                    if (!String.IsNullOrEmpty(line))
+                    if (!string.IsNullOrEmpty(line))
                     {
                         string[] LineParts = line.Split('¬');
                         string MethodLabel = LineParts[0];
@@ -65,14 +66,15 @@ namespace Drivers.Debugger
                 }
             }
 
-            using (StreamReader DebugOpsStr = new StreamReader(Path.Combine(FolderPath, AssemblyName + "_DebugOps.txt")))
+            using (StreamReader DebugOpsStr = new StreamReader(Path.Combine(FolderPath, AssemblyName + "_DebugOps.txt"))
+                )
             {
                 string line;
                 string CurrentMethodLabel = "";
                 while ((line = DebugOpsStr.ReadLine()) != null)
                 {
                     line = line.Trim();
-                    if (!String.IsNullOrEmpty(line))
+                    if (!string.IsNullOrEmpty(line))
                     {
                         if (line.StartsWith("¬"))
                         {
@@ -94,12 +96,12 @@ namespace Drivers.Debugger
                 while ((line = LabelMappingsStr.ReadLine()) != null)
                 {
                     line = line.Trim();
-                    if (!String.IsNullOrEmpty(line))
+                    if (!string.IsNullOrEmpty(line))
                     {
                         string[] LineParts = line.Split('¬');
                         string AddressStr = LineParts[0];
                         string Label = LineParts[1];
-                        uint Address = uint.Parse(AddressStr, System.Globalization.NumberStyles.HexNumber);
+                        uint Address = uint.Parse(AddressStr, NumberStyles.HexNumber);
                         if (!LabelMappings.ContainsKey(Label))
                         {
                             LabelMappings.Add(Label, Address);
@@ -113,6 +115,7 @@ namespace Drivers.Debugger
                 }
             }
         }
+
         public void ReadLibraryInfo(string FolderPath, string AssemblyName)
         {
             using (StreamReader Str = new StreamReader(Path.Combine(FolderPath, AssemblyName + "_Dependencies.txt")))
@@ -121,7 +124,7 @@ namespace Drivers.Debugger
                 while ((line = Str.ReadLine()) != null)
                 {
                     line = line.Trim();
-                    if (!String.IsNullOrEmpty(line))
+                    if (!string.IsNullOrEmpty(line))
                     {
                         if (!ProcessedAssemblies.Contains(line))
                         {
@@ -143,7 +146,7 @@ namespace Drivers.Debugger
                 while ((line = Str.ReadLine()) != null)
                 {
                     line = line.Trim();
-                    if (!String.IsNullOrEmpty(line))
+                    if (!string.IsNullOrEmpty(line))
                     {
                         if (line.StartsWith("¬"))
                         {
@@ -283,36 +286,36 @@ namespace Drivers.Debugger
                                             CurrentMethodInfo.ReturnSize = int.Parse(LineParts[1]);
                                             break;
                                         case "Argument":
-                                            {
-                                                string[] SubParts = LineParts[1].Split('|');
+                                        {
+                                            string[] SubParts = LineParts[1].Split('|');
 
-                                                //Offset|Position|TypeID
-                                                int Offset = int.Parse(SubParts[0]);
-                                                int Position = int.Parse(SubParts[1]);
-                                                string TypeID = SubParts[2];
-                                                CurrentMethodInfo.Arguments.Add(Offset, new VariableInfo()
-                                                {
-                                                    Offset = Offset,
-                                                    Position = Position,
-                                                    TypeID = TypeID
-                                                });
-                                            }
+                                            //Offset|Position|TypeID
+                                            int Offset = int.Parse(SubParts[0]);
+                                            int Position = int.Parse(SubParts[1]);
+                                            string TypeID = SubParts[2];
+                                            CurrentMethodInfo.Arguments.Add(Offset, new VariableInfo()
+                                            {
+                                                Offset = Offset,
+                                                Position = Position,
+                                                TypeID = TypeID
+                                            });
+                                        }
                                             break;
                                         case "Local":
-                                            {
-                                                string[] SubParts = LineParts[1].Split('|');
+                                        {
+                                            string[] SubParts = LineParts[1].Split('|');
 
-                                                //Offset|Position|TypeID
-                                                int Offset = int.Parse(SubParts[0]);
-                                                int Position = int.Parse(SubParts[1]);
-                                                string TypeID = SubParts[2];
-                                                CurrentMethodInfo.Locals.Add(Offset, new VariableInfo()
-                                                {
-                                                    Offset = Offset,
-                                                    Position = Position,
-                                                    TypeID = TypeID
-                                                });
-                                            }
+                                            //Offset|Position|TypeID
+                                            int Offset = int.Parse(SubParts[0]);
+                                            int Position = int.Parse(SubParts[1]);
+                                            string TypeID = SubParts[2];
+                                            CurrentMethodInfo.Locals.Add(Offset, new VariableInfo()
+                                            {
+                                                Offset = Offset,
+                                                Position = Position,
+                                                TypeID = TypeID
+                                            });
+                                        }
                                             break;
                                     }
                                 }

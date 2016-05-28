@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,71 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define ISO9660FileStream_TRACE
 #undef ISO9660FileStream_TRACE
-    
-using System;
 
-using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.IO.ISO9660;
 
 namespace Kernel.FOS_System.IO.Streams.ISO9660
 {
     /// <summary>
-    /// Represents a file stream to a ISO9660 file or ISO9660 directory file.
+    ///     Represents a file stream to a ISO9660 file or ISO9660 directory file.
     /// </summary>
     public class ISO9660FileStream : FileStream
     {
-        //TODO: This implementation has no way of shrinking files - only growing them!
+        public bool ActuallyDoRead = true;
 
         /// <summary>
-        /// The ISO9660 file system to which the file the stream is for belongs.
+        ///     The position (as an offset from the start of the file) of the stream in the file.
         /// </summary>
-        public ISO9660FileSystem TheISO9660FileSystem
-        {
-            get
-            {
-                return (ISO9660FileSystem)TheFile.TheFileSystem;
-            }
-        }
-        /// <summary>
-        /// The ISO9660 file the stream is for.
-        /// </summary>
-        public ISO9660File TheISO9660File
-        {
-            get
-            {
-                return (ISO9660File)TheFile;
-            }
-        }
+        protected ulong position = 0;
+
+        private byte[] ReadSectorBuffer = null;
+        private uint ReadSectorSize = 0;
 
         /// <summary>
-        /// The position (as an offset from the start of the file) of the stream in the file.
-        /// </summary>
-        protected UInt64 position = 0;
-        /// <summary>
-        /// Gets or sets the position (as an offset from the start of the file) of the stream in the file.
-        /// </summary>
-        public override long Position
-        {
-            get
-            {
-                return (long)position;
-            }
-            set
-            {
-                if (value < 0L)
-                {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("ISO9660FileStream.Position value must be > 0!"));
-                }
-                position = (ulong)value;
-            }
-        }
-        
-        /// <summary>
-        /// Initializes a new ISO9660 file stream for the specified file.
+        ///     Initializes a new ISO9660 file stream for the specified file.
         /// </summary>
         /// <param name="aFile">The file to create a stream to.</param>
         public ISO9660FileStream(ISO9660File aFile)
@@ -94,18 +58,48 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
         {
             if (TheISO9660File == null)
             {
-                ExceptionMethods.Throw(new Exception("Could not create ISO9660FileStream. Specified file object was null!"));
+                ExceptionMethods.Throw(
+                    new Exception("Could not create ISO9660FileStream. Specified file object was null!"));
             }
         }
 
-        byte[] ReadSectorBuffer = null;
-        UInt32 ReadSectorSize = 0;
-
-        public bool ActuallyDoRead = true;
+        //TODO: This implementation has no way of shrinking files - only growing them!
 
         /// <summary>
-        /// Reads the specified number of bytes from the stream from the current position into the buffer at the 
-        /// specified offset or as many bytes as are available before the end of the stream is met.
+        ///     The ISO9660 file system to which the file the stream is for belongs.
+        /// </summary>
+        public ISO9660FileSystem TheISO9660FileSystem
+        {
+            get { return (ISO9660FileSystem) TheFile.TheFileSystem; }
+        }
+
+        /// <summary>
+        ///     The ISO9660 file the stream is for.
+        /// </summary>
+        public ISO9660File TheISO9660File
+        {
+            get { return (ISO9660File) TheFile; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
+        public override long Position
+        {
+            get { return (long) position; }
+            set
+            {
+                if (value < 0L)
+                {
+                    ExceptionMethods.Throw(new ArgumentException("ISO9660FileStream.Position value must be > 0!"));
+                }
+                position = (ulong) value;
+            }
+        }
+
+        /// <summary>
+        ///     Reads the specified number of bytes from the stream from the current position into the buffer at the
+        ///     specified offset or as many bytes as are available before the end of the stream is met.
         /// </summary>
         /// <param name="buffer">The byte array to read into.</param>
         /// <param name="offset">The offset within the buffer to start storing read data at.</param>
@@ -116,9 +110,8 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
             //Don't attempt to read a file of 0 size.
             if (TheFile.Size > 0)
             {
-
                 ISO9660FileSystem TheFS = TheISO9660FileSystem;
-                
+
 #if ISO9660FileStream_TRACE
                 BasicConsole.WriteLine("Checking params...");
 #endif
@@ -126,19 +119,20 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                 //Conditions for being able to read from the stream.
                 if (count < 0)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("ISO9660FileStream.Read: aCount must be > 0"));
+                    ExceptionMethods.Throw(new ArgumentException("ISO9660FileStream.Read: aCount must be > 0"));
                 }
                 else if (offset < 0)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("ISO9660FileStream.Read: anOffset must be > 0"));
+                    ExceptionMethods.Throw(new ArgumentException("ISO9660FileStream.Read: anOffset must be > 0"));
                 }
                 else if (buffer == null)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("ISO9660FileStream.Read: aBuffer must not be null!"));
+                    ExceptionMethods.Throw(new ArgumentException("ISO9660FileStream.Read: aBuffer must not be null!"));
                 }
                 else if (buffer.Length - offset < count)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("ISO9660FileStream.Read: Invalid offset / length values!"));
+                    ExceptionMethods.Throw(
+                        new ArgumentException("ISO9660FileStream.Read: Invalid offset / length values!"));
                 }
                 else if (position == TheFile.Size)
                 {
@@ -149,11 +143,11 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
 #if ISO9660FileStream_TRACE
                 BasicConsole.WriteLine("Params OK.");
 #endif
-                                
+
                 // Clamp the count value so that no out of bounds exceptions occur
                 ulong FileSize = TheFile.Size;
                 ulong MaxReadableBytes = FileSize - position;
-                ulong ActualCount = (ulong)count;
+                ulong ActualCount = (ulong) count;
                 if (ActualCount > MaxReadableBytes)
                 {
                     ActualCount = MaxReadableBytes;
@@ -168,12 +162,12 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                 if (ReadSectorBuffer == null)
                 {
                     ReadSectorBuffer = TheFS.ThePartition.NewBlockArray(1);
-                    ReadSectorSize = (uint)TheFS.ThePartition.BlockSize;
+                    ReadSectorSize = (uint) TheFS.ThePartition.BlockSize;
 
 #if ISO9660FileStream_TRACE
                     BasicConsole.WriteLine(((FOS_System.String)"ReadSectorSize: ") + ReadSectorSize);
 #endif
-                }                
+                }
 
                 int read = 0;
 
@@ -183,8 +177,8 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                 //Loop reading in the data
                 while (ActualCount > 0)
                 {
-                    UInt32 SectorIdx = ((UInt32)position / ReadSectorSize) + TheISO9660File.TheDirectoryRecord.LBALocation;
-                    UInt32 PosInSector = (UInt32)position % ReadSectorSize;
+                    uint SectorIdx = (uint) position/ReadSectorSize + TheISO9660File.TheDirectoryRecord.LBALocation;
+                    uint PosInSector = (uint) position%ReadSectorSize;
 #if ISO9660FileStream_TRACE
                     BasicConsole.WriteLine(((FOS_System.String)"Reading sector ") + SectorIdx);
 #endif
@@ -199,7 +193,7 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                     }
                     else
                     {
-                        ReadSize = (uint)ActualCount;
+                        ReadSize = (uint) ActualCount;
                     }
 
 #if ISO9660FileStream_TRACE
@@ -210,10 +204,10 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                     }
 #endif
                     // TODO: Should we do an argument check here just in case?
-                    FOS_System.Array.Copy(ReadSectorBuffer, (int)PosInSector, buffer, offset, (int)ReadSize);
-                    offset += (int)ReadSize;
-                    ActualCount -= (ulong)ReadSize;
-                    read += (int)ReadSize;
+                    Array.Copy(ReadSectorBuffer, (int) PosInSector, buffer, offset, (int) ReadSize);
+                    offset += (int) ReadSize;
+                    ActualCount -= (ulong) ReadSize;
+                    read += (int) ReadSize;
                     position += ReadSize;
                 }
 
@@ -228,15 +222,17 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                 return 0;
             }
         }
+
         /// <summary>
-        /// Writes the specified number of the bytes from the buffer starting at offset in the buffer.
+        ///     Writes the specified number of the bytes from the buffer starting at offset in the buffer.
         /// </summary>
         /// <param name="buffer">The data to write.</param>
         /// <param name="offset">The offset within the buffer to start writing from.</param>
         /// <param name="count">The number of bytes to write.</param>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            ExceptionMethods.Throw(new Exceptions.NotSupportedException("Cannot modify contents of ISO9660 disc (yet)! (FileStream)"));
+            ExceptionMethods.Throw(
+                new NotSupportedException("Cannot modify contents of ISO9660 disc (yet)! (FileStream)"));
         }
     }
 }

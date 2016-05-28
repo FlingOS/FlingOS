@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,43 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlingOops
 {
     /// <summary>
-    /// An exception object.
+    ///     An exception object.
     /// </summary>
     public class Exception : Object
     {
-        protected FlingOops.String message;
+        public Exception InnerException;
+
+        public uint InstructionAddress = 0;
+        protected String message;
+
         /// <summary>
-        /// The exception message.
+        ///     Creates a new, empty exception.
         /// </summary>
-        public FlingOops.String Message
+        public Exception()
+            : base()
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new exception with specified message.
+        /// </summary>
+        /// <param name="aMessage">The exception message.</param>
+        public Exception(String aMessage)
+            : base()
+        {
+            Message = aMessage;
+        }
+
+        /// <summary>
+        ///     The exception message.
+        /// </summary>
+        public String Message
         {
             get
             {
@@ -54,31 +73,7 @@ namespace FlingOops
                 //}
                 return null;
             }
-            set
-            {
-                message = value;
-            }
-        }
-
-        public FlingOops.Exception InnerException;
-
-        public uint InstructionAddress = 0;
-
-        /// <summary>
-        /// Creates a new, empty exception.
-        /// </summary>
-        public Exception()
-            : base()
-        {
-        }
-        /// <summary>
-        /// Creates a new exception with specified message.
-        /// </summary>
-        /// <param name="aMessage">The exception message.</param>
-        public Exception(FlingOops.String aMessage)
-            : base()
-        {
-            Message = aMessage;
+            set { message = value; }
         }
     }
 }

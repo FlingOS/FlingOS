@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,74 +23,40 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using Kernel.FOS_System;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Pipes.Exceptions;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes
 {
     /// <summary>
-    /// Represents a basic inpoint for any pipe class.
+    ///     Represents a basic inpoint for any pipe class.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Unlike an outpoint, an inpoint cannot exist without being connected to an outpoint and can only have one connection.
-    /// </para>
-    /// <para>
-    /// An inpoint can only be created for existing outpoints. The principle driving this is that processes should only ever
-    /// accept connections from offered openly offered points. They should not try to accept a connection from any random 
-    /// process that comes along and asks. In other words, a process offers data and another accepts. Instead of a process 
-    /// asking for data and another fulfilling the request.
-    /// </para>
+    ///     <para>
+    ///         Unlike an outpoint, an inpoint cannot exist without being connected to an outpoint and can only have one
+    ///         connection.
+    ///     </para>
+    ///     <para>
+    ///         An inpoint can only be created for existing outpoints. The principle driving this is that processes should only
+    ///         ever
+    ///         accept connections from offered openly offered points. They should not try to accept a connection from any
+    ///         random
+    ///         process that comes along and asks. In other words, a process offers data and another accepts. Instead of a
+    ///         process
+    ///         asking for data and another fulfilling the request.
+    ///     </para>
     /// </remarks>
-    public unsafe abstract class BasicInpoint : FOS_System.Object
+    public abstract unsafe class BasicInpoint : Object
     {
         /// <summary>
-        /// The Id of the process which owns the outpoint this inpoint is connected to.
-        /// </summary>
-        public uint OutProcessId
-        {
-            get;
-            protected set;
-        }
-        /// <summary>
-        /// The Id of the pipe this inpoint is connected to.
-        /// </summary>
-        public int PipeId
-        {
-            get;
-            protected set;
-        }
-        /// <summary>
-        /// The class of the pipe this inpoint is connected to.
-        /// </summary>
-        public PipeClasses Class
-        {
-            get;
-            protected set;
-        }
-        /// <summary>
-        /// The subclass of the pipe this inpoint is connected to.
-        /// </summary>
-        public PipeSubclasses Subclass
-        {
-            get;
-            protected set;
-        }
-        /// <summary>
-        /// The size of the buffer used within the core OS.
-        /// </summary>
-        public int BufferSize
-        {
-            get;
-            protected set;
-        }
-
-        /// <summary>
-        /// Creates and connects a new pipe to the specified target process.
+        ///     Creates and connects a new pipe to the specified target process.
         /// </summary>
         /// <param name="anOutProcessId">The target process to connect to.</param>
         /// <param name="aClass">The class of pipe to create.</param>
@@ -102,7 +69,9 @@ namespace Kernel.Pipes
             Subclass = aSubclass;
             BufferSize = aBufferSize;
 
-            CreatePipeRequest* RequestPtr = (CreatePipeRequest*)Heap.AllocZeroed((uint)sizeof(CreatePipeRequest), "BasicInPipe : Alloc CreatePipeRequest");
+            CreatePipeRequest* RequestPtr =
+                (CreatePipeRequest*)
+                    Heap.AllocZeroed((uint) sizeof(CreatePipeRequest), "BasicInPipe : Alloc CreatePipeRequest");
             if (RequestPtr != null)
             {
                 try
@@ -110,7 +79,7 @@ namespace Kernel.Pipes
                     RequestPtr->BufferSize = aBufferSize;
                     RequestPtr->Class = aClass;
                     RequestPtr->Subclass = aSubclass;
-                                        
+
                     SystemCallResults SysCallResult = SystemCalls.CreatePipe(anOutProcessId, RequestPtr);
                     switch (SysCallResult)
                     {
@@ -139,13 +108,38 @@ namespace Kernel.Pipes
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicInPipe : Couldn't allocate memory to create pipe!"));
+                ExceptionMethods.Throw(new ArgumentException("BasicInPipe : Couldn't allocate memory to create pipe!"));
                 //BasicConsole.WriteLine("BasicInPipe > RequestPtr null! No memory allocated.");
             }
         }
 
         /// <summary>
-        /// Reads up to the specified length of data into the specified buffer at the specified offset in the buffer.
+        ///     The Id of the process which owns the outpoint this inpoint is connected to.
+        /// </summary>
+        public uint OutProcessId { get; protected set; }
+
+        /// <summary>
+        ///     The Id of the pipe this inpoint is connected to.
+        /// </summary>
+        public int PipeId { get; protected set; }
+
+        /// <summary>
+        ///     The class of the pipe this inpoint is connected to.
+        /// </summary>
+        public PipeClasses Class { get; protected set; }
+
+        /// <summary>
+        ///     The subclass of the pipe this inpoint is connected to.
+        /// </summary>
+        public PipeSubclasses Subclass { get; protected set; }
+
+        /// <summary>
+        ///     The size of the buffer used within the core OS.
+        /// </summary>
+        public int BufferSize { get; protected set; }
+
+        /// <summary>
+        ///     Reads up to the specified length of data into the specified buffer at the specified offset in the buffer.
         /// </summary>
         /// <param name="Data">The buffer to read into.</param>
         /// <param name="Offset">The offset in the buffer to write data to.</param>
@@ -156,15 +150,17 @@ namespace Kernel.Pipes
         {
             int BytesRead = 0;
 
-            ReadPipeRequest* ReadPipeRequestPtr = (ReadPipeRequest*)Heap.AllocZeroed((uint)sizeof(ReadPipeRequest), "BasicInPipe : Alloc ReadPipeRequest");
+            ReadPipeRequest* ReadPipeRequestPtr =
+                (ReadPipeRequest*)
+                    Heap.AllocZeroed((uint) sizeof(ReadPipeRequest), "BasicInPipe : Alloc ReadPipeRequest");
             try
             {
                 if (ReadPipeRequestPtr != null)
                 {
                     ReadPipeRequestPtr->PipeId = PipeId;
                     ReadPipeRequestPtr->Offset = Offset;
-                    ReadPipeRequestPtr->Length = FOS_System.Math.Min(Data.Length - Offset, Length);
-                    ReadPipeRequestPtr->OutBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(Data) + FOS_System.Array.FieldsBytesSize;
+                    ReadPipeRequestPtr->Length = Math.Min(Data.Length - Offset, Length);
+                    ReadPipeRequestPtr->OutBuffer = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
                     ReadPipeRequestPtr->Blocking = Blocking;
 
                     SystemCallResults SysCallResult = SystemCalls.ReadPipe(ReadPipeRequestPtr, out BytesRead);
@@ -172,17 +168,20 @@ namespace Kernel.Pipes
                     {
                         case SystemCallResults.Unhandled:
                             //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unhandled!");
-                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicInPipe : Read Pipe unexpected unhandled!"));
+                            ExceptionMethods.Throw(
+                                new RWUnhandledException("BasicInPipe : Read Pipe unexpected unhandled!"));
                             break;
                         case SystemCallResults.Fail:
                             //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Failed!");
                             if (Blocking)
                             {
-                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Read Pipe unexpected failed! (Blocking call)"));
+                                ExceptionMethods.Throw(
+                                    new RWFailedException("BasicInPipe : Read Pipe unexpected failed! (Blocking call)"));
                             }
                             else
                             {
-                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicInPipe : Read Pipe failed. (Non-blocking call)"));
+                                ExceptionMethods.Throw(
+                                    new RWFailedException("BasicInPipe : Read Pipe failed. (Non-blocking call)"));
                             }
                             break;
                         case SystemCallResults.OK:
@@ -190,13 +189,14 @@ namespace Kernel.Pipes
                             break;
                         default:
                             //BasicConsole.WriteLine("BasicInPipe > ReadPipe: Unexpected system call result!");
-                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicInPipe : Read Pipe unexpected result!"));
+                            ExceptionMethods.Throw(new RWUnhandledException("BasicInPipe : Read Pipe unexpected result!"));
                             break;
                     }
                 }
                 else
                 {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicInPipe : Couldn't allocate memory to read from pipe!"));
+                    ExceptionMethods.Throw(
+                        new ArgumentException("BasicInPipe : Couldn't allocate memory to read from pipe!"));
                 }
             }
             finally

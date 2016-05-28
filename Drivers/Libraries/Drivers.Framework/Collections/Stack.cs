@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,74 +23,72 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
+using Drivers.Framework.Stubs;
 
 namespace Drivers.Framework.Collections
 {
     /// <summary>
-    /// Represents a weakly typed stack of objects (which must be derived from Framework.Object) that can be accessed by 
-    /// pushing and popping. Provides methods to manipulate stacks.
+    ///     Represents a weakly typed stack of objects (which must be derived from Framework.Object) that can be accessed by
+    ///     pushing and popping. Provides methods to manipulate stacks.
     /// </summary>
     /// <remarks>
-    /// The job of knowing which type of object is contained within the list is left to the developer. This is a 
-    /// significant issue but one which we can't solve yet since generics aren't supported properly yet.
+    ///     The job of knowing which type of object is contained within the list is left to the developer. This is a
+    ///     significant issue but one which we can't solve yet since generics aren't supported properly yet.
     /// </remarks>
-    public class Stack : Framework.Object
+    public class Stack : Object
     {
         //Note: For the sake of simplicity, this stack class simply reuses the List class internally
 
         /// <summary>
-        /// The internal list that actually stores the items.
+        ///     The internal list that actually stores the items.
         /// </summary>
-        private List internalList;
+        private readonly List internalList;
 
         /// <summary>
-        /// The number of elements in the stack.
+        ///     Creates a new stack with initial capacity of 5.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return internalList.Count;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new stack with initial capacity of 5.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public Stack()
             : this(5)
         {
         }
+
         /// <summary>
-        /// Creates a new stack with specified initial capacity. Use this to optimise memory usage.
+        ///     Creates a new stack with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public Stack(int capacity)
         {
             internalList = new List(capacity);
         }
 
         /// <summary>
-        /// Pushes the specified object onto the stack.
+        ///     The number of elements in the stack.
+        /// </summary>
+        public int Count
+        {
+            get { return internalList.Count; }
+        }
+
+        /// <summary>
+        ///     Pushes the specified object onto the stack.
         /// </summary>
         /// <param name="obj">The object to push.</param>
-        public void Push(Framework.Object obj)
+        public void Push(Object obj)
         {
             internalList.Add(obj);
         }
+
         /// <summary>
-        /// Pops an item off the stack. If the stack is empty, it returns null.
+        ///     Pops an item off the stack. If the stack is empty, it returns null.
         /// </summary>
         /// <returns>The popped item or null if the stack is empty.</returns>
-        public Framework.Object Pop()
+        public Object Pop()
         {
             int lastIndex = internalList.Count - 1;
 
@@ -98,16 +97,16 @@ namespace Drivers.Framework.Collections
                 return null;
             }
 
-            Framework.Object result = internalList[lastIndex];
+            Object result = internalList[lastIndex];
             internalList.RemoveAt(lastIndex);
             return result;
         }
 
         /// <summary>
-        /// Removes the specified object from the stack.
+        ///     Removes the specified object from the stack.
         /// </summary>
         /// <param name="obj">The object to remove.</param>
-        public void Remove(Framework.Object obj)
+        public void Remove(Object obj)
         {
             internalList.Remove(obj);
         }
@@ -119,78 +118,77 @@ namespace Drivers.Framework.Collections
     //  b) Not all methods have been ported from Stack
 
     /// <summary>
-    /// Represents a strongly typed stack of UInt32s that can be accessed by 
-    /// pushing and popping. Provides methods to manipulate stacks.
+    ///     Represents a strongly typed stack of UInt32s that can be accessed by
+    ///     pushing and popping. Provides methods to manipulate stacks.
     /// </summary>
-    public class UInt32Stack : Framework.Object
+    public class UInt32Stack : Object
     {
         //Note: For the sake of simplicity, this stack class simply reuses the List class internally
 
         /// <summary>
-        /// The internal list that actually stores the items.
+        ///     The internal list that actually stores the items.
         /// </summary>
-        private UInt32List internalList;
+        private readonly UInt32List internalList;
 
         /// <summary>
-        /// The number of elements in the stack.
+        ///     Creates a new stack with initial capacity of 5.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return internalList.Count;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new stack with initial capacity of 5.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public UInt32Stack()
             : this(5)
         {
         }
+
         /// <summary>
-        /// Creates a new stack with specified initial capacity. Use this to optimise memory usage.
+        ///     Creates a new stack with specified initial capacity. Use this to optimise memory usage.
         /// </summary>
         /// <param name="capacity">The initial capacity of the list.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public UInt32Stack(int capacity)
         {
             internalList = new UInt32List(capacity);
         }
 
         /// <summary>
-        /// Pushes the specified object onto the stack.
+        ///     The number of elements in the stack.
+        /// </summary>
+        public int Count
+        {
+            get { return internalList.Count; }
+        }
+
+        /// <summary>
+        ///     Pushes the specified object onto the stack.
         /// </summary>
         /// <param name="obj">The object to push.</param>
-        public void Push(UInt32 obj)
+        public void Push(uint obj)
         {
             internalList.Add(obj);
         }
+
         /// <summary>
-        /// Pops an item off the stack. If the stack is empty, it returns UInt32.MaxValue.
+        ///     Pops an item off the stack. If the stack is empty, it returns UInt32.MaxValue.
         /// </summary>
         /// <returns>The popped item or UInt32.MaxValue if the stack is empty.</returns>
-        public UInt32 Pop()
+        public uint Pop()
         {
             int lastIndex = internalList.Count - 1;
 
             if (lastIndex < 0)
             {
-                return Framework.Stubs.UInt32.MaxValue;
+                return UInt32.MaxValue;
             }
 
-            UInt32 result = internalList[lastIndex];
+            uint result = internalList[lastIndex];
             internalList.RemoveAt(lastIndex);
             return result;
         }
 
         /// <summary>
-        /// Removes the specified uint from the stack.
+        ///     Removes the specified uint from the stack.
         /// </summary>
         /// <param name="obj">The object to remove.</param>
-        public void Remove(UInt32 obj)
+        public void Remove(uint obj)
         {
             internalList.Remove(obj);
         }

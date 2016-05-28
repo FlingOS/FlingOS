@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,13 +23,12 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.Pipes;
 using Kernel.Pipes.File;
 
 namespace Kernel.FOS_System.IO
@@ -41,15 +41,15 @@ namespace Kernel.FOS_System.IO
         public int CmdPipeId;
         public int DataOutPipeId;
         public FileDataInpoint DataInPipe;
-        public FOS_System.String[] MappingPrefixes = null;
+        public String[] MappingPrefixes = null;
 
         public FileSystemAccessor(uint ARemoteProcessId)
         {
             RemoteProcessId = ARemoteProcessId;
 
-            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (FOS_System.String)RemoteProcessId);
+            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String) RemoteProcessId);
             DataInPipe = new FileDataInpoint(RemoteProcessId, true);
-            
+
             BasicConsole.WriteLine("FileSystemAccessor > Connected.");
 
             try
@@ -61,12 +61,13 @@ namespace Kernel.FOS_System.IO
                 {
                     if (SystemCalls.WaitSemaphore(CmdOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
-                        UInt64 IdPair = CmdOutPipes[position];
-                        if ((uint)(IdPair >> 32) == RemoteProcessId)
+                        ulong IdPair = CmdOutPipes[position];
+                        if ((uint) (IdPair >> 32) == RemoteProcessId)
                         {
-                            CmdPipeId = (int)(IdPair & 0xFFFFFFFF);
+                            CmdPipeId = (int) (IdPair & 0xFFFFFFFF);
                             Found = true;
-                            BasicConsole.WriteLine("FileSystemAccessor > Got command output pipe id. " + (FOS_System.String)CmdPipeId);
+                            BasicConsole.WriteLine("FileSystemAccessor > Got command output pipe id. " +
+                                                   (String) CmdPipeId);
                         }
                         position++;
                     }
@@ -78,12 +79,13 @@ namespace Kernel.FOS_System.IO
                 {
                     if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
-                        UInt64 IdPair = DataOutPipes[position];
-                        if ((uint)(IdPair >> 32) == RemoteProcessId)
+                        ulong IdPair = DataOutPipes[position];
+                        if ((uint) (IdPair >> 32) == RemoteProcessId)
                         {
-                            DataOutPipeId = (int)(IdPair & 0xFFFFFFFF);
+                            DataOutPipeId = (int) (IdPair & 0xFFFFFFFF);
                             Found = true;
-                            BasicConsole.WriteLine("FileSystemAccessor > Got data output pipe id. " + (FOS_System.String)DataOutPipeId);
+                            BasicConsole.WriteLine("FileSystemAccessor > Got data output pipe id. " +
+                                                   (String) DataOutPipeId);
                         }
                         position++;
                     }
@@ -95,11 +97,12 @@ namespace Kernel.FOS_System.IO
                 BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
             }
         }
-        public FileSystemAccessor(uint ARemoteProcessId, FOS_System.String Mapping)
+
+        public FileSystemAccessor(uint ARemoteProcessId, String Mapping)
         {
             RemoteProcessId = ARemoteProcessId;
 
-            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (FOS_System.String)RemoteProcessId);
+            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String) RemoteProcessId);
             DataInPipe = new FileDataInpoint(RemoteProcessId, true);
 
             BasicConsole.WriteLine("FileSystemAccessor > Connected.");
@@ -113,10 +116,10 @@ namespace Kernel.FOS_System.IO
                 {
                     if (SystemCalls.WaitSemaphore(CmdOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
-                        UInt64 IdPair = CmdOutPipes[position];
-                        if ((uint)(IdPair >> 32) == RemoteProcessId)
+                        ulong IdPair = CmdOutPipes[position];
+                        if ((uint) (IdPair >> 32) == RemoteProcessId)
                         {
-                            CmdPipeId = (int)(IdPair & 0xFFFFFFFF);
+                            CmdPipeId = (int) (IdPair & 0xFFFFFFFF);
                         }
                         position++;
 
@@ -128,10 +131,10 @@ namespace Kernel.FOS_System.IO
                 position = 0;
                 if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
                 {
-                    UInt64 IdPair = DataOutPipes[position];
-                    if ((uint)(IdPair >> 32) == RemoteProcessId)
+                    ulong IdPair = DataOutPipes[position];
+                    if ((uint) (IdPair >> 32) == RemoteProcessId)
                     {
-                        DataOutPipeId = (int)(IdPair & 0xFFFFFFFF);
+                        DataOutPipeId = (int) (IdPair & 0xFFFFFFFF);
                     }
                     position++;
 
@@ -163,6 +166,7 @@ namespace Kernel.FOS_System.IO
                 BasicConsole.Write(MappingPrefixes[j]);
             }
         }
+
         public List ListDir(String Path)
         {
             CmdOutpoint.Write_ListDir(CmdPipeId);
@@ -175,7 +179,7 @@ namespace Kernel.FOS_System.IO
             List Listings = ListDir(Path);
             for (int k = 0; k < Listings.Count; k++)
             {
-                String Name = (String)Listings[k];
+                String Name = (String) Listings[k];
                 BasicConsole.Write(Name);
                 if (k < Listings.Count - 1)
                 {
@@ -211,7 +215,7 @@ namespace Kernel.FOS_System.IO
             DataOutPipes = new UInt64List();
             CmdOutpoint = new FileCmdOutpoint(PipeConstants.UnlimitedConnections);
             DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, false);
-            
+
             if (SystemCalls.CreateSemaphore(-1, out CmdOutPipesSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("FileSystemAccessor > Failed to create a semaphore! (1)");
@@ -231,6 +235,7 @@ namespace Kernel.FOS_System.IO
                 BasicConsole.WriteLine("FileSystemAccessor > Failed to create a thread! (2)");
             }
         }
+
         private static void WaitForFileCmdPipes()
         {
             while (!Terminating)
@@ -238,10 +243,11 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int PipeId = CmdOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("FileSystemAccessor > Storage command output connected.");
-                CmdOutPipes.Add(((UInt64)InProcessId << 32) | (UInt64)(uint)PipeId);
+                CmdOutPipes.Add(((ulong) InProcessId << 32) | (ulong) (uint) PipeId);
                 SystemCalls.SignalSemaphore(CmdOutPipesSemaphoreId);
             }
         }
+
         private static void WaitForFileDataPipes()
         {
             while (!Terminating)
@@ -249,7 +255,7 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int PipeId = DataOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("FileSystemAccessor > Storage data output connected.");
-                DataOutPipes.Add(((UInt64)InProcessId << 32) | (UInt64)(uint)PipeId);
+                DataOutPipes.Add(((ulong) InProcessId << 32) | (ulong) (uint) PipeId);
                 SystemCalls.SignalSemaphore(DataOutPipesSemaphoreId);
             }
         }

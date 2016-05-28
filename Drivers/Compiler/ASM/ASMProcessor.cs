@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,29 +23,48 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define COMPILER_ASYNC
 #undef COMPILER_ASYNC
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using Drivers.Compiler.ASM.ASMOps;
+using Drivers.Compiler.Attributes;
+using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.ASM
 {
     /// <summary>
-    /// The ASM Processor manages converting ASM blocks into actual assembly code, saving that code
-    /// to files and then executing a build tool to convert assembly code into ELF binaries.
+    ///     The ASM Processor manages converting ASM blocks into actual assembly code, saving that code
+    ///     to files and then executing a build tool to convert assembly code into ELF binaries.
     /// </summary>
     public static class ASMProcessor
     {
         /// <summary>
-        /// Processes the given ASM library.
+        ///     Whether the output ASM folder has been cleaned or not.
+        /// </summary>
+        /// <remarks>
+        ///     Prevents the compiler cleaning the output folder half-way through the compile process
+        ///     i.e. between processing libraries.
+        /// </remarks>
+        private static bool CleanedASMOutputFolder = false;
+
+        /// <summary>
+        ///     Whether the output Objects folder has been cleaned or not.
+        /// </summary>
+        /// <remarks>
+        ///     Prevents the compiler cleaning the output folder half-way through the compile process
+        ///     i.e. between processing libraries.
+        /// </remarks>
+        private static bool CleanedObjectsOutputFolder = false;
+
+        /// <summary>
+        ///     Processes the given ASM library.
         /// </summary>
         /// <param name="TheLibrary">The library to process.</param>
         /// <returns>Always CompileResult.OK. In all other cases, exceptions are thrown.</returns>
@@ -57,7 +77,7 @@ namespace Drivers.Compiler.ASM
                 return result;
             }
             TheLibrary.ASMProcessed = true;
-            
+
             int MaxConcurrentCompilerProcesses = Environment.ProcessorCount;
             List<List<ASMBlock>> CompilerLabourDivision = new List<List<ASMBlock>>();
             for (int i = 0; i < MaxConcurrentCompilerProcesses; i++)
@@ -72,7 +92,7 @@ namespace Drivers.Compiler.ASM
 
                 if (aBlock.ASMOutputFilePath != null)
                 {
-                    CompilerLabourDivision[num % MaxConcurrentCompilerProcesses].Add(aBlock);
+                    CompilerLabourDivision[num%MaxConcurrentCompilerProcesses].Add(aBlock);
                     num++;
                 }
             }
@@ -112,13 +132,13 @@ namespace Drivers.Compiler.ASM
         }
 
         /// <summary>
-        /// Processes the given ASM block.
+        ///     Processes the given ASM block.
         /// </summary>
         /// <param name="TheBlock">The ASM block to process.</param>
         private static void ProcessBlock(ASMBlock TheBlock)
         {
             string ASMText = "";
-            
+
             if (TheBlock.Plugged)
             {
                 string ASMPlugPath = Path.Combine(Options.OutputPath, TheBlock.PlugPath);
@@ -128,7 +148,9 @@ namespace Drivers.Compiler.ASM
                 {
                     if (!File.Exists(ASMPlugPath + ".x86_32.asm"))
                     {
-                        throw new FileNotFoundException("Plug file not found! File name: " + ASMPlugPath + "." + Options.TargetArchitecture + ".asm", ASMPlugPath + "." + Options.TargetArchitecture + ".asm");
+                        throw new FileNotFoundException(
+                            "Plug file not found! File name: " + ASMPlugPath + "." + Options.TargetArchitecture + ".asm",
+                            ASMPlugPath + "." + Options.TargetArchitecture + ".asm");
                     }
                     else
                     {
@@ -147,10 +169,12 @@ namespace Drivers.Compiler.ASM
 
                 ASMText = File.ReadAllText(ASMPlugPath);
 
-                ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.CallStaticConstructorsMethodAttribute)].First().ID);
-                if (IL.ILLibrary.SpecialMethods.ContainsKey(typeof(Attributes.MainMethodAttribute)))
+                ASMText = ASMText.Replace("%KERNEL_CALL_STATIC_CONSTRUCTORS_METHOD%",
+                    ILLibrary.SpecialMethods[typeof(CallStaticConstructorsMethodAttribute)].First().ID);
+                if (ILLibrary.SpecialMethods.ContainsKey(typeof(MainMethodAttribute)))
                 {
-                    ASMText = ASMText.Replace("%KERNEL_MAIN_METHOD%", IL.ILLibrary.SpecialMethods[typeof(Attributes.MainMethodAttribute)].First().ID);
+                    ASMText = ASMText.Replace("%KERNEL_MAIN_METHOD%",
+                        ILLibrary.SpecialMethods[typeof(MainMethodAttribute)].First().ID);
                 }
             }
             else
@@ -159,15 +183,18 @@ namespace Drivers.Compiler.ASM
                 {
                     if (anASMOp.RequiresILLabel)
                     {
-                        ASMText += ((ASMLabel)TargetArchitecture.CreateASMOp(OpCodes.Label, anASMOp.ILLabelPosition, "")).Convert(TheBlock) + "\r\n";
+                        ASMText +=
+                            ((ASMLabel) TargetArchitecture.CreateASMOp(OpCodes.Label, anASMOp.ILLabelPosition, ""))
+                                .Convert(TheBlock) + "\r\n";
                     }
 
-                    if (anASMOp is ASM.ASMOps.ASMLabel)
+                    if (anASMOp is ASMLabel)
                     {
-                        ASMLabel labelOp = (ASM.ASMOps.ASMLabel)anASMOp;
+                        ASMLabel labelOp = (ASMLabel) anASMOp;
                         if (labelOp.IsDebugOp)
                         {
-                            DebugDataWriter.AddDebugOp(TheBlock.OriginMethodInfo.ID, TheBlock.GenerateILOpLabel(labelOp.ILPosition, labelOp.Extension));
+                            DebugDataWriter.AddDebugOp(TheBlock.OriginMethodInfo.ID,
+                                TheBlock.GenerateILOpLabel(labelOp.ILPosition, labelOp.Extension));
                         }
                     }
 
@@ -179,7 +206,8 @@ namespace Drivers.Compiler.ASM
 
             if (!string.IsNullOrWhiteSpace(ASMText))
             {
-                string FileName = Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".s";
+                string FileName =
+                    Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".s";
                 string OutputPath = GetASMOutputPath();
                 FileName = Path.Combine(OutputPath, FileName);
                 TheBlock.ASMOutputFilePath = FileName;
@@ -192,19 +220,20 @@ namespace Drivers.Compiler.ASM
         }
 
         /// <summary>
-        /// Executes the target architecture's assembly code compiler (e.g. NASM) asynchronously.
+        ///     Executes the target architecture's assembly code compiler (e.g. NASM) asynchronously.
         /// </summary>
         /// <param name="Blocks">The blocks to execute the compiler tool for.</param>
         /// <param name="OnComplete">Method to call when the compiler tool has finished executing for all the blocks.</param>
         /// <param name="aState">The state object to use when calling the OnComplete method.</param>
-        private static void ExecuteAssemblyCodeCompilerAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete, object aState)
+        private static void ExecuteAssemblyCodeCompilerAsync(List<ASMBlock> Blocks, VoidDelegate OnComplete,
+            object aState)
         {
             string ASMOutputPath = GetASMOutputPath();
             string ObjectsOutputPath = GetObjectsOutputPath();
             VoidDelegate onComplete = null;
             onComplete = delegate(object state)
             {
-                int index = (int)state;
+                int index = (int) state;
                 if (index < Blocks.Count)
                 {
                     string inputPath = Blocks[index].ASMOutputFilePath;
@@ -212,14 +241,16 @@ namespace Drivers.Compiler.ASM
 
                     try
                     {
-                        TargetArchitecture.TargetFunctions.ExecuteAssemblyCodeCompiler(inputPath, outputPath, onComplete, index + 1);
+                        TargetArchitecture.TargetFunctions.ExecuteAssemblyCodeCompiler(inputPath, outputPath, onComplete,
+                            index + 1);
 
                         Blocks[index].ObjectOutputFilePath = outputPath;
                     }
                     catch (Exception ex)
                     {
                         Logger.LogError(Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode, inputPath, 0,
-                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode], inputPath, ex.Message));
+                            string.Format(Errors.ErrorMessages[Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode],
+                                inputPath, ex.Message));
                     }
                 }
                 else
@@ -231,7 +262,7 @@ namespace Drivers.Compiler.ASM
         }
 
         /// <summary>
-        /// Executes the target architecture's assembly code compiler (e.g. NASM) synchronously.
+        ///     Executes the target architecture's assembly code compiler (e.g. NASM) synchronously.
         /// </summary>
         /// <param name="Blocks">The blocks to execute the compiler tool for.</param>
         private static void ExecuteAssemblyCodeCompilerSync(List<ASMBlock> Blocks)
@@ -253,26 +284,19 @@ namespace Drivers.Compiler.ASM
                 catch (Exception ex)
                 {
                     Logger.LogError(Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode, inputPath, 0,
-                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode], inputPath, ex.Message));
+                        string.Format(Errors.ErrorMessages[Errors.ASMCompiler_ASMCodeCompilerException_ErrorCode],
+                            inputPath, ex.Message));
                 }
             }
         }
 
         /// <summary>
-        /// Whether the output ASM folder has been cleaned or not.
+        ///     Gets the output path for the directory to save the ASM files into. Also, creates the output
+        ///     directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
         /// </summary>
         /// <remarks>
-        /// Prevents the compiler cleaning the output folder half-way through the compile process
-        /// i.e. between processing libraries.
-        /// </remarks>
-        private static bool CleanedASMOutputFolder = false;
-        /// <summary>
-        /// Gets the output path for the directory to save the ASM files into. Also, creates the output 
-        /// directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
-        /// </summary>
-        /// <remarks>
-        /// Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\ASM" 
-        /// giving: "bin\Debug\DriversCompiler\ASM". 
+        ///     Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\ASM"
+        ///     giving: "bin\Debug\DriversCompiler\ASM".
         /// </remarks>
         /// <returns>The path.</returns>
         private static string GetASMOutputPath()
@@ -293,21 +317,14 @@ namespace Drivers.Compiler.ASM
             }
             return OutputPath;
         }
+
         /// <summary>
-        /// Whether the output Objects folder has been cleaned or not.
+        ///     Gets the output path for the directory to save the object files into. Also, creates the output
+        ///     directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
         /// </summary>
         /// <remarks>
-        /// Prevents the compiler cleaning the output folder half-way through the compile process
-        /// i.e. between processing libraries.
-        /// </remarks>
-        private static bool CleanedObjectsOutputFolder = false;
-        /// <summary>
-        /// Gets the output path for the directory to save the object files into. Also, creates the output 
-        /// directory if it doesn't exist or cleans the output directory if it hasn't already been cleaned.
-        /// </summary>
-        /// <remarks>
-        /// Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\Objects" 
-        /// giving: "bin\Debug\DriversCompiler\Objects". 
+        ///     Currently, the path provided is the build directory (e.g. "bin\Debug") added to "DriversCompiler\Objects"
+        ///     giving: "bin\Debug\DriversCompiler\Objects".
         /// </remarks>
         /// <returns>The path.</returns>
         private static string GetObjectsOutputPath()
@@ -328,6 +345,5 @@ namespace Drivers.Compiler.ASM
             }
             return OutputPath;
         }
-        
     }
 }

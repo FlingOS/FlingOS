@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection.Emit;
 
 namespace Drivers.Compiler.IL.ILOps
 {
     /// <summary>
-    /// Indicates to the compiler which IL op an ILOp implementation targets.
+    ///     Indicates to the compiler which IL op an ILOp implementation targets.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple=true, Inherited=true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class ILOpTargetAttribute : Attribute
     {
         /// <summary>
-        /// The IL op code to target.
+        ///     The IL op code to target.
         /// </summary>
         public ILOp.OpCodes Target;
     }

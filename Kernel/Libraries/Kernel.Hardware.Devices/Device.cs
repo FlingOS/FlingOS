@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,6 +23,7 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 using Kernel.FOS_System;
@@ -30,25 +32,26 @@ using Kernel.FOS_System.Processes.Requests.Devices;
 namespace Kernel.Hardware
 {
     /// <summary>
-    /// Represents any device connected to the system.
+    ///     Represents any device connected to the system.
     /// </summary>
-    public class Device : FOS_System.Object
+    public class Device : Object
     {
-        public ulong Id;
-        public DeviceGroup Group;
+        public bool Claimed;
         public DeviceClass Class;
-        public DeviceSubClass SubClass;
-
-        public String Name = null;
+        public DeviceGroup Group;
+        public ulong Id;
         public uint[] Info = null;
 
-        public bool Claimed;
+        public String Name = null;
         public uint OwnerProcessId;
+        public DeviceSubClass SubClass;
 
         public Device()
         {
         }
-        public Device(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, uint[] SomeInfo, bool IsClaimed)
+
+        public Device(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, uint[] SomeInfo,
+            bool IsClaimed)
         {
             Group = AGroup;
             Class = AClass;
@@ -58,6 +61,7 @@ namespace Kernel.Hardware
             Claimed = IsClaimed;
             OwnerProcessId = 0;
         }
+
         public unsafe Device(DeviceDescriptor* descriptor)
         {
             FillDevice(descriptor);
@@ -93,6 +97,7 @@ namespace Kernel.Hardware
             Claimed = descriptor->Claimed;
             OwnerProcessId = descriptor->OwnerProcessId;
         }
+
         public unsafe void FillDeviceDescriptor(DeviceDescriptor* TheDescriptor, bool IncludeInfo)
         {
             TheDescriptor->Id = Id;

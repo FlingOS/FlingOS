@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Debugger
 {
     public class TypeInfo
     {
-        public string ID;
         public string BaseTypeID = null;
+
+        public Dictionary<string, FieldInfo> Fields = new Dictionary<string, FieldInfo>();
+        public string ID;
         public bool IsGCManaged;
         public bool IsPointer;
         public bool IsValueType;
+        public Dictionary<string, MethodInfo> Methods = new Dictionary<string, MethodInfo>();
         public int SizeOnHeapInBytes;
         public int SizeOnStackInBytes;
-
-        public Dictionary<string, FieldInfo> Fields = new Dictionary<string, FieldInfo>();
-        public Dictionary<string, MethodInfo> Methods = new Dictionary<string, MethodInfo>();
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,16 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Pop : IL.ILOps.Pop
     {
@@ -44,13 +42,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
-        {   
+        {
             StackItem theItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (theItem.isNewGCObject)
@@ -58,14 +56,19 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //Decrement ref count
 
                 //Get the ID of method to call as it will be labeled in the output ASM.
-                Types.MethodInfo anInfo = conversionState.GetDecrementRefCountMethodInfo();
+                MethodInfo anInfo = conversionState.GetDecrementRefCountMethodInfo();
                 string methodID = anInfo.ID;
                 conversionState.AddExternalLabel(anInfo.ID);
                 //Append the actual call
-                conversionState.Append(new ASMOps.Call() { Target = methodID });
+                conversionState.Append(new ASMOps.Call() {Target = methodID});
             }
 
-            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = theItem.sizeOnStackInBytes.ToString(), Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add()
+            {
+                Src1 = "$sp",
+                Src2 = theItem.sizeOnStackInBytes.ToString(),
+                Dest = "$sp"
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldc : IL.ILOps.Ldc
     {
@@ -43,7 +42,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             bool isFloat = false;
             int numBytes = 0;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldc_I4:
                     numBytes = 4;
@@ -104,27 +103,27 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if constant is a floating point number.
+        ///     Thrown if constant is a floating point number.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Stores the integer value to push onto the stack
             long iValue = 0;
             //Stores the float value to push onto the stack
-            double fValue = 0; 
+            double fValue = 0;
             //Indicates whether we should be pushing a float or integer value
             bool isFloat = false;
             //The number of bytes to push (e.g. 4 for Int32, 8 for Int64)
             int numBytes = 0;
 
             //Load the constant and type of constant
-            switch((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldc_I4:
                     iValue = Utilities.ReadInt32(theOp.ValueBytes, 0);
@@ -171,7 +170,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I4_S:
-                    iValue = (Int32)(sbyte)theOp.ValueBytes[0];
+                    iValue = (int) (sbyte) theOp.ValueBytes[0];
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I8:
@@ -216,8 +215,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = valueToPush,
+                    Dest = "$t0",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
                 //Then push the low-bits as a word
                 //See above
@@ -227,8 +232,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = valueToPush,
+                    Dest = "$t0",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
             }
             else
             {
@@ -239,8 +250,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = valueToPush, Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = valueToPush,
+                    Dest = "$t0",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
             }
 
             //Push the constant onto our stack

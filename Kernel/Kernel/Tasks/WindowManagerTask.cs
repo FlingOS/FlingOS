@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,50 +23,43 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
+using Drivers.Compiler.Attributes;
+using Kernel.Consoles;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Devices;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Hardware.Devices;
+using Kernel.Hardware.Keyboards;
+using Kernel.Pipes;
+using Kernel.Pipes.Exceptions;
+using Kernel.Pipes.Standard;
 
 namespace Kernel.Tasks
 {
     public static unsafe class WindowManagerTask
     {
-        private class PipeInfo : FOS_System.Object
-        {
-            public Pipes.Standard.StandardInpoint StdOut;
-            public Console TheConsole = new Consoles.AdvancedConsole();
-        }
-
-        private static bool Terminating = false;
+        private static readonly bool Terminating = false;
 
         private static List ConnectedPipes;
         private static int CurrentPipeIdx = -1;
 
         /// <summary>
-        /// 
         /// </summary>
         /// <remarks>
-        /// This is guaranteed to be one.
+        ///     This is guaranteed to be one.
         /// </remarks>
         private static uint MainThreadId = 1;
+
         private static uint GCThreadId;
         private static int NewOutpointAvailable_SemaphoreId;
         private static int NewPipeConnected_SemaphoreId;
         private static int NewClientReady_SemaphoreId;
 
-        public static bool Ready
-        {
-            get
-            {
-                return ready_count == 3;
-            }
-        }
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        private static int ready_count = 0;
+        [Group(Name = "IsolatedKernel")] private static int ready_count = 0;
 
         private static bool CurrentPipeIndex_Changed = false;
 
@@ -74,6 +68,11 @@ namespace Kernel.Tasks
         private static uint AcceptedPages_FromProcessId = 0;
 
         private static int ConsoleAccessSemaphoreId = 0;
+
+        public static bool Ready
+        {
+            get { return ready_count == 3; }
+        }
 
         public static void Main()
         {
@@ -110,7 +109,7 @@ namespace Kernel.Tasks
 
             BasicConsole.WriteLine("WM > Register syscall handlers");
             SystemCalls.RegisterSyscallHandler(SystemCallNumbers.RegisterPipeOutpoint, SyscallHandler);
-            
+
             // Start thread for other testing
             //uint TestThreadId;
             //if (SystemCalls.StartThread(TestThread, out TestThreadId) != SystemCallResults.OK)
@@ -128,10 +127,10 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
-            
+
             BasicConsole.WriteLine("WM > Init keyboard");
-            Hardware.Keyboards.PS2.Init();
-            Keyboard.Default = Hardware.Keyboards.PS2.ThePS2;
+            PS2.Init();
+            Keyboard.Default = PS2.ThePS2;
             BasicConsole.WriteLine("WM > Register IRQ 1 handler");
             SystemCalls.RegisterIRQHandler(1, HandleIRQ);
 
@@ -150,7 +149,7 @@ namespace Kernel.Tasks
                     {
                         if (CurrentPipeIndex_Changed)
                         {
-                            CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+                            CurrentPipeInfo = (PipeInfo) ConnectedPipes[CurrentPipeIdx];
                             CurrentPipeIndex_Changed = false;
 
                             CurrentPipeInfo.TheConsole.Update();
@@ -172,7 +171,7 @@ namespace Kernel.Tasks
                 }
                 catch
                 {
-                    if (ExceptionMethods.CurrentException is Pipes.Exceptions.RWFailedException)
+                    if (ExceptionMethods.CurrentException is RWFailedException)
                     {
                         SystemCalls.SleepThread(50);
                     }
@@ -193,7 +192,7 @@ namespace Kernel.Tasks
                 SystemCalls.SleepThread(3000);
                 if (AcceptedPages_Count > 0)
                 {
-                    char* TextPtr = (char*)AcceptedPages_StartAddress;
+                    char* TextPtr = (char*) AcceptedPages_StartAddress;
                     while (*TextPtr == '\0')
                     {
                         SystemCalls.SleepThread(50);
@@ -203,20 +202,20 @@ namespace Kernel.Tasks
                     {
                         BasicConsole.Write(*TextPtr++);
                     }
-                    TextPtr = (char*)AcceptedPages_StartAddress;
+                    TextPtr = (char*) AcceptedPages_StartAddress;
                     *TextPtr = '\0';
                     MessageCount++;
                 }
             }
 
             {
-                char* TextPtr = (char*)AcceptedPages_StartAddress;
+                char* TextPtr = (char*) AcceptedPages_StartAddress;
                 while (*TextPtr == '\0')
                 {
                     SystemCalls.SleepThread(50);
                 }
 
-                int* IdPtr = (int*)(TextPtr + 1);
+                int* IdPtr = (int*) (TextPtr + 1);
                 int SemaphoreId = *IdPtr;
                 BasicConsole.WriteLine("Waiting on semaphore");
                 SystemCalls.WaitSemaphore(SemaphoreId);
@@ -236,12 +235,13 @@ namespace Kernel.Tasks
                 //BasicConsole.WriteLine("WM > IP : (0)");
 
                 SystemCalls.WaitSemaphore(NewOutpointAvailable_SemaphoreId);
-                
+
                 //BasicConsole.WriteLine("WM > InputProcessing thread running...");
 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
-                Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Standard, PipeSubclasses.Standard_Out);
+                BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Standard,
+                    PipeSubclasses.Standard_Out);
 
                 //BasicConsole.WriteLine("WM > IP : (1)");
 
@@ -250,7 +250,8 @@ namespace Kernel.Tasks
                     //BasicConsole.WriteLine("WM > IP : (2)");
 
                     PipeOutpointDescriptor[] OutpointDescriptors;
-                    Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Standard, PipeSubclasses.Standard_Out);
+                    BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors,
+                        PipeClasses.Standard, PipeSubclasses.Standard_Out);
 
                     //BasicConsole.WriteLine("WM > IP : (3)");
 
@@ -267,7 +268,7 @@ namespace Kernel.Tasks
 
                             for (int j = 0; j < ConnectedPipes.Count; j++)
                             {
-                                PipeInfo ExistingPipeInfo = (PipeInfo)ConnectedPipes[j];
+                                PipeInfo ExistingPipeInfo = (PipeInfo) ConnectedPipes[j];
                                 if (ExistingPipeInfo.StdOut.OutProcessId == Descriptor.ProcessId)
                                 {
                                     PipeExists = true;
@@ -282,7 +283,8 @@ namespace Kernel.Tasks
                                     //BasicConsole.WriteLine("WM > IP : (6)");
 
                                     PipeInfo NewPipeInfo = new PipeInfo();
-                                    NewPipeInfo.StdOut = new Pipes.Standard.StandardInpoint(Descriptor.ProcessId, true); // 2000 ASCII characters = 2000 bytes
+                                    NewPipeInfo.StdOut = new StandardInpoint(Descriptor.ProcessId, true);
+                                        // 2000 ASCII characters = 2000 bytes
 
                                     //BasicConsole.WriteLine("WM > IP : (7)");
 
@@ -298,7 +300,6 @@ namespace Kernel.Tasks
                                     }
 
                                     //BasicConsole.WriteLine("WM > IP : (8)");
-
                                 }
                                 catch
                                 {
@@ -319,40 +320,41 @@ namespace Kernel.Tasks
                 }
             }
         }
+
         public static int SyscallHandler(uint syscallNumber, uint param1, uint param2, uint param3,
             ref uint Return2, ref uint Return3, ref uint Return4,
             uint callerProcessId, uint callerThreadId)
         {
             SystemCallResults result = SystemCallResults.Unhandled;
 
-            switch ((SystemCallNumbers)syscallNumber)
+            switch ((SystemCallNumbers) syscallNumber)
             {
                 case SystemCallNumbers.RegisterPipeOutpoint:
+                {
+                    //BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
+                    PipeClasses Class = (PipeClasses) param1;
+                    PipeSubclasses Subclass = (PipeSubclasses) param2;
+                    if (Class == PipeClasses.Standard &&
+                        Subclass == PipeSubclasses.Standard_Out)
                     {
-                        //BasicConsole.WriteLine("WM > IH > Actioning Register Pipe Outpoint system call...");
-                        PipeClasses Class = (PipeClasses)param1;
-                        PipeSubclasses Subclass = (PipeSubclasses)param2;
-                        if (Class == PipeClasses.Standard &&
-                            Subclass == PipeSubclasses.Standard_Out)
-                        {
-                            //BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
-                            result = SystemCallResults.RequestAction_SignalSemaphore;
-                            Return2 = (uint)NewOutpointAvailable_SemaphoreId;
-                        }
+                        //BasicConsole.WriteLine("WM > IH > Register Pipe Outpoint has desired pipe class and subclass.");
+                        result = SystemCallResults.RequestAction_SignalSemaphore;
+                        Return2 = (uint) NewOutpointAvailable_SemaphoreId;
                     }
+                }
                     break;
                 case SystemCallNumbers.AcceptPages:
-                    {
-                        BasicConsole.WriteLine("WM > Accept pages");
-                        AcceptedPages_StartAddress = param1;
-                        AcceptedPages_Count = param2;
-                        AcceptedPages_FromProcessId = callerProcessId;
-                        result = SystemCallResults.OK;
-                    }
+                {
+                    BasicConsole.WriteLine("WM > Accept pages");
+                    AcceptedPages_StartAddress = param1;
+                    AcceptedPages_Count = param2;
+                    AcceptedPages_FromProcessId = callerProcessId;
+                    result = SystemCallResults.OK;
+                }
                     break;
             }
 
-            return (int)result;
+            return (int) result;
         }
 
         public static void OutputProcessing()
@@ -362,7 +364,7 @@ namespace Kernel.Tasks
             // Wait for pipe to be created
             SystemCalls.WaitSemaphore(NewPipeConnected_SemaphoreId);
 
-            PipeInfo CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+            PipeInfo CurrentPipeInfo = (PipeInfo) ConnectedPipes[CurrentPipeIdx];
 
             while (!Terminating)
             {
@@ -395,7 +397,7 @@ namespace Kernel.Tasks
                                 SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
                                 try
                                 {
-                                    CurrentPipeInfo = ((PipeInfo)ConnectedPipes[CurrentPipeIdx]);
+                                    CurrentPipeInfo = (PipeInfo) ConnectedPipes[CurrentPipeIdx];
                                     CurrentPipeIndex_Changed = true;
                                 }
                                 finally
@@ -434,7 +436,8 @@ namespace Kernel.Tasks
 
                                 //BasicConsole.WriteLine("WM > OP : (5)");
 
-                                SystemCalls.SendMessage(((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
+                                SystemCalls.SendMessage(
+                                    ((PipeInfo) ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
 
                                 //BasicConsole.WriteLine("WM > OP : (6)");
                             }
@@ -458,10 +461,16 @@ namespace Kernel.Tasks
             if (IRQNum == 1)
             {
                 //BasicConsole.WriteLine("Keyboard interrupt");
-                ((Hardware.Keyboards.PS2)Keyboard.Default).InterruptHandler();
+                ((PS2) Keyboard.Default).InterruptHandler();
                 return 0;
             }
             return -1;
+        }
+
+        private class PipeInfo : Object
+        {
+            public StandardInpoint StdOut;
+            public readonly Console TheConsole = new AdvancedConsole();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class And : IL.ILOps.And
     {
@@ -42,9 +41,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
-            
+
             if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
+                itemB.sizeOnStackInBytes == 4)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -54,7 +53,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 });
             }
             else if (itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 8)
+                     itemB.sizeOnStackInBytes == 8)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -66,15 +65,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to 'or' are floating point values.
+        ///     Thrown if either or both values to 'or' are floating point values.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either or both values to multiply are not 4 or 8 bytes
-        /// in size or if the values are of different size.
+        ///     Thrown if either or both values to multiply are not 4 or 8 bytes
+        ///     in size or if the values are of different size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -99,13 +98,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     itemB.sizeOnStackInBytes == 4)
                 {
                     //Pop item B
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                     //Pop item A
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                     //And the two
-                    conversionState.Append(new ASMOps.And() { Src1 = "$t1", Src2 = "$t0", Dest = "$t0" });
+                    conversionState.Append(new ASMOps.And() {Src1 = "$t1", Src2 = "$t0", Dest = "$t0"});
                     //Push the result onto the stack
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
@@ -115,31 +114,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4) || 
-                    (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 8))
+                          itemB.sizeOnStackInBytes == 4) ||
+                         (itemA.sizeOnStackInBytes == 4 &&
+                          itemB.sizeOnStackInBytes == 8))
                 {
                     throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 8)
+                         itemB.sizeOnStackInBytes == 8)
                 {
                     //Pop item B to ecx:ebx
                     //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                     //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
                     //Pop item A to edx:eax
                     //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                     //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
                     //And ecx:ebx with edx:eax
-                    conversionState.Append(new ASMOps.And() { Src1 = "$t1", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.And() { Src1 = "$t2", Src2 = "$t3", Dest = "$t3" });
+                    conversionState.Append(new ASMOps.And() {Src1 = "$t1", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new ASMOps.And() {Src1 = "$t2", Src2 = "$t3", Dest = "$t3"});
                     //Push the result onto the stack
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {

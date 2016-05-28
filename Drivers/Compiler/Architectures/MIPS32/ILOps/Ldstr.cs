@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,16 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldstr : IL.ILOps.Ldstr
     {
@@ -50,7 +48,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -62,14 +60,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Get the string metadata token used to get the string from the assembly
             int StringMetadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             //Get the value of the string to load
-            string theString = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveString(StringMetadataToken);
+            string theString =
+                conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveString(StringMetadataToken);
             //Add the string literal and get its ID
             string theStringID = conversionState.TheILLibrary.AddStringLiteral(theString);
             conversionState.AddExternalLabel(theStringID);
 
             //Push the address of the string (i.e. address of ID - ASM label)
-            conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = theStringID });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+            conversionState.Append(new La() {Dest = "$t4", Label = theStringID});
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {

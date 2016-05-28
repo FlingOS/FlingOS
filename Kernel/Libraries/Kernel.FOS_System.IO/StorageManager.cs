@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using Kernel.FOS_System.IO.Disk;
+using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
+using Kernel.Pipes;
 using Kernel.Pipes.Storage;
 
 namespace Kernel.FOS_System.IO
 {
     public class StorageManager : Object
     {
-        private class StorageControllerInfo : Object
-        {
-            public uint RemoteProcessId;
-            public int CmdPipeId;
-            public int DataOutPipeId;
-            public StorageDataInpoint DataInPipe;
-        }
-
         private static StorageCmdOutpoint Strg_CmdOutpoint;
         private static StorageDataOutpoint Strg_DataOutpoint;
 
@@ -77,19 +72,19 @@ namespace Kernel.FOS_System.IO
             if (SystemCalls.CreateSemaphore(1, out Strg_ConnectSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Storage Manager > Failed to create a semaphore! (1)");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
 
             if (SystemCalls.CreateSemaphore(-1, out Strg_CmdOutPipesSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Storage Manager > Failed to create a semaphore! (2)");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
 
             if (SystemCalls.CreateSemaphore(-1, out Strg_DataOutPipesSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Storage Manager > Failed to create a semaphore! (3)");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
 
             uint NewThreadId;
@@ -118,10 +113,11 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int PipeId = Strg_CmdOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("Storage Manager > Storage command output connected.");
-                Strg_CmdOutPipes.Add((uint)PipeId);
+                Strg_CmdOutPipes.Add((uint) PipeId);
                 SystemCalls.SignalSemaphore(Strg_CmdOutPipesSemaphoreId);
             }
         }
+
         private static void WaitForStrgDataPipes()
         {
             while (!Terminating)
@@ -129,7 +125,7 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int PipeId = Strg_DataOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("Storage Manager > Storage data output connected.");
-                Strg_DataOutPipes.Add((uint)PipeId);
+                Strg_DataOutPipes.Add((uint) PipeId);
                 SystemCalls.SignalSemaphore(Strg_DataOutPipesSemaphoreId);
             }
         }
@@ -138,12 +134,14 @@ namespace Kernel.FOS_System.IO
         {
             int numOutpoints;
             SystemCallResults SysCallResult;
-            Pipes.BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
+            BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.Storage,
+                PipeSubclasses.Storage_Data_Out);
 
             if (SysCallResult == SystemCallResults.OK && numOutpoints > 0)
             {
                 PipeOutpointDescriptor[] OutpointDescriptors;
-                Pipes.BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors, PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
+                BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors,
+                    PipeClasses.Storage, PipeSubclasses.Storage_Data_Out);
 
                 if (SysCallResult == SystemCallResults.OK)
                 {
@@ -154,7 +152,7 @@ namespace Kernel.FOS_System.IO
 
                         for (int j = 0; j < Strg_DataInpoints.Count; j++)
                         {
-                            StorageDataInpoint ExistingPipeInfo = (StorageDataInpoint)Strg_DataInpoints[j];
+                            StorageDataInpoint ExistingPipeInfo = (StorageDataInpoint) Strg_DataInpoints[j];
                             if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
                             {
                                 PipeExists = true;
@@ -168,7 +166,8 @@ namespace Kernel.FOS_System.IO
                             {
                                 if (SystemCalls.WaitSemaphore(Strg_ConnectSemaphoreId) == SystemCallResults.OK)
                                 {
-                                    BasicConsole.WriteLine("Storage Manager > Connecting to: " + (String)Descriptor.ProcessId);
+                                    BasicConsole.WriteLine("Storage Manager > Connecting to: " +
+                                                           (String) Descriptor.ProcessId);
                                     StorageDataInpoint DataIn = new StorageDataInpoint(Descriptor.ProcessId, true);
                                     Strg_DataInpoints.Add(DataIn);
 
@@ -178,16 +177,18 @@ namespace Kernel.FOS_System.IO
                                     {
                                         //TODO: Ought to store InProcessId (see WaitForStrgCmdPipes or WaitForStrgDataPipes)
                                         //  then check that against the Descriptor.ProcessId - wait until the correct process has connected
-                                        if (SystemCalls.WaitSemaphore(Strg_CmdOutPipesSemaphoreId) == SystemCallResults.OK)
+                                        if (SystemCalls.WaitSemaphore(Strg_CmdOutPipesSemaphoreId) ==
+                                            SystemCallResults.OK)
                                         {
-                                            int CmdPipeId = (int)Strg_CmdOutPipes[Strg_CmdOutPipes.Count - 1];
+                                            int CmdPipeId = (int) Strg_CmdOutPipes[Strg_CmdOutPipes.Count - 1];
 
                                             BasicConsole.WriteLine("Storage Manager > Got command output pipe id.");
 
                                             //TODO: As above w.r.t. process ids
-                                            if (SystemCalls.WaitSemaphore(Strg_DataOutPipesSemaphoreId) == SystemCallResults.OK)
+                                            if (SystemCalls.WaitSemaphore(Strg_DataOutPipesSemaphoreId) ==
+                                                SystemCallResults.OK)
                                             {
-                                                int DataPipeId = (int)Strg_DataOutPipes[Strg_DataOutPipes.Count - 1];
+                                                int DataPipeId = (int) Strg_DataOutPipes[Strg_DataOutPipes.Count - 1];
 
                                                 BasicConsole.WriteLine("Storage Manager > Got data output pipe id.");
 
@@ -217,7 +218,6 @@ namespace Kernel.FOS_System.IO
                             }
                         }
                     }
-
                 }
                 else
                 {
@@ -233,11 +233,12 @@ namespace Kernel.FOS_System.IO
                 BasicConsole.WriteLine("Storage Manager > Cannot get outpoints!");
             }
         }
+
         public static void InitControllers()
         {
             for (int i = 0; i < StorageControllers.Count; i++)
             {
-                StorageControllerInfo st = (StorageControllerInfo)StorageControllers[i];
+                StorageControllerInfo st = (StorageControllerInfo) StorageControllers[i];
 
                 Strg_CmdOutpoint.Send_DiskList(st.CmdPipeId);
                 ulong[] DiskIds = st.DataInPipe.ReadDiskInfos(true);
@@ -251,12 +252,14 @@ namespace Kernel.FOS_System.IO
                     {
                         if (!DiskIdsBeingManaged.ContainsItemInRange(DiskIds[j], DiskIds[j] + 1))
                         {
-                            BasicConsole.WriteLine("Storage Manager > Storage controller is managing disk device: " + (String)DiskIds[j]);
+                            BasicConsole.WriteLine("Storage Manager > Storage controller is managing disk device: " +
+                                                   (String) DiskIds[j]);
 
                             try
                             {
-                                StorageControllerDisk disk = new StorageControllerDisk(DiskIds[j], st.RemoteProcessId, st.CmdPipeId, Strg_CmdOutpoint, st.DataOutPipeId, Strg_DataOutpoint, st.DataInPipe);
-                                
+                                StorageControllerDisk disk = new StorageControllerDisk(DiskIds[j], st.RemoteProcessId,
+                                    st.CmdPipeId, Strg_CmdOutpoint, st.DataOutPipeId, Strg_DataOutpoint, st.DataInPipe);
+
                                 DiskIdsBeingManaged.Add(DiskIds[j]);
                                 StorageControllerDisks.Add(disk);
 
@@ -271,6 +274,14 @@ namespace Kernel.FOS_System.IO
                     }
                 }
             }
+        }
+
+        private class StorageControllerInfo : Object
+        {
+            public int CmdPipeId;
+            public StorageDataInpoint DataInPipe;
+            public int DataOutPipeId;
+            public uint RemoteProcessId;
         }
     }
 }

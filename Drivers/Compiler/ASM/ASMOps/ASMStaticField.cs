@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,17 +23,12 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
-    [ASMOpTarget(Target=OpCodes.StaticField)]
+    [ASMOpTarget(Target = OpCodes.StaticField)]
     public abstract class ASMStaticField : ASMOp
     {
         public string FieldID;

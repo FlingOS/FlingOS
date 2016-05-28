@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,23 +23,25 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Drivers.Debugger.App
 {
     public delegate void ValueChangedHandler(EventArgs e, object sender);
+
     public partial class RegisterControl : UserControl
     {
+        public RegisterControl()
+        {
+            InitializeComponent();
+        }
+
         [Description("Name of the register."), Category("Data")]
         public string Register
         {
@@ -49,11 +52,11 @@ namespace Drivers.Debugger.App
         [Description("Value of the register."), Category("Data")]
         public uint Value
         {
-            get 
+            get
             {
                 try
                 {
-                    return uint.Parse(ValueBox.Text, System.Globalization.NumberStyles.HexNumber);
+                    return uint.Parse(ValueBox.Text, NumberStyles.HexNumber);
                 }
                 catch
                 {
@@ -66,11 +69,6 @@ namespace Drivers.Debugger.App
         [Description("Value changed event."), Category("Event")]
         public event ValueChangedHandler ValueChangedEvent;
 
-        public RegisterControl()
-        {
-            InitializeComponent();
-        }
-
         private void ValueBox_TextChanged(object sender, EventArgs e)
         {
             if (ValueChangedEvent != null)
@@ -78,7 +76,7 @@ namespace Drivers.Debugger.App
                 try
                 {
                     // Attempt the parse
-                    uint.Parse(ValueBox.Text, System.Globalization.NumberStyles.HexNumber);
+                    uint.Parse(ValueBox.Text, NumberStyles.HexNumber);
                     // If the value is valid, we will reach this stage
                     ValueChangedEvent.Invoke(new EventArgs(), this);
                 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Stloc : IL.ILOps.Stloc
     {
@@ -44,21 +44,21 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if the value to store is floating point.
+        ///     Thrown if the value to store is floating point.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
-            UInt16 localIndex = 0;
-            switch ((ILOp.OpCodes)theOp.opCode.Value)
+            ushort localIndex = 0;
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Stloc:
-                    localIndex = (UInt16)Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    localIndex = (ushort) Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Stloc_0:
                     localIndex = 0;
@@ -73,12 +73,12 @@ namespace Drivers.Compiler.Architectures.x86
                     localIndex = 3;
                     break;
                 case OpCodes.Stloc_S:
-                    localIndex = (UInt16)theOp.ValueBytes[0];
+                    localIndex = (ushort) theOp.ValueBytes[0];
                     break;
             }
 
-            Types.VariableInfo localInfo = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
-            
+            VariableInfo localInfo = conversionState.Input.TheMethodInfo.LocalInfos[localIndex];
+
             StackItem theItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             if (theItem.isFloat)
             {
@@ -89,13 +89,17 @@ namespace Drivers.Compiler.Architectures.x86
             int locSize = localInfo.TheTypeInfo.SizeOnStackInBytes;
             if (locSize == 0)
             {
-                conversionState.Append(new ASMOps.Comment("0 pop size (?!)"));
+                conversionState.Append(new Comment("0 pop size (?!)"));
             }
             else
             {
                 for (int i = 0; i < locSize; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "[EBP-" + Math.Abs(localInfo.Offset + i).ToString() + "]" });
+                    conversionState.Append(new ASMOps.Pop()
+                    {
+                        Size = OperandSize.Dword,
+                        Dest = "[EBP-" + Math.Abs(localInfo.Offset + i).ToString() + "]"
+                    });
                 }
             }
         }

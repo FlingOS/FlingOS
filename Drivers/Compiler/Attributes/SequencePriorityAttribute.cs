@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,92 +23,88 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Attributes
 {
     /// <summary>
-    /// Specifies the priority of a method when it is sequenced in the final 
-    /// assembly file.
-    /// <para>Value meanings:</para>
-    /// <list type="bullet">
-    /// <item>
-    /// <term>long.MinValue</term>
-    /// <description>The lowest possible priority. Indicates the method should 
-    /// be the first bit of ASM in the final file.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>0</term>
-    /// <description>The default priority. Indicates it doesn't matter where 
-    /// the method appears in the final ASM file.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>long.MaxValue</term>
-    /// <description>The highest possible priority. Indicates the method should 
-    /// be the last bit of ASM in the final file.
-    /// </description>
-    /// </item>
-    /// </list>
+    ///     Specifies the priority of a method when it is sequenced in the final
+    ///     assembly file.
+    ///     <para>Value meanings:</para>
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <term>long.MinValue</term>
+    ///             <description>
+    ///                 The lowest possible priority. Indicates the method should
+    ///                 be the first bit of ASM in the final file.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <term>0</term>
+    ///             <description>
+    ///                 The default priority. Indicates it doesn't matter where
+    ///                 the method appears in the final ASM file.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <term>long.MaxValue</term>
+    ///             <description>
+    ///                 The highest possible priority. Indicates the method should
+    ///                 be the last bit of ASM in the final file.
+    ///             </description>
+    ///         </item>
+    ///     </list>
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Low priority = close to start of file
-    /// High priority = close to end of file
-    /// </para>
-    /// <para>
-    /// This is expected to be used for:
-    /// </para>
-    /// <list type="bullet">
-    /// <item>
-    /// <term>Plugged methods</term>
-    /// <description>
-    /// Plugs such as MultibootSignature or entry points which must appear at 
-    /// the start of the file for the OS to be bootable.
-    /// </description>
-    /// </item>
-    /// <item>
-    /// <term>Data blocks</term>
-    /// <description>
-    /// Data blocks such as StringLiterals which are nice to have at 
-    /// the end of the file for debugging etc.
-    /// </description>
-    /// </item>
-    /// </list>
+    ///     <para>
+    ///         Low priority = close to start of file
+    ///         High priority = close to end of file
+    ///     </para>
+    ///     <para>
+    ///         This is expected to be used for:
+    ///     </para>
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <term>Plugged methods</term>
+    ///             <description>
+    ///                 Plugs such as MultibootSignature or entry points which must appear at
+    ///                 the start of the file for the OS to be bootable.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <term>Data blocks</term>
+    ///             <description>
+    ///                 Data blocks such as StringLiterals which are nice to have at
+    ///                 the end of the file for debugging etc.
+    ///             </description>
+    ///         </item>
+    ///     </list>
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class SequencePriorityAttribute : Attribute
     {
         /// <summary>
-        /// The priority of the targeted method.
+        ///     Initialises a new SequencePriorityAttribute with priority 0.
         /// </summary>
         /// <remarks>
-        /// Please see class remarks.
+        ///     0 is the default (/standard) priority.
         /// </remarks>
-        /// <value>Gets/sets an implicitly defined field.</value>
-        public long Priority
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Initialises a new SequencePriorityAttribute with priority 0.
-        /// </summary>
-        /// <remarks>
-        /// 0 is the default (/standard) priority. 
-        /// </remarks>
-        public SequencePriorityAttribute() 
+        public SequencePriorityAttribute()
             : base()
         {
             Priority = 0;
         }
+
+        /// <summary>
+        ///     The priority of the targeted method.
+        /// </summary>
+        /// <remarks>
+        ///     Please see class remarks.
+        /// </remarks>
+        /// <value>Gets/sets an implicitly defined field.</value>
+        public long Priority { get; set; }
     }
 }

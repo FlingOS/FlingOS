@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,43 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.IO;
-using Kernel.FOS_System.IO.Streams;
-using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Processes;
 
 namespace Kernel.Processes.ELF
 {
-    public class ELFSharedObject : FOS_System.Object
+    public class ELFSharedObject : Object
     {
+        public uint BaseAddress = 0;
         protected ELFFile theFile = null;
-        public ELFFile TheFile
-        {
-            get
-            {
-                return theFile;
-            }
-        }
 
         protected ELFProcess theProcess;
-        public ELFProcess TheProcess
-        {
-            get
-            {
-                return theProcess;
-            }
-        }
-
-        public uint BaseAddress = 0;
 
         public ELFSharedObject(ELFFile anELFFile, ELFProcess aProcess)
         {
             theFile = anELFFile;
             theProcess = aProcess;
+        }
+
+        public ELFFile TheFile
+        {
+            get { return theFile; }
+        }
+
+        public ELFProcess TheProcess
+        {
+            get { return theProcess; }
         }
 
         public void Load()
@@ -69,8 +61,8 @@ namespace Kernel.Processes.ELF
             //          SharedObjectDependencyFilePaths.Add(sharedObjectFile.GetFullPath());
             //
             // - Read in segments / map in memory
-            
-            FOS_System.String fullFilePath = theFile.TheFile.GetFullPath();
+
+            String fullFilePath = theFile.TheFile.GetFullPath();
             if (theProcess.SharedObjectDependencyFilePaths.IndexOf(fullFilePath) > -1)
             {
                 return;

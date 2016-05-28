@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,13 +23,10 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
@@ -36,12 +34,12 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
     {
         public static string GetOpSizeStr(OperandSize Size)
         {
-            return System.Enum.GetName(typeof(OperandSize), Size).ToLower();
+            return Enum.GetName(typeof(OperandSize), Size).ToLower();
         }
 
 
         /// <summary>
-        /// Gets the allocation string for the specified number of bytes.
+        ///     Gets the allocation string for the specified number of bytes.
         /// </summary>
         /// <param name="numBytes">The number of bytes being allocated.</param>
         /// <returns>The allocation string.</returns>

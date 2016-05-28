@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,13 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
+using System.Runtime.InteropServices;
+using Object = Kernel.FOS_System.Object;
+using String = Kernel.FOS_System.String;
 
 namespace Kernel.USB
 {
-    public class Configuration : FOS_System.Object
+    public class Configuration : Object
     {
         [Flags]
         public enum Attributes : byte
@@ -39,406 +44,506 @@ namespace Kernel.USB
         }
 
         /// <summary>
-        /// The number of interfaces for this configuration.
-        /// </summary>
-        public byte NumInterfaces;
-        /// <summary>
-        /// The value to use as an argument to select this configuration.
-        /// </summary>
-        public byte Selector;
-        /// <summary>
-        /// Description of this configuration.
-        /// </summary>
-        public UnicodeString Description;
-        /// <summary>
-        /// Bit 7: Reserved, set to 1. (USB 1.0 Bus Powered).
-        /// Bit 6: Self Powered.
-        /// Bit 5: Remote Wakeup.
-        /// Bits 4..0: Reserved, set to 0.
+        ///     Bit 7: Reserved, set to 1. (USB 1.0 Bus Powered).
+        ///     Bit 6: Self Powered.
+        ///     Bit 5: Remote Wakeup.
+        ///     Bits 4..0: Reserved, set to 0.
         /// </summary>
         public Attributes Attribs;
+
         /// <summary>
-        /// Maximum power consumption as a multiple of 2mA units.
+        ///     Description of this configuration.
+        /// </summary>
+        public UnicodeString Description;
+
+        /// <summary>
+        ///     Maximum power consumption as a multiple of 2mA units.
         /// </summary>
         public byte MaxPower;
+
+        /// <summary>
+        ///     The number of interfaces for this configuration.
+        /// </summary>
+        public byte NumInterfaces;
+
+        /// <summary>
+        ///     The value to use as an argument to select this configuration.
+        /// </summary>
+        public byte Selector;
     }
-    public class Interface : FOS_System.Object
+
+    public class Interface : Object
     {
         /// <summary>
-        /// The index of this interface.
-        /// </summary>
-        public byte InterfaceNumber;
-        /// <summary>
-        /// A value used to select the alternative setting.
+        ///     A value used to select the alternative setting.
         /// </summary>
         public byte AlternateSetting;
+
         /// <summary>
-        /// The number of endpoints the interface has.
-        /// </summary>
-        public byte NumEndpoints;
-        /// <summary>
-        /// The interface class code.
+        ///     The interface class code.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte Class;
+
         /// <summary>
-        /// The interface sub-class code.
+        ///     Description this interface.
         /// </summary>
-        /// <see cref="!:http://www.usb.org/developers/defined_class" />
-        public byte Subclass;
+        public UnicodeString Description;
+
         /// <summary>
-        /// The interface protocol code.
+        ///     The index of this interface.
+        /// </summary>
+        public byte InterfaceNumber;
+
+        /// <summary>
+        ///     The number of endpoints the interface has.
+        /// </summary>
+        public byte NumEndpoints;
+
+        /// <summary>
+        ///     The interface protocol code.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte Protocol;
+
         /// <summary>
-        /// Description this interface.
+        ///     The interface sub-class code.
         /// </summary>
-        public UnicodeString Description;
+        /// <see cref="!:http://www.usb.org/developers/defined_class" />
+        public byte Subclass;
     }
+
     /// <summary>
-    /// Represents a device endpoint.
+    ///     Represents a device endpoint.
     /// </summary>
-    public class Endpoint : FOS_System.Object
+    public class Endpoint : Object
     {
         /// <summary>
-        /// The types of USB endpoint.
+        ///     The types of USB endpoint.
         /// </summary>
         public enum Types
         {
             /// <summary>
-            /// An endpoint that sends data.
+            ///     An endpoint that sends data.
             /// </summary>
             OUT,
+
             /// <summary>
-            /// An endpoint that receives data.
+            ///     An endpoint that receives data.
             /// </summary>
             IN,
+
             /// <summary>
-            /// A bidirectional endpoint that sends or receives data.
+            ///     A bidirectional endpoint that sends or receives data.
             /// </summary>
             BIDIR
         }
 
         /// <summary>
-        /// The maximum packet size to use when transferring data to-from 
-        /// the endpoint.
-        /// </summary>
-        public ushort MPS;
-        /// <summary>
-        /// The toggle state of the last transaction sent to the endpoint.
-        /// </summary>
-        public bool Toggle;
-        /// <summary>
-        /// The endpoint type.
-        /// </summary>
-        public Types Type;
-
-        /// <summary>
-        /// The endpoint's address.
-        /// Bit 7: Direction (0 = Out, 1 = In, ignored for Control endpoints). 
-        /// Bits 4..6: Reserved. Set to Zero. 
-        /// Bits 0..3: Endpoint number. 
+        ///     The endpoint's address.
+        ///     Bit 7: Direction (0 = Out, 1 = In, ignored for Control endpoints).
+        ///     Bits 4..6: Reserved. Set to Zero.
+        ///     Bits 0..3: Endpoint number.
         /// </summary>
         public byte Address;
+
         /// <summary>
-        /// Endpoint attributes. See remarks for details.
+        ///     Endpoint attributes. See remarks for details.
         /// </summary>
         /// <remarks>
-        /// <list type="bullet">
-        ///     <item>
-        ///         <term>Bits 0..1 - Transfer Type</term>
-        ///         <description>
-        ///             <list type="bullet">
-        ///                 <item><term>00</term><description>Control</description></item>
-        ///                 <item><term>01</term><description>Isochronous</description></item>
-        ///                 <item><term>10</term><description>Bulk</description></item>
-        ///                 <item><term>11</term><description>Interrupt</description></item>
-        ///             </list>
-        ///         </description>
-        ///     </item>
-        ///     
-        ///     <item>
-        ///         <term>Bits 2..7</term>
-        ///         <description>Reserved except if isochronous endpoint (see below).</description>
-        ///     </item>
-        ///     
-        ///     <item>
-        ///         <term>(If Isochronous endpoint) - Bits 3..2 - Synchronisation Type</term>
-        ///         <description>
-        ///             <list type="bullet">
-        ///                 <item><term>00</term><description>No Synchonisation</description></item>
-        ///                 <item><term>01</term><description>Asynchronous</description></item>
-        ///                 <item><term>10</term><description>Adaptive</description></item>
-        ///                 <item><term>11</term><description>Synchronous</description></item>
-        ///             </list>
-        ///         </description>
-        ///     </item>
-        ///     
-        ///     <item>
-        ///         <term>(If Isochronous endpoint) - Bits 5..4 - Usage Type</term>
-        ///         <description>
-        ///             <list type="bullet">
-        ///                 <item><term>00</term><description>Data Endpoint</description></item>
-        ///                 <item><term>01</term><description>Feedback Endpoint</description></item>
-        ///                 <item><term>10</term><description>Explicit Feedback Data Endpoint</description></item>
-        ///                 <item><term>11</term><description>Reserved</description></item>
-        ///             </list>
-        ///         </description>
-        ///     </item>
-        /// </list>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <term>Bits 0..1 - Transfer Type</term>
+        ///             <description>
+        ///                 <list type="bullet">
+        ///                     <item>
+        ///                         <term>00</term><description>Control</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>01</term><description>Isochronous</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>10</term><description>Bulk</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>11</term><description>Interrupt</description>
+        ///                     </item>
+        ///                 </list>
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Bits 2..7</term>
+        ///             <description>Reserved except if isochronous endpoint (see below).</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>(If Isochronous endpoint) - Bits 3..2 - Synchronisation Type</term>
+        ///             <description>
+        ///                 <list type="bullet">
+        ///                     <item>
+        ///                         <term>00</term><description>No Synchonisation</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>01</term><description>Asynchronous</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>10</term><description>Adaptive</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>11</term><description>Synchronous</description>
+        ///                     </item>
+        ///                 </list>
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <term>(If Isochronous endpoint) - Bits 5..4 - Usage Type</term>
+        ///             <description>
+        ///                 <list type="bullet">
+        ///                     <item>
+        ///                         <term>00</term><description>Data Endpoint</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>01</term><description>Feedback Endpoint</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>10</term><description>Explicit Feedback Data Endpoint</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>11</term><description>Reserved</description>
+        ///                     </item>
+        ///                 </list>
+        ///             </description>
+        ///         </item>
+        ///     </list>
         /// </remarks>
         public byte Attributes;
+
         /// <summary>
-        /// Interval for polling endpoint data transfers. Value in frame counts. See remarks for more info.
+        ///     Interval for polling endpoint data transfers. Value in frame counts. See remarks for more info.
         /// </summary>
         /// <remarks>
-        /// Ignored for Bulk &amp; Control Endpoints. Isochronous must equal 1 and field may range from 1 to 255 for interrupt endpoints.
+        ///     Ignored for Bulk &amp; Control Endpoints. Isochronous must equal 1 and field may range from 1 to 255 for interrupt
+        ///     endpoints.
         /// </remarks>
         public byte Interval;
+
+        /// <summary>
+        ///     The maximum packet size to use when transferring data to-from
+        ///     the endpoint.
+        /// </summary>
+        public ushort MPS;
+
+        /// <summary>
+        ///     The toggle state of the last transaction sent to the endpoint.
+        /// </summary>
+        public bool Toggle;
+
+        /// <summary>
+        ///     The endpoint type.
+        /// </summary>
+        public Types Type;
     }
+
     /// <summary>
-    /// The USB Device Descriptor structure received from a device.
+    ///     The USB Device Descriptor structure received from a device.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct DeviceDescriptor
     {
         /// <summary>
-        /// The length of the descriptor. Should be 18.
+        ///     The length of the descriptor. Should be 18.
         /// </summary>
         public byte length;
+
         /// <summary>
-        /// The descriptor type. Should be 1.
+        ///     The descriptor type. Should be 1.
         /// </summary>
         public byte descriptorType;
+
         /// <summary>
-        /// Maximum supported USB version where 0x0210 means 2.10
+        ///     Maximum supported USB version where 0x0210 means 2.10
         /// </summary>
         public ushort bcdUSB;
+
         /// <summary>
-        /// USB device class of the device.
+        ///     USB device class of the device.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte deviceClass;
+
         /// <summary>
-        /// USB device sub-class of the device.
+        ///     USB device sub-class of the device.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte deviceSubclass;
+
         /// <summary>
-        /// USB device protocol of the device.
+        ///     USB device protocol of the device.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte deviceProtocol;
+
         /// <summary>
-        /// The maximum packet size to use when transferring data to/from
-        /// the device. This value must be 8, 16, 32 or 64.
+        ///     The maximum packet size to use when transferring data to/from
+        ///     the device. This value must be 8, 16, 32 or 64.
         /// </summary>
         public byte MaxPacketSize;
+
         /// <summary>
-        /// The device's vendor Id.
+        ///     The device's vendor Id.
         /// </summary>
         public ushort VendorId;
+
         /// <summary>
-        /// The device's product Id.
+        ///     The device's product Id.
         /// </summary>
         public ushort ProductId;
+
         /// <summary>
-        /// The release version of the device where 0x3102 means 31.02
+        ///     The release version of the device where 0x3102 means 31.02
         /// </summary>
         public ushort bcdDevice;
+
         /// <summary>
-        /// Index of the manufacturer string descriptor.
+        ///     Index of the manufacturer string descriptor.
         /// </summary>
         public byte manufacturer;
+
         /// <summary>
-        /// Index of the product string descriptor.
+        ///     Index of the product string descriptor.
         /// </summary>
         public byte product;
+
         /// <summary>
-        /// Index of the serial number string descriptor.
+        ///     Index of the serial number string descriptor.
         /// </summary>
         public byte serialNumber;
+
         /// <summary>
-        /// The number of possible configurations.
+        ///     The number of possible configurations.
         /// </summary>
         public byte numConfigurations;
     }
+
     /// <summary>
-    /// The USB Configuration Descriptor structure received from a device.
+    ///     The USB Configuration Descriptor structure received from a device.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ConfigurationDescriptor
     {
         /// <summary>
-        /// The length of the descriptor. Should be 9.
+        ///     The length of the descriptor. Should be 9.
         /// </summary>
         public byte length;
+
         /// <summary>
-        /// The descriptor type. Should be 2.
+        ///     The descriptor type. Should be 2.
         /// </summary>
         public byte descriptorType;
+
         /// <summary>
-        /// The total length, in bytes, of the data returned.
+        ///     The total length, in bytes, of the data returned.
         /// </summary>
         public ushort totalLength;
+
         /// <summary>
-        /// The number of interfaces for this configuration.
+        ///     The number of interfaces for this configuration.
         /// </summary>
         public byte numInterfaces;
+
         /// <summary>
-        /// The value to use as an argument to select this configuration.
+        ///     The value to use as an argument to select this configuration.
         /// </summary>
         public byte configurationValue;
+
         /// <summary>
-        /// Index of the string descriptor describing this configuration.
+        ///     Index of the string descriptor describing this configuration.
         /// </summary>
         public byte configuration;
+
         /// <summary>
-        /// Bit 7: Reserved, set to 1. (USB 1.0 Bus Powered).
-        /// Bit 6: Self Powered.
-        /// Bit 5: Remote Wakeup.
-        /// Bits 4..0: Reserved, set to 0.
+        ///     Bit 7: Reserved, set to 1. (USB 1.0 Bus Powered).
+        ///     Bit 6: Self Powered.
+        ///     Bit 5: Remote Wakeup.
+        ///     Bits 4..0: Reserved, set to 0.
         /// </summary>
         public byte attributes;
+
         /// <summary>
-        /// Maximum power consumption as a multiple of 2mA units.
+        ///     Maximum power consumption as a multiple of 2mA units.
         /// </summary>
         public byte maxPower;
     }
+
     /// <summary>
-    /// The USB Interface Descriptor structure received from a device.
+    ///     The USB Interface Descriptor structure received from a device.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct InterfaceDescriptor
     {
         /// <summary>
-        /// The length of the descriptor. Should be 9.
+        ///     The length of the descriptor. Should be 9.
         /// </summary>
         public byte length;
+
         /// <summary>
-        /// The descriptor type. Should be 4.
+        ///     The descriptor type. Should be 4.
         /// </summary>
         public byte descriptorType;
+
         /// <summary>
-        /// The index of this interface.
+        ///     The index of this interface.
         /// </summary>
         public byte interfaceNumber;
+
         /// <summary>
-        /// A value used to select the alternative setting.
+        ///     A value used to select the alternative setting.
         /// </summary>
         public byte alternateSetting;
+
         /// <summary>
-        /// The number of endpoints the interface has.
+        ///     The number of endpoints the interface has.
         /// </summary>
         public byte numEndpoints;
+
         /// <summary>
-        /// The interface class code.
+        ///     The interface class code.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte interfaceClass;
+
         /// <summary>
-        /// The interface sub-class code.
+        ///     The interface sub-class code.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte interfaceSubclass;
+
         /// <summary>
-        /// The interface protocol code.
+        ///     The interface protocol code.
         /// </summary>
         /// <see cref="!:http://www.usb.org/developers/defined_class" />
         public byte interfaceProtocol;
+
         /// <summary>
-        /// Index of the string descriptor describing this interface.
+        ///     Index of the string descriptor describing this interface.
         /// </summary>
         public byte StringIndex;
     }
+
     /// <summary>
-    /// The USB Endpoint Descriptor structure received from a device.
+    ///     The USB Endpoint Descriptor structure received from a device.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct EndpointDescriptor
     {
         /// <summary>
-        /// The length of the descriptor. Should be 7.
+        ///     The length of the descriptor. Should be 7.
         /// </summary>
         public byte length;
+
         /// <summary>
-        /// The descriptor type. Should be 5.
+        ///     The descriptor type. Should be 5.
         /// </summary>
         public byte descriptorType;
+
         /// <summary>
-        /// The endpoint's address.
-        /// Bit 7: Direction (0 = Out, 1 = In, ignored for Control endpoints). 
-        /// Bits 4..6: Reserved. Set to Zero. 
-        /// Bits 0..3: Endpoint number. 
+        ///     The endpoint's address.
+        ///     Bit 7: Direction (0 = Out, 1 = In, ignored for Control endpoints).
+        ///     Bits 4..6: Reserved. Set to Zero.
+        ///     Bits 0..3: Endpoint number.
         /// </summary>
         public byte endpointAddress;
+
         /// <summary>
-        /// Endpoint attributes. See remarks for details.
+        ///     Endpoint attributes. See remarks for details.
         /// </summary>
         /// <remarks>
-        /// <list type="bullet">
-        ///     <item>
-        ///         <term>Bits 0..1 - Transfer Type</term>
-        ///         <description>
-        ///             <list type="bullet">
-        ///                 <item><term>00</term><description>Control</description></item>
-        ///                 <item><term>01</term><description>Isochronous</description></item>
-        ///                 <item><term>10</term><description>Bulk</description></item>
-        ///                 <item><term>11</term><description>Interrupt</description></item>
-        ///             </list>
-        ///         </description>
-        ///     </item>
-        ///     
-        ///     <item>
-        ///         <term>Bits 2..7</term>
-        ///         <description>Reserved except if isochronous endpoint (see below).</description>
-        ///     </item>
-        ///     
-        ///     <item>
-        ///         <term>(If Isochronous endpoint) - Bits 3..2 - Synchronisation Type</term>
-        ///         <description>
-        ///             <list type="bullet">
-        ///                 <item><term>00</term><description>No Synchonisation</description></item>
-        ///                 <item><term>01</term><description>Asynchronous</description></item>
-        ///                 <item><term>10</term><description>Adaptive</description></item>
-        ///                 <item><term>11</term><description>Synchronous</description></item>
-        ///             </list>
-        ///         </description>
-        ///     </item>
-        ///     
-        ///     <item>
-        ///         <term>(If Isochronous endpoint) - Bits 5..4 - Usage Type</term>
-        ///         <description>
-        ///             <list type="bullet">
-        ///                 <item><term>00</term><description>Data Endpoint</description></item>
-        ///                 <item><term>01</term><description>Feedback Endpoint</description></item>
-        ///                 <item><term>10</term><description>Explicit Feedback Data Endpoint</description></item>
-        ///                 <item><term>11</term><description>Reserved</description></item>
-        ///             </list>
-        ///         </description>
-        ///     </item>
-        /// </list>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <term>Bits 0..1 - Transfer Type</term>
+        ///             <description>
+        ///                 <list type="bullet">
+        ///                     <item>
+        ///                         <term>00</term><description>Control</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>01</term><description>Isochronous</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>10</term><description>Bulk</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>11</term><description>Interrupt</description>
+        ///                     </item>
+        ///                 </list>
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <term>Bits 2..7</term>
+        ///             <description>Reserved except if isochronous endpoint (see below).</description>
+        ///         </item>
+        ///         <item>
+        ///             <term>(If Isochronous endpoint) - Bits 3..2 - Synchronisation Type</term>
+        ///             <description>
+        ///                 <list type="bullet">
+        ///                     <item>
+        ///                         <term>00</term><description>No Synchonisation</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>01</term><description>Asynchronous</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>10</term><description>Adaptive</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>11</term><description>Synchronous</description>
+        ///                     </item>
+        ///                 </list>
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <term>(If Isochronous endpoint) - Bits 5..4 - Usage Type</term>
+        ///             <description>
+        ///                 <list type="bullet">
+        ///                     <item>
+        ///                         <term>00</term><description>Data Endpoint</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>01</term><description>Feedback Endpoint</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>10</term><description>Explicit Feedback Data Endpoint</description>
+        ///                     </item>
+        ///                     <item>
+        ///                         <term>11</term><description>Reserved</description>
+        ///                     </item>
+        ///                 </list>
+        ///             </description>
+        ///         </item>
+        ///     </list>
         /// </remarks>
         public byte attributes;
+
         /// <summary>
-        /// The maximum packet size to use when transferring data to/from
-        /// the endpoint. This value must be 8, 16, 32 or 64.
+        ///     The maximum packet size to use when transferring data to/from
+        ///     the endpoint. This value must be 8, 16, 32 or 64.
         /// </summary>
         public ushort maxPacketSize;
+
         /// <summary>
-        /// Interval for polling endpoint data transfers. Value in frame counts. See remarks for more info.
+        ///     Interval for polling endpoint data transfers. Value in frame counts. See remarks for more info.
         /// </summary>
         /// <remarks>
-        /// Ignored for Bulk &amp; Control Endpoints. Isochronous must equal 1 and field may range from 1 to 255 for interrupt endpoints.
+        ///     Ignored for Bulk &amp; Control Endpoints. Isochronous must equal 1 and field may range from 1 to 255 for interrupt
+        ///     endpoints.
         /// </remarks>
         public byte interval;
     }
-    public class StringInfo : FOS_System.Object
+
+    public class StringInfo : Object
     {
         public ushort[] LanguageIds;
 
-        public static FOS_System.String GetLanguageName(ushort languageId)
+        public static String GetLanguageName(ushort languageId)
         {
             switch (languageId)
             {
@@ -581,53 +686,61 @@ namespace Kernel.USB
                 case 0x465:
                     return "Divehi";
                 default:
-                    return "Language code: " + (FOS_System.String)languageId;
+                    return "Language code: " + (String) languageId;
             }
         }
     }
+
     /// <summary>
-    /// The USB String Descriptor structure received from a device. Use this or the unicode version as appropriate.
+    ///     The USB String Descriptor structure received from a device. Use this or the unicode version as appropriate.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct StringDescriptor
     {
         /// <summary>
-        /// The length of the descriptor. Value is variable.
+        ///     The length of the descriptor. Value is variable.
         /// </summary>
         public byte length;
+
         /// <summary>
-        /// The descriptor type. Should be 3.
+        ///     The descriptor type. Should be 3.
         /// </summary>
         public byte descriptorType;
+
         /// <summary>
-        /// The language IDs or value bytes of the string. 
-        /// This has been determined, through testing, to require a max length 10 bytes. Not sure if this is proper though.
+        ///     The language IDs or value bytes of the string.
+        ///     This has been determined, through testing, to require a max length 10 bytes. Not sure if this is proper though.
         /// </summary>
-        public fixed ushort languageID[10];
+        public fixed ushort languageID [10];
     }
-    public class UnicodeString : FOS_System.Object
+
+    public class UnicodeString : Object
     {
         public byte StringType;
-        public FOS_System.String Value;
+        public String Value;
     }
+
     /// <summary>
-    /// A USB Unicode String Description structure received from a device. Use this or the unicode version as appropriate.
+    ///     A USB Unicode String Description structure received from a device. Use this or the unicode version as appropriate.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct StringDescriptorUnicode
     {
         /// <summary>
-        /// The length of the descriptor. Should equal: 2 + (2 * numUnicodeCharacters)
+        ///     The length of the descriptor. Should equal: 2 + (2 * numUnicodeCharacters)
         /// </summary>
         public byte length;
+
         /// <summary>
-        /// The descriptor type. Should be 3.
+        ///     The descriptor type. Should be 3.
         /// </summary>
         public byte descriptorType;
+
         /// <summary>
-        /// The unicode value bytes of the string. 
-        /// This has been determined, through testing, to require a max length 60 bytes (30 characters). Not sure if this is proper though.
+        ///     The unicode value bytes of the string.
+        ///     This has been determined, through testing, to require a max length 60 bytes (30 characters). Not sure if this is
+        ///     proper though.
         /// </summary>
-        public fixed byte widechar[60];
+        public fixed byte widechar [60];
     }
 }

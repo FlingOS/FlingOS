@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,51 +23,49 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System.IO.Streams;
 
 namespace Kernel.FOS_System.IO
 {
     /// <summary>
-    /// Represents a file listing in a file system.
+    ///     Represents a file listing in a file system.
     /// </summary>
     public abstract class File : Base
     {
         /// <summary>
-        /// Initializes a new file.
+        ///     Initializes a new file.
         /// </summary>
         /// <param name="aFileSystem">The file system to which the file belongs.</param>
         /// <param name="parent">The parent directory of the file.</param>
         /// <param name="aName">The name of the file.</param>
         /// <param name="aSize">The exact size of the file in bytes.</param>
-        public File(FileSystem aFileSystem, Directory parent, FOS_System.String aName, UInt64 aSize)
+        public File(FileSystem aFileSystem, Directory parent, String aName, ulong aSize)
             : base(aFileSystem, parent, aName, false)
         {
             mSize = aSize;
         }
 
         /// <summary>
-        /// Gets a stream to read/write from the file.
+        ///     Gets a stream to read/write from the file.
         /// </summary>
         /// <returns>A readable, writeable stream.</returns>
-        public Streams.FileStream GetStream()
+        public FileStream GetStream()
         {
-            return Streams.FileStream.Create(this);
+            return FileStream.Create(this);
         }
 
         /// <summary>
-        /// Opens the specified file.
+        ///     Opens the specified file.
         /// </summary>
         /// <param name="fileName">The full path to the file to open.</param>
         /// <returns>The file listing or null if not found.</returns>
-        public static File Open(FOS_System.String fileName)
+        public static File Open(String fileName)
         {
             FileSystemMapping theMapping = FileSystemManager.GetMapping(fileName);
-            if(theMapping == null)
+            if (theMapping == null)
             {
                 return null;
             }
@@ -84,7 +83,7 @@ namespace Kernel.FOS_System.IO
             {
                 if (baseListing is File)
                 {
-                    return (File)baseListing;
+                    return (File) baseListing;
                 }
                 else
                 {
@@ -92,12 +91,13 @@ namespace Kernel.FOS_System.IO
                 }
             }
         }
+
         /// <summary>
-        /// Deletes the specified file within the file system.
+        ///     Deletes the specified file within the file system.
         /// </summary>
         /// <param name="name">The name of the file to delete.</param>
         /// <returns>True if the file was found and deleted. Otherwise, false.</returns>
-        public static bool Delete(FOS_System.String name)
+        public static bool Delete(String name)
         {
             File theFile = Open(name);
 

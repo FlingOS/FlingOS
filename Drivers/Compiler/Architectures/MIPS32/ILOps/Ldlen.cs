@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldlen : IL.ILOps.Ldlen
     {
@@ -53,20 +51,20 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if field to load is a floating value or the field to load
-        /// is not of size 4 or 8 bytes.
+        ///     Thrown if field to load is a floating value or the field to load
+        ///     is not of size 4 or 8 bytes.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            Types.TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
+            TypeInfo arrayTypeInfo = conversionState.GetArrayTypeInfo();
             int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
 
             int currOpPosition = conversionState.PositionOf(theOp);
@@ -82,24 +80,41 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
 
             //      1.1. Move array ref into eax
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Word,
+                Src = "0($sp)",
+                Dest = "$t0",
+                MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+            });
             //      1.2. Compare eax (array ref) to 0
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", Src2 = "0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "ContinueExecution1", UnsignedTest = false });
+            conversionState.Append(new Branch()
+            {
+                Src1 = "$t0",
+                Src2 = "0",
+                BranchType = BranchOp.BranchNotZero,
+                DestILPosition = currOpPosition,
+                Extension = "ContinueExecution1",
+                UnsignedTest = false
+            });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
-            conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ContinueExecution1" });
+            conversionState.Append(new ASMOps.Call()
+            {
+                Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
+            });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ContinueExecution1"});
 
             //2. Load array length
             //  - Pop array ref
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
             //  - Load length from array ref
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t2)", Dest = "$t0" }); 
             GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", lengthOffset, 4);
             //  - Push array length
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {

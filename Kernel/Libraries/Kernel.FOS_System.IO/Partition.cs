@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,90 +23,85 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.FOS_System;
+
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
 
 namespace Kernel.FOS_System.IO
 {
     /// <summary>
-    /// Represents a partition on a disk drive.
+    ///     Represents a partition on a disk drive.
     /// </summary>
     public class Partition : DiskDevice
     {
-        /// <summary>
-        /// The underlying disk device on which this partition resides.
-        /// </summary>
-        public DiskDevice TheDiskDevice;
-        /// <summary>
-        /// The sector number at which the partition starts.
-        /// </summary>
-        internal UInt64 StartingSector;
-
-        public override ulong BlockCount
-        {
-            get
-            {
-                return TheDiskDevice.BlockCount;
-            }
-        }
-        public override ulong BlockSize
-        {
-            get
-            {
-                return TheDiskDevice.BlockSize;
-            }
-        }
-
         public bool Mapped = false;
 
         /// <summary>
-        /// The ID of this partition (volume).
+        ///     The sector number at which the partition starts.
         /// </summary>
-        public FOS_System.String VolumeID = "[NO ID]";
+        internal ulong StartingSector;
 
         /// <summary>
-        /// Initializes a new partition.
+        ///     The underlying disk device on which this partition resides.
+        /// </summary>
+        public DiskDevice TheDiskDevice;
+
+        /// <summary>
+        ///     The ID of this partition (volume).
+        /// </summary>
+        public String VolumeID = "[NO ID]";
+
+        /// <summary>
+        ///     Initializes a new partition.
         /// </summary>
         /// <param name="aDiskDevice">The disk device on which the partition resides.</param>
         /// <param name="aStartingSector">The sector number at which the partition starts.</param>
         /// <param name="aSectorCount">The number of sectors in the partition.</param>
-        public Partition(DiskDevice aDiskDevice, UInt64 aStartingSector, UInt64 aSectorCount)
+        public Partition(DiskDevice aDiskDevice, ulong aStartingSector, ulong aSectorCount)
             : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.Virtual, "Partition", new uint[0], true)
         {
             TheDiskDevice = aDiskDevice;
             StartingSector = aStartingSector;
         }
 
+        public override ulong BlockCount
+        {
+            get { return TheDiskDevice.BlockCount; }
+        }
+
+        public override ulong BlockSize
+        {
+            get { return TheDiskDevice.BlockSize; }
+        }
+
         /// <summary>
-        /// Reads contiguous blocks within the partition. Block 0 = 1st sector of the partition.
+        ///     Reads contiguous blocks within the partition. Block 0 = 1st sector of the partition.
         /// </summary>
         /// <param name="aBlockNo">The first sector (block) number to read.</param>
         /// <param name="aBlockCount">The number of sectors (blocks) to read.</param>
         /// <param name="aData">The buffer to read into.</param>
-        public override void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            UInt64 DiskBlockNo = StartingSector + aBlockNo;
+            ulong DiskBlockNo = StartingSector + aBlockNo;
             TheDiskDevice.ReadBlock(DiskBlockNo, aBlockCount, aData);
         }
 
         /// <summary>
-        /// See base class.
+        ///     See base class.
         /// </summary>
         /// <param name="aBlockNo">See base class.</param>
         /// <param name="aBlockCount">See base class.</param>
         /// <param name="aData">See base class.</param>
-        public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            UInt64 xHostBlockNo = StartingSector + aBlockNo;
+            ulong xHostBlockNo = StartingSector + aBlockNo;
             TheDiskDevice.WriteBlock(xHostBlockNo, aBlockCount, aData);
         }
 
         /// <summary>
-        /// Determines whether the specified disk has had any valid partitions detected.
+        ///     Determines whether the specified disk has had any valid partitions detected.
         /// </summary>
         /// <param name="disk">The disk to check.</param>
         /// <returns>Whether the specified disk has had any valid partitions detected.</returns>
@@ -113,7 +109,7 @@ namespace Kernel.FOS_System.IO
         {
             for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                FOS_System.IO.Partition part = (FOS_System.IO.Partition)PartitionManager.Partitions[i];
+                Partition part = (Partition) PartitionManager.Partitions[i];
                 if (part.TheDiskDevice == disk)
                 {
                     return true;
@@ -121,8 +117,9 @@ namespace Kernel.FOS_System.IO
             }
             return false;
         }
+
         /// <summary>
-        /// Gets the first partition, if any, of the specified disk.
+        ///     Gets the first partition, if any, of the specified disk.
         /// </summary>
         /// <param name="disk">The disk to get the first partition of.</param>
         /// <returns>The partition or null if none found.</returns>
@@ -130,7 +127,7 @@ namespace Kernel.FOS_System.IO
         {
             for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                FOS_System.IO.Partition part = (FOS_System.IO.Partition)PartitionManager.Partitions[i];
+                Partition part = (Partition) PartitionManager.Partitions[i];
                 if (part.TheDiskDevice == disk)
                 {
                     return part;
@@ -140,7 +137,7 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
-        /// Cleans any caches of data which haven't been committed to disk.
+        ///     Cleans any caches of data which haven't been committed to disk.
         /// </summary>
         public override void CleanCaches()
         {

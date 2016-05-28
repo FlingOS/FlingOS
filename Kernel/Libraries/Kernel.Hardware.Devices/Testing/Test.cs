@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,20 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
 
 namespace Kernel.Hardware.Testing
 {
-    public delegate void OutputMessageDel(FOS_System.String TestName, FOS_System.String Message);
-    public delegate void OutputWarningDel(FOS_System.String TestName, FOS_System.String message);
-    public delegate void OutputErrorDel(FOS_System.String TestName, FOS_System.String message);
+    public delegate void OutputMessageDel(String TestName, String Message);
 
-    public class Test : FOS_System.Object
+    public delegate void OutputWarningDel(String TestName, String message);
+
+    public delegate void OutputErrorDel(String TestName, String message);
+
+    public class Test : Object
     {
     }
 }

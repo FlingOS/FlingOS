@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Stfld : IL.ILOps.Stfld
     {
@@ -46,23 +46,23 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if the value to store is floating point or
-        /// if the value is not 4 or 8 bytes in size.
+        ///     Thrown if the value to store is floating point or
+        ///     if the value is not 4 or 8 bytes in size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
-            Types.TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
-            Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+            TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
+            TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             Types.FieldInfo theFieldInfo = conversionState.TheILLibrary.GetFieldInfo(objTypeInfo, theField.Name);
-            
+
 
             int offset = theFieldInfo.OffsetInBytes;
 
@@ -71,32 +71,47 @@ namespace Drivers.Compiler.Architectures.x86
 
             StackItem value = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
-            
+
             if (value.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Storing fields of type float is not supported yet!");
             }
-            
+
             //Get object pointer
-            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[ESP+" + stackSize.ToString() + "]", Dest = "ECX" });
+            conversionState.Append(new Mov()
+            {
+                Size = OperandSize.Dword,
+                Src = "[ESP+" + stackSize.ToString() + "]",
+                Dest = "ECX"
+            });
             //Pop and mov value
             int i = 0;
             for (; i < memSize; i += 2)
             {
                 if (memSize - i == 1)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "AX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[ECX+" + (offset + i).ToString() + "]" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "AX"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "AL",
+                        Dest = "[ECX+" + (offset + i).ToString() + "]"
+                    });
                 }
                 else
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "AX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[ECX+" + (offset + i).ToString() + "]" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "AX"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "AX",
+                        Dest = "[ECX+" + (offset + i).ToString() + "]"
+                    });
                 }
             }
             //                                                       + 4 to pop object pointer
-            conversionState.Append(new ASMOps.Add() { Src = ((i % 4) + 4).ToString(), Dest = "ESP" });
+            conversionState.Append(new ASMOps.Add() {Src = (i%4 + 4).ToString(), Dest = "ESP"});
         }
     }
 }

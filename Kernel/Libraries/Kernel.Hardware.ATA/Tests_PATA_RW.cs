@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,28 +23,32 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
+using Kernel.FOS_System;
+using Kernel.Hardware.ATA;
 
 namespace Kernel.Hardware.Testing
 {
     public partial class ATATests : Test
     {
-        public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning, OutputErrorDel OutputError)
+        public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning,
+            OutputErrorDel OutputError)
         {
             OutputMessage("ATATests : Test_LongRead", "Test started.");
 
             // The device we are going to test
-            ATA.PATA TestDevice = null;
+            PATA TestDevice = null;
 
             // Search for PATA device
             OutputMessage("ATATests : Test_LongRead", "Searching for PATA device...");
-            for (int i = 0; i < ATA.ATAManager.Devices.Count; i++)
+            for (int i = 0; i < ATAManager.Devices.Count; i++)
             {
-                Device ADevice = (Device)ATA.ATAManager.Devices[i];
-                if (ADevice is ATA.PATA)
+                Device ADevice = (Device) ATAManager.Devices[i];
+                if (ADevice is PATA)
                 {
-                    TestDevice = (ATA.PATA)ADevice;
+                    TestDevice = (PATA) ADevice;
                     break;
                 }
             }
@@ -56,21 +61,25 @@ namespace Kernel.Hardware.Testing
             }
             else
             {
-                OutputMessage("ATATests : Test_LongRead", ((FOS_System.String)"Device found. Controller ID: ") + 
-                        (TestDevice.ControllerID == ATA.ATA.ControllerID.Primary ? "Primary" : "Secondary") + " , Position: " + 
-                        (TestDevice.BusPosition == ATA.ATA.BusPosition.Master ? "Master" : "Slave"));
+                OutputMessage("ATATests : Test_LongRead", (String) "Device found. Controller ID: " +
+                                                          (TestDevice.ControllerID == ATA.ATA.ControllerID.Primary
+                                                              ? "Primary"
+                                                              : "Secondary") + " , Position: " +
+                                                          (TestDevice.BusPosition == ATA.ATA.BusPosition.Master
+                                                              ? "Master"
+                                                              : "Slave"));
             }
 
             // Create a buffer for storing up to 16 blocks of data
             OutputMessage("ATATests : Test_LongRead", "Creating data buffer...");
-            byte[] buffer = new byte[32 * (int)(uint)TestDevice.BlockSize];
+            byte[] buffer = new byte[32*(int) (uint) TestDevice.BlockSize];
             OutputMessage("ATATests : Test_LongRead", "done.");
 
             try
             {
                 OutputMessage("ATATests : Test_LongRead", "Calculating statistical data...");
-                ulong FractionOfDisk = FOS_System.Math.Divide(TestDevice.BlockCount, 10);
-                ulong PercentileOfFraction = FOS_System.Math.Divide(FractionOfDisk, 100);
+                ulong FractionOfDisk = Math.Divide(TestDevice.BlockCount, 10);
+                ulong PercentileOfFraction = Math.Divide(FractionOfDisk, 100);
                 ulong dist = 0;
                 bool a = true;
                 OutputMessage("ATATests : Test_LongRead", "done.");

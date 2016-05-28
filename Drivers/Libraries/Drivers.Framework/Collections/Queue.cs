@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,26 +23,32 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Collections
 {
-    public class Queue : Framework.Object
+    public class Queue : Object
     {
-        private Framework.Object[] InternalArray;
         /// <summary>
-        /// Next index to pop item from
+        ///     Next index to pop item from
         /// </summary>
         private int BackIdx = 0;
+
+        private readonly bool CanExpand;
+
         /// <summary>
-        /// Next index to push item to
+        ///     Next index to push item to
         /// </summary>
         private int FrontIdx = 0;
+
+        private Object[] InternalArray;
+
+        public Queue(int capacity, bool canExpand)
+        {
+            InternalArray = new Object[capacity];
+            CanExpand = canExpand;
+        }
 
         public int Count
         {
@@ -57,23 +64,13 @@ namespace Drivers.Framework.Collections
                 }
             }
         }
+
         public int Capacity
         {
-            get
-            {
-                return InternalArray.Length;
-            }
+            get { return InternalArray.Length; }
         }
 
-        private bool CanExpand;
-
-        public Queue(int capacity, bool canExpand)
-        {
-            InternalArray = new Framework.Object[capacity];
-            CanExpand = canExpand;
-        }
-
-        public void Push(Framework.Object val)
+        public void Push(Object val)
         {
             if ((BackIdx != 0 && FrontIdx == BackIdx - 1) ||
                 (BackIdx == 0 && FrontIdx == InternalArray.Length - 1))
@@ -96,11 +93,12 @@ namespace Drivers.Framework.Collections
                 FrontIdx = 0;
             }
         }
-        public Framework.Object Pop()
+
+        public Object Pop()
         {
             if (Count > 0)
             {
-                Framework.Object result = InternalArray[BackIdx];
+                Object result = InternalArray[BackIdx];
                 InternalArray[BackIdx++] = null;
 
                 if (BackIdx >= InternalArray.Length)
@@ -112,7 +110,8 @@ namespace Drivers.Framework.Collections
             }
             return null;
         }
-        public Framework.Object Peek()
+
+        public Object Peek()
         {
             if (Count > 0)
             {
@@ -125,7 +124,7 @@ namespace Drivers.Framework.Collections
         {
             if (amount > 0)
             {
-                Framework.Object[] newInternalArray = new Framework.Object[InternalArray.Length + amount];
+                Object[] newInternalArray = new Object[InternalArray.Length + amount];
                 int readIdx = BackIdx;
                 int writeIdx = 0;
 
@@ -145,17 +144,28 @@ namespace Drivers.Framework.Collections
             }
         }
     }
-    public class UInt32Queue : Framework.Object
+
+    public class UInt32Queue : Object
     {
-        private UInt32[] InternalArray;
         /// <summary>
-        /// Next index to pop item from
+        ///     Next index to pop item from
         /// </summary>
         private int BackIdx = 0;
+
+        private readonly bool CanExpand;
+
         /// <summary>
-        /// Next index to push item to
+        ///     Next index to push item to
         /// </summary>
         private int FrontIdx = 0;
+
+        private uint[] InternalArray;
+
+        public UInt32Queue(int capacity, bool canExpand)
+        {
+            InternalArray = new uint[capacity];
+            CanExpand = canExpand;
+        }
 
         public int Count
         {
@@ -171,23 +181,13 @@ namespace Drivers.Framework.Collections
                 }
             }
         }
+
         public int Capacity
         {
-            get
-            {
-                return InternalArray.Length;
-            }
-        }
-        
-        private bool CanExpand;
-
-        public UInt32Queue(int capacity, bool canExpand)
-        {
-            InternalArray = new UInt32[capacity];
-            CanExpand = canExpand;
+            get { return InternalArray.Length; }
         }
 
-        public void Push(UInt32 val)
+        public void Push(uint val)
         {
             if ((BackIdx != 0 && FrontIdx == BackIdx - 1) ||
                 (BackIdx == 0 && FrontIdx == InternalArray.Length - 1))
@@ -210,11 +210,12 @@ namespace Drivers.Framework.Collections
                 FrontIdx = 0;
             }
         }
-        public UInt32 Pop()
+
+        public uint Pop()
         {
             if (Count > 0)
             {
-                UInt32 result = InternalArray[BackIdx];
+                uint result = InternalArray[BackIdx];
                 InternalArray[BackIdx++] = 0;
 
                 if (BackIdx >= InternalArray.Length)
@@ -226,7 +227,8 @@ namespace Drivers.Framework.Collections
             }
             return 0;
         }
-        public UInt32 Peek()
+
+        public uint Peek()
         {
             if (Count > 0)
             {
@@ -234,7 +236,8 @@ namespace Drivers.Framework.Collections
             }
             return 0;
         }
-        public UInt32 RemoveLast()
+
+        public uint RemoveLast()
         {
             if (Count > 0)
             {
@@ -256,7 +259,7 @@ namespace Drivers.Framework.Collections
         {
             if (amount > 0)
             {
-                UInt32[] newInternalArray = new UInt32[InternalArray.Length + amount];
+                uint[] newInternalArray = new uint[InternalArray.Length + amount];
                 int readIdx = BackIdx;
                 int writeIdx = 0;
 

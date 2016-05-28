@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 namespace Drivers.Framework
 {
     /// <summary>
-    /// Replacement class for methods, properties and fields usually found on standard System.Int32 type.
+    ///     Replacement class for methods, properties and fields usually found on standard System.Int32 type.
     /// </summary>
     public static class Int32
     {
         /// <summary>
-        /// Returns the maximum value of an Int32.
+        ///     Returns the maximum value of an Int32.
         /// </summary>
         public static int MaxValue
         {
-            get
-            {
-                return 2147483647;
-            }
+            get { return 2147483647; }
         }
 
         /// <summary>
-        /// Parses a string as an unsigned decimal integer.
+        ///     Parses a string as an unsigned decimal integer.
         /// </summary>
         /// <param name="str">The string to parse.</param>
         /// <param name="offset">The offset into the string at which to start parsing.</param>
         /// <returns>The parsed uint.</returns>
-        public static uint Parse_DecimalUnsigned(Framework.String str, int offset)
+        public static uint Parse_DecimalUnsigned(String str, int offset)
         {
             uint result = 0;
-            for(int i = offset; i < str.length; i++)
+            for (int i = offset; i < str.length; i++)
             {
                 char c = str[i];
                 if (c < '0' || c > '9')
@@ -59,19 +58,20 @@ namespace Drivers.Framework
                     break;
                 }
                 result *= 10;
-                result += (uint)(c - '0');
+                result += (uint) (c - '0');
             }
             return result;
         }
+
         /// <summary>
-        /// Parses a string as an signed decimal integer.
+        ///     Parses a string as an signed decimal integer.
         /// </summary>
         /// <param name="str">The string to parse.</param>
         /// <returns>The parsed int.</returns>
-        public static int Parse_DecimalSigned(Framework.String str)
+        public static int Parse_DecimalSigned(String str)
         {
             bool neg = str.StartsWith("-");
-            int result = (int)Parse_DecimalUnsigned(str, (neg ? 1 : 0));
+            int result = (int) Parse_DecimalUnsigned(str, neg ? 1 : 0);
             if (neg)
             {
                 result *= -1;
@@ -80,12 +80,12 @@ namespace Drivers.Framework
         }
 
         /// <summary>
-        /// Parses a string as an unsigned hexadecimal integer.
+        ///     Parses a string as an unsigned hexadecimal integer.
         /// </summary>
         /// <param name="str">The string to parse.</param>
         /// <param name="offset">The offset into the string at which to start parsing.</param>
         /// <returns>The parsed uint.</returns>
-        public static uint Parse_HexadecimalUnsigned(Framework.String str, int offset)
+        public static uint Parse_HexadecimalUnsigned(String str, int offset)
         {
             str = str.ToLower();
 
@@ -108,22 +108,22 @@ namespace Drivers.Framework
                 result *= 16;
                 if (c >= '0' && c <= '9')
                 {
-                    result += (uint)(c - '0');
+                    result += (uint) (c - '0');
                 }
                 else
                 {
-                    result += (uint)(c - 'a') + 10;
+                    result += (uint) (c - 'a') + 10;
                 }
             }
             return result;
         }
 
-        public static Framework.String ToDecimalString(int num)
+        public static String ToDecimalString(int num)
         {
             //This functions exactly the same as its unsigned 
             //  counterpart but it adds a minus sign if the number
             //  is negative.
-            Framework.String result = "";
+            String result = "";
             if (num != 0)
             {
                 bool neg = num < 0;
@@ -134,7 +134,7 @@ namespace Drivers.Framework
 
                 while (num > 0)
                 {
-                    int rem = num % 10;
+                    int rem = num%10;
                     switch (rem)
                     {
                         case 0:

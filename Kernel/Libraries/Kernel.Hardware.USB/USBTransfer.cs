@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,68 +23,80 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.USB.Devices;
 
 namespace Kernel.USB
 {
     /// <summary>
-    /// The USB transfer types.
+    ///     The USB transfer types.
     /// </summary>
     public enum USBTransferType : byte
     {
         /// <summary>
-        /// Indicates a bulk transfer.
+        ///     Indicates a bulk transfer.
         /// </summary>
         Bulk,
+
         /// <summary>
-        /// Indicates a control transfer.
+        ///     Indicates a control transfer.
         /// </summary>
         Control,
+
         /// <summary>
-        /// Indicates an interrupt transfer.
+        ///     Indicates an interrupt transfer.
         /// </summary>
         Interrupt,
+
         /// <summary>
-        /// Indicates an isochronous transfer.
+        ///     Indicates an isochronous transfer.
         /// </summary>
         Isochronous
     }
+
     /// <summary>
-    /// Represents a transfer from the high-level USB perspective.
+    ///     Represents a transfer from the high-level USB perspective.
     /// </summary>
-    public unsafe class USBTransfer : FOS_System.Object
+    public unsafe class USBTransfer : Object
     {
         /// <summary>
-        /// A pointer to the underlying data which a specific host controller can actually use to execute the transfer.
+        ///     The device info of the device which owns the target endpoint.
         /// </summary>
-        public void* underlyingTransferData;
+        public USBDeviceInfo device;
+
         /// <summary>
-        /// The transfer type.
-        /// </summary>
-        public USBTransferType type;
-        /// <summary>
-        /// The endpoint to send the transfer to.
+        ///     The endpoint to send the transfer to.
         /// </summary>
         public byte endpoint;
+
         /// <summary>
-        /// The preferred size of the packets to use when sending/receiving transactions within the transfer.
+        ///     The preferred size of the packets to use when sending/receiving transactions within the transfer.
         /// </summary>
         public ushort packetSize;
+
         /// <summary>
-        /// The device info of the device which owns the target endpoint.
-        /// </summary>
-        public USB.Devices.USBDeviceInfo device;
-        /// <summary>
-        /// The list of "USBTransaction"s to send.
-        /// </summary>
-        /// <seealso cref="Kernel.USB.USBTransaction"/>
-        public List transactions;
-        /// <summary>
-        /// Whether the transfer completed successfully (in-full) or not.
+        ///     Whether the transfer completed successfully (in-full) or not.
         /// </summary>
         public bool success;
+
+        /// <summary>
+        ///     The list of "USBTransaction"s to send.
+        /// </summary>
+        /// <seealso cref="Kernel.USB.USBTransaction" />
+        public List transactions;
+
+        /// <summary>
+        ///     The transfer type.
+        /// </summary>
+        public USBTransferType type;
+
+        /// <summary>
+        ///     A pointer to the underlying data which a specific host controller can actually use to execute the transfer.
+        /// </summary>
+        public void* underlyingTransferData;
     }
 }

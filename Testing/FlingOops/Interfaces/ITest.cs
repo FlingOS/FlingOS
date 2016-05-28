@@ -1,4 +1,4 @@
-﻿using NoGCAttribute = Drivers.Compiler.Attributes.NoGCAttribute;
+﻿using Drivers.Compiler.Attributes;
 using Log = FlingOops.BasicConsole;
 
 namespace FlingOops.Interfaces
@@ -9,26 +9,29 @@ namespace FlingOops.Interfaces
         int Test2();
     }
 
-    public class TestITest : FlingOops.Object, ITest
-    {        
+    public class TestITest : Object, ITest
+    {
         public int Test()
         {
             Log.WriteSuccess("TestITest.Test called.");
             return 1;
         }
+
         public int Test2()
         {
             Log.WriteSuccess("TestITest.Test2 called.");
             return 2;
         }
     }
-    public class TestITest2 : FlingOops.Object, ITest
+
+    public class TestITest2 : Object, ITest
     {
         public int Test2()
         {
             Log.WriteSuccess("TestITest2.Test2 called.");
             return 4;
         }
+
         public int Test()
         {
             Log.WriteSuccess("TestITest2.Test called.");

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,27 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldarg : IL.ILOps.Ldarg
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            Int16 index = 0;
-            switch ((OpCodes)theOp.opCode.Value)
+            short index = 0;
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldarg:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
@@ -60,24 +61,25 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     index = 3;
                     break;
                 case OpCodes.Ldarg_S:
-                    index = (Int16)theOp.ValueBytes[0];
+                    index = (short) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ldarga:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldarga_S:
-                    index = (Int16)theOp.ValueBytes[0];
+                    index = (short) theOp.ValueBytes[0];
                     break;
             }
 
-            List<Type> allParams = conversionState.Input.TheMethodInfo.UnderlyingInfo.GetParameters().Select(x => x.ParameterType).ToList();
+            List<Type> allParams =
+                conversionState.Input.TheMethodInfo.UnderlyingInfo.GetParameters().Select(x => x.ParameterType).ToList();
             if (!conversionState.Input.TheMethodInfo.IsStatic)
             {
                 allParams.Insert(0, conversionState.Input.TheMethodInfo.UnderlyingInfo.DeclaringType);
             }
-            
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
-                (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
+
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldarga ||
+                (OpCodes) theOp.opCode.Value == OpCodes.Ldarga_S)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -89,7 +91,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else
             {
-                Types.TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
+                TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -102,30 +104,30 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
-        /// <para>To Do's:</para>
-        /// <list type="bullet">
-        /// <item>
-        /// <term>To do</term>
-        /// <description>Implement loading of float arguments.</description>
-        /// </item>
-        /// </list>
+        ///     See base class documentation.
+        ///     <para>To Do's:</para>
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <term>To do</term>
+        ///             <description>Implement loading of float arguments.</description>
+        ///         </item>
+        ///     </list>
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown when loading a float argument is required as it currently hasn't been
-        /// implemented.
+        ///     Thrown when loading a float argument is required as it currently hasn't been
+        ///     implemented.
         /// </exception>
         /// <exception cref="System.ArgumentException">
-        /// Thrown when an invalid number of bytes is specified for the argument to load.
+        ///     Thrown when an invalid number of bytes is specified for the argument to load.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Get the index of the argument to load
-            Int16 index = 0;
-            switch ((OpCodes)theOp.opCode.Value)
+            short index = 0;
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldarg:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
@@ -143,17 +145,17 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     index = 3;
                     break;
                 case OpCodes.Ldarg_S:
-                    index = (Int16)theOp.ValueBytes[0];
+                    index = (short) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ldarga:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldarga_S:
-                    index = (Int16)theOp.ValueBytes[0];
+                    index = (short) theOp.ValueBytes[0];
                     break;
             }
 
-            Types.VariableInfo argInfo = conversionState.Input.TheMethodInfo.ArgumentInfos[index];
+            VariableInfo argInfo = conversionState.Input.TheMethodInfo.ArgumentInfos[index];
             if (Utilities.IsFloat(argInfo.TheTypeInfo.UnderlyingType))
             {
                 //SUPPORT - floats
@@ -162,15 +164,26 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //Used to store the number of bytes to add to EBP to get to the arg
             int BytesOffsetFromEBP = argInfo.Offset;
-            
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
-                (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
+
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldarga ||
+                (OpCodes) theOp.opCode.Value == OpCodes.Ldarga_S)
             {
                 //Push the address of the argument onto the stack
 
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$fp", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
-                conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = BytesOffsetFromEBP.ToString(), Dest = "$t2" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t2" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Word,
+                    Src = "$fp",
+                    Dest = "$t2",
+                    MoveType = Mov.MoveTypes.RegToReg
+                });
+                conversionState.Append(new ASMOps.Add()
+                {
+                    Src1 = "$t2",
+                    Src2 = BytesOffsetFromEBP.ToString(),
+                    Dest = "$t2"
+                });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t2"});
 
                 //Push the address onto our stack
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
@@ -184,22 +197,29 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else
             {
                 //Push the argument onto the stack
-                Types.TypeInfo paramTypeInfo = argInfo.TheTypeInfo;
+                TypeInfo paramTypeInfo = argInfo.TheTypeInfo;
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
 
-                if (bytesForArg % 4 != 0)
+                if (bytesForArg%4 != 0)
                 {
-                    throw new ArgumentException("Cannot load arg! Don't understand byte size of the arg! Size:" + bytesForArg);
+                    throw new ArgumentException("Cannot load arg! Don't understand byte size of the arg! Size:" +
+                                                bytesForArg);
                 }
 
                 while (bytesForArg > 0)
                 {
                     bytesForArg -= 4;
 
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = (BytesOffsetFromEBP + bytesForArg).ToString() + "($fp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = (BytesOffsetFromEBP + bytesForArg).ToString() + "($fp)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                 }
-                
+
                 //Push the arg onto our stack
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {

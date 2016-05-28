@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Add : IL.ILOps.Add
     {
@@ -44,7 +43,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
+                itemB.sizeOnStackInBytes == 4)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -66,14 +65,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if attempt to add a floating point number since floats are not supported yet.
+        ///     Thrown if attempt to add a floating point number since floats are not supported yet.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either stack argument is &lt; 4 bytes in size.
+        ///     Thrown if either stack argument is &lt; 4 bytes in size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -112,13 +111,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     itemB.sizeOnStackInBytes == 4)
                 {
                     //Pop item B
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                     //Pop item A
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                     //Add the two
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t0", Src2 = "$t1", Dest = "$t1" });
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$t0", Src2 = "$t1", Dest = "$t1"});
                     //Push the result onto the stack
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t1" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t1"});
 
                     //Push the result onto our stack
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
@@ -131,40 +130,46 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //Invalid if the operands are of different sizes.
                 //Note: This usually occurs when a previous IL op failed to process properly.
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 4) || 
-                    (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 8))
+                          itemB.sizeOnStackInBytes == 4) ||
+                         (itemA.sizeOnStackInBytes == 4 &&
+                          itemB.sizeOnStackInBytes == 8))
                 {
                     throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
-                   itemB.sizeOnStackInBytes == 8)
+                         itemB.sizeOnStackInBytes == 8)
                 {
                     //Pop item B to $t2:$t1
                     //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                     //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
                     //Pop item A to $t3:$t0
                     //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                     //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
                     //Add $t2:$t1 to $t3:$t0
                     //Add low bits
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t1", Src2 = "$t0", Dest = "$t4", Unsigned = true });
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$t1", Src2 = "$t0", Dest = "$t4", Unsigned = true});
                     //Add carry bit to $t5
-                    conversionState.Append(new ASMOps.Sltu() { Src1 = "$t4", Src2 = "$t1", Dest = "$t5" });
+                    conversionState.Append(new Sltu() {Src1 = "$t4", Src2 = "$t1", Dest = "$t5"});
                     //Add high bits including any carry from 
                     //when low bits were added
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t5", Src2 = "$t3", Dest = "$t5", Unsigned = true });
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t5", Src2 = "$t2", Dest = "$t3", Unsigned = true });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t4", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$t5", Src2 = "$t3", Dest = "$t5", Unsigned = true});
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$t5", Src2 = "$t2", Dest = "$t3", Unsigned = true});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "$t4",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.RegToReg
+                    });
                     //Push the result
                     //Push high bits
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
                     //Push low bits
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
                     //Push the result onto our stack
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()

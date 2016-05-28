@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,125 +23,130 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using Kernel.FOS_System.Collections;
+using System.Runtime.InteropServices;
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
+using Kernel.Hardware.IO;
 using Kernel.Hardware.Processes;
 
 namespace Kernel.Hardware.Interrupts
 {
     /// <summary>
-    /// Strcture for an interrupt descriptor in the Interrupts Descriptor Table (IDT).
+    ///     Strcture for an interrupt descriptor in the Interrupts Descriptor Table (IDT).
     /// </summary>
     /// <remarks>
-    /// See the <a href="http://www.flingos.co.uk/docs/reference/Interrupt-Descriptors-Table/">Interrupt Descriptors Table</a> article for details.
+    ///     See the
+    ///     <a href="http://www.flingos.co.uk/docs/reference/Interrupt-Descriptors-Table/">Interrupt Descriptors Table</a>
+    ///     article for details.
     /// </remarks>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)] 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     //TODO: Work out whether this attribute is necessary given that the FlingOS Compiler doesnt look for it. It assumes packing of 1 for everything.
     public struct InterruptDescriptor
     {
         /// <summary>
-        /// Handler address low-bytes.
+        ///     Handler address low-bytes.
         /// </summary>
         public ushort OffsetLo;
+
         /// <summary>
-        /// Segment Selector for destination code segment (i.e. selector for Code Segment that contains the interrupt handler). 
-        /// In most systems this will always be 0.
+        ///     Segment Selector for destination code segment (i.e. selector for Code Segment that contains the interrupt handler).
+        ///     In most systems this will always be 0.
         /// </summary>
         public ushort Selector;
+
         /// <summary>
-        /// Always 0.
+        ///     Always 0.
         /// </summary>
         public byte UNUSED;
+
         /// <summary>
-        /// Gate type, Storage Segment, Descriptor Privilege Level and Present bits.
+        ///     Gate type, Storage Segment, Descriptor Privilege Level and Present bits.
         /// </summary>
         public byte Type_S_DPL_P;
+
         /// <summary>
-        /// Handler address high-bytes.
+        ///     Handler address high-bytes.
         /// </summary>
         public ushort OffsetHi;
     }
+
     /// <summary>
-    /// Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
+    ///     Provides methods for handling hardware and software interrupts (excluding interrupts 0 through 16).
     /// </summary>
-    public unsafe static class Interrupts
+    public static unsafe class Interrupts
     {
         //TODO: This lot is all x86 specific. It needs to be abstracted into a separate x86 interrupts class to support new architectures.
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static bool wasPrintingMessages = false;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static bool wasPrintingMessages = false;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static bool insideCriticalHandler = false;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static bool insideCriticalHandler = false;
+
+        /// <summary>
+        ///     Used to disable attempts to process switch while the OS is initialising.
+        /// </summary>
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static bool EnableProcessSwitching = false;
+
+        /// <summary>
+        ///     Exception state for during interrupt handlers.
+        /// </summary>
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static ExceptionState* InterruptsExState;
+
+        static Interrupts()
+        {
+            InterruptsExState =
+                (ExceptionState*) Heap.AllocZeroed((uint) sizeof(ExceptionState), "Interrupts : Interrupts()");
+        }
+
         public static bool InsideCriticalHandler
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            [Drivers.Compiler.Attributes.NoGC]
-            get
-            {
-                return insideCriticalHandler;
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            [Drivers.Compiler.Attributes.NoGC]
+            [NoDebug] [NoGC] get { return insideCriticalHandler; }
+            [NoDebug]
+            [NoGC]
             set
             {
                 if (value)
                 {
                     insideCriticalHandler = true;
-                    FOS_System.GC.UseCurrentState = false;
+                    GC.UseCurrentState = false;
                     ExceptionMethods.UseCurrentState = false;
 
                     //wasPrintingMessages = ExceptionMethods.PrintMessages;
                     //ExceptionMethods.PrintMessages = false;
 
-                    FOS_System.Heap.PreventAllocation = true;
-                    FOS_System.Heap.PreventReason = "Inside critical interrupt handler.";
-                    FOS_System.GC.Disable("InsideCriticalHandler");
+                    Heap.PreventAllocation = true;
+                    Heap.PreventReason = "Inside critical interrupt handler.";
+                    GC.Disable("InsideCriticalHandler");
                 }
                 else
                 {
-                    FOS_System.GC.Enable("InsideCriticalHandler");
-                    FOS_System.Heap.PreventReason = "[NONE]";
-                    FOS_System.Heap.PreventAllocation = false;
+                    GC.Enable("InsideCriticalHandler");
+                    Heap.PreventReason = "[NONE]";
+                    Heap.PreventAllocation = false;
 
                     //ExceptionMethods.PrintMessages = wasPrintingMessages;
 
                     ExceptionMethods.UseCurrentState = true;
-                    FOS_System.GC.UseCurrentState = true;
+                    GC.UseCurrentState = true;
                     insideCriticalHandler = false;
                 }
             }
         }
 
-        /// <summary>
-        /// Used to disable attempts to process switch while the OS is initialising.
-        /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static bool EnableProcessSwitching = false;
-
-        /// <summary>
-        /// Exception state for during interrupt handlers.
-        /// </summary>
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static ExceptionState* InterruptsExState;
-
-        static Interrupts()
-        {
-            InterruptsExState = (ExceptionState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ExceptionState), "Interrupts : Interrupts()");
-        }
-
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
+        [PluggedMethod(ASMFilePath = null)]
         public static void EnableInterrupts()
         {
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         public static void DisableInterrupts()
         {
         }
 
         /// <summary>
-        /// Enables the specified IRQ number (0-15)
+        ///     Enables the specified IRQ number (0-15)
         /// </summary>
         /// <param name="num">The IRQ to enable.</param>
         public static void EnableIRQ(byte num)
@@ -162,25 +168,26 @@ namespace Kernel.Hardware.Interrupts
 
                 //Bit mask - set bit indicates IRQ disabled.
                 // We want to enable, so we must clear the corresponding bit.
-                byte mask = IO.IOPort.doRead_Byte(0xA1);
-                byte bitMask = (byte)(~(1u << num));
+                byte mask = IOPort.doRead_Byte(0xA1);
+                byte bitMask = (byte) ~(1u << num);
                 mask &= bitMask;
                 //Port 0xA1 for slave PIC
-                IO.IOPort.doWrite_Byte(0xA1, mask);
+                IOPort.doWrite_Byte(0xA1, mask);
             }
             //Else we send the info to the master PIC
             else
             {
                 //See above.
-                byte mask = IO.IOPort.doRead_Byte(0x21);
-                byte bitMask = (byte)(~(1u << num));
+                byte mask = IOPort.doRead_Byte(0x21);
+                byte bitMask = (byte) ~(1u << num);
                 mask &= bitMask;
                 //Port 0x21 for master PIC
-                IO.IOPort.doWrite_Byte(0x21, mask);
+                IOPort.doWrite_Byte(0x21, mask);
             }
         }
+
         /// <summary>
-        /// Disables the specified IRQ number (0-15)
+        ///     Disables the specified IRQ number (0-15)
         /// </summary>
         /// <param name="num">The IRQ to disable.</param>
         public static void DisableIRQ(byte num)
@@ -191,30 +198,30 @@ namespace Kernel.Hardware.Interrupts
             {
                 num -= 8;
 
-                byte mask = IO.IOPort.doRead_Byte(0xA1);
-                byte bitMask = (byte)(1u << num);
+                byte mask = IOPort.doRead_Byte(0xA1);
+                byte bitMask = (byte) (1u << num);
                 mask |= bitMask;
-                IO.IOPort.doWrite_Byte(0xA1, mask);
+                IOPort.doWrite_Byte(0xA1, mask);
             }
             else
             {
-                byte mask = IO.IOPort.doRead_Byte(0x21);
-                byte bitMask = (byte)(1u << num);
+                byte mask = IOPort.doRead_Byte(0x21);
+                byte bitMask = (byte) (1u << num);
                 mask |= bitMask;
-                IO.IOPort.doWrite_Byte(0x21, mask);
+                IOPort.doWrite_Byte(0x21, mask);
             }
         }
-        
+
         /// <summary>
-        /// Common method called to handle all interrupts (excluding numbers 0-16 inclusive).
+        ///     Common method called to handle all interrupts (excluding numbers 0-16 inclusive).
         /// </summary>
         /// <param name="ISRNum">The number of the interrupt which occurred.</param>
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoGC]
+        [NoDebug]
         private static void CommonISR(uint ISRNum)
         {
             InsideCriticalHandler = true;
-            
+
             try
             {
                 if (ISRNum > 31 && ISRNum < 48)
@@ -237,8 +244,9 @@ namespace Kernel.Hardware.Interrupts
 
             InsideCriticalHandler = false;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         private static void HandleISR(uint ISRNum)
         {
             Process currProcess = ProcessManager.CurrentProcess;
@@ -250,8 +258,8 @@ namespace Kernel.Hardware.Interrupts
                 Process handlerProcess = null;
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    handlerProcess = (Process)ProcessManager.Processes[i];
-                    if (handlerProcess.ISRsToHandle.IsSet((int)ISRNum))
+                    handlerProcess = (Process) ProcessManager.Processes[i];
+                    if (handlerProcess.ISRsToHandle.IsSet((int) ISRNum))
                     {
                         if (handlerProcess.SwitchProcessForISRs && EnableProcessSwitching)
                         {
@@ -260,7 +268,8 @@ namespace Kernel.Hardware.Interrupts
                         }
                         if (handlerProcess.ISRHandler == null)
                         {
-                            BasicConsole.WriteLine("Error! handlerProcess.ISRHandler is null but is set to handle the ISR.");
+                            BasicConsole.WriteLine(
+                                "Error! handlerProcess.ISRHandler is null but is set to handle the ISR.");
                         }
                         else if (handlerProcess.ISRHandler(ISRNum) == 0)
                         {
@@ -273,12 +282,13 @@ namespace Kernel.Hardware.Interrupts
             {
                 if (switched)
                 {
-                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int) currThread.Id);
                 }
             }
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         private static void HandleIRQ(uint IRQNum)
         {
             Process currProcess = ProcessManager.CurrentProcess;
@@ -290,8 +300,8 @@ namespace Kernel.Hardware.Interrupts
                 Process handlerProcess = null;
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    handlerProcess = (Process)ProcessManager.Processes[i];
-                    if (handlerProcess.IRQsToHandle.IsSet((int)IRQNum))
+                    handlerProcess = (Process) ProcessManager.Processes[i];
+                    if (handlerProcess.IRQsToHandle.IsSet((int) IRQNum))
                     {
                         if (handlerProcess.SwitchProcessForIRQs && EnableProcessSwitching)
                         {
@@ -301,7 +311,8 @@ namespace Kernel.Hardware.Interrupts
 
                         if (handlerProcess.IRQHandler == null)
                         {
-                            BasicConsole.WriteLine("Error! handlerProcess.IRQHandler is null but is set to handle the IRQ.");
+                            BasicConsole.WriteLine(
+                                "Error! handlerProcess.IRQHandler is null but is set to handle the IRQ.");
                         }
                         else if (handlerProcess.IRQHandler(IRQNum) == 0)
                         {
@@ -314,38 +325,39 @@ namespace Kernel.Hardware.Interrupts
             {
                 if (switched)
                 {
-                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int) currThread.Id);
                 }
 
                 EndIRQ(IRQNum > 7);
             }
         }
+
         /// <summary>
-        /// Sends the End of Interrupt to the PIC to signify the end of an IRQ.
+        ///     Sends the End of Interrupt to the PIC to signify the end of an IRQ.
         /// </summary>
         /// <param name="slave">Whether to send the EOI to the slave PIC too.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         private static void EndIRQ(bool slave)
         {
         }
 
         /// <summary>
-        /// Gets a pointer to the interrupt descriptor table.
+        ///     Gets a pointer to the interrupt descriptor table.
         /// </summary>
         /// <returns>The pointer to the IDT.</returns>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Interrupts\Interrupts")]
+        [PluggedMethod(ASMFilePath = @"ASM\Interrupts\Interrupts")]
         private static InterruptDescriptor* GetIDTPtr()
         {
             return null;
         }
 
         /// <summary>
-        /// Invokes the specified interrupt number. Warning: Invoking interrupts 0 through 16 has the same
-        /// affect as if the actual hardware exception occurred. Invoking interrupts 0 through 16 will result 
-        /// in exception logic or page fault logic being executed!
+        ///     Invokes the specified interrupt number. Warning: Invoking interrupts 0 through 16 has the same
+        ///     affect as if the actual hardware exception occurred. Invoking interrupts 0 through 16 will result
+        ///     in exception logic or page fault logic being executed!
         /// </summary>
         /// <param name="IntNum">The interrupt number to fire.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
+        [PluggedMethod(ASMFilePath = null)]
         public static void InvokeInterrupt(uint IntNum)
         {
         }

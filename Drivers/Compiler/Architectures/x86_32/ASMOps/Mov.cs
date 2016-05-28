@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,23 +23,20 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Mov : ASM.ASMOp
+    public class Mov : ASMOp
     {
+        public string Dest;
         public OperandSize Size;
         public string Src;
-        public string Dest;
 
-        public override string Convert(ASM.ASMBlock theBlock)
+        public override string Convert(ASMBlock theBlock)
         {
             return "mov " + ASMUtilities.GetOpSizeStr(Size) + " " + Dest + ", " + Src;
         }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,111 +23,52 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define FATFileStream_TRACE
 #undef FATFileStream_TRACE
-    
-using System;
 
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.IO.FAT;
 
 namespace Kernel.FOS_System.IO.Streams.FAT
 {
     /// <summary>
-    /// Represents a file stream to a FAT file or FAT directory file.
+    ///     Represents a file stream to a FAT file or FAT directory file.
     /// </summary>
     public class FATFileStream : FileStream
     {
+        private const uint NumReadClusters = 64;
         //TODO: This implementation has no way of shrinking files - only growing them!
 
         /// <summary>
-        /// The cluster numbers that are part of the file.
+        ///     The cluster numbers that are part of the file.
         /// </summary>
         protected UInt32List ClusterNums;
 
         /// <summary>
-        /// The FAT file system to which the file the stream is for belongs.
-        /// </summary>
-        public FATFileSystem TheFATFileSystem
-        {
-            get
-            {
-                return (FATFileSystem)TheFile.TheFileSystem;
-            }
-        }
-        /// <summary>
-        /// The FAT file the stream is for.
-        /// </summary>
-        public FATFile TheFATFile
-        {
-            get
-            {
-                return (FATFile)TheFile;
-            }
-        }
-
-        /// <summary>
-        /// The position (as an offset from the start of the file) of the stream in the file.
-        /// </summary>
-        protected UInt64 position = 0;
-        /// <summary>
-        /// Gets or sets the position (as an offset from the start of the file) of the stream in the file.
-        /// </summary>
-        public override long Position
-        {
-            get
-            {
-                return (long)position;
-            }
-            set
-            {
-                if (value < 0L)
-                {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Position value must be > 0!"));
-                }
-                position = (ulong)value;
-            }
-        }
-
-        /// <summary>
-        /// Whether to ignore the file size and use cluster sizes or not.
-        /// This is always true for directories as directories report file
-        /// size 0.
+        ///     Whether to ignore the file size and use cluster sizes or not.
+        ///     This is always true for directories as directories report file
+        ///     size 0.
         /// </summary>
         /// <remarks>
-        /// Directories having file size 0 makes perfect sense when you study
-        /// the structure of a directory file.
+        ///     Directories having file size 0 makes perfect sense when you study
+        ///     the structure of a directory file.
         /// </remarks>
         public bool IgnoreFileSize = false;
-        /// <summary>
-        /// Gets the actual length (size) of the stream.
-        /// For files, this is FileSize. For directories, it is calculated
-        /// from the number of clusters times cluster size.
-        /// </summary>
-        /// <returns>The actual size of the file.</returns>
-        public UInt64 GetActualSize()
-        {
-            //This is set for streams which access a directory 
-            //  since directories look and work like files except for
-            //  the fact that directory sizes are determined solely 
-            //  by the number of clusters they use.
-            if (IgnoreFileSize)
-            {
-                if (ClusterNums == null)
-                {
-                    GetClusterNums();
-                }
-                //We have assumed at this point that GetClusterNums worked. If it didn't,
-                //  then ClusterNums will be null and we will have a serious problem! :)
-                return (uint)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
-            }
-            return TheFile.Size;
-        }
 
         /// <summary>
-        /// Initializes a new FAT file stream for the specified file.
+        ///     The position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
+        protected ulong position = 0;
+
+        private byte[] ReadClusterBuffer = null;
+        private uint ReadClusterSize = 0;
+
+        /// <summary>
+        ///     Initializes a new FAT file stream for the specified file.
         /// </summary>
         /// <param name="aFile">The file to create a stream to.</param>
         /// <param name="ignoreFileSize">Whether to ignore the file size or not. True for directories.</param>
@@ -144,7 +86,64 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         }
 
         /// <summary>
-        /// Gets the list of cluster numbers that are part of the file being read/written from/to.
+        ///     The FAT file system to which the file the stream is for belongs.
+        /// </summary>
+        public FATFileSystem TheFATFileSystem
+        {
+            get { return (FATFileSystem) TheFile.TheFileSystem; }
+        }
+
+        /// <summary>
+        ///     The FAT file the stream is for.
+        /// </summary>
+        public FATFile TheFATFile
+        {
+            get { return (FATFile) TheFile; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
+        public override long Position
+        {
+            get { return (long) position; }
+            set
+            {
+                if (value < 0L)
+                {
+                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Position value must be > 0!"));
+                }
+                position = (ulong) value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the actual length (size) of the stream.
+        ///     For files, this is FileSize. For directories, it is calculated
+        ///     from the number of clusters times cluster size.
+        /// </summary>
+        /// <returns>The actual size of the file.</returns>
+        public ulong GetActualSize()
+        {
+            //This is set for streams which access a directory 
+            //  since directories look and work like files except for
+            //  the fact that directory sizes are determined solely 
+            //  by the number of clusters they use.
+            if (IgnoreFileSize)
+            {
+                if (ClusterNums == null)
+                {
+                    GetClusterNums();
+                }
+                //We have assumed at this point that GetClusterNums worked. If it didn't,
+                //  then ClusterNums will be null and we will have a serious problem! :)
+                return (uint) ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
+            }
+            return TheFile.Size;
+        }
+
+        /// <summary>
+        ///     Gets the list of cluster numbers that are part of the file being read/written from/to.
         /// </summary>
         private void GetClusterNums()
         {
@@ -159,13 +158,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
             }
         }
 
-        byte[] ReadClusterBuffer = null;
-        UInt32 ReadClusterSize = 0;
-        const uint NumReadClusters = 64;
-
         /// <summary>
-        /// Reads the specified number of bytes from the stream from the current position into the buffer at the 
-        /// specified offset or as many bytes as are available before the end of the stream is met.
+        ///     Reads the specified number of bytes from the stream from the current position into the buffer at the
+        ///     specified offset or as many bytes as are available before the end of the stream is met.
         /// </summary>
         /// <param name="buffer">The byte array to read into.</param>
         /// <param name="offset">The offset within the buffer to start storing read data at.</param>
@@ -182,14 +177,14 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     GetClusterNums();
                     //If loading cluster nums failed, don't throw an exception, 
                     //  just return nothing read.
-                    if(ClusterNums == null)
+                    if (ClusterNums == null)
                     {
                         return 0;
                     }
                 }
 
-                FATFileSystem TheFS = (FATFileSystem)TheFile.TheFileSystem;
-                
+                FATFileSystem TheFS = (FATFileSystem) TheFile.TheFileSystem;
+
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Checking params...");
 #endif
@@ -197,19 +192,19 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 //Conditions for being able to read from the stream.
                 if (count < 0)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Read: aCount must be > 0"));
+                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Read: aCount must be > 0"));
                 }
                 else if (offset < 0)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Read: anOffset must be > 0"));
+                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Read: anOffset must be > 0"));
                 }
                 else if (buffer == null)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Read: aBuffer must not be null!"));
+                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Read: aBuffer must not be null!"));
                 }
                 else if (buffer.Length - offset < count)
                 {
-                    ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Read: Invalid offset / length values!"));
+                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Read: Invalid offset / length values!"));
                 }
                 else if (TheFATFile.FirstClusterNum == 0)
                 {
@@ -225,19 +220,19 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Params OK.");
 #endif
-                                
+
                 // Clamp the count value so that no out of bounds exceptions occur
                 ulong FileSize = 0;
                 if (IgnoreFileSize)
                 {
-                    FileSize = (ulong)ClusterNums.Count * TheFATFileSystem.BytesPerCluster;
+                    FileSize = (ulong) ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
                 }
                 else
                 {
                     FileSize = TheFile.Size;
                 }
                 ulong MaxReadableBytes = FileSize - position;
-                ulong ActualCount = (ulong)count;
+                ulong ActualCount = (ulong) count;
                 if (ActualCount > MaxReadableBytes)
                 {
                     ActualCount = MaxReadableBytes;
@@ -251,22 +246,22 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 //  read entire clusters at a time.
                 if (ReadClusterBuffer == null)
                 {
-                    ReadClusterBuffer = new byte[TheFS.BytesPerCluster * NumReadClusters];
+                    ReadClusterBuffer = new byte[TheFS.BytesPerCluster*NumReadClusters];
                     ReadClusterSize = TheFS.BytesPerCluster;
-                }                
+                }
 
                 int read = 0;
 
                 while (ActualCount > 0)
                 {
-                    uint NumClustersToRead = (uint)ActualCount / ReadClusterSize;
-                    if ((uint)ActualCount % ReadClusterSize != 0)
+                    uint NumClustersToRead = (uint) ActualCount/ReadClusterSize;
+                    if ((uint) ActualCount%ReadClusterSize != 0)
                     {
                         NumClustersToRead++;
                     }
 
-                    uint StartPosition = (uint)position;
-                    int StartClusterIdx = (int)(StartPosition / ReadClusterSize);
+                    uint StartPosition = (uint) position;
+                    int StartClusterIdx = (int) (StartPosition/ReadClusterSize);
                     uint StartClusterNum = ClusterNums[StartClusterIdx];
 
                     uint ContiguousClusters = 1;
@@ -289,8 +284,8 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
                     TheFS.ReadClusters(StartClusterNum, ContiguousClusters, ReadClusterBuffer);
 
-                    uint StartClusterOffset = StartPosition % ReadClusterSize;
-                    uint ContiguousClusterSize = ContiguousClusters * ReadClusterSize;
+                    uint StartClusterOffset = StartPosition%ReadClusterSize;
+                    uint ContiguousClusterSize = ContiguousClusters*ReadClusterSize;
                     uint ReadSize = ContiguousClusterSize;
                     if (StartClusterOffset > 0)
                     {
@@ -298,16 +293,16 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     }
                     if (ReadSize > ActualCount)
                     {
-                        ReadSize = (uint)ActualCount;
+                        ReadSize = (uint) ActualCount;
                     }
-                    Array.Copy(ReadClusterBuffer, (int)StartClusterOffset, buffer, offset, (int)ReadSize);
+                    Array.Copy(ReadClusterBuffer, (int) StartClusterOffset, buffer, offset, (int) ReadSize);
 
                     position += ReadSize;
-                    offset += (int)ReadSize;
+                    offset += (int) ReadSize;
                     ActualCount -= ReadSize;
-                    read += (int)ReadSize;
+                    read += (int) ReadSize;
                 }
-                
+
                 return read;
             }
             else
@@ -315,8 +310,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                 return 0;
             }
         }
+
         /// <summary>
-        /// Writes the specified number of the bytes from the buffer starting at offset in the buffer.
+        ///     Writes the specified number of the bytes from the buffer starting at offset in the buffer.
         /// </summary>
         /// <param name="buffer">The data to write.</param>
         /// <param name="offset">The offset within the buffer to start writing from.</param>
@@ -325,24 +321,24 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         {
             if (count < 0)
             {
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Write: aCount must be > 0"));
+                ExceptionMethods.Throw(new ArgumentException("FATFileStream.Write: aCount must be > 0"));
             }
             else if (offset < 0)
             {
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Write: anOffset must be > 0"));
+                ExceptionMethods.Throw(new ArgumentException("FATFileStream.Write: anOffset must be > 0"));
             }
             else if (buffer == null)
             {
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Write: aBuffer must not be null!"));
+                ExceptionMethods.Throw(new ArgumentException("FATFileStream.Write: aBuffer must not be null!"));
             }
             else if (buffer.Length - offset < count)
             {
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("FATFileStream.Write: Invalid offset / length values!"));
+                ExceptionMethods.Throw(new ArgumentException("FATFileStream.Write: Invalid offset / length values!"));
             }
 
             //BasicConsole.WriteLine("Checks passed.");
 
-            FATFileSystem mFS = (FATFileSystem)TheFile.TheFileSystem;
+            FATFileSystem mFS = (FATFileSystem) TheFile.TheFileSystem;
             FATFile mFile = TheFATFile;
 
             if (ClusterNums == null)
@@ -361,23 +357,23 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
             //BasicConsole.WriteLine("Creating write buffer...");
 
-            UInt32 xClusterSize = mFS.BytesPerCluster;
+            uint xClusterSize = mFS.BytesPerCluster;
             byte[] writeBuffer = mFS.NewClusterArray();
 
             //BasicConsole.WriteLine("Writing data...");
 
-            while(count > 0)
+            while (count > 0)
             {
-                UInt32 clusterIdx = (UInt32)position / xClusterSize;
-                UInt32 posInCluster = (UInt32)position % xClusterSize;
+                uint clusterIdx = (uint) position/xClusterSize;
+                uint posInCluster = (uint) position%xClusterSize;
 
                 bool newCluster = false;
                 while (clusterIdx >= ClusterNums.Count)
                 {
                     //BasicConsole.WriteLine("Expanding clusters...");
 
-                    UInt32 lastClusterNum = ClusterNums[ClusterNums.Count - 1];
-                    UInt32 nextClusterNum = mFS.GetNextFreeCluster(lastClusterNum);
+                    uint lastClusterNum = ClusterNums[ClusterNums.Count - 1];
+                    uint nextClusterNum = mFS.GetNextFreeCluster(lastClusterNum);
 
                     //Clear cluster
                     mFS.WriteCluster(nextClusterNum, null);
@@ -393,29 +389,30 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                     newCluster = true;
                 }
 
-                if((posInCluster != 0 || count < xClusterSize) && !newCluster)
+                if ((posInCluster != 0 || count < xClusterSize) && !newCluster)
                 {
                     //BasicConsole.WriteLine("Reading existing data...");
 
-                    mFS.ReadClusters(ClusterNums[(int)clusterIdx], 1, writeBuffer);
+                    mFS.ReadClusters(ClusterNums[(int) clusterIdx], 1, writeBuffer);
 
                     //BasicConsole.WriteLine("Read existing data.");
                 }
 
                 //BasicConsole.WriteLine("Calculating write size...");
-                int writeSize = count < (xClusterSize - posInCluster) ? count : 
-                                            (int)(xClusterSize - posInCluster);
+                int writeSize = count < xClusterSize - posInCluster
+                    ? count
+                    : (int) (xClusterSize - posInCluster);
                 //BasicConsole.WriteLine("Calculated write size. Copying data to write...");
-                Array.Copy(buffer, offset, writeBuffer, (int)posInCluster, writeSize);
+                Array.Copy(buffer, offset, writeBuffer, (int) posInCluster, writeSize);
                 //BasicConsole.WriteLine("Data copied. Writing data to disk...");
 
-                mFS.WriteCluster(ClusterNums[(int)clusterIdx], writeBuffer);
+                mFS.WriteCluster(ClusterNums[(int) clusterIdx], writeBuffer);
 
                 //BasicConsole.WriteLine("Written data.");
 
                 count -= writeSize;
                 offset += writeSize;
-                position += (uint)writeSize;
+                position += (uint) writeSize;
             }
 
             mFS.CleanDiskCaches();

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,25 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define SYSCALLS_TRACE
 
-using Kernel.Hardware.Processes;
 using Kernel.FOS_System.Processes;
 
 namespace Kernel.Hardware.Processes
 {
     /// <summary>
-    /// Contains callers and handlers for system calls.
+    ///     Contains callers and handlers for system calls.
     /// </summary>
     public static unsafe class SystemCallHandlers
     {
         /// <summary>
-        /// Main interrupt handler routine for system calls.
+        ///     Main interrupt handler routine for system calls.
         /// </summary>
         /// <remarks>
-        /// Prevents direct invocation of the Receive Message system call, since that's not allowed.
+        ///     Prevents direct invocation of the Receive Message system call, since that's not allowed.
         /// </remarks>
         public static void InterruptHandler()
         {
@@ -68,8 +69,8 @@ namespace Kernel.Hardware.Processes
             uint Return3 = 0;
             uint Return4 = 0;
 
-            if (syscallNumber != (uint)SystemCallNumbers.ReceiveMessage &&
-                syscallNumber != (uint)SystemCallNumbers.AcceptPages)
+            if (syscallNumber != (uint) SystemCallNumbers.ReceiveMessage &&
+                syscallNumber != (uint) SystemCallNumbers.AcceptPages)
             {
                 Process handlerProcess = null;
 
@@ -80,8 +81,8 @@ namespace Kernel.Hardware.Processes
                 bool PermitActionResulted = false;
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    handlerProcess = (Process)ProcessManager.Processes[i];
-                    if (handlerProcess.SyscallsToHandle.IsSet((int)syscallNumber))
+                    handlerProcess = (Process) ProcessManager.Processes[i];
+                    if (handlerProcess.SyscallsToHandle.IsSet((int) syscallNumber))
                     {
                         ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
                         switched = true;
@@ -102,7 +103,7 @@ namespace Kernel.Hardware.Processes
                         uint TempReturn2 = 0;
                         uint TempReturn3 = 0;
                         uint TempReturn4 = 0;
-                        SystemCallResults tempResult = (SystemCallResults)handlerProcess.SyscallHandler(syscallNumber,
+                        SystemCallResults tempResult = (SystemCallResults) handlerProcess.SyscallHandler(syscallNumber,
                             param1, param2, param3,
                             ref TempReturn2, ref TempReturn3, ref TempReturn4,
                             currProcess.Id, currThread.Id);
@@ -120,7 +121,7 @@ namespace Kernel.Hardware.Processes
 #if SYSCALLS_TRACE
                             BasicConsole.WriteLine("System calls : Performing action - signal semaphore");
 #endif
-                            ProcessManager.Semaphore_Signal((int)TempReturn2, handlerProcess);
+                            ProcessManager.Semaphore_Signal((int) TempReturn2, handlerProcess);
                             tempResult = SystemCallResults.Unhandled;
                         }
 
@@ -158,10 +159,10 @@ namespace Kernel.Hardware.Processes
                     BasicConsole.WriteLine("Switching back...");
 #endif
 
-                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int) currThread.Id);
                 }
             }
-            
+
 #if SYSCALLS_TRACE
             BasicConsole.WriteLine("Setting result values...");
 #endif
@@ -175,7 +176,7 @@ namespace Kernel.Hardware.Processes
             }
             else
             {
-                currThread.Return1 = (uint)result;
+                currThread.Return1 = (uint) result;
                 currThread.Return2 = Return2;
                 currThread.Return3 = Return3;
                 currThread.Return4 = Return4;
@@ -188,7 +189,7 @@ namespace Kernel.Hardware.Processes
 #endif
                 Scheduler.UpdateCurrentState();
             }
-            
+
 #if SYSCALLS_TRACE
             BasicConsole.WriteLine("Syscall handled.");
             BasicConsole.WriteLine("---------------");
@@ -276,7 +277,7 @@ namespace Kernel.Hardware.Processes
             DeferredSystemCalls_CurrentThread.Return4 = 0;
         }*/
     }
-    
+
     #region Play Note
 
     public enum MusicalNote : int
@@ -436,18 +437,18 @@ namespace Kernel.Hardware.Processes
         Bb8 = 7458,
         B8 = 7902
     }
+
     public enum MusicalNoteValue : uint
     {
-        Semiquaver = 1,     //  1/16
-        Quaver = 2,         //  1/8
-        Crotchet = 4,       //  1/4
-        Minim = 8,          //  1/2
-        Semibreve = 16,     //  1
-        Breve = 32,         //  2
-        Longa = 64,         //  4
-        Maxima = 128        //  8
+        Semiquaver = 1, //  1/16
+        Quaver = 2, //  1/8
+        Crotchet = 4, //  1/4
+        Minim = 8, //  1/2
+        Semibreve = 16, //  1
+        Breve = 32, //  2
+        Longa = 64, //  4
+        Maxima = 128 //  8
     }
 
     #endregion
-
 }

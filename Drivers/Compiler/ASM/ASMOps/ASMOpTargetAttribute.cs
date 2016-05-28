@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
-    /// Indicates to the compiler which ASM op an ASMOp implementation targets.
+    ///     Indicates to the compiler which ASM op an ASMOp implementation targets.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class ASMOpTargetAttribute : Attribute
     {
         /// <summary>
-        /// The ASM op code to target.
+        ///     The ASM op code to target.
         /// </summary>
         public OpCodes Target;
     }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,21 +23,22 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #if x86
-using System;
+using Drivers.Compiler.Attributes;
 
 namespace FlingOops.x86
 {
     public static class Kernel
     {
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoGC]
         public static void Start()
         {
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoGC]
         public static void End()
         {
             bool OK = true;
@@ -47,4 +49,5 @@ namespace FlingOops.x86
         }
     }
 }
+
 #endif

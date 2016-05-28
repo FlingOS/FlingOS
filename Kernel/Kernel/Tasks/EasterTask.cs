@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,16 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks
 {
-    public unsafe static class EasterTask
+    public static unsafe class EasterTask
     {
-        static FOS_System.String ImageMap = "                                                                                                                                                                                                                                                                  HH    HH                                                                        HH    HH    HHHH      HH        HH    HH    HH                                  HH    HH  HH    HH  HH  HH   HH  HH     HH  HH                                  HHHHHHHH  HH    HH  HH   HH  HH   HH      HH                                    HH    HH  HHHHHHHH  HHHHH    HHHHH       HH                                     HH    HH  HH    HH  HH       HH         HH                                      HH    HH  HH    HH  HH       HH        HH                                                                                                                                                                                                                                                                                   HHHHHHHH                                                                        HH                                                                              HH          HHHH       HHHHHH  HH      HHHHHHHH   HHHHH                         HHHHHH    HH    HH   HH        HH      HH        HH   HH                        HH        HHHHHHHH     HHHH    HHHH    HHHHHH    HHHHH                          HH        HH    HH         HH  HH      HH        HH  HH                         HHHHHHHH  HH    HH   HHHHHH     HHHHH  HHHHHHHH  HH    HH                                                                                                                                                                                                                                                                                                                                                                                                                         ";
+        private static readonly String ImageMap =
+            "                                                                                                                                                                                                                                                                  HH    HH                                                                        HH    HH    HHHH      HH        HH    HH    HH                                  HH    HH  HH    HH  HH  HH   HH  HH     HH  HH                                  HHHHHHHH  HH    HH  HH   HH  HH   HH      HH                                    HH    HH  HHHHHHHH  HHHHH    HHHHH       HH                                     HH    HH  HH    HH  HH       HH         HH                                      HH    HH  HH    HH  HH       HH        HH                                                                                                                                                                                                                                                                                   HHHHHHHH                                                                        HH                                                                              HH          HHHH       HHHHHH  HH      HHHHHHHH   HHHHH                         HHHHHH    HH    HH   HH        HH      HH        HH   HH                        HH        HHHHHHHH     HHHH    HHHH    HHHHHH    HHHHH                          HH        HH    HH         HH  HH      HH        HH  HH                         HHHHHHHH  HH    HH   HHHHHH     HHHHH  HHHHHHHH  HH    HH                                                                                                                                                                                                                                                                                                                                                                                                                         ";
 
         public static void Main()
         {
@@ -39,17 +42,17 @@ namespace Kernel.Tasks
             {
                 if (ImageMap[i] == 'H')
                 {
-                    ImageMap[i] = (char)(' ' | (0xFF00));
+                    ImageMap[i] = (char) (' ' | 0xFF00);
                 }
                 else
                 {
-                    ImageMap[i] = (char)(' ' | (0x4400));
+                    ImageMap[i] = (char) (' ' | 0x4400);
                 }
             }
 
             while (true)
             {
-                char* VidMemPtr = (char*)0xB8000;
+                char* VidMemPtr = (char*) 0xB8000;
                 for (int i = 0; i < ImageMap.length; i++)
                 {
                     VidMemPtr[i] = ImageMap[i];

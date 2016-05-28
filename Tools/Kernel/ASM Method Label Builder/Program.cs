@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,32 +23,32 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Drivers.Compiler.Types;
 
 namespace ASM_Method_Label_Builder
 {
-    class Program
+    internal class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Enter the method declaration using fully-qualified names:");
-            
+
             Console.Write("Return type: ");
             string returnType = Console.ReadLine().Trim();
-            
+
             Console.Write("Declaring type: ");
             string declaringType = Console.ReadLine().Trim();
-            
+
             Console.Write("Method name: ");
             string methodName = Console.ReadLine().Trim();
-            
+
             Console.WriteLine();
             Console.WriteLine("Param types (one per line. Enter a blank line to complete): ");
             List<string> paramTypes = new List<string>();
@@ -59,13 +60,12 @@ namespace ASM_Method_Label_Builder
                 {
                     paramTypes.Add(paramType);
                 }
-            }
-            while(!string.IsNullOrEmpty(paramType));
+            } while (!string.IsNullOrEmpty(paramType));
             Console.WriteLine();
             Console.WriteLine();
 
-            string signature = Drivers.Compiler.Types.MethodInfo.GetMethodSignature(returnType, declaringType, methodName, paramTypes.ToArray());
-            string id = Drivers.Compiler.Types.MethodInfo.CreateMethodID(signature);
+            string signature = MethodInfo.GetMethodSignature(returnType, declaringType, methodName, paramTypes.ToArray());
+            string id = MethodInfo.CreateMethodID(signature);
             Console.WriteLine("ASM Label: " + id);
 
             Console.WriteLine();

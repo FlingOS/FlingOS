@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,62 +23,74 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Static class for providing options to the compiler.
+    ///     Static class for providing options to the compiler.
     /// </summary>
     public static class Options
     {
         /// <summary>
-        /// List of all valid target architectures that are supported by the compiler.
-        /// </summary>
-        public static List<string> ValidTargetArchitectures = new List<string> {
-            "x86",
-            "mips"
-        };
-
-        /// <summary>
-        /// The available build modes.
+        ///     The available build modes.
         /// </summary>
         public enum BuildModes
         {
             /// <summary>
-            /// Specifies the compiler should include debug information and perform no optimisation.
+            ///     Specifies the compiler should include debug information and perform no optimisation.
             /// </summary>
             Debug,
+
             /// <summary>
-            /// Specifies the compiler should include no debug information and perform all optimisations.
+            ///     Specifies the compiler should include no debug information and perform all optimisations.
             /// </summary>
             Release
         }
 
         /// <summary>
-        /// The available link modes.
+        ///     The available link modes.
         /// </summary>
         public enum LinkModes
         {
             /// <summary>
-            /// Specifies the compiler should compile an operating system to a .ISO file, including all dependencies such as libraries.
+            ///     Specifies the compiler should compile an operating system to a .ISO file, including all dependencies such as
+            ///     libraries.
             /// </summary>
             ISO,
+
             /// <summary>
-            /// Specifies the compiler should compile an ELF executable, and compile dependencies to library files (.a files).
+            ///     Specifies the compiler should compile an ELF executable, and compile dependencies to library files (.a files).
             /// </summary>
             ELF
         }
 
         /// <summary>
-        /// Initialises default options.
+        ///     List of all valid target architectures that are supported by the compiler.
+        /// </summary>
+        public static List<string> ValidTargetArchitectures = new List<string>
+        {
+            "x86",
+            "mips"
+        };
+
+        /// <summary>
+        ///     List of assembly names to ignore when compiling.
+        /// </summary>
+        private static List<string> ignoreAssemblies = new List<string>
+        {
+            "mscorlib",
+            "Kernel.Compiler",
+            "Drivers.Compiler"
+        };
+
+        /// <summary>
+        ///     Initialises default options.
         /// </summary>
         static Options()
         {
@@ -89,165 +102,117 @@ namespace Drivers.Compiler
         }
 
         /// <summary>
-        /// Path to the IL library to compile (the .dll or .exe file).
+        ///     Path to the IL library to compile (the .dll or .exe file).
         /// </summary>
         /// <value>
-        /// Gets/sets an implicitly defined field.
+        ///     Gets/sets an implicitly defined field.
         /// </value>
-        public static string LibraryPath
-        {
-            get;
-            set;
-        }
-        /// <summary>
-        /// Path to the output folder.
-        /// </summary>
-        /// <value>
-        /// Gets/sets an implicitly defined field.
-        /// </value>
-        public static string OutputPath
-        {
-            get;
-            set;
-        }
-        /// <summary>
-        /// Path to the Drivers Compiler's Tools folder.
-        /// </summary>
-        /// <value>
-        /// Gets/sets an implicitly defined field.
-        /// </value>
-        public static string ToolsPath
-        {
-            get;
-            set;
-        }
+        public static string LibraryPath { get; set; }
 
         /// <summary>
-        /// The build mode.
+        ///     Path to the output folder.
         /// </summary>
         /// <value>
-        /// Gets/sets an implicitly defined field.
+        ///     Gets/sets an implicitly defined field.
         /// </value>
-        public static BuildModes BuildMode
-        {
-            get;
-            set;
-        }
-        /// <summary>
-        /// The link mode.
-        /// </summary>
-        /// <value>
-        /// Gets/sets an implicitly defined field.
-        /// </value>
-        public static LinkModes LinkMode
-        {
-            get;
-            set;
-        }
-        /// <summary>
-        /// The target architecture. Should be one of the ones listed in <see cref="ValidTargetArchitectures"/>.
-        /// </summary>
-        /// <value>
-        /// Gets/sets an implicitly defined field.
-        /// </value>
-        public static string TargetArchitecture
-        {
-            get;
-            set;
-        }
+        public static string OutputPath { get; set; }
 
         /// <summary>
-        /// The size of an address in bytes. 4 for 32-bit architecture, 8 for 64-bit, etc.
+        ///     Path to the Drivers Compiler's Tools folder.
         /// </summary>
         /// <value>
-        /// Gets/sets an implicitly defined field.
+        ///     Gets/sets an implicitly defined field.
         /// </value>
-        public static int AddressSizeInBytes
-        {
-            get;
-            set;
-        }
-
-        public static ulong BaseAddress
-        {
-            get;
-            set;
-        }
-        public static long LoadOffset
-        {
-            get;
-            set;
-        }
-
-        public static bool ShortenDependencyNames
-        {
-            get;
-            set;
-        }
+        public static string ToolsPath { get; set; }
 
         /// <summary>
-        /// List of assembly names to ignore when compiling.
-        /// </summary>
-        private static List<string> ignoreAssemblies = new List<string>
-        {
-            "mscorlib",
-            "Kernel.Compiler",
-            "Drivers.Compiler"
-        };
-        /// <summary>
-        /// List of assembly names to ignore when compiling.
+        ///     The build mode.
         /// </summary>
         /// <value>
-        /// Gets/sets <see cref="ignoreAssemblies"/>.
+        ///     Gets/sets an implicitly defined field.
+        /// </value>
+        public static BuildModes BuildMode { get; set; }
+
+        /// <summary>
+        ///     The link mode.
+        /// </summary>
+        /// <value>
+        ///     Gets/sets an implicitly defined field.
+        /// </value>
+        public static LinkModes LinkMode { get; set; }
+
+        /// <summary>
+        ///     The target architecture. Should be one of the ones listed in <see cref="ValidTargetArchitectures" />.
+        /// </summary>
+        /// <value>
+        ///     Gets/sets an implicitly defined field.
+        /// </value>
+        public static string TargetArchitecture { get; set; }
+
+        /// <summary>
+        ///     The size of an address in bytes. 4 for 32-bit architecture, 8 for 64-bit, etc.
+        /// </summary>
+        /// <value>
+        ///     Gets/sets an implicitly defined field.
+        /// </value>
+        public static int AddressSizeInBytes { get; set; }
+
+        public static ulong BaseAddress { get; set; }
+
+        public static long LoadOffset { get; set; }
+
+        public static bool ShortenDependencyNames { get; set; }
+
+        /// <summary>
+        ///     List of assembly names to ignore when compiling.
+        /// </summary>
+        /// <value>
+        ///     Gets/sets <see cref="ignoreAssemblies" />.
         /// </value>
         public static List<string> IgnoreAssemblies
         {
-            get
-            {
-                return ignoreAssemblies;
-            }
-            set
-            {
-                ignoreAssemblies = value;
-            }
+            get { return ignoreAssemblies; }
+            set { ignoreAssemblies = value; }
         }
 
         /// <summary>
-        /// Formats the input values to be in the format the compiler requires.
+        ///     Formats the input values to be in the format the compiler requires.
         /// </summary>
         public static void Format()
         {
             TargetArchitecture = TargetArchitecture.ToLower();
         }
+
         /// <summary>
-        /// Validates the options.
+        ///     Validates the options.
         /// </summary>
         /// <returns>True if all options are valid. Otherwise, false with a message describing what is wrong.</returns>
         public static Tuple<bool, string> Validate()
         {
             if (!File.Exists(LibraryPath))
             {
-                return new Tuple<bool,string>(false, "Could not find library file! Library Path argument is invalid.");
+                return new Tuple<bool, string>(false, "Could not find library file! Library Path argument is invalid.");
             }
 
             if (!Directory.Exists(OutputPath))
             {
-                return new Tuple<bool,string>(false, "Could not find output directory! Output Path argument is invalid.");
+                return new Tuple<bool, string>(false,
+                    "Could not find output directory! Output Path argument is invalid.");
             }
 
             if (!Directory.Exists(ToolsPath))
             {
-                return new Tuple<bool,string>(false, "Could not find tools directory! Tools Path argument is invalid.");
+                return new Tuple<bool, string>(false, "Could not find tools directory! Tools Path argument is invalid.");
             }
 
-            if (!Options.ValidTargetArchitectures.Contains(TargetArchitecture))
+            if (!ValidTargetArchitectures.Contains(TargetArchitecture))
             {
-                return new Tuple<bool,string>(false, 
+                return new Tuple<bool, string>(false,
                     "Invalid Target Architecture specified! Valid architectures: " +
-                    string.Join(", ", Options.ValidTargetArchitectures));
+                    string.Join(", ", ValidTargetArchitectures));
             }
 
-            return new Tuple<bool,string>(true, "");
+            return new Tuple<bool, string>(true, "");
         }
     }
 }

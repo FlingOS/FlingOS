@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,41 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using MethodInfo = Drivers.Compiler.Types.MethodInfo;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Callvirt : IL.ILOps.Callvirt
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             MethodBase methodToCall = theOp.MethodToCall;
-            Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
+            MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
-            if (methodToCall is MethodInfo)
+            if (methodToCall is System.Reflection.MethodInfo)
             {
-                if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
+                if (typeof(Delegate).IsAssignableFrom(((System.Reflection.MethodInfo) methodToCall).DeclaringType))
                 {
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
-                    
-                    Type retType = ((MethodInfo)methodToCall).ReturnType;
-                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    List<Type> allParams =
+                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                            .Select(x => x.ParameterType)
+                            .ToList();
+
+                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem()
                     {
                         isFloat = Utilities.IsFloat(retType),
@@ -60,7 +66,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         isValue = retTypeInfo.IsValueType
                     };
 
-                    
+
                     int bytesToAdd = 4;
                     foreach (Type aParam in allParams)
                     {
@@ -78,10 +84,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     string methodIDValueWanted = methodToCallInfo.IDValue.ToString();
                     int currOpPosition = conversionState.PositionOf(theOp);
 
-                    Types.TypeInfo declaringTypeInfo = conversionState.TheILLibrary.GetTypeInfo(methodToCall.DeclaringType);
-                    
-                    Type retType = ((MethodInfo)methodToCall).ReturnType;
-                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    TypeInfo declaringTypeInfo = conversionState.TheILLibrary.GetTypeInfo(methodToCall.DeclaringType);
+
+                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem()
                     {
                         isFloat = Utilities.IsFloat(retType),
@@ -89,9 +95,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         isGCManaged = retTypeInfo.IsGCManaged,
                         isValue = retTypeInfo.IsValueType
                     };
-                    
+
                     int bytesToAdd = 0;
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    List<Type> allParams =
+                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                            .Select(x => x.ParameterType)
+                            .ToList();
                     if (!methodToCall.IsStatic)
                     {
                         allParams.Insert(0, methodToCall.DeclaringType);
@@ -115,19 +124,20 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
             }
         }
+
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if any argument or the return value is a floating point number.
+        ///     Thrown if any argument or the return value is a floating point number.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             MethodBase methodToCall = theOp.MethodToCall;
-            Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
+            MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID);
@@ -135,33 +145,47 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //The method to call is a method base
             //A method base can be either a method info i.e. a normal method
             //or a constructor method. The two types are treated separately.
-            if(methodToCall is MethodInfo)
+            if (methodToCall is System.Reflection.MethodInfo)
             {
                 //Need to do callvirt related stuff to load address of method to call
                 // - Check for invoke of a delegate - if so, treat rather differently from normal callvirt
 
-                if (typeof(Delegate).IsAssignableFrom(((MethodInfo)methodToCall).DeclaringType))
+                if (typeof(Delegate).IsAssignableFrom(((System.Reflection.MethodInfo) methodToCall).DeclaringType))
                 {
                     //Callvirt to delegate method
                     // - We only support calls to Invoke at the moment
                     if (methodToCall.Name != "Invoke")
                     {
-                        throw new NotSupportedException("Callvirt to Delegate method not supported! Method name: " + methodToCall.Name);
+                        throw new NotSupportedException("Callvirt to Delegate method not supported! Method name: " +
+                                                        methodToCall.Name);
                     }
-                    int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes).Sum();
+                    int bytesForAllParams =
+                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                            .Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes)
+                            .Sum();
 
                     // - Move into $t0 address of function to call from stack - delegate reference is function pointer
 
                     //All the parameters for the method that was called
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    List<Type> allParams =
+                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                            .Select(x => x.ParameterType)
+                            .ToList();
 
-                    int bytesForParams = allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = bytesForParams + "($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    int bytesForParams =
+                        allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = bytesForParams + "($sp)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
 
 
                     //Allocate space on the stack for the return value as necessary
-                    Type retType = ((MethodInfo)methodToCall).ReturnType;
-                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem()
                     {
                         isFloat = Utilities.IsFloat(retType),
@@ -181,12 +205,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         }
                         else if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                         }
                         else
                         {
@@ -195,9 +219,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
 
 
-
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() { Target = "$t0" });
+                    conversionState.Append(new ASMOps.Call() {Target = "$t0"});
 
 
                     //After a call, we need to remove the return value and parameters from the stack
@@ -233,16 +256,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //We will push it back on after params are skipped over.
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
                         }
                     }
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp"});
                     //If necessary, push the return value onto the stack.
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
@@ -252,12 +275,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //So push it back onto the stack
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                         }
                     }
                 }
@@ -277,71 +300,138 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     string methodIDValueWanted = methodToCallInfo.IDValue.ToString();
                     int currOpPosition = conversionState.PositionOf(theOp);
 
-                    Types.TypeInfo declaringTypeInfo = conversionState.TheILLibrary.GetTypeInfo(methodToCall.DeclaringType);
+                    TypeInfo declaringTypeInfo = conversionState.TheILLibrary.GetTypeInfo(methodToCall.DeclaringType);
                     //DB_Type declaringDBType = DebugDatabase.GetType(conversionState.GetTypeID(methodToCall.DeclaringType));
 
                     //Get object ref
-                    int bytesForAllParams = ((MethodInfo)methodToCall).GetParameters().Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes).Sum();
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = bytesForAllParams + "($sp)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    
-                    //Check object ref
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src1 = "$t0", Src2 = "$zero", DestILPosition = currOpPosition, Extension = "NotNull" });
+                    int bytesForAllParams =
+                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                            .Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes)
+                            .Sum();
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = bytesForAllParams + "($sp)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
 
-                    conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+                    //Check object ref
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.BranchNotZero,
+                        Src1 = "$t0",
+                        Src2 = "$zero",
+                        DestILPosition = currOpPosition,
+                        Extension = "NotNull"
+                    });
+
+                    conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
                     conversionState.AddExternalLabel("GetEIP");
-                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNull" });
+                    conversionState.Append(new ASMOps.Call()
+                    {
+                        Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
+                    });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotNull"});
 
                     //Get type ref
                     int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
                     //conversionState.Append(new ASMOps.La() { Dest = "$t1", Label = "type_Testing1_String" });
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = typeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", typeOffset, 4);
-                    
+
                     //Get method table ref
                     int methodTablePtrOffset = conversionState.GetTypeFieldOffset("MethodTablePtr");
                     //conversionState.Append(new ASMOps.La() { Dest = "$t0", Label = "type_Testing1_String_MethodTable" });
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = methodTablePtrOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", methodTablePtrOffset, 4);
-                    
+
                     //Loop through entries
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "LoopMethodTable" });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "LoopMethodTable"});
                     //Load ID Val for current entry
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 4);
                     //Compare to wanted ID value
-                    conversionState.Append(new ASMOps.Mov() { Src = methodIDValueWanted,  Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                    conversionState.Append(new Mov()
+                    {
+                        Src = methodIDValueWanted,
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.ImmediateToReg
+                    });
                     //If equal, load method address into $t0
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotEqual, Src1 = "$t1", Src2 = "$t4", DestILPosition = currOpPosition, Extension = "NotEqual" });
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.BranchNotEqual,
+                        Src1 = "$t1",
+                        Src2 = "$t4",
+                        DestILPosition = currOpPosition,
+                        Extension = "NotEqual"
+                    });
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", 4, 4);
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "Call" });
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotEqual" });
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "Call"
+                    });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotEqual"});
                     //Else, compare to 0 to check for end of table
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchZero, Src1 = "$t1", DestILPosition = currOpPosition, Extension = "EndOfTable" });
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.BranchZero,
+                        Src1 = "$t1",
+                        DestILPosition = currOpPosition,
+                        Extension = "EndOfTable"
+                    });
                     //Not 0? Move to next entry then loop again
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$t0", Src2 = "8", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "LoopMethodTable" });
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "EndOfTable" });
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$t0", Src2 = "8", Dest = "$t0"});
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "LoopMethodTable"
+                    });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "EndOfTable"});
                     //Compare address value to 0
                     //If not zero, there is a parent method table to check
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
                     GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 4, 4);
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchZero, Src1 = "$t1", DestILPosition = currOpPosition, Extension = "NotFound" });
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.BranchZero,
+                        Src1 = "$t1",
+                        DestILPosition = currOpPosition,
+                        Extension = "NotFound"
+                    });
                     //Load parent method table and loop 
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "$t1", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.RegToReg });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "LoopMethodTable" });
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotFound" });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "$t1",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.RegToReg
+                    });
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "LoopMethodTable"
+                    });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotFound"});
                     //Throw exception!
-                    conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+                    conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
                     conversionState.AddExternalLabel("GetEIP");
-                    conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
-                    
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Call" });
+                    conversionState.Append(new ASMOps.Call()
+                    {
+                        Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
+                    });
+
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Call"});
 
                     //Allocate space on the stack for the return value as necessary
-                    Type retType = ((MethodInfo)methodToCall).ReturnType;
-                    Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem()
                     {
                         isFloat = Utilities.IsFloat(retType),
@@ -361,12 +451,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         }
                         else if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                         }
                         else
                         {
@@ -376,8 +466,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() { Target = "$t0" });
-                    
+                    conversionState.Append(new ASMOps.Call() {Target = "$t0"});
 
 
                     //After a call, we need to remove the return value and parameters from the stack
@@ -387,7 +476,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Stores the number of bytes to add
                     int bytesToAdd = 0;
                     //All the parameters for the method that was called
-                    List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    List<Type> allParams =
+                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                            .Select(x => x.ParameterType)
+                            .ToList();
                     //Go through each one
                     if (!methodToCall.IsStatic)
                     {
@@ -420,16 +512,21 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             //We will push it back on after params are skipped over.
                             if (returnItem.sizeOnStackInBytes == 4)
                             {
-                                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                             }
                             else if (returnItem.sizeOnStackInBytes == 8)
                             {
-                                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
                             }
                         }
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
+                        conversionState.Append(new ASMOps.Add()
+                        {
+                            Src1 = "$sp",
+                            Src2 = bytesToAdd.ToString(),
+                            Dest = "$sp"
+                        });
                         //If necessary, push the return value onto the stack.
                         if (returnItem.sizeOnStackInBytes != 0)
                         {
@@ -439,12 +536,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             //So push it back onto the stack
                             if (returnItem.sizeOnStackInBytes == 4)
                             {
-                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                             }
                             else if (returnItem.sizeOnStackInBytes == 8)
                             {
-                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
-                                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                             }
                         }
                     }
@@ -457,7 +554,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
                 }
             }
-            else if(methodToCall is ConstructorInfo)
+            else if (methodToCall is ConstructorInfo)
             {
                 throw new NotSupportedException("How the hell are we getting callvirts to constructor methods?!");
             }

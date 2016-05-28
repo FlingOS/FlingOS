@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Not : IL.ILOps.Not
     {
@@ -44,14 +43,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to not are floating point values or
-        /// if the values are 8 bytes in size.
+        ///     Thrown if either or both values to not are floating point values or
+        ///     if the values are 8 bytes in size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -66,21 +65,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (itemA.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                 //To not, arg Xor -1
-                conversionState.Append(new ASMOps.Mov() { Dest = "$t4", Src = "0xFFFFFFFF", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Xor() { Dest = "$t0", Src1 = "$t0", Src2 = "$t4" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                conversionState.Append(new Mov()
+                {
+                    Dest = "$t4",
+                    Src = "0xFFFFFFFF",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new ASMOps.Xor() {Dest = "$t0", Src1 = "$t0", Src2 = "$t4"});
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
             }
             else if (itemA.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
-                conversionState.Append(new ASMOps.Mov() { Dest = "$t4", Src = "0xFFFFFFFF", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Xor() { Dest = "$t0", Src1 = "$t0", Src2 = "$t4" });
-                conversionState.Append(new ASMOps.Xor() { Dest = "$t3", Src1 = "$t3", Src2 = "$t4" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
+                conversionState.Append(new Mov()
+                {
+                    Dest = "$t4",
+                    Src = "0xFFFFFFFF",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new ASMOps.Xor() {Dest = "$t0", Src1 = "$t0", Src2 = "$t4"});
+                conversionState.Append(new ASMOps.Xor() {Dest = "$t3", Src1 = "$t3", Src2 = "$t4"});
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
             }
             else
             {

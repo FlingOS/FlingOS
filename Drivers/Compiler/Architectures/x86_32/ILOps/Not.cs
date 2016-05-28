@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Not : IL.ILOps.Not
     {
@@ -44,14 +43,14 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if either or both values to not are floating point values or
-        /// if the values are 8 bytes in size.
+        ///     Thrown if either or both values to not are floating point values or
+        ///     if the values are 8 bytes in size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -64,18 +63,18 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (theItem.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Not() { Dest = "EAX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Not() {Dest = "EAX"});
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
             }
             else if (theItem.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
-                conversionState.Append(new ASMOps.Not() { Dest = "EAX" });
-                conversionState.Append(new ASMOps.Not() { Dest = "EBX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EBX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                conversionState.Append(new ASMOps.Not() {Dest = "EAX"});
+                conversionState.Append(new ASMOps.Not() {Dest = "EBX"});
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,42 +23,47 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes.File
 {
     /// <summary>
-    /// Represents an outpoint for a standard in or standard out pipe.
+    ///     Represents an outpoint for a standard in or standard out pipe.
     /// </summary>
     public class FileDataOutpoint : BasicOutpoint
     {
         /// <summary>
-        /// Creates and registers an outpoint as either a Standard In or Standard Out pipe outpoint.
+        ///     Creates and registers an outpoint as either a Standard In or Standard Out pipe outpoint.
         /// </summary>
         public FileDataOutpoint(int MaxConnections, bool OutputPipe)
-            : base(PipeClasses.File, (OutputPipe ? PipeSubclasses.File_Data_Out : PipeSubclasses.File_Data_In), MaxConnections)
+            : base(
+                PipeClasses.File, OutputPipe ? PipeSubclasses.File_Data_Out : PipeSubclasses.File_Data_In,
+                MaxConnections)
         {
         }
 
         //TODO: Appropriate functions
 
-        public unsafe void WriteFSInfos(int PipeId, FOS_System.String[] FSPrefixes)
+        public unsafe void WriteFSInfos(int PipeId, String[] FSPrefixes)
         {
-            byte[] buffer = new byte[sizeof(FilePipeDataHeader) + (sizeof(FilePipeDataFSInfo) * FSPrefixes.Length)];
-            FilePipeDataHeader* HdrPtr = (FilePipeDataHeader*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize);
+            byte[] buffer = new byte[sizeof(FilePipeDataHeader) + sizeof(FilePipeDataFSInfo)*FSPrefixes.Length];
+            FilePipeDataHeader* HdrPtr =
+                (FilePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
             HdrPtr->Count = FSPrefixes.Length;
-            FilePipeDataFSInfo* DataPtr = (FilePipeDataFSInfo*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize + sizeof(FilePipeDataHeader));
+            FilePipeDataFSInfo* DataPtr =
+                (FilePipeDataFSInfo*)
+                    ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(FilePipeDataHeader));
             for (int i = 0; i < FSPrefixes.Length; i++)
             {
                 if (FSPrefixes[i].length > 10)
                 {
-                    BasicConsole.WriteLine("FileDataOutpoint.WriteFSInfo > Error! FS prefix longer than maximum transmittable length (10).");
+                    BasicConsole.WriteLine(
+                        "FileDataOutpoint.WriteFSInfo > Error! FS prefix longer than maximum transmittable length (10).");
                 }
                 for (int j = 0; j < 10; j++)
                 {
@@ -66,7 +72,8 @@ namespace Kernel.Pipes.File
             }
             base.Write(PipeId, buffer, 0, buffer.Length, true);
         }
-        public unsafe void WriteString(int PipeId, FOS_System.String str)
+
+        public unsafe void WriteString(int PipeId, String str)
         {
             if (str == "")
             {

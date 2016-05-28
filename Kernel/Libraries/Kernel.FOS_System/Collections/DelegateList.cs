@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,55 +23,84 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
+using Drivers.Compiler.Attributes;
+using IndexOutOfRangeException = Kernel.FOS_System.Exceptions.IndexOutOfRangeException;
 
 namespace Kernel.FOS_System.Collections
 {
     /// <summary>
-    /// Represents a strongly typed list of Delegates that can be accessed by 
-    /// index. Provides methods to search and manipulate lists.
+    ///     Represents a strongly typed list of Delegates that can be accessed by
+    ///     index. Provides methods to search and manipulate lists.
     /// </summary>
-    public class DelegateList : FOS_System.Object
+    public class DelegateList : Object
     {
         /// <summary>
-        /// The underlying object array.
+        ///     The underlying object array.
         /// </summary>
         /// <remarks>
-        /// When describing entries in the internal, the internal array should be seen
-        /// as a list which grows downwards. So the first entry (index 0) is the top of 
-        /// the list. Adding an entry extends the list downwards by one. Removing an 
-        /// entry shifts the remaining items up by one.
+        ///     When describing entries in the internal, the internal array should be seen
+        ///     as a list which grows downwards. So the first entry (index 0) is the top of
+        ///     the list. Adding an entry extends the list downwards by one. Removing an
+        ///     entry shifts the remaining items up by one.
         /// </remarks>
         protected Delegate[] _array;
+
+        public int ExpandAmount = 5;
+
         /// <summary>
-        /// The "nextIndex" is the index to insert the next new item.
-        /// It is the index immediately after the last-set item in the array.
-        /// It thus also acts as an item count.
+        ///     The "nextIndex" is the index to insert the next new item.
+        ///     It is the index immediately after the last-set item in the array.
+        ///     It thus also acts as an item count.
         /// </summary>
         protected int nextIndex = 0;
 
         /// <summary>
-        /// The number of elements in the list.
+        ///     Creates a new list with initial capacity of 5.
+        /// </summary>
+        [NoDebug]
+        public DelegateList()
+            : this(5)
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new list with specified initial capacity. Use this to optimise memory usage.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the list.</param>
+        [NoDebug]
+        public DelegateList(int capacity)
+            : this(capacity, 5)
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new list with specified initial capacity. Use this to optimise memory usage.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the list.</param>
+        /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
+        [NoDebug]
+        public DelegateList(int capacity, int expandAmount)
+        {
+            //Create the internal array with specified capacity.
+            _array = new Delegate[capacity];
+            ExpandAmount = expandAmount;
+        }
+
+        /// <summary>
+        ///     The number of elements in the list.
         /// </summary>
         public int Count
         {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return nextIndex;
-            }
+            [NoGC] [NoDebug] get { return nextIndex; }
         }
+
         public int Capacity
         {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return _array.Length;
-            }
+            [NoGC] [NoDebug] get { return _array.Length; }
             set
             {
                 if (value > _array.Length)
@@ -80,43 +110,54 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
-        public int ExpandAmount = 5;
+        /// <summary>
+        ///     Gets the Delegate at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the Delegate to get.</param>
+        /// <returns>The Delegate at the specified index.</returns>
+        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+        ///     Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
+        /// </exception>
+        public Delegate this[int index]
+        {
+            [NoDebug]
+            get
+            {
+                if (index >= nextIndex)
+                {
+                    ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
+                }
+
+                return _array[index];
+            }
+            [NoDebug]
+            set
+            {
+                //Throw an exception if the index to set is beyond the length of
+                //  the list.
+                //Note: Beyond the length of the list not the capacity!
+                if (index >= nextIndex)
+                {
+                    ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
+                }
+                else if (index < 0)
+                {
+                    ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
+                }
+
+                _array[index] = value;
+            }
+        }
 
         /// <summary>
-        /// Creates a new list with initial capacity of 5.
-        /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public DelegateList()
-            : this(5)
-        {
-        }
-        /// <summary>
-        /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public DelegateList(int capacity)
-            : this(capacity, 5)
-        {
-        }
-        /// <summary>
-        /// Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
-        public DelegateList(int capacity, int expandAmount)
-        {
-            //Create the internal array with specified capacity.
-            _array = new Delegate[capacity];
-            ExpandAmount = expandAmount;
-        }
-
-        /// <summary>
-        /// Adds the specified Delegate to the list.
+        ///     Adds the specified Delegate to the list.
         /// </summary>
         /// <param name="obj">The Delegate to add.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public void Add(Delegate obj)
         {
             //If the next index to insert an item at is beyond the capacity of
@@ -130,11 +171,12 @@ namespace Kernel.FOS_System.Collections
             _array[nextIndex] = obj;
             nextIndex++;
         }
+
         /// <summary>
-        /// Removes the first equal value of the specified Delegate from the list.
+        ///     Removes the first equal value of the specified Delegate from the list.
         /// </summary>
         /// <param name="obj">The Delegate to remove.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public void Remove(Delegate obj)
         {
             bool setObjectToNull = false;
@@ -161,16 +203,17 @@ namespace Kernel.FOS_System.Collections
                 }
             }
         }
+
         /// <summary>
-        /// The removes the UInt32 at the specified index from the list.
+        ///     The removes the UInt32 at the specified index from the list.
         /// </summary>
         /// <param name="index">The index of the UInt32 to remove.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public void RemoveAt(int index)
         {
             if (index >= nextIndex)
             {
-                ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
+                ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
             }
 
             for (int i = index; i < nextIndex; i++)
@@ -189,8 +232,8 @@ namespace Kernel.FOS_System.Collections
         }
 
         /// <summary>
-        /// Returns the index of the first instance of the specified object or -1 
-        /// if it is not found.
+        ///     Returns the index of the first instance of the specified object or -1
+        ///     if it is not found.
         /// </summary>
         /// <param name="obj">The object to search for.</param>
         /// <returns>The index or -1 if not found.</returns>
@@ -219,9 +262,9 @@ namespace Kernel.FOS_System.Collections
         }
 
         /// <summary>
-        /// Empties the list of all objects but does not alter the list capacity.
+        ///     Empties the list of all objects but does not alter the list capacity.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public void Empty()
         {
             //Reset the count to 0
@@ -234,10 +277,10 @@ namespace Kernel.FOS_System.Collections
         }
 
         /// <summary>
-        /// Expands the capacity of the internel array that stores the objects.
+        ///     Expands the capacity of the internel array that stores the objects.
         /// </summary>
         /// <param name="amount">The amount to expand the capacity by.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         private void ExpandCapacity(int amount)
         {
             Delegate[] newArray = new Delegate[_array.Length + amount];
@@ -246,49 +289,6 @@ namespace Kernel.FOS_System.Collections
                 newArray[i] = _array[i];
             }
             _array = newArray;
-        }
-
-        /// <summary>
-        /// Gets the Delegate at the specified index.
-        /// </summary>
-        /// <param name="index">The index of the Delegate to get.</param>
-        /// <returns>The Delegate at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
-        /// Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
-        /// </exception>
-        public Delegate this[int index]
-        {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                if (index >= nextIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
-                }
-
-                return _array[index];
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                //Throw an exception if the index to set is beyond the length of
-                //  the list.
-                //Note: Beyond the length of the list not the capacity!
-                if (index >= nextIndex)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
-                }
-                else if (index < 0)
-                {
-                    ExceptionMethods.Throw(new Exceptions.IndexOutOfRangeException(index, nextIndex));
-                }
-
-                _array[index] = value;
-            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
-    /// Represents a label for an external dependency of an ASM block.
+    ///     Represents a label for an external dependency of an ASM block.
     /// </summary>
     [ASMOpTarget(Target = OpCodes.ExternalLabel)]
     public abstract class ASMExternalLabel : ASMOp
     {
         /// <summary>
-        /// The external label.
+        ///     The external label.
         /// </summary>
         public string Label;
 
@@ -49,19 +45,20 @@ namespace Drivers.Compiler.ASM.ASMOps
         }
 
         /// <summary>
-        /// Gets a hash code for the external label which can be used for comparison to prevent
-        /// duplicate external labels being added.
+        ///     Gets a hash code for the external label which can be used for comparison to prevent
+        ///     duplicate external labels being added.
         /// </summary>
         /// <remarks>
-        /// Uses the hash code of the Label field.
+        ///     Uses the hash code of the Label field.
         /// </remarks>
         /// <returns>The hash code value.</returns>
         public override int GetHashCode()
         {
             return Label.GetHashCode();
         }
+
         /// <summary>
-        /// Compares the external label to the specified object.
+        ///     Compares the external label to the specified object.
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
         /// <returns>True if the object is an external label and has the same value for Label. Otherwise, false.</returns>
@@ -69,7 +66,7 @@ namespace Drivers.Compiler.ASM.ASMOps
         {
             if (obj is ASMExternalLabel)
             {
-                return Label.Equals(((ASMExternalLabel)obj).Label);
+                return Label.Equals(((ASMExternalLabel) obj).Label);
             }
             return base.Equals(obj);
         }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,28 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.Hardware.Devices
 {
     /// <summary>
-    /// Represents a CPU in the machine.
+    ///     Represents a CPU in the machine.
     /// </summary>
     public abstract class CPU : Device
     {
         /// <summary>
-        /// Halts the CPU (e.g. using x86 hlt instruction)
-        /// </summary>
-        public abstract void Halt();
-
-        /// <summary>
-        /// The default CPU.
+        ///     The default CPU.
         /// </summary>
         public static CPU Default;
+
+        /// <summary>
+        ///     Halts the CPU (e.g. using x86 hlt instruction)
+        /// </summary>
+        public abstract void Halt();
     }
 }

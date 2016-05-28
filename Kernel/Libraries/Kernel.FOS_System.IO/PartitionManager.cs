@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,23 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 #define PM_TRACE
 
-using Kernel.FOS_System.IO.Disk;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
+using Kernel.FOS_System.IO.Disk;
+using Kernel.FOS_System.IO.FAT;
+using Kernel.FOS_System.IO.ISO9660;
 using Kernel.Hardware.Devices;
-using Kernel.Pipes.Storage;
 
 namespace Kernel.FOS_System.IO
 {
     public class PartitionManager : Object
     {
         /// <summary>
-        /// The list of initialized partitions.
+        ///     The list of initialized partitions.
         /// </summary>
         public static List Partitions;
 
@@ -46,9 +48,9 @@ namespace Kernel.FOS_System.IO
         {
             Partitions = new List(3);
         }
-        
+
         /// <summary>
-        /// Initializes the specified disk device.
+        ///     Initializes the specified disk device.
         /// </summary>
         /// <param name="aDiskDevice">The disk device to initialize.</param>
         public static void InitDisk(DiskDevice TheDisk)
@@ -80,9 +82,11 @@ namespace Kernel.FOS_System.IO
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Non MBR/EBR/GPT/ISO9660 formatted disks not supported."));
+                ExceptionMethods.Throw(
+                    new NotSupportedException("Non MBR/EBR/GPT/ISO9660 formatted disks not supported."));
             }
         }
+
         private static bool InitAsISO9660(DiskDevice TheDisk)
         {
             // TODO: Should only check for ISO9660 only on CD/DVD drives
@@ -96,8 +100,9 @@ namespace Kernel.FOS_System.IO
 
             return true;
         }
+
         /// <summary>
-        /// Attempts to initialise a disk treating it as GPT formatted.
+        ///     Attempts to initialise a disk treating it as GPT formatted.
         /// </summary>
         /// <param name="aDiskDevice">The disk to initialise.</param>
         /// <returns>True if a valid GPT was detected and the disk was successfully initialised. Otherwise, false.</returns>
@@ -114,15 +119,16 @@ namespace Kernel.FOS_System.IO
                 return true;
             }
         }
+
         /// <summary>
-        /// Attempts to initialise a disk treating it as MBR formatted.
+        ///     Attempts to initialise a disk treating it as MBR formatted.
         /// </summary>
         /// <param name="aDiskDevice">The disk to initialise.</param>
         /// <returns>True if a valid MBR was detected and the disk was successfully initialised. Otherwise, false.</returns>
         private static bool InitAsMBR(DiskDevice TheDisk)
         {
 #if PM_TRACE
-           BasicConsole.WriteLine("Attempting to read MBR...");
+            BasicConsole.WriteLine("Attempting to read MBR...");
 #endif
             byte[] MBRData = new byte[512];
             TheDisk.ReadBlock(0UL, 1U, MBRData);
@@ -148,19 +154,21 @@ namespace Kernel.FOS_System.IO
                 return true;
             }
         }
+
         private static void ProcessISO9660(Disk.ISO9660 aISO9660, DiskDevice TheDisk)
         {
             for (int i = 0; i < aISO9660.VolumeDescriptors.Count; i++)
             {
-                Disk.ISO9660.VolumeDescriptor volDescrip = (Disk.ISO9660.VolumeDescriptor)aISO9660.VolumeDescriptors[i];
+                Disk.ISO9660.VolumeDescriptor volDescrip = (Disk.ISO9660.VolumeDescriptor) aISO9660.VolumeDescriptors[i];
                 if (volDescrip is Disk.ISO9660.PrimaryVolumeDescriptor)
                 {
                     AddPartition(volDescrip);
                 }
             }
         }
+
         /// <summary>
-        /// Processes a valid GUID partition table to initialize its partitions.
+        ///     Processes a valid GUID partition table to initialize its partitions.
         /// </summary>
         /// <param name="aGPT">The GPT to process.</param>
         /// <param name="aDiskDevice">The disk device from which the GPT was read.</param>
@@ -168,12 +176,13 @@ namespace Kernel.FOS_System.IO
         {
             for (int i = 0; i < aGPT.Partitions.Count; i++)
             {
-                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
+                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo) aGPT.Partitions[i];
                 AddPartition(new Partition(TheDisk, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
             }
         }
+
         /// <summary>
-        /// Processes a valid master boot record to initialize its partitions.
+        ///     Processes a valid master boot record to initialize its partitions.
         /// </summary>
         /// <param name="anMBR">The MBR to process.</param>
         /// <param name="TheDisk">The disk device from which the MBR was read.</param>
@@ -215,7 +224,8 @@ namespace Kernel.FOS_System.IO
                     }
                     else
                     {
-                        BasicConsole.WriteLine("Partition Manager > Error! Partition not formatted as valid FAT or ISO9660 file-system.");
+                        BasicConsole.WriteLine(
+                            "Partition Manager > Error! Partition not formatted as valid FAT or ISO9660 file-system.");
                     }
                 }
             }
@@ -226,20 +236,21 @@ namespace Kernel.FOS_System.IO
                 //BasicConsole.DelayOutput(20);
             }
         }
+
         /// <summary>
-        /// Initializes all available partitions looking for valid 
-        /// file systems.
+        ///     Initializes all available partitions looking for valid
+        ///     file systems.
         /// </summary>
         private static FileSystem InitPartition(Partition aPartition)
         {
             FileSystem newFS = null;
             if (aPartition is Disk.ISO9660.PrimaryVolumeDescriptor)
             {
-                newFS = new ISO9660.ISO9660FileSystem((Disk.ISO9660.PrimaryVolumeDescriptor)aPartition);
+                newFS = new ISO9660FileSystem((Disk.ISO9660.PrimaryVolumeDescriptor) aPartition);
             }
             else
             {
-                newFS = new FAT.FATFileSystem(aPartition);
+                newFS = new FATFileSystem(aPartition);
             }
             return newFS;
         }

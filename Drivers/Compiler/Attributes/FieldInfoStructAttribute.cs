@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,21 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Attributes
 {
     /// <summary>
-    /// Indicates the struct is the kernel's MethodInfo struct. 
-    /// Note: There should only ever be one of these used!
+    ///     Indicates the struct is the kernel's MethodInfo struct.
+    ///     Note: There should only ever be one of these used!
     /// </summary>
-    [AttributeUsage(AttributeTargets.Struct, AllowMultiple=false, Inherited=false)]
+    [AttributeUsage(AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
     public class FieldInfoStructAttribute : Attribute
     {
     }

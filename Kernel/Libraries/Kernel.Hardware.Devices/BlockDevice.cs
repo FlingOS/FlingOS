@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,75 +23,79 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware
 {
     /// <summary>
-    /// Represents a logical block based device.
+    ///     Represents a logical block based device.
     /// </summary>
     public abstract class BlockDevice : Device
     {
-        public BlockDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, FOS_System.String AName, uint[] SomeInfo, bool IsClaimed)
+        /// <summary>
+        ///     The number of logical blocks in the device.
+        /// </summary>
+        protected ulong blockCount = 0;
+
+        /// <summary>
+        ///     The size of the logical blocks.
+        /// </summary>
+        protected ulong blockSize = 0;
+
+        public BlockDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName,
+            uint[] SomeInfo, bool IsClaimed)
             : base(AGroup, AClass, ASubClass, AName, SomeInfo, IsClaimed)
         {
         }
 
         /// <summary>
-        /// The number of logical blocks in the device.
+        ///     The number of logical blocks in the device.
         /// </summary>
-        protected UInt64 blockCount = 0;
-        /// <summary>
-        /// The number of logical blocks in the device.
-        /// </summary>
-        public virtual UInt64 BlockCount
+        public virtual ulong BlockCount
         {
             get { return blockCount; }
         }
 
         /// <summary>
-        /// The size of the logical blocks.
+        ///     The size of the logical blocks.
         /// </summary>
-        protected UInt64 blockSize = 0;
-        /// <summary>
-        /// The size of the logical blocks.
-        /// </summary>
-        public virtual UInt64 BlockSize
+        public virtual ulong BlockSize
         {
             get { return blockSize; }
         }
 
         /// <summary>
-        /// Reads contiguous logical blocks from the device.
+        ///     Reads contiguous logical blocks from the device.
         /// </summary>
         /// <param name="aBlockNo">The logical block number to read.</param>
         /// <param name="aBlockCount">The number of blocks to read.</param>
         /// <param name="aData">The byte array to store the data in.</param>
-        public abstract void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData);
+        public abstract void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData);
+
         /// <summary>
-        /// Writes contiguous logical blocks to the device.
+        ///     Writes contiguous logical blocks to the device.
         /// </summary>
         /// <param name="aBlockNo">The number of the first block to write.</param>
         /// <param name="aBlockCount">The number of blocks to write.</param>
         /// <param name="aData">The data to write. Pass null to efficiently write 0s to the device.</param>
         /// <remarks>
-        /// If data is null, all data to be written should be assumed to be 0.
+        ///     If data is null, all data to be written should be assumed to be 0.
         /// </remarks>
-        public abstract void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData);
+        public abstract void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData);
 
         /// <summary>
-        /// Creates a new byte array sized to fit the specified number of blocks.
+        ///     Creates a new byte array sized to fit the specified number of blocks.
         /// </summary>
         /// <param name="aBlockCount">The number of blocks to size for.</param>
         /// <returns>The new byte array.</returns>
-        public byte[] NewBlockArray(UInt32 aBlockCount)
+        public byte[] NewBlockArray(uint aBlockCount)
         {
             //TODO: Support Conv_Ovf_I_Un IL op then remove the cast below
-            return new byte[aBlockCount * (uint)BlockSize];
+            return new byte[aBlockCount*(uint) BlockSize];
         }
     }
 }

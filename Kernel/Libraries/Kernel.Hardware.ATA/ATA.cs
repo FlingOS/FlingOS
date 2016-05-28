@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,58 +23,64 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Hardware.ATA
 {
     /// <summary>
-    /// Represents an ATA device.
+    ///     Represents an ATA device.
     /// </summary>
-    public abstract class ATA : Devices.DiskDevice
+    public abstract class ATA : DiskDevice
     {
         /// <summary>
-        /// The ATA controller IDs.
-        /// </summary>
-        public enum ControllerID
-        { 
-            /// <summary>
-            /// Primary ATA controller.
-            /// </summary>
-            Primary,
-            /// <summary>
-            /// Secondary ATA controller.
-            /// </summary>
-            Secondary 
-        }
-        /// <summary>
-        /// The ATA bus positions.
+        ///     The ATA bus positions.
         /// </summary>
         public enum BusPosition
-        { 
+        {
             /// <summary>
-            /// Master device.
+            ///     Master device.
             /// </summary>
             Master,
+
             /// <summary>
-            /// Slave device.
+            ///     Slave device.
             /// </summary>
-            Slave 
+            Slave
         }
 
         /// <summary>
-        /// The device's controller ID.
+        ///     The ATA controller IDs.
         /// </summary>
-        public ControllerID controllerId;
+        public enum ControllerID
+        {
+            /// <summary>
+            ///     Primary ATA controller.
+            /// </summary>
+            Primary,
+
+            /// <summary>
+            ///     Secondary ATA controller.
+            /// </summary>
+            Secondary
+        }
+
         /// <summary>
-        /// The device's bus position.
+        ///     The device's bus position.
         /// </summary>
         public BusPosition busPosition;
 
         /// <summary>
-        /// Initialises a new ATA device with block size 512.
+        ///     The device's controller ID.
+        /// </summary>
+        public ControllerID controllerId;
+
+        /// <summary>
+        ///     Initialises a new ATA device with block size 512.
         /// </summary>
         internal ATA(String AName)
             : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, AName, new uint[2], true)

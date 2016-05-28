@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
 
 namespace Kernel.FOS_System.IO
 {
     /// <summary>
-    /// Represents an IO exception.
+    ///     Represents an IO exception.
     /// </summary>
-    public class IOException : FOS_System.Exception
+    public class IOException : Exception
     {
         /// <summary>
-        /// Initializes a new IO exception.
+        ///     Initializes a new IO exception.
         /// </summary>
         /// <param name="aMessage">The IO exception message.</param>
         public IOException(string aMessage)

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,15 +23,16 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
 
 namespace Kernel
 {
     /// <summary>
-    /// Contains plugged methos that are pre-requisites for the kernel to boot.
-    /// For example, the Multiboot Signature.
+    ///     Contains plugged methos that are pre-requisites for the kernel to boot.
+    ///     For example, the Multiboot Signature.
     /// </summary>
     public static class PreReqs
     {
@@ -43,98 +45,105 @@ namespace Kernel
         //          hard-coded asm so they can be called by the compiler generated code
 
         /// <summary>
-        /// Inserts the multiboot signature at the start of the file.
+        ///     Inserts the multiboot signature at the start of the file.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\LoadSequence")]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 0)]
+        [PluggedMethod(ASMFilePath = @"ASM\LoadSequence")]
+        [SequencePriority(Priority = long.MinValue + 0)]
         private static void MultibootSignature()
         {
         }
 
         /// <summary>
-        /// Inserts the pre-entrypoint kernel start method plug.
+        ///     Inserts the pre-entrypoint kernel start method plug.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 1)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 1)]
         private static void Kernel_Start()
         {
         }
 
         /// <summary>
-        /// Initialises virtual memory (i.e. shifts to higher-half kernel).
+        ///     Initialises virtual memory (i.e. shifts to higher-half kernel).
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 2)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 2)]
         private static void VirtualMemInit()
         {
         }
 
         /// <summary>
-        /// Inserts the initialise stack code. 
-        /// Kernel stack space is currently hard-coded into the 
-        /// Multiboot Signature asm.
+        ///     Inserts the initialise stack code.
+        ///     Kernel stack space is currently hard-coded into the
+        ///     Multiboot Signature asm.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 3)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 3)]
         private static void InitStack()
         {
         }
 
         /// <summary>
-        /// Initialises the Global Descriptor Table.
+        ///     Initialises the Global Descriptor Table.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 4)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 4)]
         private static void InitGDT()
         {
         }
 
         /// <summary>
-        /// Initialises the Interrupt Descriptor Table.
+        ///     Initialises the Interrupt Descriptor Table.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 5)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 5)]
         private static void InitIDT()
         {
         }
-        
+
         /// <summary>
-        /// Inserts the method that handles what happens when the Multiboot
-        /// Signature is invalid or undetected.
+        ///     Inserts the method that handles what happens when the Multiboot
+        ///     Signature is invalid or undetected.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 8)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 8)]
         private static void HandleNoMultiboot()
         {
         }
-        
+
         /// <summary>
-        /// Inserts the stub that calls the main kernel entrypoint.
+        ///     Inserts the stub that calls the main kernel entrypoint.
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 7)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 7)]
         private static void MainEntrypoint()
         {
         }
 
         /// <summary>
-        /// Resets the OS / CPU / etc. i.e. terminates the OS
+        ///     Resets the OS / CPU / etc. i.e. terminates the OS
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 9)]
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 9)]
         public static void Reset()
         {
         }
-        
+
         /// <summary>
-        /// Writes a piece of text to the first line of the screen. Note: Does not use same string memory structure as C# so cannot be called
-        /// from C#. Uses format of: Length as DWORD, Characters as BYTE
+        ///     Writes a piece of text to the first line of the screen. Note: Does not use same string memory structure as C# so
+        ///     cannot be called
+        ///     from C#. Uses format of: Length as DWORD, Characters as BYTE
         /// </summary>
-        /// <param name="aText">The text to write. First dword should be the length of the string. (Inserted by compiler for string literals)</param>
-        /// <param name="aColour">The foreground/background (DOS) colour to write in - 0xXY where X is background colour and Y is foreground colour.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 10)]
-        private static void WriteDebugVideo(string aText, UInt32 aColour)
+        /// <param name="aText">
+        ///     The text to write. First dword should be the length of the string. (Inserted by compiler for string
+        ///     literals)
+        /// </param>
+        /// <param name="aColour">
+        ///     The foreground/background (DOS) colour to write in - 0xXY where X is background colour and Y is
+        ///     foreground colour.
+        /// </param>
+        [PluggedMethod(ASMFilePath = null)]
+        [SequencePriority(Priority = long.MinValue + 10)]
+        private static void WriteDebugVideo(string aText, uint aColour)
         {
         }
     }

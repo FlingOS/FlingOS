@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,69 +23,62 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
 
 namespace Kernel.FOS_System.Processes.Synchronisation
 {
-    public class SpinLock : FOS_System.Object
+    public class SpinLock : Object
     {
-        private int id;
-        public int Id
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return id;
-            }
-        }
+        private readonly int id;
 
-        private UInt16 locked = 0;
-        public bool Locked
-        {
-            [Drivers.Compiler.Attributes.NoGC]
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return locked != 0;
-            }
-        }
+        private readonly ushort locked = 0;
 
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public SpinLock()
             : this(-1)
         {
         }
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoDebug]
         public SpinLock(int anId)
         {
             id = anId;
         }
 
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\Processes\Synchronisation\SpinLock")]
+        public int Id
+        {
+            [NoGC] [NoDebug] get { return id; }
+        }
+
+        public bool Locked
+        {
+            [NoGC] [NoDebug] get { return locked != 0; }
+        }
+
+        [PluggedMethod(ASMFilePath = @"ASM\Processes\Synchronisation\SpinLock")]
         private void _Enter()
         {
         }
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=null)]
+
+        [PluggedMethod(ASMFilePath = null)]
         private void _Exit()
         {
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoGC]
+        [NoDebug]
         public void Enter()
         {
             //BasicConsole.WriteLine("Entering spin lock...");
             _Enter();
             //BasicConsole.WriteLine("Lock acquired.");
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public void Exit()
         {
             //BasicConsole.WriteLine("Exiting spin lock...");

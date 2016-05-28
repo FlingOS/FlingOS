@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,22 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// Represents a null reference exception.
+    ///     Represents a null reference exception.
     /// </summary>
-    public class NullReferenceException : Framework.Exception
+    public class NullReferenceException : Exception
     {
         /// <summary>
-        /// Sets the message to "Null reference exception."
+        ///     Sets the message to "Null reference exception."
         /// </summary>
         public NullReferenceException()
             : base("Null reference exception.")

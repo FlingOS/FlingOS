@@ -1,4 +1,5 @@
-﻿using Kernel.FOS_System;
+﻿using Kernel.Consoles;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.Hardware;
 using Kernel.Hardware.ATA;
@@ -7,18 +8,18 @@ namespace Kernel.Tasks.Driver
 {
     public static class ATADriverTask
     {
-        private static Consoles.VirtualConsole console;
+        private static VirtualConsole console;
 
         private static uint GCThreadId;
 
         public static void Main()
         {
             Helpers.ProcessInit("ATA Driver", out GCThreadId);
-            
+
             try
             {
                 BasicConsole.WriteLine("ATA Driver > Creating virtual console...");
-                console = new Consoles.VirtualConsole();
+                console = new VirtualConsole();
 
                 BasicConsole.WriteLine("ATA Driver > Connecting virtual console...");
                 console.Connect();
@@ -26,7 +27,7 @@ namespace Kernel.Tasks.Driver
                 BasicConsole.WriteLine("ATA Driver > Registering for IRQs...");
                 SystemCalls.RegisterIRQHandler(14, IRQHandler);
                 SystemCalls.RegisterIRQHandler(15);
-   
+
                 BasicConsole.WriteLine("ATA Driver > Executing.");
 
                 try
@@ -55,14 +56,14 @@ namespace Kernel.Tasks.Driver
         }
 
         /// <summary>
-        /// Outputs the ATA system information.
+        ///     Outputs the ATA system information.
         /// </summary>
         private static void OutputATA()
         {
             int numDrives = 0;
             for (int i = 0; i < ATAManager.Devices.Count; i++)
             {
-                Device aDevice = (Device)ATAManager.Devices[i];
+                Device aDevice = (Device) ATAManager.Devices[i];
                 if (aDevice is PATA)
                 {
                     console.WriteLine();
@@ -71,14 +72,14 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine(" ---------------------");
                     console.WriteLine("Type: PATA");
 
-                    PATA theATA = (PATA)aDevice;
-                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
+                    PATA theATA = (PATA) aDevice;
+                    console.WriteLine((String) "Serial No: " + theATA.SerialNo);
+                    console.WriteLine((String) "Firmware Rev: " + theATA.FirmwareRev);
+                    console.WriteLine((String) "Model No: " + theATA.ModelNo);
+                    console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
+                    console.WriteLine((String) "Block Count: " + theATA.BlockCount);
+                    console.WriteLine((String) "Size: " + ((theATA.BlockCount*theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine((String) "Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
 
                     numDrives++;
                 }
@@ -91,14 +92,14 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine("Type: PATAPI");
                     console.WriteLine("Warning: Read-only support.");
 
-                    PATAPI theATA = (PATAPI)aDevice;
-                    console.WriteLine(((FOS_System.String)"Serial No: ") + theATA.SerialNo);
-                    console.WriteLine(((FOS_System.String)"Firmware Rev: ") + theATA.FirmwareRev);
-                    console.WriteLine(((FOS_System.String)"Model No: ") + theATA.ModelNo);
-                    console.WriteLine(((FOS_System.String)"Block Size: ") + theATA.BlockSize + " bytes");
-                    console.WriteLine(((FOS_System.String)"Block Count: ") + theATA.BlockCount);
-                    console.WriteLine(((FOS_System.String)"Size: ") + ((theATA.BlockCount * theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine(((FOS_System.String)"Max Write Pio Blocks: ") + (theATA.MaxWritePioBlocks));
+                    PATAPI theATA = (PATAPI) aDevice;
+                    console.WriteLine((String) "Serial No: " + theATA.SerialNo);
+                    console.WriteLine((String) "Firmware Rev: " + theATA.FirmwareRev);
+                    console.WriteLine((String) "Model No: " + theATA.ModelNo);
+                    console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
+                    console.WriteLine((String) "Block Count: " + theATA.BlockCount);
+                    console.WriteLine((String) "Size: " + ((theATA.BlockCount*theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine((String) "Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
 
                     numDrives++;
                 }

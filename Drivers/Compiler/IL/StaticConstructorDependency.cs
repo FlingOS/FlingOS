@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,39 +23,38 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace Drivers.Compiler.IL
 {
     /// <summary>
-    /// A node in a static constructor dependency tree.
+    ///     A node in a static constructor dependency tree.
     /// </summary>
     /// <remarks>
-    /// This class is used to create a tree structure of which static constructors depend on which other
-    /// static constructors. The tree is later flattened into a list where children appear before parents.
-    /// That list is then used to generate the IL code that calls all the static constructors in the 
-    /// necessary order before any of the rest of the kernel executes.
+    ///     This class is used to create a tree structure of which static constructors depend on which other
+    ///     static constructors. The tree is later flattened into a list where children appear before parents.
+    ///     That list is then used to generate the IL code that calls all the static constructors in the
+    ///     necessary order before any of the rest of the kernel executes.
     /// </remarks>
     public class StaticConstructorDependency
     {
         /// <summary>
-        /// A list of the child-nodes i.e. static constructors that TheConstructor depends upon.
+        ///     A list of the child-nodes i.e. static constructors that TheConstructor depends upon.
         /// </summary>
         public List<StaticConstructorDependency> Children = new List<StaticConstructorDependency>();
+
         /// <summary>
-        /// The constructor represented by this node.
+        ///     The constructor represented by this node.
         /// </summary>
         public ConstructorInfo TheConstructor;
 
         /// <summary>
-        /// Returns the first node representing of the specified constructor - full-depth search.
+        ///     Returns the first node representing of the specified constructor - full-depth search.
         /// </summary>
         /// <value>Searches the complete tree looking for the node.</value>
         /// <param name="inf">The constructor to search for.</param>
@@ -63,25 +63,25 @@ namespace Drivers.Compiler.IL
         {
             get
             {
-                if(TheConstructor == inf)
+                if (TheConstructor == inf)
                 {
                     return this;
                 }
                 else
                 {
                     List<StaticConstructorDependency> posDeps = (from deps in Children
-                                                                 where (deps.TheConstructor.Equals(inf))
-                                                                 select deps).ToList();
-                    if(posDeps.Count > 0)
+                        where deps.TheConstructor.Equals(inf)
+                        select deps).ToList();
+                    if (posDeps.Count > 0)
                     {
                         return posDeps.First();
                     }
                     else
                     {
-                        foreach(StaticConstructorDependency child in Children)
+                        foreach (StaticConstructorDependency child in Children)
                         {
                             StaticConstructorDependency posDep = child[inf];
-                            if(posDep != null)
+                            if (posDep != null)
                             {
                                 return posDep;
                             }
@@ -93,8 +93,8 @@ namespace Drivers.Compiler.IL
         }
 
         /// <summary>
-        /// Flattens the tree such that deepest-children appear first, shallowest-parents appear last.
-        /// Also removes any duplicates so that first instance only appears in the list.
+        ///     Flattens the tree such that deepest-children appear first, shallowest-parents appear last.
+        ///     Also removes any duplicates so that first instance only appears in the list.
         /// </summary>
         /// <returns>The flattened list.</returns>
         public List<ConstructorInfo> Flatten()
@@ -114,7 +114,7 @@ namespace Drivers.Compiler.IL
             //Remove duplicates
             for (int i = 0; i < result.Count; i++)
             {
-                if(!finalResult.Contains(result[i]))
+                if (!finalResult.Contains(result[i]))
                 {
                     finalResult.Add(result[i]);
                 }

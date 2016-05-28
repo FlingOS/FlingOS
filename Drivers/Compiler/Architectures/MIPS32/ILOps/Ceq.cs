@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ceq : IL.ILOps.Ceq
     {
@@ -70,14 +69,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if compare operands are floating point numbers or if either value is &lt; 4 bytes in length or
-        /// operands are not of the same size.
+        ///     Thrown if compare operands are floating point numbers or if either value is &lt; 4 bytes in length or
+        ///     operands are not of the same size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -92,24 +91,42 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //SUPPORT - floats
                 throw new NotSupportedException("Compare floats is unsupported!");
             }
-            else if(itemA.sizeOnStackInBytes == 4 && itemB.sizeOnStackInBytes == 4)
+            else if (itemA.sizeOnStackInBytes == 4 && itemB.sizeOnStackInBytes == 4)
             {
                 //Pop item B
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                 //Pop item A
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                 //If A != B, jump to Else (not-true case)
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotEqual, Src1 = "$t0", Src2 = "$t1", DestILPosition = currOpPosition, Extension = "Else" });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.BranchNotEqual,
+                    Src1 = "$t0",
+                    Src2 = "$t1",
+                    DestILPosition = currOpPosition,
+                    Extension = "Else"
+                });
                 //Otherwise, A = B, so push true (true=1)
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "$t4", Src = "1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Word,
+                    Dest = "$t4",
+                    Src = "1",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
                 //And then jump to the end of this IL op.
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.Branch,
+                    DestILPosition = currOpPosition,
+                    Extension = "End"
+                });
                 //Insert the Else label.
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Else"});
                 //Else case - Push false (false=0)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+
                 //Push the result onto our stack
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -122,32 +139,57 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else if (itemA.sizeOnStackInBytes == 8 && itemB.sizeOnStackInBytes == 8)
             {
                 //Pop item B
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
                 //Pop item A
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
                 //If A high bytes = B high bytes : Check, if A low bytes = B low bytes : True
                 //Else : False
-                
+
                 //A high bytes != B high bytes? Branch to else case.
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotEqual, Src1 = "$t3", Src2 = "$t2", DestILPosition = currOpPosition, Extension = "Else" });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.BranchNotEqual,
+                    Src1 = "$t3",
+                    Src2 = "$t2",
+                    DestILPosition = currOpPosition,
+                    Extension = "Else"
+                });
                 //Otherwise, A high bytes = B high bytes
                 //A low bytes != B low bytes? Branch to else case.
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotEqual, Src1 = "$t0", Src2 = "$t1", DestILPosition = currOpPosition, Extension = "Else" });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.BranchNotEqual,
+                    Src1 = "$t0",
+                    Src2 = "$t1",
+                    DestILPosition = currOpPosition,
+                    Extension = "Else"
+                });
                 //Otherwise A = B.
 
                 //Insert True case label
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "True" });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "True"});
                 //True case - Push true (true=1)
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Dest = "$t4", Src = "1", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Word,
+                    Dest = "$t4",
+                    Src = "1",
+                    MoveType = Mov.MoveTypes.ImmediateToReg
+                });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
                 //And then jump to the end of this IL op.
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.Branch,
+                    DestILPosition = currOpPosition,
+                    Extension = "End"
+                });
                 //Insert Else case label
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "Else" });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Else"});
                 //Else case - Push false (false=0)
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
 
                 //Push the result onto our stack
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
@@ -166,7 +208,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
 
             //Always append the end label
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
         }
     }
 }

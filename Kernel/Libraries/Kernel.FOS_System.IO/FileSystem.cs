@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,64 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
-#endregion
-    
-using System;
 
-using Kernel.FOS_System.Processes;
+#endregion
+
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware;
+using Kernel.FOS_System.Exceptions;
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.FOS_System.IO
 {
     /// <summary>
-    /// Represents a file system which must exist within a partition.
+    ///     Represents a file system which must exist within a partition.
     /// </summary>
-    public abstract class FileSystem : FOS_System.Object
+    public abstract class FileSystem : Object
     {
         public int ActionSemaphoreId;
 
         /// <summary>
-        /// The partition in which the file system resides.
-        /// </summary>
-        protected Partition thePartition;
-        /// <summary>
-        /// The partition in which the file system resides.
-        /// </summary>
-        public Partition ThePartition
-        {
-            get
-            {
-                return thePartition;
-            }
-        }
-
-        /// <summary>
-        /// The file system mapping for the file system.
-        /// </summary>
-        public FileSystemMapping TheMapping
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Whether the file system is valid or not.
+        ///     Whether the file system is valid or not.
         /// </summary>
         protected bool isValid = false;
-        /// <summary>
-        /// Whether the file system is valid or not.
-        /// </summary>
-        public bool IsValid
-        {
-            get
-            {
-                return isValid;
-            }
-        }
 
         /// <summary>
-        /// Initializes a new file system for the specified partition.
+        ///     The partition in which the file system resides.
+        /// </summary>
+        protected Partition thePartition;
+
+        /// <summary>
+        ///     Initializes a new file system for the specified partition.
         /// </summary>
         /// <param name="aPartition">The partition in which the partition resides.</param>
         public FileSystem(Partition aPartition)
@@ -89,28 +60,51 @@ namespace Kernel.FOS_System.IO
             if (SystemCalls.CreateSemaphore(1, out ActionSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("File System > Failed to create a semaphore!");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
+        }
+
+        /// <summary>
+        ///     The partition in which the file system resides.
+        /// </summary>
+        public Partition ThePartition
+        {
+            get { return thePartition; }
+        }
+
+        /// <summary>
+        ///     The file system mapping for the file system.
+        /// </summary>
+        public FileSystemMapping TheMapping { get; set; }
+
+        /// <summary>
+        ///     Whether the file system is valid or not.
+        /// </summary>
+        public bool IsValid
+        {
+            get { return isValid; }
         }
 
         public bool Lock()
         {
             return SystemCalls.WaitSemaphore(ActionSemaphoreId) == SystemCallResults.OK;
         }
+
         public bool Unlock()
         {
             return SystemCalls.SignalSemaphore(ActionSemaphoreId) == SystemCallResults.OK;
         }
 
         /// <summary>
-        /// Gets the listing for the specified path.
+        ///     Gets the listing for the specified path.
         /// </summary>
         /// <param name="aName">The full path to the listing to get.</param>
         /// <returns>The listing or null if not found.</returns>
-        public abstract Base GetListing(FOS_System.String aName);
+        public abstract Base GetListing(String aName);
+
         /// <summary>
-        /// Gets a specific listing from the specified list of listings. Performs a recursive
-        /// search down the file system tree.
+        ///     Gets a specific listing from the specified list of listings. Performs a recursive
+        ///     search down the file system tree.
         /// </summary>
         /// <param name="nameParts">The parts of the full path of the listing to get.</param>
         /// <param name="parent">The parent directory of the directory from which the listings were taken.</param>
@@ -119,7 +113,7 @@ namespace Kernel.FOS_System.IO
         public Base GetListingFromListings(List nameParts, Directory parent, List listings)
         {
             //  ".." means "parent directory"
-            if (((FOS_System.String)nameParts[0]) == "..")
+            if ((String) nameParts[0] == "..")
             {
                 nameParts.RemoveAt(0);
                 if (nameParts.Count == 0)
@@ -132,8 +126,8 @@ namespace Kernel.FOS_System.IO
 
             for (int i = 0; i < listings.Count; i++)
             {
-                Base aListing = (Base)listings[i];
-                if (aListing.Name == (FOS_System.String)nameParts[0])
+                Base aListing = (Base) listings[i];
+                if (aListing.Name == (String) nameParts[0])
                 {
                     nameParts.RemoveAt(0);
                     if (nameParts.Count == 0)
@@ -142,7 +136,7 @@ namespace Kernel.FOS_System.IO
                     }
                     else if (aListing.IsDirectory)
                     {
-                        return ((Directory)aListing).GetListing(nameParts);
+                        return ((Directory) aListing).GetListing(nameParts);
                     }
                 }
             }
@@ -151,19 +145,20 @@ namespace Kernel.FOS_System.IO
         }
 
         /// <summary>
-        /// Creates a new file within the file system.
+        ///     Creates a new file within the file system.
         /// </summary>
         /// <param name="name">The name of the file to create.</param>
         /// <param name="parent">The parent directory of the new file.</param>
         /// <returns>The new file listing.</returns>
-        public abstract File NewFile(FOS_System.String name, Directory parent);
+        public abstract File NewFile(String name, Directory parent);
+
         /// <summary>
-        /// Creates a new directory within the file system.
+        ///     Creates a new directory within the file system.
         /// </summary>
         /// <param name="name">The name of the directory to create.</param>
         /// <param name="parent">The parent directory of the new directory.</param>
         /// <returns>The new directory listing.</returns>
-        public abstract Directory NewDirectory(FOS_System.String name, Directory parent);
+        public abstract Directory NewDirectory(String name, Directory parent);
 
         public abstract void CleanDiskCaches();
     }

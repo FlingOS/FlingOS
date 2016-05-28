@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,40 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using Kernel.FOS_System.Processes;
+
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
+using Kernel.Hardware.CPUs;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Tasks
 {
     public static unsafe class IdleTask
     {
-        private static bool Terminating = false;
+        private static readonly bool Terminating = false;
         private static uint GCThreadId;
 
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoGC]
         public static void Main()
         {
             Helpers.ProcessInit("Idle Task", out GCThreadId);
 
             //TODO: Use some kind of factory for creating the correct CPU class
-            Hardware.Devices.CPU TheCPU = new Hardware.CPUs.CPUx86_32();
+            CPU TheCPU = new CPUx86_32();
 
             //Note: Do not use Thread.Sleep within this task because this is the idle task. Its purpose
             //      is to be the only thread left awake when all others are slept.
 
-            FOS_System.GC.OutputTrace = false;
-            
+            GC.OutputTrace = false;
+
             while (!Terminating)
             {
-                *((ushort*)0xB809E) = (0x1F00 | '1');
+                *(ushort*) 0xB809E = 0x1F00 | '1';
                 TheCPU.Halt();
 
-                *((ushort*)0xB809E) = (0x3F00 | '2');
+                *(ushort*) 0xB809E = 0x3F00 | '2';
                 TheCPU.Halt();
             }
         }

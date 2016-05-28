@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,6 +23,7 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 //#define SCHEDULER_TRACE
@@ -29,27 +31,31 @@
 //#define SCHEDULER_HANDLER_MIN_TRACE
 //#define SCHEDULER_UPDATE_LIST_TRACE
 
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.Utilities;
 using Kernel.VirtualMemory.Implementations;
 
 namespace Kernel.Hardware.Processes.Scheduling
 {
-    public unsafe class PriorityQueueScheduler : FOS_System.Object, IScheduler
+    public unsafe class PriorityQueueScheduler : Object, IScheduler
     {
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        private static PriorityQueueScheduler ThePQScheduler;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private static PriorityQueueScheduler ThePQScheduler;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        private PriorityQueue ActiveQueue = new PriorityQueue(1024);
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        private PriorityQueue InactiveQueue = new PriorityQueue(1024);
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private readonly PriorityQueue ActiveQueue =
+            new PriorityQueue(1024);
+
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private readonly PriorityQueue InactiveQueue =
+            new PriorityQueue(1024);
+
         //private List SuspendedList = new List(1024);
-        
+
         private bool Enabled = false;
         private bool Started = false;
-        
+
         private const int MSFreq = 5;
-        private int UpdatePeriod = MSFreq;
+        private readonly int UpdatePeriod = MSFreq;
         private int UpdateCountdown;
 
         public long PreemptionPeriod
@@ -57,7 +63,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             get
             {
                 /*Multiply by 1000000 to get from ms to ns*/
-                return MSFreq * 1000000;
+                return MSFreq*1000000;
             }
         }
 
@@ -69,22 +75,23 @@ namespace Kernel.Hardware.Processes.Scheduling
 
             for (int i = 0; i < process.Threads.Count; i++)
             {
-                Thread t = (Thread)process.Threads[i];
+                Thread t = (Thread) process.Threads[i];
 
                 InitThread(process, t);
             }
 
             process.Registered = true;
         }
+
         public void InitThread(Process process, Thread t)
         {
-            t.TimeToRunReload = (int)process.Priority;
+            t.TimeToRunReload = (int) process.Priority;
             t.TimeToRun = t.TimeToRunReload;
 
             UpdateList(t, false);
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public void Init()
         {
             ThePQScheduler = this;
@@ -92,18 +99,19 @@ namespace Kernel.Hardware.Processes.Scheduling
             ActiveQueue.Name = "Active Queue";
             InactiveQueue.Name = "Inactive Queue";
         }
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoDebug]
         public PreemptionHandler Start()
         {
             //Load first process and first thread
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current process...");
 #endif
-            ProcessManager.CurrentProcess = (Process)ProcessManager.Processes[0];
+            ProcessManager.CurrentProcess = (Process) ProcessManager.Processes[0];
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current thread...");
 #endif
-            ProcessManager.CurrentThread = (Thread)ProcessManager.CurrentProcess.Threads[0];
+            ProcessManager.CurrentThread = (Thread) ProcessManager.CurrentProcess.Threads[0];
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current thread state...");
 #endif
@@ -117,7 +125,7 @@ namespace Kernel.Hardware.Processes.Scheduling
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting esp0...");
 #endif
-            tss->esp0 = (uint)ProcessManager.CurrentThread_State->KernelStackTop;
+            tss->esp0 = (uint) ProcessManager.CurrentThread_State->KernelStackTop;
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting ss0...");
 #endif
@@ -134,7 +142,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             BasicConsole.WriteLine(" > Loading TR...");
 #endif
             Scheduler.LoadTR();
-            
+
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Enabling process switching...");
 #endif
@@ -150,8 +158,8 @@ namespace Kernel.Hardware.Processes.Scheduling
             return OnTimerInterrupt;
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public void HandlePageFault(uint eip, uint errorCode, uint address)
         {
             /*Hardware.VirtMem.MemoryLayout memLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
@@ -187,12 +195,15 @@ namespace Kernel.Hardware.Processes.Scheduling
             BasicConsole.WriteLine("Suspending current thread.");
             ProcessManager.CurrentThread.Suspend = true;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        private void WriteNumber(FOS_System.String str, uint val)
+
+        [NoDebug]
+        [NoGC]
+        private void WriteNumber(String str, uint val)
         {
             int offset = 9;
+
             #region Address
+
             while (offset > 1)
             {
                 uint rem = val & 0xFu;
@@ -258,9 +269,10 @@ namespace Kernel.Hardware.Processes.Scheduling
         bool wasum = false;
         public bool print = false;
 #endif
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        private static void OnTimerInterrupt(FOS_System.Object state)
+
+        [NoDebug]
+        [NoGC]
+        private static void OnTimerInterrupt(Object state)
         {
 #if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
             BasicConsole.Write("T");
@@ -278,7 +290,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             //    BasicConsole.WriteLine("Debug Point 3");
             //}
 
-            if (!((PriorityQueueScheduler)state).Enabled || !((PriorityQueueScheduler)state).Started)
+            if (!((PriorityQueueScheduler) state).Enabled || !((PriorityQueueScheduler) state).Started)
             {
                 //BasicConsole.Write("D");
                 return;
@@ -301,11 +313,12 @@ namespace Kernel.Hardware.Processes.Scheduling
             //    BasicConsole.WriteLine("Debug Point 4");
             //}
 
-            ((PriorityQueueScheduler)state).UpdateCurrentState();
+            ((PriorityQueueScheduler) state).UpdateCurrentState();
             //}
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         public void UpdateCurrentState()
         {
 #if SCHEDULER_HANDLER_TRACE
@@ -316,8 +329,8 @@ namespace Kernel.Hardware.Processes.Scheduling
 #endif
 
             if (ProcessManager.CurrentProcess == null ||
-               ProcessManager.CurrentThread == null ||
-               ProcessManager.CurrentThread_State == null)
+                ProcessManager.CurrentThread == null ||
+                ProcessManager.CurrentThread_State == null)
             {
                 return;
             }
@@ -344,7 +357,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             while (ActiveQueue.Count == 0)
             {
 #if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
-                //BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
+    //BasicConsole.WriteLine("WARNING: Scheduler preventing infinite loop by early-updating sleeping threads.");
 #endif
                 UpdateInactiveThreads();
             }
@@ -354,7 +367,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             //    BasicConsole.WriteLine("Debug Point 8");
             //}
 
-            Thread nextThread = (Thread)ActiveQueue.PeekMin();
+            Thread nextThread = (Thread) ActiveQueue.PeekMin();
 #if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
             BasicConsole.Write("Active: ");
             BasicConsole.Write(nextThread.Owner.Name);
@@ -366,7 +379,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             //    BasicConsole.WriteLine("Debug Point 9");
             //}
 
-            ProcessManager.SwitchProcess(nextThread.Owner.Id, (int)nextThread.Id);
+            ProcessManager.SwitchProcess(nextThread.Owner.Id, (int) nextThread.Id);
 
             //if (Processes.Scheduler.OutputMessages)
             //{
@@ -395,6 +408,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             BasicConsole.SetTextColour(BasicConsole.default_colour);
 #endif
         }
+
         //[Drivers.Compiler.Attributes.NoDebug]
         //[Drivers.Compiler.Attributes.NoGC]
         //private void NextProcess(ref int threadIdx, ref int processIdx)
@@ -426,8 +440,8 @@ namespace Kernel.Hardware.Processes.Scheduling
         //    }
         //    return threadIdx;
         //}
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         private void UpdateActiveThreads()
         {
 #if SCHEDULER_HANDLER_TRACE
@@ -438,7 +452,7 @@ namespace Kernel.Hardware.Processes.Scheduling
 
             BasicConsole.WriteLine("Scheduler > Peeking min active thread...");
 #endif
-            Thread minThread = (Thread)ActiveQueue.PeekMin();
+            Thread minThread = (Thread) ActiveQueue.PeekMin();
             if (minThread != null &&
                 minThread.Key == 0)
             {
@@ -465,8 +479,9 @@ namespace Kernel.Hardware.Processes.Scheduling
             BasicConsole.WriteLine("Scheduler > Updated active threads.");
 #endif
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         private void UpdateInactiveThreads()
         {
 #if SCHEDULER_HANDLER_TRACE
@@ -482,7 +497,7 @@ namespace Kernel.Hardware.Processes.Scheduling
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.WriteLine("Scheduler > Peeking min inactive thread...");
 #endif
-            Thread cThread = (Thread)InactiveQueue.PeekMin();
+            Thread cThread = (Thread) InactiveQueue.PeekMin();
             while (cThread != null && cThread.ActiveState != Thread.ActiveStates.Inactive)
             {
 #if SCHEDULER_HANDLER_TRACE
@@ -498,14 +513,15 @@ namespace Kernel.Hardware.Processes.Scheduling
 #if SCHEDULER_HANDLER_TRACE
                 BasicConsole.WriteLine("Scheduler > Moving to next min inactive thread...");
 #endif
-                cThread = (Thread)InactiveQueue.PeekMin();
+                cThread = (Thread) InactiveQueue.PeekMin();
             }
 
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.WriteLine("Scheduler > Updated inactive threads.");
 #endif
         }
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoDebug]
         private void SetupThreadForStart()
         {
 #if SCHEDULER_TRACE
@@ -525,12 +541,12 @@ namespace Kernel.Hardware.Processes.Scheduling
 #endif
             // Selectors for user-mode must be or'ed with 3 to set privilege level
 
-            uint* stackPtr = (uint*)ProcessManager.CurrentThread_State->ThreadStackTop;
+            uint* stackPtr = (uint*) ProcessManager.CurrentThread_State->ThreadStackTop;
             // Process terminate CS selector
             //      Process terminate should always be jumping into kernel-mode code (for now)
             *stackPtr-- = 8u;
             // Process terminate return pointer
-            *stackPtr-- = (uint)Utilities.ObjectUtilities.GetHandle((TerminateMethod)ThreadTerminated);
+            *stackPtr-- = (uint) ObjectUtilities.GetHandle((TerminateMethod) ThreadTerminated);
             if (ProcessManager.CurrentProcess.UserMode)
             {
 #if SCHEDULER_TRACE
@@ -540,21 +556,21 @@ namespace Kernel.Hardware.Processes.Scheduling
                 }
 #endif
 
-                uint WantedStackPtr = (uint)stackPtr;
-                *stackPtr-- = 0x23;    //64 - SS after switch to UM
+                uint WantedStackPtr = (uint) stackPtr;
+                *stackPtr-- = 0x23; //64 - SS after switch to UM
                 *stackPtr-- = WantedStackPtr; // 60 - ESP after switch to UM
                 *stackPtr-- = 0x0202u; // - 56 - Reserved=1, Interrupt Enable=1, IOPL=0
-                *stackPtr-- = 0x1Bu;   // CS - 52
+                *stackPtr-- = 0x1Bu; // CS - 52
                 *stackPtr-- = ProcessManager.CurrentThread_State->StartEIP; // - 48
 
-                *stackPtr-- = 0;    //eax - 44
-                *stackPtr-- = 0;    //ecx - 40
-                *stackPtr-- = 0;    //edx - 36
-                *stackPtr-- = 0;    //ebx - 32
-                *stackPtr-- = 0xDEADBEEF;    //esp - 28 - This is actually ignored by Popad instruction
+                *stackPtr-- = 0; //eax - 44
+                *stackPtr-- = 0; //ecx - 40
+                *stackPtr-- = 0; //edx - 36
+                *stackPtr-- = 0; //ebx - 32
+                *stackPtr-- = 0xDEADBEEF; //esp - 28 - This is actually ignored by Popad instruction
                 *stackPtr-- = WantedStackPtr; //ebp - 24
-                *stackPtr-- = 0;    //esi - 20
-                *stackPtr-- = 0;    //edi - 16
+                *stackPtr-- = 0; //esi - 20
+                *stackPtr-- = 0; //edi - 16
 
                 *stackPtr-- = 0x23u; //ds - 12
                 *stackPtr-- = 0x23u; //es - 8
@@ -571,17 +587,17 @@ namespace Kernel.Hardware.Processes.Scheduling
 #endif
 
                 *stackPtr-- = 0x0202u; // - IOPL=0
-                *stackPtr-- = 0x08u;   // CS
+                *stackPtr-- = 0x08u; // CS
                 *stackPtr-- = ProcessManager.CurrentThread_State->StartEIP;
 
-                *stackPtr-- = 0;    //eax
-                *stackPtr-- = 0;    //ecx
-                *stackPtr-- = 0;    //edx
-                *stackPtr-- = 0;    //ebx
-                *stackPtr-- = 0xDEADBEEF;    //esp - This is actually ignored by Popad instruction
-                *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop;    //ebp
-                *stackPtr-- = 0;    //esi
-                *stackPtr-- = 0;    //edi 
+                *stackPtr-- = 0; //eax
+                *stackPtr-- = 0; //ecx
+                *stackPtr-- = 0; //edx
+                *stackPtr-- = 0; //ebx
+                *stackPtr-- = 0xDEADBEEF; //esp - This is actually ignored by Popad instruction
+                *stackPtr-- = (uint) ProcessManager.CurrentThread_State->ThreadStackTop; //ebp
+                *stackPtr-- = 0; //esi
+                *stackPtr-- = 0; //edi 
 
                 *stackPtr-- = 0x10u; //ds
                 *stackPtr-- = 0x10u; //es
@@ -595,7 +611,7 @@ namespace Kernel.Hardware.Processes.Scheduling
                 BasicConsole.WriteLine("Updating thread stack...");
             }
 #endif
-            ProcessManager.CurrentThread_State->ESP = (uint)stackPtr;
+            ProcessManager.CurrentThread_State->ESP = (uint) stackPtr;
 
 #if SCHEDULER_TRACE
             if (print)
@@ -609,13 +625,15 @@ namespace Kernel.Hardware.Processes.Scheduling
         }
 
         private delegate void TerminateMethod();
+
         private static void ThreadTerminated()
         {
             //#if SCHEDULER_TRACE
             // START - Trace code
 
             BasicConsole.WriteLine("Thread terminated.");
-            BasicConsole.WriteLine("Process Name: " + ProcessManager.CurrentProcess.Name + ", Thread Id: " + ProcessManager.CurrentThread.Id);
+            BasicConsole.WriteLine("Process Name: " + ProcessManager.CurrentProcess.Name + ", Thread Id: " +
+                                   ProcessManager.CurrentThread.Id);
 
             //if(reenable)
             //{
@@ -651,8 +669,8 @@ namespace Kernel.Hardware.Processes.Scheduling
             }
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public void Enable()
         {
             //BasicConsole.WriteLine("Enabling scheduler...");
@@ -660,9 +678,10 @@ namespace Kernel.Hardware.Processes.Scheduling
             Enabled = true;
             //Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        public void Disable(/*FOS_System.String disabler*/)
+
+        [NoDebug]
+        [NoGC]
+        public void Disable( /*FOS_System.String disabler*/)
         {
             //Hardware.Interrupts.Interrupts.DisableInterrupts();
             Enabled = false;
@@ -670,8 +689,9 @@ namespace Kernel.Hardware.Processes.Scheduling
             //BasicConsole.WriteLine(disabler);
             //BasicConsole.DelayOutput(1);
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         public bool IsEnabled()
         {
             return Enabled;
@@ -681,9 +701,10 @@ namespace Kernel.Hardware.Processes.Scheduling
         {
             UpdateList(t, false);
         }
+
         private void UpdateList(Thread t, bool skipRemove)
         {
-            Disable(/*"Scheduler UpdateList"*/);
+            Disable( /*"Scheduler UpdateList"*/);
 
 #if SCHEDULER_UPDATE_LIST_TRACE
             BasicConsole.Write("S > UpdateList: ");

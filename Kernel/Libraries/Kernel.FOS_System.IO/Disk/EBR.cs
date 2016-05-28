@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,22 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.IO.Disk
 {
     /// <summary>
-    /// Represents an extended boot record.
+    ///     Represents an extended boot record.
     /// </summary>
     public class EBR : MBR
     {
         /// <summary>
-        /// Initializes an EBR from the specified data.
+        ///     Initializes an EBR from the specified data.
         /// </summary>
         /// <param name="aEBR">The EBR data.</param>
         public EBR(byte[] aEBR)

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,17 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 
 namespace Drivers.Compiler.Attributes
 {
     /// <summary>
-    /// Indicates the method is the kernel's exception ThrowNullReference method. 
-    /// Note: There should only ever be one of these used!
+    ///     Indicates the method is the kernel's exception ThrowNullReference method.
+    ///     Note: There should only ever be one of these used!
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple=false, Inherited=false)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class GetObjectTypeMethodAttribute : Attribute
     {
     }

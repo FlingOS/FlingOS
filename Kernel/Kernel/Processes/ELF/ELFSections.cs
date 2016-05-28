@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,11 +23,11 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO;
 using Kernel.FOS_System.IO.Streams;
 
 namespace Kernel.Processes.ELF
@@ -46,23 +47,37 @@ namespace Kernel.Processes.ELF
         SHLib = 10,
         DynSym = 11
     }
+
     public enum ELFSectionFlags : uint
     {
         Write = 0x1,
         Alloc = 0x2,
         ExecInstr = 0x4
     }
-    public unsafe class ELFSectionHeader : FOS_System.Object
+
+    public unsafe class ELFSectionHeader : Object
     {
+        public uint AddressAlignment;
+        public uint EntrySize;
+        public ELFSectionFlags Flags;
+        public uint Info;
+        public uint Link;
+        public byte* LoadAddress;
+
+        public uint NameIndex;
+        public uint SectionFileOffset;
+        public uint SectionSize;
+        public ElfSectionTypes SectionType;
+
         public ELFSectionHeader(byte[] header, ref uint offset)
         {
             NameIndex = ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            SectionType = (ElfSectionTypes)ByteConverter.ToUInt32(header, offset);
+            SectionType = (ElfSectionTypes) ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            Flags = (ELFSectionFlags)ByteConverter.ToUInt32(header, offset);
+            Flags = (ELFSectionFlags) ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            LoadAddress = (byte*)ByteConverter.ToUInt32(header, offset);
+            LoadAddress = (byte*) ByteConverter.ToUInt32(header, offset);
             offset += 4;
             SectionFileOffset = ByteConverter.ToUInt32(header, offset);
             offset += 4;
@@ -77,34 +92,21 @@ namespace Kernel.Processes.ELF
             EntrySize = ByteConverter.ToUInt32(header, offset);
             offset += 4;
         }
-
-        public uint NameIndex;
-        public ElfSectionTypes SectionType;
-        public ELFSectionFlags Flags;
-        public byte* LoadAddress;
-        public uint SectionFileOffset;
-        public uint SectionSize;
-        public uint Link;
-        public uint Info;
-        public uint AddressAlignment;
-        public uint EntrySize;
     }
-    public class ELFSection : FOS_System.Object
-    {
-        protected ELFSectionHeader header;
-        public ELFSectionHeader Header
-        {
-            get
-            {
-                return header;
-            }
-        }
 
+    public class ELFSection : Object
+    {
         protected byte[] data;
+        protected ELFSectionHeader header;
 
         protected ELFSection(ELFSectionHeader aHeader)
         {
             header = aHeader;
+        }
+
+        public ELFSectionHeader Header
+        {
+            get { return header; }
         }
 
         public virtual int Read(FileStream stream)
@@ -114,7 +116,7 @@ namespace Kernel.Processes.ELF
             int bytesRead = stream.Read(data, 0, data.Length);
             if (bytesRead != data.Length)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read section data from file!"));
+                ExceptionMethods.Throw(new Exception("Failed to read section data from file!"));
             }
             return bytesRead;
         }
@@ -149,6 +151,7 @@ namespace Kernel.Processes.ELF
             return new ELFSection(header);
         }
     }
+
     public class ELFStringTableSection : ELFSection
     {
         public ELFStringTableSection(ELFSectionHeader header)
@@ -156,7 +159,20 @@ namespace Kernel.Processes.ELF
         {
         }
 
-        public bool IsMatch(uint offset, FOS_System.String value)
+        public String this[uint offset]
+        {
+            get
+            {
+                String currString = "";
+                if (offset < data.Length)
+                {
+                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint) (data.Length - offset));
+                }
+                return currString;
+            }
+        }
+
+        public bool IsMatch(uint offset, String value)
         {
             if (value == null || (offset == data.Length && value.length != 0))
             {
@@ -166,29 +182,17 @@ namespace Kernel.Processes.ELF
             bool result = true;
 
             uint i = 0;
-            for (; i < value.length && (i + offset) < data.Length && data[i + offset] != 0; i++)
+            for (; i < value.length && i + offset < data.Length && data[i + offset] != 0; i++)
             {
                 result &= value[i] == data[i + offset];
             }
-            
-            result &= (i == value.length);
+
+            result &= i == value.length;
 
             return result;
         }
-
-        public FOS_System.String this[uint offset]
-        {
-            get
-            {
-                FOS_System.String currString = "";
-                if (offset < data.Length)
-                {
-                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint)(data.Length - offset));
-                }
-                return currString;
-            }
-        }
     }
+
     public unsafe class ELFSymbolTableSection : ELFSection
     {
         public enum SymbolBinding : byte
@@ -197,6 +201,7 @@ namespace Kernel.Processes.ELF
             Global = 1,
             Weak = 2
         }
+
         public enum SymbolType : byte
         {
             NoType = 0,
@@ -205,52 +210,27 @@ namespace Kernel.Processes.ELF
             Section = 3,
             File = 4
         }
-        public unsafe class Symbol : FOS_System.Object
-        {
-            //Interpreted from Info field
-            public SymbolBinding Binding
-            {
-                get
-                {
-                    return (SymbolBinding)(Info >> 4);
-                }
-            }
-            public SymbolType Type
-            {
-                get
-                {
-                    return (SymbolType)(Info & 0xF);
-                }
-            }
-
-            public uint NameIdx;
-            public byte* Value;
-            public uint Size;
-            public byte Info;
-            public byte Other;
-            public ushort SectionIndex;
-        }
 
         protected List symbols = new List();
-        public List Symbols
-        {
-            get
-            {
-                return symbols;
-            }
-        }
-
-        public int StringsSectionIndex
-        {
-            get
-            {
-                return (int)header.Link;
-            }
-        }
 
         public ELFSymbolTableSection(ELFSectionHeader header)
             : base(header)
         {
+        }
+
+        public List Symbols
+        {
+            get { return symbols; }
+        }
+
+        public int StringsSectionIndex
+        {
+            get { return (int) header.Link; }
+        }
+
+        public Symbol this[uint index]
+        {
+            get { return (Symbol) symbols[(int) index]; }
         }
 
         public override int Read(FileStream stream)
@@ -265,7 +245,7 @@ namespace Kernel.Processes.ELF
                 currSymbol = new Symbol();
 
                 currSymbol.NameIdx = ByteConverter.ToUInt32(data, offset + 0);
-                currSymbol.Value = (byte*)ByteConverter.ToUInt32(data, offset + 4);
+                currSymbol.Value = (byte*) ByteConverter.ToUInt32(data, offset + 4);
                 currSymbol.Size = ByteConverter.ToUInt32(data, offset + 8);
                 currSymbol.Info = data[offset + 12];
                 currSymbol.Other = data[offset + 13];
@@ -279,14 +259,28 @@ namespace Kernel.Processes.ELF
             return symbols.Count;
         }
 
-        public Symbol this[uint index]
+        public unsafe class Symbol : Object
         {
-            get
+            public byte Info;
+
+            public uint NameIdx;
+            public byte Other;
+            public ushort SectionIndex;
+            public uint Size;
+            public byte* Value;
+            //Interpreted from Info field
+            public SymbolBinding Binding
             {
-                return (Symbol)symbols[(int)index];
+                get { return (SymbolBinding) (Info >> 4); }
+            }
+
+            public SymbolType Type
+            {
+                get { return (SymbolType) (Info & 0xF); }
             }
         }
     }
+
     public unsafe class ELFDynamicSymbolTableSection : ELFSymbolTableSection
     {
         public ELFDynamicSymbolTableSection(ELFSectionHeader header)
@@ -294,6 +288,7 @@ namespace Kernel.Processes.ELF
         {
         }
     }
+
     public unsafe class ELFRelocationTableSection : ELFSection
     {
         public enum RelocationType : byte
@@ -316,78 +311,32 @@ namespace Kernel.Processes.ELF
             R_386_PC8 = 23,
             R_386_SIZE32 = 38
         }
-        public unsafe class Relocation : FOS_System.Object
-        {
-
-            //Interpreted from Info field
-            public uint Symbol
-            {
-                get
-                {
-                    return (Info >> 8);
-                }
-            }
-            public RelocationType Type
-            {
-                get
-                {
-                    return (RelocationType)(Info & 0xFF);
-                }
-            }
-
-            /// <summary>
-            /// This member gives both the symbol table index with respect to which the 
-            /// relocation must be made, and the type of relocation to apply. For example, 
-            /// a call instruction's relocation entry would hold the symbol table index 
-            /// of the function being called. If the index is STN_UNDEF, the undefined 
-            /// symbol index, the relocation uses 0 as the "symbol value". Relocation 
-            /// types are processor-specific; descriptions of their behavior appear in the 
-            /// processor supplement.
-            /// </summary>
-            /// <remarks>
-            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
-            /// </remarks>
-            public uint Info;
-            /// <summary>
-            /// This member gives the location at which to apply the relocation action. 
-            /// For a relocatable file, the value is the byte offset from the beginning 
-            /// of the section to the storage unit affected by the relocation. For an 
-            /// executable file or a shared object, the value is the virtual address of 
-            /// the storage unit affected by the relocation.
-            /// </summary>
-            /// <remarks>
-            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
-            /// </remarks>
-            public byte* Offset;
-        }
 
         protected List relocations = new List();
-        public List Relocations
-        {
-            get
-            {
-                return relocations;
-            }
-        }
-
-        public int SymbolTableSectionIndex
-        {
-            get
-            {
-                return (int)header.Link;
-            }
-        }
-        public int SectionToRelocateIndex
-        {
-            get
-            {
-                return (int)header.Info;
-            }
-        }
 
         public ELFRelocationTableSection(ELFSectionHeader header)
             : base(header)
         {
+        }
+
+        public List Relocations
+        {
+            get { return relocations; }
+        }
+
+        public int SymbolTableSectionIndex
+        {
+            get { return (int) header.Link; }
+        }
+
+        public int SectionToRelocateIndex
+        {
+            get { return (int) header.Info; }
+        }
+
+        public Relocation this[uint index]
+        {
+            get { return (Relocation) Relocations[(int) index]; }
         }
 
         public override int Read(FileStream stream)
@@ -401,9 +350,9 @@ namespace Kernel.Processes.ELF
             {
                 currRelocation = new Relocation();
 
-                currRelocation.Offset = (byte*)ByteConverter.ToUInt32(data, offset + 0);
+                currRelocation.Offset = (byte*) ByteConverter.ToUInt32(data, offset + 0);
                 currRelocation.Info = ByteConverter.ToUInt32(data, offset + 4);
-                
+
                 relocations.Add(currRelocation);
 
                 offset += header.EntrySize;
@@ -412,95 +361,74 @@ namespace Kernel.Processes.ELF
             return relocations.Count;
         }
 
-        public Relocation this[uint index]
+        public unsafe class Relocation : Object
         {
-            get
-            {
-                return (Relocation)Relocations[(int)index];
-            }
-        }
-    }
-    public unsafe class ELFRelocationAddendTableSection : ELFSection
-    {
-        public unsafe class RelocationAddend : FOS_System.Object
-        {
+            /// <summary>
+            ///     This member gives both the symbol table index with respect to which the
+            ///     relocation must be made, and the type of relocation to apply. For example,
+            ///     a call instruction's relocation entry would hold the symbol table index
+            ///     of the function being called. If the index is STN_UNDEF, the undefined
+            ///     symbol index, the relocation uses 0 as the "symbol value". Relocation
+            ///     types are processor-specific; descriptions of their behavior appear in the
+            ///     processor supplement.
+            /// </summary>
+            /// <remarks>
+            ///     Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
+            public uint Info;
+
+            /// <summary>
+            ///     This member gives the location at which to apply the relocation action.
+            ///     For a relocatable file, the value is the byte offset from the beginning
+            ///     of the section to the storage unit affected by the relocation. For an
+            ///     executable file or a shared object, the value is the virtual address of
+            ///     the storage unit affected by the relocation.
+            /// </summary>
+            /// <remarks>
+            ///     Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
+            public byte* Offset;
+
             //Interpreted from Info field
             public uint Symbol
             {
-                get
-                {
-                    return (Info >> 8);
-                }
-            }
-            public ELFRelocationTableSection.RelocationType Type
-            {
-                get
-                {
-                    return (ELFRelocationTableSection.RelocationType)(Info & 0xFF);
-                }
+                get { return Info >> 8; }
             }
 
-            /// <summary>
-            /// This member gives both the symbol table index with respect to which the 
-            /// relocation must be made, and the type of relocation to apply. For example, 
-            /// a call instruction's relocation entry would hold the symbol table index 
-            /// of the function being called. If the index is STN_UNDEF, the undefined 
-            /// symbol index, the relocation uses 0 as the "symbol value". Relocation 
-            /// types are processor-specific; descriptions of their behavior appear in the 
-            /// processor supplement.
-            /// </summary>
-            /// <remarks>
-            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
-            /// </remarks>
-            public uint Info;
-            /// <summary>
-            /// This member gives the location at which to apply the relocation action. 
-            /// For a relocatable file, the value is the byte offset from the beginning 
-            /// of the section to the storage unit affected by the relocation. For an 
-            /// executable file or a shared object, the value is the virtual address of 
-            /// the storage unit affected by the relocation.
-            /// </summary>
-            /// <remarks>
-            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
-            /// </remarks>
-            public byte* Offset;
-            /// <summary>
-            /// This member specifies a constant addend used to compute the value to be 
-            /// stored into the relocatable field.
-            /// </summary>
-            /// <remarks>
-            /// Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
-            /// </remarks>
-            public short Addend;
+            public RelocationType Type
+            {
+                get { return (RelocationType) (Info & 0xFF); }
+            }
+        }
+    }
+
+    public unsafe class ELFRelocationAddendTableSection : ELFSection
+    {
+        protected List relocations = new List();
+
+        public ELFRelocationAddendTableSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
 
-        protected List relocations = new List();
         public List Relocations
         {
-            get
-            {
-                return relocations;
-            }
+            get { return relocations; }
         }
 
         public int SymbolTableSectionIndex
         {
-            get
-            {
-                return (int)header.Link;
-            }
+            get { return (int) header.Link; }
         }
+
         public int SectionToRelocateIndex
         {
-            get
-            {
-                return (int)header.Info;
-            }
+            get { return (int) header.Info; }
         }
-        
-        public ELFRelocationAddendTableSection(ELFSectionHeader header)
-            : base(header)
+
+        public RelocationAddend this[uint index]
         {
+            get { return (RelocationAddend) Relocations[(int) index]; }
         }
 
         public override int Read(FileStream stream)
@@ -514,9 +442,9 @@ namespace Kernel.Processes.ELF
             {
                 currRelocation = new RelocationAddend();
 
-                currRelocation.Offset = (byte*)ByteConverter.ToUInt32(data, offset + 0);
+                currRelocation.Offset = (byte*) ByteConverter.ToUInt32(data, offset + 0);
                 currRelocation.Info = ByteConverter.ToUInt32(data, offset + 4);
-                currRelocation.Addend = (short)ByteConverter.ToUInt16(data, offset + 8);
+                currRelocation.Addend = (short) ByteConverter.ToUInt16(data, offset + 8);
 
                 relocations.Add(currRelocation);
 
@@ -526,14 +454,56 @@ namespace Kernel.Processes.ELF
             return relocations.Count;
         }
 
-        public RelocationAddend this[uint index]
+        public unsafe class RelocationAddend : Object
         {
-            get
+            /// <summary>
+            ///     This member specifies a constant addend used to compute the value to be
+            ///     stored into the relocatable field.
+            /// </summary>
+            /// <remarks>
+            ///     Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
+            public short Addend;
+
+            /// <summary>
+            ///     This member gives both the symbol table index with respect to which the
+            ///     relocation must be made, and the type of relocation to apply. For example,
+            ///     a call instruction's relocation entry would hold the symbol table index
+            ///     of the function being called. If the index is STN_UNDEF, the undefined
+            ///     symbol index, the relocation uses 0 as the "symbol value". Relocation
+            ///     types are processor-specific; descriptions of their behavior appear in the
+            ///     processor supplement.
+            /// </summary>
+            /// <remarks>
+            ///     Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
+            public uint Info;
+
+            /// <summary>
+            ///     This member gives the location at which to apply the relocation action.
+            ///     For a relocatable file, the value is the byte offset from the beginning
+            ///     of the section to the storage unit affected by the relocation. For an
+            ///     executable file or a shared object, the value is the virtual address of
+            ///     the storage unit affected by the relocation.
+            /// </summary>
+            /// <remarks>
+            ///     Quoted from http://www.scs.stanford.edu/14wi-cs140/pintos/specs/sysv-abi-update.html/ch4.reloc.html
+            /// </remarks>
+            public byte* Offset;
+
+            //Interpreted from Info field
+            public uint Symbol
             {
-                return (RelocationAddend)Relocations[(int)index];
+                get { return Info >> 8; }
+            }
+
+            public ELFRelocationTableSection.RelocationType Type
+            {
+                get { return (ELFRelocationTableSection.RelocationType) (Info & 0xFF); }
             }
         }
     }
+
     public unsafe class ELFDynamicSection : ELFSection
     {
         public enum DynamicTag : int
@@ -566,24 +536,22 @@ namespace Kernel.Processes.ELF
             Init_Array = 25,
             Fini_Array = 26,
             Init_ArraySz = 27,
-            Fini_ArraySz = 28, 
+            Fini_ArraySz = 28,
             RunPath = 29,
             Flags = 30,
             Encoding = 32
         }
-        public unsafe class Dynamic : FOS_System.Object
-        {
-            public DynamicTag Tag;
-            public uint Val_Ptr;
-        }
 
         protected List dynamics = new List();
+
+        public ELFDynamicSection(ELFSectionHeader header)
+            : base(header)
+        {
+        }
+
         public List Dynamics
         {
-            get
-            {
-                return dynamics;
-            }
+            get { return dynamics; }
         }
 
         public Dynamic StrTabDynamic
@@ -592,7 +560,7 @@ namespace Kernel.Processes.ELF
             {
                 for (int i = 0; i < dynamics.Count; i++)
                 {
-                    Dynamic theDyn = (Dynamic)dynamics[i];
+                    Dynamic theDyn = (Dynamic) dynamics[i];
                     if (theDyn.Tag == DynamicTag.StrTab)
                     {
                         return theDyn;
@@ -601,13 +569,14 @@ namespace Kernel.Processes.ELF
                 return null;
             }
         }
+
         public Dynamic StrTabSizeDynamic
         {
             get
             {
                 for (int i = 0; i < dynamics.Count; i++)
                 {
-                    Dynamic theDyn = (Dynamic)dynamics[i];
+                    Dynamic theDyn = (Dynamic) dynamics[i];
                     if (theDyn.Tag == DynamicTag.StrSZ)
                     {
                         return theDyn;
@@ -617,9 +586,9 @@ namespace Kernel.Processes.ELF
             }
         }
 
-        public ELFDynamicSection(ELFSectionHeader header)
-            : base(header)
+        public Dynamic this[uint index]
         {
+            get { return (Dynamic) dynamics[(int) index]; }
         }
 
         public override int Read(FileStream stream)
@@ -633,7 +602,7 @@ namespace Kernel.Processes.ELF
             {
                 currDynamic = new Dynamic();
 
-                currDynamic.Tag = (DynamicTag)ByteConverter.ToUInt32(data, offset + 0);
+                currDynamic.Tag = (DynamicTag) ByteConverter.ToUInt32(data, offset + 0);
                 currDynamic.Val_Ptr = ByteConverter.ToUInt32(data, offset + 4);
 
                 dynamics.Add(currDynamic);
@@ -644,12 +613,10 @@ namespace Kernel.Processes.ELF
             return dynamics.Count;
         }
 
-        public Dynamic this[uint index]
+        public unsafe class Dynamic : Object
         {
-            get
-            {
-                return (Dynamic)dynamics[(int)index];
-            }
+            public DynamicTag Tag;
+            public uint Val_Ptr;
         }
     }
 }

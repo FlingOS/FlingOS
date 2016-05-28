@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,16 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 //#define PROCESSMANAGER_TRACE
 //#define PROCESSMANAGER_SWITCH_TRACE
 //#define PROCESSMANAGER_KERNEL_ACCESS_TRACE
 
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;
 using Kernel.Hardware.Processes.Synchronisation;
-using Kernel.FOS_System.Processes;
+using Kernel.Utilities;
+using Kernel.VirtualMemory;
 
 namespace Kernel.Hardware.Processes
 {
@@ -39,46 +45,47 @@ namespace Kernel.Hardware.Processes
     {
         public const int THREAD_DONT_CARE = -1;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static List Processes = new List();
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static Process CurrentProcess = null;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static Thread CurrentThread = null;
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static ThreadState* CurrentThread_State = null;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static List Processes = new List();
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static Process KernelProcess = null;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Process CurrentProcess = null;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        public static uint ProcessIdGenerator = 1;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Thread CurrentThread = null;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware_Multiprocessing")]
-        private static List Semaphores = new List(1024, 1024);
-        
-        public static Process CreateProcess(ThreadStartPoint MainMethod, FOS_System.String Name, bool UserMode)
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static ThreadState* CurrentThread_State = null;
+
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Process KernelProcess = null;
+
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static uint ProcessIdGenerator = 1;
+
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private static readonly List Semaphores =
+            new List(1024, 1024);
+
+
+        private static void* ShadowPageVAddr = (void*) 0xFFFFFFFF;
+        private static void* ShadowPagePAddr = (void*) 0xFFFFFFFF;
+
+        public static Process CreateProcess(ThreadStartPoint MainMethod, String Name, bool UserMode)
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process...");
 #endif
-            
+
             Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
-            
-            uint[] vAddrs = VirtualMemory.VirtualMemoryManager.GetBuiltInProcessVAddrs();
+
+            uint[] vAddrs = VirtualMemoryManager.GetBuiltInProcessVAddrs();
             uint startVAddr = 0xDEADBEEF;
             uint vAddrCount = 0;
             for (int i = 0; i < vAddrs.Length; i++)
             {
                 if (vAddrCount > 0)
                 {
-                    if (startVAddr + (0x1000 * vAddrCount) != vAddrs[i])
+                    if (startVAddr + 0x1000*vAddrCount != vAddrs[i])
                     {
                         AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
 
                         vAddrCount = 0;
                     }
-                }                
+                }
 
                 if (vAddrCount == 0)
                 {
@@ -120,6 +127,7 @@ namespace Kernel.Hardware.Processes
 
             return NewProcess;
         }
+
         public static Process CreateProcess(bool UserMode, Process ProcessToCopyFrom, StartProcessRequest* request)
         {
 #if PROCESSMANAGER_TRACE
@@ -128,12 +136,13 @@ namespace Kernel.Hardware.Processes
 
             EnableKernelAccessToProcessMemory(ProcessToCopyFrom);
 
-            FOS_System.String Name = FOS_System.String.New(request->NameLength);
+            String Name = String.New(request->NameLength);
             for (int i = 0; i < request->NameLength; i++)
             {
                 Name[i] = request->Name[i];
             }
-            Process NewProcess = new Process((ThreadStartPoint)Utilities.ObjectUtilities.GetObject(request->MainMethod), ProcessIdGenerator++, Name, UserMode);
+            Process NewProcess = new Process((ThreadStartPoint) ObjectUtilities.GetObject(request->MainMethod),
+                ProcessIdGenerator++, Name, UserMode);
 
             uint* vAddrs = request->CodePages;
             uint startVAddr = 0xDEADBEEF;
@@ -142,7 +151,7 @@ namespace Kernel.Hardware.Processes
             {
                 if (vAddrCount > 0)
                 {
-                    if (startVAddr + (0x1000 * vAddrCount) != vAddrs[i])
+                    if (startVAddr + 0x1000*vAddrCount != vAddrs[i])
                     {
                         AddCodePagesToProcess(NewProcess, startVAddr, vAddrCount);
 
@@ -168,7 +177,7 @@ namespace Kernel.Hardware.Processes
             {
                 if (vAddrCount > 0)
                 {
-                    if (startVAddr + (0x1000 * vAddrCount) != vAddrs[i])
+                    if (startVAddr + 0x1000*vAddrCount != vAddrs[i])
                     {
                         AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
 
@@ -186,7 +195,7 @@ namespace Kernel.Hardware.Processes
             {
                 AddDataPagesToProcess(NewProcess, startVAddr, vAddrCount);
             }
-            
+
             DisableKernelAccessToProcessMemory(ProcessToCopyFrom);
 
 #if PROCESSMANAGER_TRACE
@@ -227,24 +236,25 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtualMemory.VirtualMemoryManager.MapFreePagesForKernel(VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtualMemoryManager.MapFreePagesForKernel(
+                VirtualMemoryImplementation.PageFlags.KernelOnly, (int) vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
 #endif
 
-            NewProcess.TheMemoryLayout.AddCodePages(startVAddr, (uint)newPAddr, vAddrCount);
+            NewProcess.TheMemoryLayout.AddCodePages(startVAddr, (uint) newPAddr, vAddrCount);
 
-            CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
+            CurrentProcess.TheMemoryLayout.AddDataPages((uint) newVAddr, (uint) newPAddr, vAddrCount);
 
             // Guarantee memory layout cleanly loaded
             Thread.Sleep(50);
 
-            uint* srcPtr = (uint*)startVAddr;
-            uint* dstPtr = (uint*)newVAddr;
-            for (uint j = 0; j < (1024 * vAddrCount); j++, srcPtr++, dstPtr++)
+            uint* srcPtr = (uint*) startVAddr;
+            uint* dstPtr = (uint*) newVAddr;
+            for (uint j = 0; j < 1024*vAddrCount; j++, srcPtr++, dstPtr++)
             {
-                if (j % 1024 == 0)
+                if (j%1024 == 0)
                 {
 #if PROCESSMANAGER_TRACE
                     BasicConsole.WriteLine("vAddr=" + (FOS_System.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
@@ -253,8 +263,9 @@ namespace Kernel.Hardware.Processes
 
                 *dstPtr = *srcPtr;
             }
-            CurrentProcess.TheMemoryLayout.RemovePages((uint)newVAddr, vAddrCount);
+            CurrentProcess.TheMemoryLayout.RemovePages((uint) newVAddr, vAddrCount);
         }
+
         private static void AddDataPagesToProcess(Process NewProcess, uint startVAddr, uint vAddrCount)
         {
 #if PROCESSMANAGER_TRACE
@@ -263,24 +274,25 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtualMemory.VirtualMemoryManager.MapFreePagesForKernel(VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtualMemoryManager.MapFreePagesForKernel(
+                VirtualMemoryImplementation.PageFlags.KernelOnly, (int) vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
 #endif
-            
-            NewProcess.TheMemoryLayout.AddDataPages(startVAddr, (uint)newPAddr, vAddrCount);
 
-            CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
+            NewProcess.TheMemoryLayout.AddDataPages(startVAddr, (uint) newPAddr, vAddrCount);
+
+            CurrentProcess.TheMemoryLayout.AddDataPages((uint) newVAddr, (uint) newPAddr, vAddrCount);
 
             // Guarantee memory layout cleanly loaded
             Thread.Sleep(50);
 
-            uint* srcPtr = (uint*)startVAddr;
-            uint* dstPtr = (uint*)newVAddr;
-            for (uint j = 0; j < (1024 * vAddrCount); j++, srcPtr++, dstPtr++)
+            uint* srcPtr = (uint*) startVAddr;
+            uint* dstPtr = (uint*) newVAddr;
+            for (uint j = 0; j < 1024*vAddrCount; j++, srcPtr++, dstPtr++)
             {
-                if (j % 1024 == 0)
+                if (j%1024 == 0)
                 {
 #if PROCESSMANAGER_TRACE
                     BasicConsole.WriteLine("vAddr=" + (FOS_System.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
@@ -289,9 +301,9 @@ namespace Kernel.Hardware.Processes
 
                 *dstPtr = *srcPtr;
             }
-            CurrentProcess.TheMemoryLayout.RemovePages((uint)newVAddr, vAddrCount);
+            CurrentProcess.TheMemoryLayout.RemovePages((uint) newVAddr, vAddrCount);
         }
-        
+
         public static void RegisterProcess(Process process, Scheduler.Priority priority)
         {
 #if PROCESSMANAGER_TRACE
@@ -299,16 +311,16 @@ namespace Kernel.Hardware.Processes
 #endif
             if (process == null)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to register null process!"));
+                ExceptionMethods.Throw(new Exception("Attempted to register null process!"));
             }
 
             if (process.Registered)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to re-register process! Process name: " + process.Name));
+                ExceptionMethods.Throw(new Exception("Attempted to re-register process! Process name: " + process.Name));
             }
-            
+
 #if PROCESSMANAGER_TRACE
-            //BasicConsole.WriteLine("Disabling scheduler...");
+    //BasicConsole.WriteLine("Disabling scheduler...");
 #endif
             //bool reenable = Scheduler.Enabled;
             //if (reenable)
@@ -329,7 +341,7 @@ namespace Kernel.Hardware.Processes
 
 
 #if PROCESSMANAGER_TRACE
-            //BasicConsole.WriteLine("Enabling scheduler...");
+    //BasicConsole.WriteLine("Enabling scheduler...");
 #endif
             //if (reenable)
             //{
@@ -341,32 +353,33 @@ namespace Kernel.Hardware.Processes
         {
             for (int i = 0; i < Processes.Count; i++)
             {
-                if (((Process)Processes[i]).Id == processId)
+                if (((Process) Processes[i]).Id == processId)
                 {
-                    return ((Process)Processes[i]);
+                    return (Process) Processes[i];
                 }
             }
             return null;
         }
+
         public static Thread GetThreadById(uint threadId, Process parent)
         {
             for (int i = 0; i < parent.Threads.Count; i++)
             {
-                if (((Thread)parent.Threads[i]).Id == threadId)
+                if (((Thread) parent.Threads[i]).Id == threadId)
                 {
-                    return (Thread)parent.Threads[i];
+                    return (Thread) parent.Threads[i];
                 }
             }
             return null;
         }
 
         /// <remarks>
-        /// Specifying threadId=-1 accepts any thread from the specified process.
-        /// No guarantees are made about the thread chosen. This is used when you
-        /// mainly want to switch process context and don't care about the specific
-        /// thread context e.g. during an interrupt.
+        ///     Specifying threadId=-1 accepts any thread from the specified process.
+        ///     No guarantees are made about the thread chosen. This is used when you
+        ///     mainly want to switch process context and don't care about the specific
+        ///     thread context e.g. during an interrupt.
         /// </remarks>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public static void SwitchProcess(uint processId, int threadId)
         {
             //Switch the current memory layout across.
@@ -400,7 +413,7 @@ namespace Kernel.Hardware.Processes
                 BasicConsole.Write("Switching out: ");
                 BasicConsole.WriteLine(CurrentProcess.Name);
 #endif
-                
+
                 Process NewProcess = GetProcessById(processId);
 
                 // Process not found
@@ -446,12 +459,12 @@ namespace Kernel.Hardware.Processes
             {
                 if (CurrentProcess.Threads.Count > 0)
                 {
-                    CurrentThread = (Thread)CurrentProcess.Threads[0];
+                    CurrentThread = (Thread) CurrentProcess.Threads[0];
                 }
             }
             else
             {
-                CurrentThread = GetThreadById((uint)threadId, CurrentProcess);
+                CurrentThread = GetThreadById((uint) threadId, CurrentProcess);
             }
 
             //if (Scheduler.OutputMessages)
@@ -483,7 +496,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             //BasicConsole.Write("Load ex state");
-            ExceptionMethods.state = ProcessManager.CurrentThread_State->ExState;
+            ExceptionMethods.state = CurrentThread_State->ExState;
 
 #if PROCESSMANAGER_SWITCH_TRACE
             BasicConsole.WriteLine("Exception state updated.");
@@ -502,6 +515,7 @@ namespace Kernel.Hardware.Processes
         {
             return WakeThread(GetProcessById(processId), threadId);
         }
+
         public static bool WakeThread(Process theProcess, uint threadId)
         {
             bool Woken = false;
@@ -526,7 +540,7 @@ namespace Kernel.Hardware.Processes
 
             for (int i = 0; i < Semaphores.Count; i++)
             {
-                Semaphore aSemaphore = (Semaphore)Semaphores[i];
+                Semaphore aSemaphore = (Semaphore) Semaphores[i];
                 if (aSemaphore == null)
                 {
                     Semaphores[i] = theSemaphore = new Semaphore(i, limit);
@@ -545,80 +559,89 @@ namespace Kernel.Hardware.Processes
 
             return result;
         }
+
         public static bool Semaphore_Deallocate(int id)
         {
             if (Semaphore_CheckExists(id))
             {
                 Semaphores[id] = null;
-                
+
                 return true;
             }
             return false;
         }
+
         public static int Semaphore_WaitCurrentThread(int id)
         {
             if (Semaphore_VerifyOwner(id, CurrentProcess))
             {
-                ((Semaphore)Semaphores[id]).Wait();
+                ((Semaphore) Semaphores[id]).Wait();
                 return 1;
             }
             return -1;
         }
+
         public static int Semaphore_Wait(int id, Process aProcess, Thread aThread)
         {
             if (Semaphore_VerifyOwner(id, aProcess))
             {
-                return ((Semaphore)Semaphores[id]).WaitOnBehalf(aProcess, aThread) ? 1 : 0;
+                return ((Semaphore) Semaphores[id]).WaitOnBehalf(aProcess, aThread) ? 1 : 0;
             }
             return -1;
         }
+
         public static bool Semaphore_Signal(int id, Process aProcess)
         {
             if (Semaphore_VerifyOwner(id, aProcess))
             {
-                ((Semaphore)Semaphores[id]).SignalOnBehalf();
+                ((Semaphore) Semaphores[id]).SignalOnBehalf();
                 return true;
             }
             return false;
         }
+
         public static bool Semaphore_AddOwner(int semaphoreId, uint NewProcessId, Process CallerProcess)
         {
             if (Semaphore_VerifyOwner(semaphoreId, CallerProcess))
             {
-                ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Add(NewProcessId);
+                ((Semaphore) Semaphores[semaphoreId]).OwnerProcesses.Add(NewProcessId);
                 return true;
             }
             return false;
         }
+
         public static bool Semaphore_RemoveOwner(int semaphoreId, uint RemoveProcessId, Process CallerProcess)
         {
             if (Semaphore_VerifyOwner(semaphoreId, CallerProcess) && RemoveProcessId == CallerProcess.Id)
             {
-                ((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Remove(RemoveProcessId);
+                ((Semaphore) Semaphores[semaphoreId]).OwnerProcesses.Remove(RemoveProcessId);
                 return true;
             }
             return false;
         }
+
         public static bool Semaphore_CheckForDeallocate(int semaphoreId)
         {
             if (Semaphore_CheckExists(semaphoreId))
             {
-                if (((Semaphore)Semaphores[semaphoreId]).OwnerProcesses.Count == 0)
+                if (((Semaphore) Semaphores[semaphoreId]).OwnerProcesses.Count == 0)
                 {
                     return Semaphore_Deallocate(semaphoreId);
                 }
             }
             return false;
         }
+
         private static bool Semaphore_VerifyOwner(int id, Process aProcess)
         {
             if (Semaphore_CheckExists(id))
             {
-                Semaphore theSemaphore = ((Semaphore)Semaphores[id]);
+                Semaphore theSemaphore = (Semaphore) Semaphores[id];
                 return theSemaphore.OwnerProcesses.IndexOf(aProcess.Id) > -1;
             }
             return false;
         }
+
         private static bool Semaphore_CheckExists(int id)
         {
             return id > -1 && id < Semaphores.Count && Semaphores[id] != null;
@@ -628,10 +651,12 @@ namespace Kernel.Hardware.Processes
         {
             EnableKernelAccessToProcessMemory(GetProcessById(TargetProcessId));
         }
+
         public static void DisableKernelAccessToProcessMemory(uint TargetProcessId)
         {
             DisableKernelAccessToProcessMemory(GetProcessById(TargetProcessId));
         }
+
         public static void EnableKernelAccessToProcessMemory(Process TargetProcess)
         {
             if (KernelProcess != null && KernelProcess != TargetProcess)
@@ -647,6 +672,7 @@ namespace Kernel.Hardware.Processes
 #endif
             }
         }
+
         public static void DisableKernelAccessToProcessMemory(Process TargetProcess)
         {
             if (KernelProcess != null && KernelProcess != TargetProcess)
@@ -663,23 +689,23 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-
-        private static void* ShadowPageVAddr = (void*)0xFFFFFFFF;
-        private static void* ShadowPagePAddr = (void*)0xFFFFFFFF;
         public static void* EnableDebuggerAccessToProcessMemory(Process TargetProcess, void* PageToShadowPAddr)
         {
-            if (ShadowPageVAddr == (void*)0xFFFFFFFF)
+            if (ShadowPageVAddr == (void*) 0xFFFFFFFF)
             {
-                ShadowPageVAddr = VirtualMemory.VirtualMemoryManager.MapFreePageForKernel(VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, out ShadowPagePAddr);
-                KernelProcess.TheMemoryLayout.AddKernelPage((uint)ShadowPagePAddr, (uint)ShadowPageVAddr);
+                ShadowPageVAddr =
+                    VirtualMemoryManager.MapFreePageForKernel(VirtualMemoryImplementation.PageFlags.KernelOnly,
+                        out ShadowPagePAddr);
+                KernelProcess.TheMemoryLayout.AddKernelPage((uint) ShadowPagePAddr, (uint) ShadowPageVAddr);
             }
-            
-            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint)ShadowPageVAddr, (uint)PageToShadowPAddr);
+
+            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint) ShadowPageVAddr, (uint) PageToShadowPAddr);
             return ShadowPageVAddr;
         }
+
         public static void DisableDebuggerAccessToProcessMemory(Process TargetProcess)
         {
-            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint)ShadowPageVAddr, (uint)ShadowPagePAddr);
+            KernelProcess.TheMemoryLayout.ReplaceKernelPage((uint) ShadowPageVAddr, (uint) ShadowPagePAddr);
         }
     }
 }

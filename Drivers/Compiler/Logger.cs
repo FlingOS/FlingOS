@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,41 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Used to log output of the compiler.
+    ///     Used to log output of the compiler.
     /// </summary>
     /// <remarks>
-    /// Output can be directed either to MSBuild or to the Console or to any other output, depending on what is required.
+    ///     Output can be directed either to MSBuild or to the Console or to any other output, depending on what is required.
     /// </remarks>
     public static class Logger
     {
         /// <summary>
-        /// Delegate for handling a log message event.
-        /// </summary>
-        /// <param name="file">The file associated with the message.</param>
-        /// <param name="lineNumber">The line number within the associated file.</param>
-        /// <param name="message">The message to log.</param>
-        public delegate void LogMessageEventHandler(string file, int lineNumber, string message);
-        /// <summary>
-        /// Delegate for handling a log warning event.
-        /// </summary>
-        /// <param name="warningCode">The warning code.</param>
-        /// <param name="file">The file associated with the message.</param>
-        /// <param name="lineNumber">The line number within the associated file.</param>
-        /// <param name="message">The message to log.</param>
-        public delegate void LogWarningEventHandler(string warningCode, string file, int lineNumber, string message);
-        /// <summary>
-        /// Delegate for handling a log error event.
+        ///     Delegate for handling a log error event.
         /// </summary>
         /// <param name="errorCode">The error code.</param>
         /// <param name="file">The file associated with the message.</param>
@@ -65,20 +46,39 @@ namespace Drivers.Compiler
         public delegate void LogErrorEventHandler(string errorCode, string file, int lineNumber, string message);
 
         /// <summary>
-        /// The handler to use for logging a message. Must not be left as null.
+        ///     Delegate for handling a log message event.
+        /// </summary>
+        /// <param name="file">The file associated with the message.</param>
+        /// <param name="lineNumber">The line number within the associated file.</param>
+        /// <param name="message">The message to log.</param>
+        public delegate void LogMessageEventHandler(string file, int lineNumber, string message);
+
+        /// <summary>
+        ///     Delegate for handling a log warning event.
+        /// </summary>
+        /// <param name="warningCode">The warning code.</param>
+        /// <param name="file">The file associated with the message.</param>
+        /// <param name="lineNumber">The line number within the associated file.</param>
+        /// <param name="message">The message to log.</param>
+        public delegate void LogWarningEventHandler(string warningCode, string file, int lineNumber, string message);
+
+        /// <summary>
+        ///     The handler to use for logging a message. Must not be left as null.
         /// </summary>
         public static event LogMessageEventHandler OnLogMessage;
+
         /// <summary>
-        /// The handler to use for logging a warning. Must not be left as null.
+        ///     The handler to use for logging a warning. Must not be left as null.
         /// </summary>
         public static event LogWarningEventHandler OnLogWarning;
+
         /// <summary>
-        /// The handler to use for logging an error. Must not be left as null.
+        ///     The handler to use for logging an error. Must not be left as null.
         /// </summary>
         public static event LogErrorEventHandler OnLogError;
 
         /// <summary>
-        /// Logs a message.
+        ///     Logs a message.
         /// </summary>
         /// <param name="file">The file associated with the message.</param>
         /// <param name="lineNumber">The line number within the associated file.</param>
@@ -87,8 +87,9 @@ namespace Drivers.Compiler
         {
             OnLogMessage.Invoke(file, lineNumber, message);
         }
+
         /// <summary>
-        /// Logs a warning.
+        ///     Logs a warning.
         /// </summary>
         /// <param name="warningCode">The warning code.</param>
         /// <param name="file">The file associated with the message.</param>
@@ -98,8 +99,9 @@ namespace Drivers.Compiler
         {
             OnLogWarning.Invoke(warningCode, file, lineNumber, message);
         }
+
         /// <summary>
-        /// Logs an error.
+        ///     Logs an error.
         /// </summary>
         /// <param name="errorCode">The error code.</param>
         /// <param name="file">The file associated with the message.</param>

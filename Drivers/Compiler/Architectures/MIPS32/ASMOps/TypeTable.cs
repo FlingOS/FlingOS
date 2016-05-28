@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,35 +23,42 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Drivers.Compiler;
+using Drivers.Compiler.ASM;
+using Drivers.Compiler.ASM.ASMOps;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
-    public class TypeTable : ASM.ASMOps.ASMTypeTable
+    public class TypeTable : ASMTypeTable
     {
-        public TypeTable(string typeId, string sizeVal, string idVal, string stackSizeVal, string isValueTypeVal, string methodTablePointer, string isPointerTypeVal, string baseTypeIdVal, string fieldTablePointer, string typeSignatureLiteralLabel, string typeIdLiteralLabel, List<Tuple<string, Types.TypeInfo>> fieldInformation)
-            : base(typeId, sizeVal, idVal, stackSizeVal, isValueTypeVal, methodTablePointer, isPointerTypeVal, baseTypeIdVal, fieldTablePointer, typeSignatureLiteralLabel, typeIdLiteralLabel, fieldInformation)
+        public TypeTable(string typeId, string sizeVal, string idVal, string stackSizeVal, string isValueTypeVal,
+            string methodTablePointer, string isPointerTypeVal, string baseTypeIdVal, string fieldTablePointer,
+            string typeSignatureLiteralLabel, string typeIdLiteralLabel, List<Tuple<string, TypeInfo>> fieldInformation)
+            : base(
+                typeId, sizeVal, idVal, stackSizeVal, isValueTypeVal, methodTablePointer, isPointerTypeVal,
+                baseTypeIdVal, fieldTablePointer, typeSignatureLiteralLabel, typeIdLiteralLabel, fieldInformation)
         {
         }
 
-        public override string Convert(ASM.ASMBlock theBlock)
+        public override string Convert(ASMBlock theBlock)
         {
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine(".globl " + TypeId);
             ASMResult.AppendLine(".align 2");
             ASMResult.AppendLine(TypeId + ":");
 
-            foreach (Tuple<string, Types.TypeInfo> aFieldInfo in FieldInformation)
+            foreach (Tuple<string, TypeInfo> aFieldInfo in FieldInformation)
             {
                 string allocStr = ASMUtilities.GetAllocStringForSize(
-                    aFieldInfo.Item2.IsValueType ? aFieldInfo.Item2.SizeOnHeapInBytes : aFieldInfo.Item2.SizeOnStackInBytes);
+                    aFieldInfo.Item2.IsValueType
+                        ? aFieldInfo.Item2.SizeOnHeapInBytes
+                        : aFieldInfo.Item2.SizeOnStackInBytes);
                 switch (aFieldInfo.Item1)
                 {
                     case "Size":

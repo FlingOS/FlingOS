@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,49 +23,45 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Exceptions;
 using Kernel.Hardware.Devices;
 
 namespace Kernel
 {
     /// <summary>
-    /// Represents a text-only shell (/command-line) interface.
+    ///     Represents a text-only shell (/command-line) interface.
     /// </summary>
-    public abstract class Shell : FOS_System.Object
+    public abstract class Shell : Object
     {
         /// <summary>
-        /// The console used for output.
+        ///     The console used for output.
         /// </summary>
         protected Console console;
-        /// <summary>
-        /// The keyboard used for input.
-        /// </summary>
-        protected Keyboard keyboard;
-        /// <summary>
-        /// Whether the shell is in the process of closing (/terminating) or not.
-        /// </summary>
-        protected bool terminating = false;
-        /// <summary>
-        /// Whether the shell is in the process of closing (/terminating) or not.
-        /// </summary>
-        public bool Terminating
-        {
-            get
-            {
-                return terminating;
-            }
-        }
 
         /// <summary>
-        /// Initialises a new shell instances that uses the default console.
+        ///     The keyboard used for input.
+        /// </summary>
+        protected Keyboard keyboard;
+
+        /// <summary>
+        ///     Whether the shell is in the process of closing (/terminating) or not.
+        /// </summary>
+        protected bool terminating = false;
+
+        /// <summary>
+        ///     Initialises a new shell instances that uses the default console.
         /// </summary>
         public Shell()
         {
             Console.InitDefault();
             console = Console.Default;
         }
+
         public Shell(Console AConsole, Keyboard AKeyboard)
         {
             console = AConsole;
@@ -72,24 +69,32 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Executes the shell.
+        ///     Whether the shell is in the process of closing (/terminating) or not.
+        /// </summary>
+        public bool Terminating
+        {
+            get { return terminating; }
+        }
+
+        /// <summary>
+        ///     Executes the shell.
         /// </summary>
         public abstract void Execute();
-        
+
         /// <summary>
-        /// Outputs informations about the current exception, if any.
+        ///     Outputs informations about the current exception, if any.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
-        protected void OutputExceptionInfo(FOS_System.Exception Ex)
+        [NoDebug]
+        protected void OutputExceptionInfo(Exception Ex)
         {
             if (Ex != null)
             {
                 console.WarningColour();
                 console.WriteLine(Ex.Message);
-                if (Ex is FOS_System.Exceptions.PageFaultException)
+                if (Ex is PageFaultException)
                 {
-                    console.WriteLine(((FOS_System.String)"    - Address: ") + ((FOS_System.Exceptions.PageFaultException)Ex).address);
-                    console.WriteLine(((FOS_System.String)"    - Error code: ") + ((FOS_System.Exceptions.PageFaultException)Ex).errorCode);
+                    console.WriteLine((String) "    - Address: " + ((PageFaultException) Ex).address);
+                    console.WriteLine((String) "    - Error code: " + ((PageFaultException) Ex).errorCode);
                 }
                 console.DefaultColour();
             }
@@ -100,9 +105,9 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Outputs a divider line.
+        ///     Outputs a divider line.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         protected void OutputDivider()
         {
             console.WriteLine("--------------------------------------------------------");

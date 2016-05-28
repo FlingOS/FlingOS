@@ -12,6 +12,7 @@
         USB,
         Unkown
     }
+
     public enum DeviceClass
     {
         CPU,
@@ -22,6 +23,7 @@
         Timer,
         Controller
     }
+
     public enum DeviceSubClass
     {
         ATA,
@@ -38,12 +40,11 @@
         public DeviceGroup Group;
         public DeviceClass Class;
         public DeviceSubClass SubClass;
-        
-        public fixed char Name[64];
-        public fixed uint Info[16];
+
+        public fixed char Name [64];
+        public fixed uint Info [16];
 
         public bool Claimed;
         public uint OwnerProcessId;
     }
-    
 }

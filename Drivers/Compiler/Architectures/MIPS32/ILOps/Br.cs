@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Br : IL.ILOps.Br
     {
@@ -42,97 +41,97 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            ASMOps.BranchOp branchOp = ASMOps.BranchOp.Branch;
-            
-            switch ((OpCodes)theOp.opCode.Value)
+            BranchOp branchOp = BranchOp.Branch;
+
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Br:
                 case OpCodes.Br_S:
                     break;
                 case OpCodes.Brtrue:
-                    branchOp = ASMOps.BranchOp.BranchNotZero;
+                    branchOp = BranchOp.BranchNotZero;
                     break;
                 case OpCodes.Brtrue_S:
-                    branchOp = ASMOps.BranchOp.BranchNotZero;
+                    branchOp = BranchOp.BranchNotZero;
                     break;
                 case OpCodes.Brfalse:
-                    branchOp = ASMOps.BranchOp.BranchZero;
+                    branchOp = BranchOp.BranchZero;
                     break;
                 case OpCodes.Brfalse_S:
-                    branchOp = ASMOps.BranchOp.BranchZero;
+                    branchOp = BranchOp.BranchZero;
                     break;
                 case OpCodes.Beq:
-                    branchOp = ASMOps.BranchOp.BranchEqual;
+                    branchOp = BranchOp.BranchEqual;
                     break;
                 case OpCodes.Beq_S:
-                    branchOp = ASMOps.BranchOp.BranchEqual;
+                    branchOp = BranchOp.BranchEqual;
                     break;
                 case OpCodes.Bne_Un:
-                    branchOp = ASMOps.BranchOp.BranchNotEqual;
+                    branchOp = BranchOp.BranchNotEqual;
                     break;
                 case OpCodes.Bne_Un_S:
-                    branchOp = ASMOps.BranchOp.BranchNotEqual;
+                    branchOp = BranchOp.BranchNotEqual;
                     break;
                 case OpCodes.Bge:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
                     break;
                 case OpCodes.Bge_S:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
                     break;
                 case OpCodes.Bge_Un:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
                     break;
                 case OpCodes.Bge_Un_S:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
                     break;
                 case OpCodes.Ble:
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
+                    branchOp = BranchOp.BranchLessThanEqual;
                     break;
                 case OpCodes.Ble_S:
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
+                    branchOp = BranchOp.BranchLessThanEqual;
                     break;
                 case OpCodes.Ble_Un:
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
+                    branchOp = BranchOp.BranchLessThanEqual;
                     break;
                 case OpCodes.Ble_Un_S:
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
+                    branchOp = BranchOp.BranchLessThanEqual;
                     break;
                 case OpCodes.Blt:
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Blt_S:
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Blt_Un:
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Blt_Un_S:
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Bgt:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     break;
                 case OpCodes.Bgt_S:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     break;
                 case OpCodes.Bgt_Un:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     break;
                 case OpCodes.Bgt_Un_S:
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     break;
             }
 
-            if (branchOp == ASMOps.BranchOp.BranchZero || branchOp == ASMOps.BranchOp.BranchNotZero)
+            if (branchOp == BranchOp.BranchZero || branchOp == BranchOp.BranchNotZero)
             {
                 //Pop from our stack the test item to use in the condition
                 StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
-            else if (branchOp == ASMOps.BranchOp.BranchEqual || branchOp == ASMOps.BranchOp.BranchNotEqual ||
-                         branchOp == ASMOps.BranchOp.BranchGreaterThanEqual ||
-                         branchOp == ASMOps.BranchOp.BranchLessThanEqual ||
-                         branchOp == ASMOps.BranchOp.BranchLessThan ||
-                         branchOp == ASMOps.BranchOp.BranchGreaterThan)
+            else if (branchOp == BranchOp.BranchEqual || branchOp == BranchOp.BranchNotEqual ||
+                     branchOp == BranchOp.BranchGreaterThanEqual ||
+                     branchOp == BranchOp.BranchLessThanEqual ||
+                     branchOp == BranchOp.BranchLessThan ||
+                     branchOp == BranchOp.BranchGreaterThan)
             {
                 //Pop from our stack the test items to use in the condition
                 StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
@@ -145,8 +144,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //This will store the offset from the current next op's position
             //to the IL op to jump to.
             int ILOffset = 0;
-            
-            switch ((OpCodes)theOp.opCode.Value)
+
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -154,7 +153,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -162,7 +161,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -170,7 +169,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Beq:
@@ -179,7 +178,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bne_Un:
@@ -188,7 +187,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bge:
@@ -197,7 +196,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
@@ -205,7 +204,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Ble:
@@ -214,7 +213,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
@@ -222,7 +221,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Blt:
@@ -231,7 +230,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Blt_Un:
                     //See above : This is unsigned variant
@@ -239,7 +238,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bgt:
@@ -248,7 +247,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bgt_Un:
                     //See above : This is unsigned variant
@@ -256,7 +255,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
             }
 
@@ -269,20 +268,20 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 //Find the IL op to jump to 
                 ILOp opToGoTo = preprocessState.Input.At(ILNumToGoTo);
-                
+
                 //Mark it as requiring a label
                 opToGoTo.LabelRequired = true;
             }
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if branch test operand value is a floating point value.
+        ///     Thrown if branch test operand value is a floating point value.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -290,16 +289,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //to the IL op to branch to.
             int ILOffset = 0;
             //This will store the branch operation - by default, the basic branch op
-            ASMOps.BranchOp branchOp = ASMOps.BranchOp.Branch;
+            BranchOp branchOp = BranchOp.Branch;
             bool UnsignedTest = false;
 
-            ASMOps.BranchOp inverseBranchOp = ASMOps.BranchOp.None;
+            BranchOp inverseBranchOp = BranchOp.None;
             bool isNegativeTest = false;
 
             //The value for the branch op to test against - currently always "0" since on jnz and jz ops are used.
             string testVal = "0";
-            
-            switch ((OpCodes)theOp.opCode.Value)
+
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -307,7 +306,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -315,13 +314,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Branch-if-true means we want to do the branch if the operand is not equal to 0
                     //i.e. not false
                     //Set the branch op to jnz - Branch if Not Zero
-                    branchOp = ASMOps.BranchOp.BranchNotZero;
+                    branchOp = BranchOp.BranchNotZero;
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchNotZero;
+                    branchOp = BranchOp.BranchNotZero;
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -329,13 +328,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Branch-if-true means we want to do the branch if the operand is equal to 0
                     //i.e. is false
                     //Set the branch op to jz - Branch if Zero
-                    branchOp = ASMOps.BranchOp.BranchZero;
+                    branchOp = BranchOp.BranchZero;
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchZero;
+                    branchOp = BranchOp.BranchZero;
                     break;
 
                 case OpCodes.Beq:
@@ -344,15 +343,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Branch-if-equal means we want to do the branch if the operand is equal to the other operand
                     //i.e. A == B
                     //Set the branch op to je - Branch if equal
-                    branchOp = ASMOps.BranchOp.BranchEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchNotEqual;
+                    branchOp = BranchOp.BranchEqual;
+                    inverseBranchOp = BranchOp.BranchNotEqual;
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchNotEqual;
+                    branchOp = BranchOp.BranchEqual;
+                    inverseBranchOp = BranchOp.BranchNotEqual;
                     break;
 
                 case OpCodes.Bne_Un:
@@ -361,14 +360,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Branch-if-equal means we want to do the branch if the operand is equal to the other operand
                     //i.e. A == B
                     //Set the branch op to je - Branch if not equal
-                    branchOp = ASMOps.BranchOp.BranchNotEqual;
+                    branchOp = BranchOp.BranchNotEqual;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchNotEqual;
+                    branchOp = BranchOp.BranchNotEqual;
                     isNegativeTest = true;
                     break;
 
@@ -379,31 +378,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //the other operand
                     //i.e. A >= B
                     //Set the branch op to jge - Branch if greater than or equal
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
+                    inverseBranchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
+                    inverseBranchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
+                    inverseBranchOp = BranchOp.BranchLessThan;
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchGreaterThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchGreaterThanEqual;
+                    inverseBranchOp = BranchOp.BranchLessThan;
                     break;
 
                 case OpCodes.Ble:
@@ -413,31 +412,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //the other operand
                     //i.e. A <= B
                     //Set the branch op to jle - Branch if less than or equal
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchLessThanEqual;
+                    inverseBranchOp = BranchOp.BranchGreaterThan;
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchLessThanEqual;
+                    inverseBranchOp = BranchOp.BranchGreaterThan;
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchLessThanEqual;
+                    inverseBranchOp = BranchOp.BranchGreaterThan;
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchLessThanEqual;
-                    inverseBranchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchLessThanEqual;
+                    inverseBranchOp = BranchOp.BranchGreaterThan;
                     break;
 
                 case OpCodes.Blt:
@@ -447,14 +446,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //the other operand
                     //i.e. A < B
                     //Set the branch op to jl - Branch if less than
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Blt_Un:
@@ -462,15 +461,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchLessThan;
+                    branchOp = BranchOp.BranchLessThan;
                     isNegativeTest = true;
                     break;
 
@@ -481,14 +480,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //the other operand
                     //i.e. A > B
                     //Set the branch op to jg - Branch if greater than
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bgt_Un:
@@ -496,24 +495,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (int)(sbyte)theOp.ValueBytes[0];
+                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    branchOp = ASMOps.BranchOp.BranchGreaterThan;
+                    branchOp = BranchOp.BranchGreaterThan;
                     isNegativeTest = true;
                     break;
-
             }
 
             if (ILOffset == 0)
             {
                 //Err..why bother jumping at all if the offset is 0?
-                conversionState.Append(new ASMOps.Comment("No jump insert - pointless 0 distance jump"));
+                conversionState.Append(new Comment("No jump insert - pointless 0 distance jump"));
             }
             else
             {
@@ -521,18 +519,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 int startILNum = theOp.NextOffset;
                 //Add the offset to get the IL op num to jump to
                 int ILNumToGoTo = startILNum + ILOffset;
-                
+
                 //Find the IL op to jump to 
                 ILOp opToGoTo = conversionState.Input.At(ILNumToGoTo);
                 int opToGoToPosition = conversionState.PositionOf(opToGoTo);
                 int currOpPosition = conversionState.PositionOf(theOp);
 
                 //If the jump op is not a straightforward jump i.e. has one or more conditions
-                if (branchOp == ASMOps.BranchOp.BranchZero || branchOp == ASMOps.BranchOp.BranchNotZero)
+                if (branchOp == BranchOp.BranchZero || branchOp == BranchOp.BranchNotZero)
                 {
                     //Pop from our stack the test item to use in the condition
                     StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
-                    
+
                     if (testItem.isFloat)
                     {
                         //SUPPORT - floats
@@ -543,29 +541,52 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     {
                         //Compare first 32 bits (low bits)
                         //Then (if necessary) compare second 32 bits (high bits)
-                        
+
                         //Pop the low bits
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                         //Pop the high bits
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
-                            
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+
                         //If we are testing for not equal to zero:
-                        if (branchOp == ASMOps.BranchOp.BranchNotZero)
+                        if (branchOp == BranchOp.BranchNotZero)
                         {
                             //If the low bits are not zero, do the jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src2 = testVal, Src1 = "$t0", DestILPosition = opToGoToPosition });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = branchOp,
+                                Src2 = testVal,
+                                Src1 = "$t0",
+                                DestILPosition = opToGoToPosition
+                            });
                             //If the high bits are not zero, do the jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = testVal, DestILPosition = opToGoToPosition });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = branchOp,
+                                Src1 = "$t1",
+                                Src2 = testVal,
+                                DestILPosition = opToGoToPosition
+                            });
                         }
                         //If we are testing for equal to zero:
-                        else if (branchOp == ASMOps.BranchOp.BranchZero)
+                        else if (branchOp == BranchOp.BranchZero)
                         {
                             //If the low bits are not zero, jump to the end of these tests as condition has not been met
-                            conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchNotZero, Src1 = "$t0", DestILPosition = opToGoToPosition, Extension = "End" });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = BranchOp.BranchNotZero,
+                                Src1 = "$t0",
+                                DestILPosition = opToGoToPosition,
+                                Extension = "End"
+                            });
                             //If the high bits are zero, do the jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", DestILPosition = opToGoToPosition });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = branchOp,
+                                Src1 = "$t1",
+                                DestILPosition = opToGoToPosition
+                            });
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
+                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
@@ -577,20 +598,26 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     else if (testItem.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                         //Do the specified jump
-                        conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t0", Src2 = testVal, DestILPosition = opToGoToPosition });
+                        conversionState.Append(new Branch()
+                        {
+                            BranchType = branchOp,
+                            Src1 = "$t0",
+                            Src2 = testVal,
+                            DestILPosition = opToGoToPosition
+                        });
                     }
                     else
                     {
                         throw new InvalidOperationException("Invalid stack operand sizes!");
                     }
                 }
-                else if (branchOp == ASMOps.BranchOp.BranchEqual || branchOp == ASMOps.BranchOp.BranchNotEqual ||
-                         branchOp == ASMOps.BranchOp.BranchGreaterThanEqual ||
-                         branchOp == ASMOps.BranchOp.BranchLessThanEqual ||
-                         branchOp == ASMOps.BranchOp.BranchLessThan ||
-                         branchOp == ASMOps.BranchOp.BranchGreaterThan)
+                else if (branchOp == BranchOp.BranchEqual || branchOp == BranchOp.BranchNotEqual ||
+                         branchOp == BranchOp.BranchGreaterThanEqual ||
+                         branchOp == BranchOp.BranchLessThanEqual ||
+                         branchOp == BranchOp.BranchLessThan ||
+                         branchOp == BranchOp.BranchGreaterThan)
                 {
                     //Pop from our stack the test items to use in the condition
                     StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
@@ -601,52 +628,88 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                    else if(itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
+                    else if (itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
                     {
                         throw new InvalidOperationException("Branch test operands must be same size!");
                     }
                     else if (itemA.sizeOnStackInBytes == 8)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
 
-                        if(!isNegativeTest)
+                        if (!isNegativeTest)
                         {
                             //Compare test item A high bits to test item B high bits
                             //If they are not equal, abort the testing
-                            conversionState.Append(new ASMOps.Branch() { BranchType = inverseBranchOp, Src1 = "$t3", Src2 = "$t2", DestILPosition = currOpPosition, Extension = "End", UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = inverseBranchOp,
+                                Src1 = "$t3",
+                                Src2 = "$t2",
+                                DestILPosition = currOpPosition,
+                                Extension = "End",
+                                UnsignedTest = UnsignedTest
+                            });
 
                             //Else the igh bits are equal so test low bits
                             //Compare test item A low bits to test item B low bits
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t0", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = branchOp,
+                                Src1 = "$t1",
+                                Src2 = "$t0",
+                                DestILPosition = opToGoToPosition,
+                                UnsignedTest = UnsignedTest
+                            });
 
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
+                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
                             //Compare test item A high bits to test item B high bits
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t3", Src2 = "$t2", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = branchOp,
+                                Src1 = "$t3",
+                                Src2 = "$t2",
+                                DestILPosition = opToGoToPosition,
+                                UnsignedTest = UnsignedTest
+                            });
                             //Compare test item A low bits to test item B low bits
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t1", Src2 = "$t0", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Branch()
+                            {
+                                BranchType = branchOp,
+                                Src1 = "$t1",
+                                Src2 = "$t0",
+                                DestILPosition = opToGoToPosition,
+                                UnsignedTest = UnsignedTest
+                            });
                         }
                     }
                     else if (itemA.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                         //Compare test item A to test item B
                         //Do the specified jump
-                        conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, Src1 = "$t0", Src2 = "$t1", DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                        conversionState.Append(new Branch()
+                        {
+                            BranchType = branchOp,
+                            Src1 = "$t0",
+                            Src2 = "$t1",
+                            DestILPosition = opToGoToPosition,
+                            UnsignedTest = UnsignedTest
+                        });
                     }
                     else
                     {
@@ -656,7 +719,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 else
                 {
                     //Do the straightforward jump...
-                    conversionState.Append(new ASMOps.Branch() { BranchType = branchOp, DestILPosition = opToGoToPosition });
+                    conversionState.Append(new Branch() {BranchType = branchOp, DestILPosition = opToGoToPosition});
                 }
             }
         }

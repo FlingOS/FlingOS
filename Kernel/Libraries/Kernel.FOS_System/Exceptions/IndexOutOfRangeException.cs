@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,49 +23,45 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kernel.FOS_System.Exceptions
 {
     /// <summary>
-    /// Represents an index out of range exception.
+    ///     Represents an index out of range exception.
     /// </summary>
-    public class IndexOutOfRangeException : FOS_System.Exception
+    public class IndexOutOfRangeException : Exception
     {
         /// <summary>
-        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
-        public IndexOutOfRangeException(int index, int range) 
-            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+        public IndexOutOfRangeException(int index, int range)
+            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
         {
         }
 
         /// <summary>
-        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(uint index, uint range)
-            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
         {
         }
 
         /// <summary>
-        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(long index, long range)
-            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
         {
         }
 
         /// <summary>
-        /// Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
+        ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(ulong index, ulong range)
-            : base("Index out of range exception. Index: " + (FOS_System.String)index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
         {
         }
     }

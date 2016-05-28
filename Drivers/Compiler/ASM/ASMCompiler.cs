@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,41 +23,38 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.ASM
 {
     /// <summary>
-    /// The ASM Compiler is the high-level class which manages the ASM compilation step
-    /// including executing the ASM Preprocessor and the ASM Processor. 
+    ///     The ASM Compiler is the high-level class which manages the ASM compilation step
+    ///     including executing the ASM Preprocessor and the ASM Processor.
     /// </summary>
     /// <remarks>
-    /// The ASM compiler itself does very little work. It is mostly a wrapper to ensure
-    /// that the processing steps (i.e. preprocess followed by process) happen in the 
-    /// correct order and are hidden from other parts of the compiler. It also allows
-    /// additional ASM processing steps to be added more easily later.
+    ///     The ASM compiler itself does very little work. It is mostly a wrapper to ensure
+    ///     that the processing steps (i.e. preprocess followed by process) happen in the
+    ///     correct order and are hidden from other parts of the compiler. It also allows
+    ///     additional ASM processing steps to be added more easily later.
     /// </remarks>
     public static class ASMCompiler
     {
         /// <summary>
-        /// Compiles the specified IL Library and any dependencies using the ASM Preprocesor and ASM Processor.
+        ///     Compiles the specified IL Library and any dependencies using the ASM Preprocesor and ASM Processor.
         /// </summary>
         /// <remarks>
-        /// The ASM Compiler's steps convert the ASM into machine code.
+        ///     The ASM Compiler's steps convert the ASM into machine code.
         /// </remarks>
         /// <param name="TheILLibrary">The library to compile.</param>
         /// <returns>CompileResult.OK if all steps complete successfully.</returns>
-        public static CompileResult Compile(IL.ILLibrary TheILLibrary)
+        public static CompileResult Compile(ILLibrary TheILLibrary)
         {
             CompileResult Result = CompileResult.OK;
 
-            foreach(IL.ILLibrary depLib in TheILLibrary.Dependencies)
+            foreach (ILLibrary depLib in TheILLibrary.Dependencies)
             {
                 Result = Result == CompileResult.OK ? Compile(depLib) : Result;
             }
@@ -72,7 +70,7 @@ namespace Drivers.Compiler.ASM
         }
 
         /// <summary>
-        /// Executes the ASM Preprocessor for the specified library.
+        ///     Executes the ASM Preprocessor for the specified library.
         /// </summary>
         /// <param name="TheLibrary">The library to execute the preprocessor on.</param>
         /// <returns>The return value from the ASMPreprocessor.Preprocess method.</returns>
@@ -82,7 +80,7 @@ namespace Drivers.Compiler.ASM
         }
 
         /// <summary>
-        /// Executes the ASM Processor for the specified library.
+        ///     Executes the ASM Processor for the specified library.
         /// </summary>
         /// <param name="TheLibrary">The library to execute the processor on.</param>
         /// <returns>The return value from the ASMProcessor.Process method.</returns>

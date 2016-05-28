@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Neg : IL.ILOps.Neg
     {
@@ -44,21 +43,21 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// If either value is &lt; 4 bytes in length or
-        /// operands are not of the same size.
+        ///     If either value is &lt; 4 bytes in length or
+        ///     operands are not of the same size.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Pop item to negate
             StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            if(itemA.isFloat)
+            if (itemA.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Negate float vals not suppported yet!");
@@ -67,33 +66,33 @@ namespace Drivers.Compiler.Architectures.x86
             // Two's Complement negation
             //  - "Not" value then add 1
 
-            if(itemA.sizeOnStackInBytes == 4)
+            if (itemA.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Neg() { Arg = "EAX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Neg() {Arg = "EAX"});
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
             }
             else if (itemA.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
                 // Not the value
-                conversionState.Append(new ASMOps.Not() { Dest = "EAX" });
-                conversionState.Append(new ASMOps.Not() { Dest = "EDX" });
+                conversionState.Append(new ASMOps.Not() {Dest = "EAX"});
+                conversionState.Append(new ASMOps.Not() {Dest = "EDX"});
 
                 // Then add 1
-                conversionState.Append(new ASMOps.Mov() { Src = "1", Dest = "EBX", Size = ASMOps.OperandSize.Dword });
-                conversionState.Append(new ASMOps.Mov() { Src = "0", Dest = "ECX", Size = ASMOps.OperandSize.Dword });
+                conversionState.Append(new Mov() {Src = "1", Dest = "EBX", Size = OperandSize.Dword});
+                conversionState.Append(new Mov() {Src = "0", Dest = "ECX", Size = OperandSize.Dword});
 
                 //Add ecx:ebx to edx:eax
                 //Add low bits
-                conversionState.Append(new ASMOps.Add() { Src = "EBX", Dest = "EAX" });
+                conversionState.Append(new ASMOps.Add() {Src = "EBX", Dest = "EAX"});
                 //Add high bits including any carry from 
                 //when low bits were added
-                conversionState.Append(new ASMOps.Add() { Src = "ECX", Dest = "EDX", WithCarry = true });
+                conversionState.Append(new ASMOps.Add() {Src = "ECX", Dest = "EDX", WithCarry = true});
 
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
             }
             else
             {

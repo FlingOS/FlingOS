@@ -20,6 +20,7 @@
         ListDir,
         ReadDirEntry
     }
+
     public struct FilePipeCommand
     {
         public int Command;

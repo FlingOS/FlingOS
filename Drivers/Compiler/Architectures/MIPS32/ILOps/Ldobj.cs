@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldobj : IL.ILOps.Ldobj
     {
@@ -43,7 +42,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             int size = theTypeInfo.SizeOnStackInBytes;
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
@@ -56,13 +55,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown when loading a static float field.
+        ///     Thrown when loading a static float field.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -72,25 +71,25 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             //Get the type info for the object to load
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-            Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
+            TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
 
             //Get the object size information
             int size = theTypeInfo.SizeOnStackInBytes;
 
             //Load the object onto the stack
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
             for (int i = size - 4; i >= 0; i -= 4)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = i.ToString() + "($t2)", Dest = "$t0" });
                 GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", i, 4);
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
             }
-            int extra = size % 4;
+            int extra = size%4;
             for (int i = extra - 1; i >= 0; i--)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = i.ToString() + "($t2)", Dest = "$t0" });
                 GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", i, 1);
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Byte, Src = "$t0" });
+                conversionState.Append(new Push() {Size = OperandSize.Byte, Src = "$t0"});
             }
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()

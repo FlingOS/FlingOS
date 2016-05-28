@@ -1,4 +1,5 @@
 #region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,68 +23,74 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
 
 namespace Kernel
 {
     /// <summary>
-    /// Class to describe the command descriptions.
+    ///     Class to describe the command descriptions.
     /// </summary>
-    public class CommandDescription : FOS_System.Object
+    public class CommandDescription : Object
     {
         /// <summary>
-        /// Name of the command
+        ///     Name of the command
         /// </summary>
-        public String CommandName;
+        public string CommandName;
+
         /// <summary>
-        /// Command name in lower case
+        ///     Command name in lower case
         /// </summary>
-        public String CommandNameLower;
+        public string CommandNameLower;
+
         /// <summary>
-        /// Description of the command
+        ///     Description of the command
         /// </summary>
-        public FOS_System.String Description;
+        public String Description;
     }
 
     /// <summary>
-    /// Class that has all the command descriptions and related methods.
+    ///     Class that has all the command descriptions and related methods.
     /// </summary>
     public static class CommandHelp
     {
         /// <summary>
-        /// List of descriptions for the available commands.
+        ///     List of descriptions for the available commands.
         /// </summary>
-        public static FOS_System.Collections.List CommandDescriptions = new FOS_System.Collections.List(); 
-        
+        public static List CommandDescriptions = new List();
+
         /// <summary>
-        /// CommandHelp constructor
+        ///     CommandHelp constructor
         /// </summary>
         static CommandHelp()
         {
             #region ExInfo
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "ExInfo",
                 CommandNameLower = "exinfo",
                 Description = "Provides you all the cached exception details."
             });
+
             #endregion
 
             #region Halt
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Halt",
                 CommandNameLower = "halt",
                 Description = "Shuts down the system."
             });
+
             #endregion
 
             #region Init
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Init",
@@ -98,9 +105,11 @@ Possible options:
     USB => Initialize USB sub-system (EHCI, USB and USB MSDs). Dependent upon PCI sub-system. PCI must be initialised first.
     FS  => Initialize partitions and file systems. Dependent upon ATA or USB sub-systems. One or more must be initialised prior to calling this."
             });
+
             #endregion
 
             #region Output
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Output",
@@ -115,9 +124,11 @@ Possible options:
     FS  => Output partition and file system statuses,
     Memory = > Output Heap memory and GC status.",
             });
+
             #endregion
 
             #region CheckDisk
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "CheckDisk",
@@ -126,9 +137,11 @@ Possible options:
 Check disks passed in option for errors.
 ",
             });
+
             #endregion
 
             #region chkd
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Chkd",
@@ -137,9 +150,11 @@ Check disks passed in option for errors.
 Alias for CheckDisk commmand.
 ",
             });
+
             #endregion
 
             #region FormatDisk
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "FormatDisk",
@@ -148,9 +163,11 @@ Alias for CheckDisk commmand.
 Formats a disk passed in option in FAT 32 format.
 ",
             });
+
             #endregion
 
             #region Fmtd
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Fmtd",
@@ -159,9 +176,11 @@ Formats a disk passed in option in FAT 32 format.
 Alias for FormatDisk.
 ",
             });
+
             #endregion
 
             #region Dir
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Dir",
@@ -176,9 +195,11 @@ On changing directory, it will set ./ to current directory.
 To refer current directory, you can use ./ and for the parent directory, use ../
 ",
             });
+
             #endregion
 
             #region File
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "File",
@@ -189,9 +210,11 @@ File Delete <File> : Delete a specified File.
 File Copy <SrcFile> <DestFile>  : Copies specified source file <SrcFile> to destination.
 ",
             });
+
             #endregion
 
             #region GC
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "GC",
@@ -201,9 +224,11 @@ Calls garbage collection and performs memory clean up.
 Cleanup: This argument is optional and doesn't modify the behaviour.
 ",
             });
+
             #endregion
 
             #region Clear
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Clear",
@@ -211,9 +236,11 @@ Cleanup: This argument is optional and doesn't modify the behaviour.
                 Description = @"Clear
 Clears the command shell and displays the empty prompt.",
             });
+
             #endregion
 
             #region Show
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Show",
@@ -223,9 +250,11 @@ Show: Show the License information.
 Show w: Show the license warnings.
 Show c: Show the license conditions."
             });
+
             #endregion
 
             #region Reboot
+
             CommandDescriptions.Add(new CommandDescription()
             {
                 CommandName = "Reboot",
@@ -233,20 +262,21 @@ Show c: Show the license conditions."
                 Description = @"Reboot
 Safely reboots the computer."
             });
+
             #endregion
         }
-        
+
         /// <summary>
-        /// Returns Description of the command passed to it
+        ///     Returns Description of the command passed to it
         /// </summary>
         /// <param name="command">Name of the command to find the description of</param>
         /// <returns>Description of the command (FOS_System.String)</returns>
-        public static FOS_System.String GetCommandDescription(FOS_System.String command)
+        public static String GetCommandDescription(String command)
         {
             for (int i = 0; i < CommandDescriptions.Count; i++)
             {
-                CommandDescription cmdDesc = (CommandDescription)CommandHelp.CommandDescriptions[i];
-                
+                CommandDescription cmdDesc = (CommandDescription) CommandDescriptions[i];
+
                 if (cmdDesc.CommandNameLower == command)
                 {
                     return cmdDesc.Description;

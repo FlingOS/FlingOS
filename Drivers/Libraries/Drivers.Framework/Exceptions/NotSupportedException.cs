@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// Represents a not supported exception.
+    ///     Represents a not supported exception.
     /// </summary>
-    public class NotSupportedException : Framework.Exception
+    public class NotSupportedException : Exception
     {
         /// <summary>
-        /// Sets the message to "Not supported exception."
+        ///     Sets the message to "Not supported exception."
         /// </summary>
         /// <param name="anExtendedMessage">The extended message to append to the main message.</param>
-        public NotSupportedException(Framework.String anExtendedMessage)
+        public NotSupportedException(String anExtendedMessage)
             : base("Not supported exception. " + anExtendedMessage)
         {
         }

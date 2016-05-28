@@ -1,20 +1,19 @@
-﻿using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
+﻿using Drivers.Compiler.Attributes;
+using Kernel.Consoles;
 using Kernel.FOS_System.IO;
-
+using Kernel.FOS_System.Processes;
 
 namespace Kernel.Tasks.Driver
 {
     public static class FileSystemsDriverTask
     {
-        private static Consoles.VirtualConsole console;
+        private static VirtualConsole console;
 
         private static uint GCThreadId;
 
         public static bool Terminating = false;
 
-        [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel")]
-        public static bool Ready;
+        [Group(Name = "IsolatedKernel")] public static bool Ready;
 
         public static void Main()
         {
@@ -25,7 +24,7 @@ namespace Kernel.Tasks.Driver
             try
             {
                 BasicConsole.WriteLine("File Systems Driver > Creating virtual console...");
-                console = new Consoles.VirtualConsole();
+                console = new VirtualConsole();
 
                 BasicConsole.WriteLine("File Systems Driver > Connecting virtual console...");
                 console.Connect();

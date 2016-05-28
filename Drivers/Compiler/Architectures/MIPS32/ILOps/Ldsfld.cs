@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldsfld : IL.ILOps.Ldsfld
     {
@@ -44,22 +44,22 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldsfld:
-                    {
-                        Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
-                        int size = theTypeInfo.SizeOnStackInBytes;
-                        bool isFloat = Utilities.IsFloat(theField.FieldType);
+                {
+                    TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+                    int size = theTypeInfo.SizeOnStackInBytes;
+                    bool isFloat = Utilities.IsFloat(theField.FieldType);
 
-                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                        {
-                            isFloat = isFloat,
-                            sizeOnStackInBytes = (size == 8 ? 8 : 4),
-                            isGCManaged = theTypeInfo.IsGCManaged,
-                            isValue = theTypeInfo.IsValueType
-                        });
-                    }
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    {
+                        isFloat = isFloat,
+                        sizeOnStackInBytes = size == 8 ? 8 : 4,
+                        isGCManaged = theTypeInfo.IsGCManaged,
+                        isValue = theTypeInfo.IsValueType
+                    });
+                }
                     break;
                 case OpCodes.Ldsflda:
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
@@ -74,13 +74,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown when loading a static float field.
+        ///     Thrown when loading a static float field.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -96,64 +96,96 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.AddExternalLabel(fieldID);
 
             //Load the field or field address
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldsfld:
+                {
+                    TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+                    int size = /*theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : */
+                        theTypeInfo.SizeOnStackInBytes;
+                    bool isFloat = Utilities.IsFloat(theField.FieldType);
+
+                    if (isFloat)
                     {
-                        Types.TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
-                        int size = /*theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : */theTypeInfo.SizeOnStackInBytes;
-                        bool isFloat = Utilities.IsFloat(theField.FieldType);
-
-                        if (isFloat)
-                        {
-                            //SUPPORT - floats
-                            throw new NotSupportedException("Loading static fields of type float not supported yet!");
-                        }
-
-                        conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t1" });
-
-                        if (size == 1)
-                        {
-                            conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t0", Dest = "$t0" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                        }
-                        else if (size == 2)
-                        {
-                            conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t0", Dest = "$t0" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                        }
-                        else if (size == 4)
-                        {
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                        }
-                        else if (size == 8)
-                        {
-                                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                        }
-                        else
-                        {
-                            throw new ArgumentOutOfRangeException("Loading static field that has stack size greater than 8 not supported!");
-                        }
-
-                        conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                        {
-                            isFloat = isFloat,
-                            sizeOnStackInBytes = (size == 8 ? 8 : 4),
-                            isGCManaged = theTypeInfo.IsGCManaged,
-                            isValue = theTypeInfo.IsValueType
-                        });
+                        //SUPPORT - floats
+                        throw new NotSupportedException("Loading static fields of type float not supported yet!");
                     }
+
+                    conversionState.Append(new La() {Label = fieldID, Dest = "$t1"});
+
+                    if (size == 1)
+                    {
+                        conversionState.Append(new ASMOps.Xor() {Src1 = "$t0", Src2 = "$t0", Dest = "$t0"});
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Byte,
+                            Src = "0($t1)",
+                            Dest = "$t0",
+                            MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                        });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                    }
+                    else if (size == 2)
+                    {
+                        conversionState.Append(new ASMOps.Xor() {Src1 = "$t0", Src2 = "$t0", Dest = "$t0"});
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Halfword,
+                            Src = "0($t1)",
+                            Dest = "$t0",
+                            MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                        });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                    }
+                    else if (size == 4)
+                    {
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Word,
+                            Src = "0($t1)",
+                            Dest = "$t0",
+                            MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                        });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                    }
+                    else if (size == 8)
+                    {
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Word,
+                            Src = "4($t1)",
+                            Dest = "$t0",
+                            MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                        });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Word,
+                            Src = "0($t1)",
+                            Dest = "$t0",
+                            MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                        });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException(
+                            "Loading static field that has stack size greater than 8 not supported!");
+                    }
+
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    {
+                        isFloat = isFloat,
+                        sizeOnStackInBytes = size == 8 ? 8 : 4,
+                        isGCManaged = theTypeInfo.IsGCManaged,
+                        isValue = theTypeInfo.IsValueType
+                    });
+                }
                     break;
                 case OpCodes.Ldsflda:
                     //Load the address of the field i.e. address of the ASM label
-                    conversionState.Append(new ASMOps.La() { Label = fieldID, Dest = "$t4" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+                    conversionState.Append(new La() {Label = fieldID, Dest = "$t4"});
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {

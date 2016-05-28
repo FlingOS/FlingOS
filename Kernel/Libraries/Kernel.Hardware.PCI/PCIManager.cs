@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,61 +23,64 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define PCI_TRACE
 #undef PCI_TRACE
 
-using System;
-using Kernel.FOS_System;
+using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware.Devices;
+using Kernel.Hardware.IO;
 
 namespace Kernel.Hardware.PCI
 {
     /// <summary>
-    /// Provides methods for managing PCI access.
+    ///     Provides methods for managing PCI access.
     /// </summary>
     public static class PCIManager
     {
         /// <summary>
-        /// The configuration address port.
+        ///     The configuration address port.
         /// </summary>
-        internal static IO.IOPort ConfigAddressPort;
-        /// <summary>
-        /// The configuration data port.
-        /// </summary>
-        internal static IO.IOPort ConfigDataPort;
+        internal static IOPort ConfigAddressPort;
 
         /// <summary>
-        /// List of all the PCI devices found.
+        ///     The configuration data port.
+        /// </summary>
+        internal static IOPort ConfigDataPort;
+
+        /// <summary>
+        ///     List of all the PCI devices found.
         /// </summary>
         public static List Devices;
 
         /// <summary>
-        /// Initialises the PCI bus by enumerating all connected devices.
+        ///     Initialises the PCI bus by enumerating all connected devices.
         /// </summary>
         public static void Init()
         {
-            ConfigAddressPort = new IO.IOPort(0xCF8);
-            ConfigDataPort = new IO.IOPort(0xCFC);
+            ConfigAddressPort = new IOPort(0xCF8);
+            ConfigDataPort = new IOPort(0xCFC);
             Devices = new List();
         }
-        
+
         /// <summary>
-        /// Enumerates all connected PCI devices.
+        ///     Enumerates all connected PCI devices.
         /// </summary>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public static void EnumerateDevices()
         {
             EnumerateBus(0, 0);
         }
 
         /// <summary>
-        /// Enumerates a particular PCI bus for connected devices.
+        ///     Enumerates a particular PCI bus for connected devices.
         /// </summary>
         /// <param name="bus">The bus to enumerate.</param>
         /// <param name="step">The number of steps from the root bus.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         private static void EnumerateBus(uint bus, uint step)
         {
             for (uint device = 0; device < 32; device++)
@@ -84,7 +88,7 @@ namespace Kernel.Hardware.PCI
                 PCIDevice zeroFuncDevice = new PCIDevice(bus, device, 0x00, "Generic PCI Device");
                 if (zeroFuncDevice.DeviceExists)
                 {
-                    uint max = ((uint)zeroFuncDevice.HeaderType & 0x80) != 0 ? 8u : 1u;
+                    uint max = ((uint) zeroFuncDevice.HeaderType & 0x80) != 0 ? 8u : 1u;
 
                     for (uint function = 0; function < max; function++)
                     {
@@ -110,15 +114,15 @@ namespace Kernel.Hardware.PCI
         }
 
         /// <summary>
-        /// Adds a PCI device to the list of devices. Enumerates the secondary bus if it is available.
+        ///     Adds a PCI device to the list of devices. Enumerates the secondary bus if it is available.
         /// </summary>
         /// <param name="device">The device to add.</param>
         /// <param name="step">The number of steps from the root bus.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         private static void AddDevice(PCIDevice device, uint step)
         {
             Devices.Add(device);
-            Hardware.Devices.DeviceManager.RegisterDevice(device);
+            DeviceManager.RegisterDevice(device);
 
             if (device is PCIDeviceBridge)
             {
@@ -126,8 +130,8 @@ namespace Kernel.Hardware.PCI
                 BasicConsole.WriteLine("Enumerating PCI Bridge Device...");
                 BasicConsole.DelayOutput(5);
 #endif
-                 
-                EnumerateBus(((PCIDeviceBridge)device).SecondaryBusNumber, step + 1);
+
+                EnumerateBus(((PCIDeviceBridge) device).SecondaryBusNumber, step + 1);
             }
         }
     }

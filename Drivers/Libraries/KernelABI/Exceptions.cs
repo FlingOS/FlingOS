@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
 
 namespace KernelABI
 {
     public static class Exceptions
     {
-        [Drivers.Compiler.Attributes.AddExceptionHandlerInfoMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [AddExceptionHandlerInfoMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void AddExceptionHandlerInfo(
             void* handlerPtr,
             void* filterPtr)
         {
         }
 
-        [Drivers.Compiler.Attributes.ExceptionsHandleLeaveMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [ExceptionsHandleLeaveMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void HandleLeave(void* continuePtr)
         {
         }
 
-        [Drivers.Compiler.Attributes.ExceptionsHandleEndFinallyMethod]
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [ExceptionsHandleEndFinallyMethod]
+        [NoDebug]
+        [NoGC]
         public static unsafe void HandleEndFinally()
         {
         }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,125 +23,126 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 //#define MSD_TRACE
 //#define DEVICE_INFO
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Controllers;
 using Kernel.Hardware.Devices;
+using Kernel.Utilities;
 using Utils = Kernel.Utilities.MemoryUtils;
 
 namespace Kernel.USB.Devices
 {
     /// <summary>
-    /// Constant values used by the Mass Storage Device driver.
+    ///     Constant values used by the Mass Storage Device driver.
     /// </summary>
     public static class MassStorageDevice_Consts
     {
         /// <summary>
-        /// Indicates the SCSI command is not OK. 
+        ///     Indicates the SCSI command is not OK.
         /// </summary>
         public const uint CSWMagicNotOK = 0x01010101;
+
         /// <summary>
-        /// Indiciates the SCSI command is OK.
+        ///     Indiciates the SCSI command is OK.
         /// </summary>
         public const uint CSWMagicOK = 0x53425355; // USBS
+
         /// <summary>
-        /// SCSI command packet siganture.
+        ///     SCSI command packet siganture.
         /// </summary>
         public const uint CBWMagic = 0x43425355; // USBC
     }
 
     /// <summary>
-    /// All the possible Mass Storage Device power states.
+    ///     All the possible Mass Storage Device power states.
     /// </summary>
     public enum MSD_PowerStates : byte
     {
         /// <summary>
-        /// Default state used with devices which do not support the other states.
-        /// Tells the device to process the Start and LOEJ bits. 
+        ///     Default state used with devices which do not support the other states.
+        ///     Tells the device to process the Start and LOEJ bits.
         /// </summary>
         /// <remarks>
-        /// If you set the power state to something other than START_VALID, the Start 
-        /// and LOEJ bits are ignored.
+        ///     If you set the power state to something other than START_VALID, the Start
+        ///     and LOEJ bits are ignored.
         /// </remarks>
         START_VALID = 0x0,
+
         /// <summary>
-        /// Tells the device to transition into the Active power state.
+        ///     Tells the device to transition into the Active power state.
         /// </summary>
         ACTIVE = 0x1,
+
         /// <summary>
-        /// Tells the device to transition into the Idle power state.
+        ///     Tells the device to transition into the Idle power state.
         /// </summary>
         IDLE = 0x2,
+
         /// <summary>
-        /// Tells the device to transition into the Standby power state.
+        ///     Tells the device to transition into the Standby power state.
         /// </summary>
         STANDBY = 0x3,
+
         /// <summary>
-        /// Tells the device to transfer power control to the logical unit.
+        ///     Tells the device to transfer power control to the logical unit.
         /// </summary>
         /// <remarks>
-        /// Enables the Idle timer and disables the Standby timer.
+        ///     Enables the Idle timer and disables the Standby timer.
         /// </remarks>
         LU_CONTROL = 0x7,
+
         /// <summary>
-        /// Forces the Idle timer to 0 then transitions the device power state to 
-        /// Idle then hands power control back to the device server.
+        ///     Forces the Idle timer to 0 then transitions the device power state to
+        ///     Idle then hands power control back to the device server.
         /// </summary>
         FORCE_IDLE_0 = 0xA,
+
         /// <summary>
-        /// Forces the Standby timer to 0 then transitions the device power state to 
-        /// Standby then hands power control back to the device server.
+        ///     Forces the Standby timer to 0 then transitions the device power state to
+        ///     Standby then hands power control back to the device server.
         /// </summary>
         FORCE_STANDBY_0 = 0xB
     }
+
     /// <summary>
-    /// Represents a USB mass storage device.
+    ///     Represents a USB mass storage device.
     /// </summary>
     /// <remarks>
-    /// The SCSI MSD commands specification is available from 
-    /// <a href="http://www.seagate.com/staticfiles/support/disc/manuals/scsi/100293068a.pdf">Seagate</a>.
+    ///     The SCSI MSD commands specification is available from
+    ///     <a href="http://www.seagate.com/staticfiles/support/disc/manuals/scsi/100293068a.pdf">Seagate</a>.
     /// </remarks>
     public unsafe class MassStorageDevice : USBDevice
     {
         //TODO: Test for ejected, don't send commands if ejected!
-    
-        /// <summary>
-        /// The underlying disk device that allows the mass storage device to be 
-        /// accessed in the same way as a disk.
-        /// </summary>
-        public MassStorageDevice_DiskDevice diskDevice
-        {
-            get;
-            protected set;
-        }
-       
-        /// <summary>
-        /// Whether the device has been ejected or not.
-        /// </summary>
-        public bool Ejected
-        {
-            get;
-            protected set;
-        }
-        /// <summary>
-        /// Whether the device is in the Active power state or not.
-        /// </summary>
-        public bool Active
-        {
-            get;
-            protected set;
-        }
 
         /// <summary>
-        /// Initialises a new mass storage device with the specified USB device information.
+        ///     The underlying disk device that allows the mass storage device to be
+        ///     accessed in the same way as a disk.
+        /// </summary>
+        public MassStorageDevice_DiskDevice diskDevice { get; protected set; }
+
+        /// <summary>
+        ///     Whether the device has been ejected or not.
+        /// </summary>
+        public bool Ejected { get; protected set; }
+
+        /// <summary>
+        ///     Whether the device is in the Active power state or not.
+        /// </summary>
+        public bool Active { get; protected set; }
+
+        /// <summary>
+        ///     Initialises a new mass storage device with the specified USB device information.
         /// </summary>
         /// <param name="aDeviceInfo">
-        /// The USB device information that specifies the physical mass storage device.
+        ///     The USB device information that specifies the physical mass storage device.
         /// </param>
         public MassStorageDevice(USBDeviceInfo aDeviceInfo)
             : base(aDeviceInfo, DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage", true)
@@ -155,13 +157,13 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Sets up the mass storage device for bulk transfer. Also creates the mass storage disk device.
+        ///     Sets up the mass storage device for bulk transfer. Also creates the mass storage disk device.
         /// </summary>
         protected void Setup()
         {
             // Start with correct endpoint toggles
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
+            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
+            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
 
             // Reset the main MSD interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
@@ -169,7 +171,7 @@ namespace Kernel.USB.Devices
             //Check the device is responding correctly. The inquiry will also return
             //  you more information like Id string indices etc. but we just check 
             //  then discard them for now.
-            byte* inquiryBuffer = (byte*)FOS_System.Heap.AllocZeroed(26u, "MassStorageDevice : Setup");
+            byte* inquiryBuffer = (byte*) Heap.AllocZeroed(26u, "MassStorageDevice : Setup");
             try
             {
                 SendSCSICommand_IN(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
@@ -178,20 +180,20 @@ namespace Kernel.USB.Devices
             }
             finally
             {
-                FOS_System.Heap.Free(inquiryBuffer);
+                Heap.Free(inquiryBuffer);
             }
 
             // Send SCSI command "test unit ready(6)"
             //  And check the response is OK
-            if(TestDeviceReady() != 0)
+            if (TestDeviceReady() != 0)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Mass Storage Device not ready!"));
+                ExceptionMethods.Throw(new Exception("Mass Storage Device not ready!"));
             }
 
             // Create the paired disk device for this MSD.
             diskDevice = new MassStorageDevice_DiskDevice(this);
             DeviceManager.RegisterDevice(diskDevice);
-            
+
             // Tell the MSD device to "load" the medium
             Load();
             // Then force the code to put the MSD into the Idle power state
@@ -203,7 +205,7 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Destroys the USB device.
+        ///     Destroys the USB device.
         /// </summary>
         public override void Destroy()
         {
@@ -220,11 +222,11 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Transitions the device to the Active power state.
+        ///     Transitions the device to the Active power state.
         /// </summary>
         public void Activate()
         {
-            if(!Active)
+            if (!Active)
             {
                 Active = true;
 
@@ -236,11 +238,12 @@ namespace Kernel.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.ACTIVE, true, true, null);
             }
         }
+
         /// <summary>
-        /// Transitions the device to the Idle power state.
+        ///     Transitions the device to the Idle power state.
         /// </summary>
         /// <param name="overrideCondition">
-        /// Whether to ignore the internal Active state or not.
+        ///     Whether to ignore the internal Active state or not.
         /// </param>
         public void Idle(bool overrideCondition)
         {
@@ -259,8 +262,9 @@ namespace Kernel.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.IDLE, false, false, null);
             }
         }
+
         /// <summary>
-        /// Transitions the device to the Standby power state.
+        ///     Transitions the device to the Standby power state.
         /// </summary>
         public void Standby()
         {
@@ -273,8 +277,9 @@ namespace Kernel.USB.Devices
             //    to have the device stop but not eject the medium.
             SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.STANDBY, false, false, null);
         }
+
         /// <summary>
-        /// Tells the device to laod the medium.
+        ///     Tells the device to laod the medium.
         /// </summary>
         public void Load()
         {
@@ -289,12 +294,13 @@ namespace Kernel.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, true, true, null);
             }
         }
+
         /// <summary>
-        /// Safely ejects the device.
+        ///     Safely ejects the device.
         /// </summary>
         public void Eject()
         {
-            if(!Ejected)
+            if (!Ejected)
             {
                 Ejected = true;
 
@@ -310,9 +316,10 @@ namespace Kernel.USB.Devices
                 SendSCSI_StartStopUnitCommand(false, MSD_PowerStates.START_VALID, false, true, null);
             }
         }
+
         /// <summary>
-        /// Sends the synchronise cache command to tell the device
-        /// to immediately write any cached data to the medium.
+        ///     Sends the synchronise cache command to tell the device
+        ///     to immediately write any cached data to the medium.
         /// </summary>
         public void CleanCaches()
         {
@@ -323,7 +330,7 @@ namespace Kernel.USB.Devices
                 //  loaded for it to be able to sync caches (i.e. write) to 
                 //  the medium.
                 bool goIdle = false;
-                if(!Active)
+                if (!Active)
                 {
                     Activate();
                     //Store the fact that this method activated the device.
@@ -341,24 +348,25 @@ namespace Kernel.USB.Devices
 
                 // Only idle the device if this method was the one which activated it.
                 //  See above to reasoning.
-                if(goIdle)
+                if (goIdle)
                 {
                     Idle(false);
                 }
             }
         }
-        
+
         /// <summary>
-        /// Resets the bulk tarnsfer interface.
+        ///     Resets the bulk tarnsfer interface.
         /// </summary>
         public void BulkReset()
         {
             BulkReset(DeviceInfo.MSD_InterfaceNum);
         }
+
         /// <summary>
-        /// Resets the bulk tarnsfer interface.
+        ///     Resets the bulk tarnsfer interface.
         /// </summary>
-        /// <param name="numInterface">The bulk transfer interface number to reset.</param> 
+        /// <param name="numInterface">The bulk transfer interface number to reset.</param>
         public void BulkReset(byte numInterface)
         {
 #if MSD_TRACE
@@ -376,7 +384,7 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Sets up a SCSI command.
+        ///     Sets up a SCSI command.
         /// </summary>
         /// <param name="SCSICommand">The command byte.</param>
         /// <param name="cbw">A pointer to an existing command block wrapper.</param>
@@ -421,34 +429,36 @@ namespace Kernel.USB.Devices
                     // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x80;
                     cbw->CBWCBLength = 10;
-                    cbw->commandByte[2] = (byte)(LBA >> 24);    // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);    //   ...
-                    cbw->commandByte[4] = (byte)(LBA >> 8);     //   ...
-                    cbw->commandByte[5] = (byte)(LBA);          // LBA LSB
+                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
                     break;
                 // Read (10)
                 case 0x28:
                     // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x80;
                     cbw->CBWCBLength = 10;
-                    cbw->commandByte[2] = (byte)(LBA >> 24);    // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);    //   ...
-                    cbw->commandByte[4] = (byte)(LBA >> 8);     //   ...
-                    cbw->commandByte[5] = (byte)(LBA);          // LBA LSB
-                    cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize);        // LSB
+                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
+                    cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
+                        // MSB <--- blocks not byte!
+                    cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
                     break;
                 // Write (10)
                 case 0x2A:
                     // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x00;
                     cbw->CBWCBLength = 10;
-                    cbw->commandByte[2] = (byte)(LBA >> 24);    // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);    //   ...
-                    cbw->commandByte[4] = (byte)(LBA >> 8);     //   ...
-                    cbw->commandByte[5] = (byte)(LBA);          // LBA LSB
-                    cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize);        // LSB
+                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
+                    cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
+                        // MSB <--- blocks not byte!
+                    cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
                     break;
                 // Synchronise Cache (10)
                 case 0x35:
@@ -456,12 +466,13 @@ namespace Kernel.USB.Devices
                     cbw->CBWFlags = 0x00;
                     cbw->CBWCBLength = 10;
                     cbw->CBWDataTransferLength = 0;
-                    cbw->commandByte[2] = (byte)(LBA >> 24);            // LBA MSB
-                    cbw->commandByte[3] = (byte)(LBA >> 16);            //   ...
-                    cbw->commandByte[4] = (byte)(LBA >> 8);             //   ...
-                    cbw->commandByte[5] = (byte)(LBA);                  // LBA LSB
-                    cbw->commandByte[7] = (byte)((TransferLength / (uint)diskDevice.BlockSize) >> 8); // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte)(TransferLength / (uint)diskDevice.BlockSize);        // LSB
+                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
+                    cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
+                        // MSB <--- blocks not byte!
+                    cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
                     break;
                 // Start Stop Unit (6)
                 case 0x1B:
@@ -472,8 +483,9 @@ namespace Kernel.USB.Devices
                     break;
             }
         }
+
         /// <summary>
-        /// Checks a received SCSI command is valid and OK.
+        ///     Checks a received SCSI command is valid and OK.
         /// </summary>
         /// <param name="MSDStatus">A pointer to the start of the SCSI command data.</param>
         /// <param name="SCSIOpcode">The SCSI op coce.</param>
@@ -483,7 +495,7 @@ namespace Kernel.USB.Devices
             int error = 0;
 
             // check signature 0x53425355 // DWORD 0 (byte 0:3)
-            uint CSWsignature = *(uint*)MSDStatus; // DWORD 0
+            uint CSWsignature = *(uint*) MSDStatus; // DWORD 0
             if (CSWsignature == MassStorageDevice_Consts.CSWMagicOK)
             {
 #if MSD_TRACE
@@ -506,9 +518,10 @@ namespace Kernel.USB.Devices
             }
 
             // check matching tag
-            uint CSWtag = *(((uint*)MSDStatus) + 1); // DWORD 1 (byte 4:7)
+            uint CSWtag = *((uint*) MSDStatus + 1); // DWORD 1 (byte 4:7)
 
-            if (((byte)(CSWtag) == SCSIOpcode) && ((byte)(CSWtag >> 8) == 0x42) && ((byte)(CSWtag >> 16) == 0x42) && ((byte)(CSWtag >> 24) == 0x42))
+            if (((byte) CSWtag == SCSIOpcode) && ((byte) (CSWtag >> 8) == 0x42) && ((byte) (CSWtag >> 16) == 0x42) &&
+                ((byte) (CSWtag >> 24) == 0x42))
             {
 #if MSD_TRACE
                 DBGMSG(((FOS_System.String)"CSW tag ") + (byte)(CSWtag) + " OK");
@@ -523,7 +536,7 @@ namespace Kernel.USB.Devices
             }
 
             // check CSWDataResidue
-            uint CSWDataResidue = *(((uint*)MSDStatus) + 2); // DWORD 2 (byte 8:11)
+            uint CSWDataResidue = *((uint*) MSDStatus + 2); // DWORD 2 (byte 8:11)
             if (CSWDataResidue == 0)
             {
 #if MSD_TRACE
@@ -538,7 +551,7 @@ namespace Kernel.USB.Devices
             }
 
             // check status byte // DWORD 3 (byte 12)
-            byte CSWstatusByte = *(((byte*)MSDStatus) + 12); // byte 12 (last byte of 13 bytes)
+            byte CSWstatusByte = *((byte*) MSDStatus + 12); // byte 12 (last byte of 13 bytes)
 
             switch (CSWstatusByte)
             {
@@ -570,15 +583,16 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Sends a SCSI command that receives data.
+        ///     Sends a SCSI command that receives data.
         /// </summary>
         /// <param name="SCSIcommand">The SCSI command to send.</param>
         /// <param name="LBA">The LBA to access.</param>
         /// <param name="TransferLength">The length of the data to receive.</param>
         /// <param name="dataBuffer">The data buffer - must be at least as big as the transfer length.</param>
         /// <param name="statusBuffer">The buffer to store the command status result in. Must be at least 13 bytes long.</param>
-        /// <see cref="!:http://www.beyondlogic.org/usbnutshell/usb4.htm#Bulk"/>
-        public bool SendSCSICommand_IN(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer, bool resetOnFail = true)
+        /// <see cref="!:http://www.beyondlogic.org/usbnutshell/usb4.htm#Bulk" />
+        public bool SendSCSICommand_IN(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer,
+            void* statusBuffer, bool resetOnFail = true)
         {
 #if MSD_TRACE
             DBGMSG("OUT part");
@@ -600,7 +614,9 @@ namespace Kernel.USB.Devices
                 BasicConsole.WriteLine(" - correct.");
             }
 #endif
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_IN (1)");
+            CommandBlockWrapper* cbw =
+                (CommandBlockWrapper*)
+                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_IN (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -614,10 +630,11 @@ namespace Kernel.USB.Devices
                 // Create a new USB transfer 
                 //  This transfer is re-used for all transfers throughout this method
                 USBTransfer transfer = new USBTransfer();
-                
+
                 // Initialises the transfer
                 //  Sets the transfer packet size, points it to the MSD OUT endpoint and sets it as a bulk transfer
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID,
+                    512);
                 // Adds an OUT transaction to the transfer.
                 //  This OUT transaction ouptuts the SCSI command to the MSD
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
@@ -641,14 +658,15 @@ namespace Kernel.USB.Devices
                         // And we must remember to only free it later if we created it.
                         FreeStatusBuffer = true;
                         // Create the pre-allocated buffer. Size 13 is the size of the response.
-                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSICommand_IN (2)");
+                        statusBuffer = Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSICommand_IN (2)");
                     }
 
 #if MSD_TRACE
                     DBGMSG("Setup transfer...");
 #endif
                     // Setup a new transfer to receive the response from the device
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID,
+                        512);
 #if MSD_TRACE
                     DBGMSG("Done.");
 #endif
@@ -714,25 +732,27 @@ namespace Kernel.USB.Devices
             }
             finally
             {
-                FOS_System.Heap.Free(cbw);
+                Heap.Free(cbw);
                 // Only free the status buffer if we allocated it
                 if (FreeStatusBuffer)
                 {
-                    FOS_System.Heap.Free(statusBuffer);
+                    Heap.Free(statusBuffer);
                 }
             }
 
             return OK;
         }
+
         /// <summary>
-        /// Sends a SCSI command that sends data.
+        ///     Sends a SCSI command that sends data.
         /// </summary>
         /// <param name="SCSIcommand">The SCSI command to send.</param>
         /// <param name="LBA">The LBA to access.</param>
         /// <param name="TransferLength">The length of the data to send.</param>
         /// <param name="dataBuffer">The data buffer - must be at least as long as the transfer length.</param>
         /// <param name="statusBuffer">The data buffer to store the command status result in. Must be at least 13 bytes long.</param>
-        public void SendSCSICommand_OUT(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer, void* statusBuffer)
+        public void SendSCSICommand_OUT(byte SCSIcommand, uint LBA, ushort TransferLength, void* dataBuffer,
+            void* statusBuffer)
         {
 #if MSD_TRACE
             DBGMSG("OUT part");
@@ -741,7 +761,9 @@ namespace Kernel.USB.Devices
 
             //This method work pretty much the same as the SendSCSICommand_IN method so see there for docs.
 
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_OUT (1)");
+            CommandBlockWrapper* cbw =
+                (CommandBlockWrapper*)
+                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_OUT (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -752,7 +774,8 @@ namespace Kernel.USB.Devices
 #endif
                 //Issue the command transfer
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID,
+                    512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
@@ -769,7 +792,8 @@ namespace Kernel.USB.Devices
                     //      2) Or my implementation for issusing multiple OUT transactions in a row in 
                     //          one is broken. In this case, I have failed to find out what causes ths issue 
                     //          / why it occurs.
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID,
+                        512);
                     DeviceInfo.hc.OUTTransaction(transfer, false, dataBuffer, TransferLength);
                     DeviceInfo.hc.IssueTransfer(transfer);
 
@@ -801,13 +825,14 @@ namespace Kernel.USB.Devices
                         DBGMSG("Alloc 13 bytes of mem...");
 #endif
                         FreeStatusBuffer = true;
-                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSICommand_OUT (2)");
+                        statusBuffer = Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSICommand_OUT (2)");
                     }
 
 #if MSD_TRACE
                     DBGMSG("Setup transfer...");
 #endif
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID,
+                        512);
 #if MSD_TRACE
                     DBGMSG("Done.");
 #endif
@@ -846,29 +871,30 @@ namespace Kernel.USB.Devices
             }
             finally
             {
-                FOS_System.Heap.Free(cbw);
+                Heap.Free(cbw);
                 if (FreeStatusBuffer)
                 {
-                    FOS_System.Heap.Free(statusBuffer);
+                    Heap.Free(statusBuffer);
                 }
             }
         }
+
         /// <summary>
-        /// Sends a SCSI Sync Cache command.
+        ///     Sends a SCSI Sync Cache command.
         /// </summary>
         /// <param name="SyncNV">
-        /// Whether the device is required to sync volatile and non-volatile caches or not. Specify 
-        /// "false" to force full cache sync including non-volatile caches. Specify "true" to force 
-        /// sync volatile caches and optionally sync non-volatile caches (up to the specific device
-        /// what it does).
+        ///     Whether the device is required to sync volatile and non-volatile caches or not. Specify
+        ///     "false" to force full cache sync including non-volatile caches. Specify "true" to force
+        ///     sync volatile caches and optionally sync non-volatile caches (up to the specific device
+        ///     what it does).
         /// </param>
         /// <param name="ImmediateResponse">
-        /// Whether the device should send the status response as soon as the command is recognised
-        /// or the device should only send the response once the sync is completed. Specify "false"
-        /// for the latter option.
+        ///     Whether the device should send the status response as soon as the command is recognised
+        ///     or the device should only send the response once the sync is completed. Specify "false"
+        ///     for the latter option.
         /// </param>
         /// <param name="statusBuffer">
-        /// Buffer for the status response. Specify null if you don't want to keep the response data.
+        ///     Buffer for the status response. Specify null if you don't want to keep the response data.
         /// </param>
         public void SendSCSI_SyncCacheCommand(bool SyncNV, bool ImmediateResponse, void* statusBuffer)
         {
@@ -876,80 +902,87 @@ namespace Kernel.USB.Devices
             //Thus, using LBA=0 & Blocks=0, syncs all blocks on the device!
             SendSCSI_SyncCacheCommand(SyncNV, ImmediateResponse, 0, 0, statusBuffer);
         }
+
         /// <summary>
-        /// Sends a SCSI Sync Cache command.
+        ///     Sends a SCSI Sync Cache command.
         /// </summary>
         /// <param name="SyncNV">
-        /// Whether the device is required to sync volatile and non-volatile caches or not. Specify 
-        /// "false" to force full cache sync including non-volatile caches. Specify "true" to force 
-        /// sync volatile caches and optionally sync non-volatile caches (up to the specific device
-        /// what it does).
+        ///     Whether the device is required to sync volatile and non-volatile caches or not. Specify
+        ///     "false" to force full cache sync including non-volatile caches. Specify "true" to force
+        ///     sync volatile caches and optionally sync non-volatile caches (up to the specific device
+        ///     what it does).
         /// </param>
         /// <param name="ImmediateResponse">
-        /// Whether the device should send the status response as soon as the command is recognised
-        /// or the device should only send the response once the sync is completed. Specify "false"
-        /// for the latter option.
+        ///     Whether the device should send the status response as soon as the command is recognised
+        ///     or the device should only send the response once the sync is completed. Specify "false"
+        ///     for the latter option.
         /// </param>
         /// <param name="LBA">The LBA of the first block to sync.</param>
         /// <param name="Blocks">
-        /// The number of blocks to sync. Specify 0 to sync all the blocks from the start LBA through
-        /// to the end of the device.
+        ///     The number of blocks to sync. Specify 0 to sync all the blocks from the start LBA through
+        ///     to the end of the device.
         /// </param>
         /// <param name="statusBuffer">
-        /// Buffer for the status response. Specify null if you don't want to keep the response data.
+        ///     Buffer for the status response. Specify null if you don't want to keep the response data.
         /// </param>
-        public void SendSCSI_SyncCacheCommand(bool SyncNV, bool ImmediateResponse, uint LBA, ushort Blocks, void* statusBuffer)
+        public void SendSCSI_SyncCacheCommand(bool SyncNV, bool ImmediateResponse, uint LBA, ushort Blocks,
+            void* statusBuffer)
         {
-            #if MSD_TRACE
+#if MSD_TRACE
             DBGMSG("SyncCache Command");
             DBGMSG("OUT part");
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
             #endif
 
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSI_SyncCacheCommand (1)");
+            CommandBlockWrapper* cbw =
+                (CommandBlockWrapper*)
+                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper),
+                        "MassStorageDevice : SendSCSI_SyncCacheCommand (1)");
             bool FreeStatusBuffer = false;
             try
             {
                 SetupSCSICommand(0x35, cbw, LBA, Blocks);
-                cbw->commandByte[1] = (byte)((SyncNV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
+                cbw->commandByte[1] = (byte) ((SyncNV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
 
-                #if MSD_TRACE
+#if MSD_TRACE
                 DBGMSG("Setup transfer...");
                 #endif
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID,
+                    512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
 
                 if (transfer.success)
                 {
-                    #if MSD_TRACE
+#if MSD_TRACE
                     DBGMSG("IN part");
                     #endif
 
                     if (statusBuffer == null)
                     {
-                        #if MSD_TRACE
+#if MSD_TRACE
                         DBGMSG("Alloc 13 bytes of mem...");
                         #endif
                         FreeStatusBuffer = true;
-                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSI_SyncCacheCommand (2)");
+                        statusBuffer = Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSI_SyncCacheCommand (2)");
                     }
 
-                    #if MSD_TRACE
+#if MSD_TRACE
                     DBGMSG("Setup transfer...");
                     #endif
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
-                    #if MSD_TRACE
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID,
+                        512);
+#if MSD_TRACE
                     DBGMSG("Done.");
                     #endif
                     DeviceInfo.hc.INTransaction(transfer, false, statusBuffer, 13);
-                    #if MSD_TRACE
+#if MSD_TRACE
                     DBGMSG("Issue transfer...");
                     #endif
                     DeviceInfo.hc.IssueTransfer(transfer);
-                    #if MSD_TRACE
+#if MSD_TRACE
                     DBGMSG("Done.");
                     DBGMSG("Check command...");
                     #endif
@@ -957,11 +990,11 @@ namespace Kernel.USB.Devices
                     if (!transfer.success || CheckSCSICommand(statusBuffer, 0x35) != 0)
                     {
                         // TODO: Handle failure/timeout
-                        #if MSD_TRACE
+#if MSD_TRACE
                         DBGMSG("SCSI SyncCaches (10) (In) command failed!");
                         #endif
                     }
-                    #if MSD_TRACE
+#if MSD_TRACE
                     else
                     {
                         DBGMSG("Command OK.");
@@ -972,45 +1005,46 @@ namespace Kernel.USB.Devices
                 else
                 {
                     // TODO: Handle failure/timeout
-                    #if MSD_TRACE
+#if MSD_TRACE
                     DBGMSG("SCSI SyncCache (10) (Out) command failed!");
                     #endif
                 }
             }
             finally
             {
-                FOS_System.Heap.Free(cbw);
+                Heap.Free(cbw);
                 if (FreeStatusBuffer)
                 {
-                    FOS_System.Heap.Free(statusBuffer);
+                    Heap.Free(statusBuffer);
                 }
             }
         }
+
         /// <summary>
-        /// Sends a SCSI START_STOP Unit command.
+        ///     Sends a SCSI START_STOP Unit command.
         /// </summary>
         /// <param name="ImmediateResponse">
-        /// Whether the device should send the status response as soon as the command is recognised
-        /// or the device should only send the response once the command processing is completed. 
-        /// Specify "false" for the latter option.
+        ///     Whether the device should send the status response as soon as the command is recognised
+        ///     or the device should only send the response once the command processing is completed.
+        ///     Specify "false" for the latter option.
         /// </param>
         /// <param name="PowerCondition">
-        /// The power condition to transition to. It is not invalid to tell the device to transition
-        /// to the same as its current power state.
+        ///     The power condition to transition to. It is not invalid to tell the device to transition
+        ///     to the same as its current power state.
         /// </param>
         /// <param name="Start">
-        /// If PowerCondition is START_VALID, tells the device to transition to the Active power state
-        /// or the Stopped power state (true for the former, false for the latter).
+        ///     If PowerCondition is START_VALID, tells the device to transition to the Active power state
+        ///     or the Stopped power state (true for the former, false for the latter).
         /// </param>
         /// <param name="LoadEject">
-        /// False to take no load/eject action. If true then: If Start is true, the device shall load
-        /// the medium. If Start is false, the device shall eject the medium.
+        ///     False to take no load/eject action. If true then: If Start is true, the device shall load
+        ///     the medium. If Start is false, the device shall eject the medium.
         /// </param>
         /// <param name="statusBuffer">
-        /// Buffer for the status response. Specify null if you don't want to keep the response data.
+        ///     Buffer for the status response. Specify null if you don't want to keep the response data.
         /// </param>
-        public void SendSCSI_StartStopUnitCommand(bool ImmediateResponse, MSD_PowerStates PowerCondition, 
-                                                  bool Start, bool LoadEject, void* statusBuffer)
+        public void SendSCSI_StartStopUnitCommand(bool ImmediateResponse, MSD_PowerStates PowerCondition,
+            bool Start, bool LoadEject, void* statusBuffer)
         {
 #if MSD_TRACE
             DBGMSG("StartStop Unit Command");
@@ -1019,19 +1053,23 @@ namespace Kernel.USB.Devices
             DBGMSG("OUT part");
             DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
-            CommandBlockWrapper* cbw = (CommandBlockWrapper*)FOS_System.Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSI_StartStopUnitCommand (1)");
+            CommandBlockWrapper* cbw =
+                (CommandBlockWrapper*)
+                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper),
+                        "MassStorageDevice : SendSCSI_StartStopUnitCommand (1)");
             bool FreeStatusBuffer = false;
             try
             {
                 SetupSCSICommand(0x1B, cbw, 0, 0);
-                cbw->commandByte[1] = (byte)(ImmediateResponse ? 0x1 : 0);
-                cbw->commandByte[4] = (byte)(((byte)PowerCondition << 4) | (LoadEject ? 0x2 : 0) | (Start ? 0x1 : 0));
+                cbw->commandByte[1] = (byte) (ImmediateResponse ? 0x1 : 0);
+                cbw->commandByte[4] = (byte) (((byte) PowerCondition << 4) | (LoadEject ? 0x2 : 0) | (Start ? 0x1 : 0));
 
 #if MSD_TRACE
                 DBGMSG("Setup transfer...");
 #endif
                 USBTransfer transfer = new USBTransfer();
-                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID, 512);
+                DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_OUTEndpointID,
+                    512);
                 DeviceInfo.hc.OUTTransaction(transfer, false, cbw, 31);
                 DeviceInfo.hc.IssueTransfer(transfer);
 
@@ -1048,13 +1086,14 @@ namespace Kernel.USB.Devices
                         DBGMSG("Alloc 13 bytes of mem...");
 #endif
                         FreeStatusBuffer = true;
-                        statusBuffer = FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSI_StartStopUnitCommand (2)");
+                        statusBuffer = Heap.AllocZeroed(13u, "MassStorageDevice : SendSCSI_StartStopUnitCommand (2)");
                     }
 
 #if MSD_TRACE
                     DBGMSG("Setup transfer...");
 #endif
-                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID, 512);
+                    DeviceInfo.hc.SetupTransfer(DeviceInfo, transfer, USBTransferType.Bulk, DeviceInfo.MSD_INEndpointID,
+                        512);
 #if MSD_TRACE
                     DBGMSG("Done.");
 #endif
@@ -1093,21 +1132,22 @@ namespace Kernel.USB.Devices
             }
             finally
             {
-                FOS_System.Heap.Free(cbw);
+                Heap.Free(cbw);
                 if (FreeStatusBuffer)
                 {
-                    FOS_System.Heap.Free(statusBuffer);
+                    Heap.Free(statusBuffer);
                 }
             }
         }
 
         /// <summary>
-        /// The maximum number of times to resend the "ready" query. See TestDeviceReady().
+        ///     The maximum number of times to resend the "ready" query. See TestDeviceReady().
         /// </summary>
-        /// <see cref="TestDeviceReady()"/>
+        /// <see cref="TestDeviceReady()" />
         public static byte MaxReadyTests = 100;
+
         /// <summary>
-        /// Tests the device is ready to send/receive data.
+        ///     Tests the device is ready to send/receive data.
         /// </summary>
         /// <returns>The last status byte from the device.</returns>
         public byte TestDeviceReady()
@@ -1123,7 +1163,7 @@ namespace Kernel.USB.Devices
 #endif
 
                 bool doBreak = true;
-                byte* statusBuffer = (byte*)FOS_System.Heap.AllocZeroed(13u, "MassStorageDevice : TestDeviceReady (1)");
+                byte* statusBuffer = (byte*) Heap.AllocZeroed(13u, "MassStorageDevice : TestDeviceReady (1)");
                 try
                 {
                     //Get the device status by sending the Test Unit Ready command
@@ -1141,7 +1181,7 @@ namespace Kernel.USB.Devices
                     DBGMSG("SCSI: request sense");
 #endif
 
-                    byte* dataBuffer = (byte*)FOS_System.Heap.AllocZeroed(18u, "MassStorageDevice : TestDeviceReady (2)");
+                    byte* dataBuffer = (byte*) Heap.AllocZeroed(18u, "MassStorageDevice : TestDeviceReady (2)");
                     try
                     {
                         // Now send the Request Sense command
@@ -1160,12 +1200,12 @@ namespace Kernel.USB.Devices
                     }
                     finally
                     {
-                        FOS_System.Heap.Free(dataBuffer);
+                        Heap.Free(dataBuffer);
                     }
                 }
                 finally
                 {
-                    FOS_System.Heap.Free(statusBuffer);
+                    Heap.Free(statusBuffer);
                 }
 
                 if (doBreak)
@@ -1181,12 +1221,13 @@ namespace Kernel.USB.Devices
 
             return statusByte;
         }
+
         /// <summary>
-        /// Analyses the inquiry data to extract device-specific information.
+        ///     Analyses the inquiry data to extract device-specific information.
         /// </summary>
         /// <param name="inquiryData">A pointer to the data to analyse.</param>
-        /// <see cref="!:http://en.wikipedia.org/wiki/SCSI_Inquiry_Command"/>
-        static void AnalyseInquiry(byte* inquiryData)
+        /// <see cref="!:http://en.wikipedia.org/wiki/SCSI_Inquiry_Command" />
+        private static void AnalyseInquiry(byte* inquiryData)
         {
             //TODO: Store this data (inc. #region stuff) in the class for later
 
@@ -1277,7 +1318,7 @@ namespace Kernel.USB.Devices
 //#if MSD_TRACE
 //            DBGMSG("SCSI: inquiry");
 //#endif
-              
+
 //#if DEVICE_INFO || MSD_TRACE
 //            BasicConsole.DelayOutput(10);
 //#endif
@@ -1299,14 +1340,14 @@ namespace Kernel.USB.Devices
 
 //            //diskDevice.SetBlockCount(((ulong)capacityBuffer[0]) + 1);
 //            //diskDevice.SetBlockSize((ulong)capacityBuffer[1]);
-            
+
 //#if MSD_TRACE
 //            DBGMSG(((FOS_System.String)"Capacity: ") + (diskDevice.BlockCount * diskDevice.BlockSize) + ", Last LBA: " + capacityBuffer[0] + ", block size: " + capacityBuffer[1]);
 //#endif
 //        }
 
         /// <summary>
-        /// Reads the specified block of the device.
+        ///     Reads the specified block of the device.
         /// </summary>
         /// <param name="sector">The sector index to read.</param>
         /// <param name="buffer">The buffer to store the sector data in. Must be at least as big as the sector size.</param>
@@ -1318,8 +1359,8 @@ namespace Kernel.USB.Devices
 #endif
             int retries = 3;
             //Send SCSI Read (10) command
-            while (!SendSCSICommand_IN(0x28, sector, (ushort)((uint)diskDevice.BlockSize * numSectors), buffer, null) &&
-                    --retries > 0)
+            while (!SendSCSICommand_IN(0x28, sector, (ushort) ((uint) diskDevice.BlockSize*numSectors), buffer, null) &&
+                   --retries > 0)
             {
                 ;
             }
@@ -1327,8 +1368,9 @@ namespace Kernel.USB.Devices
 
             return retries > 0;
         }
+
         /// <summary>
-        /// Writes the specified block of the device.
+        ///     Writes the specified block of the device.
         /// </summary>
         /// <param name="sector">The sector index to write.</param>
         /// <param name="buffer">The buffer storing the data to write. Must be at least as big as the sector size.</param>
@@ -1340,19 +1382,19 @@ namespace Kernel.USB.Devices
 #endif
 
             //Send SCSI Write (10) command
-            SendSCSICommand_OUT(0x2A, sector, (ushort)diskDevice.BlockSize, buffer, null);
+            SendSCSICommand_OUT(0x2A, sector, (ushort) diskDevice.BlockSize, buffer, null);
 
             return true;
         }
 
         /// <summary>
-        /// Performs the reset-recovery operation on the specified interface.
+        ///     Performs the reset-recovery operation on the specified interface.
         /// </summary>
         public void ResetRecoveryMSD()
         {
             // Start with correct endpoint toggles and reset interface
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
-            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
+            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
+            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
             // Reset Interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
 
@@ -1387,11 +1429,11 @@ namespace Kernel.USB.Devices
 #endif
             SystemCalls.SleepThread(500);
         }
-        
+
         /// <summary>
-        /// Human readable descriptions of the SCSI command sense keys.
+        ///     Human readable descriptions of the SCSI command sense keys.
         /// </summary>
-        public static FOS_System.String[] SenseDescriptions =
+        public static String[] SenseDescriptions =
         {
             "No Sense",
             "Recovered Error - last command completed with some recovery action",
@@ -1410,8 +1452,9 @@ namespace Kernel.USB.Devices
             "Miscompare - source data did not match the data read from the medium",
             "not defined"
         };
+
         /// <summary>
-        /// Gets the request's result's sense. 
+        ///     Gets the request's result's sense.
         /// </summary>
         /// <param name="RequestResultData">The result data to get the sense from.</param>
         /// <returns>The sense key.</returns>
@@ -1420,7 +1463,7 @@ namespace Kernel.USB.Devices
             uint Valid = Utils.GetField(RequestResultData, 0, 7, 1); // byte 0, bit 7
             uint ResponseCode = Utils.GetField(RequestResultData, 0, 0, 7); // byte 0, bit 6:0
             uint SenseKey = Utils.GetField(RequestResultData, 2, 0, 4); // byte 2, bit 3:0
-            
+
 #if MSD_TRACE
             DBGMSG("Results of \"request sense\":");
 #endif
@@ -1462,9 +1505,9 @@ namespace Kernel.USB.Devices
                 else
                     DBGMSG("sense key not known!");
 #endif
-                return (int)SenseKey;
+                return (int) SenseKey;
             }
-            
+
 #if MSD_TRACE
             DBGMSG("No vaild response code!");
 #endif
@@ -1478,28 +1521,31 @@ namespace Kernel.USB.Devices
         }
 #endif
     }
+
     /// <summary>
-    /// Represents a mass storage device as a disk device. Allows an MSD to be accessed
-    /// like a normal disk device.
+    ///     Represents a mass storage device as a disk device. Allows an MSD to be accessed
+    ///     like a normal disk device.
     /// </summary>
     public unsafe class MassStorageDevice_DiskDevice : DiskDevice
     {
         /// <summary>
-        /// The MSD that the disk device is an interface for.
+        ///     The MSD that the disk device is an interface for.
         /// </summary>
         protected MassStorageDevice msd;
 
         /// <summary>
-        /// Initialises a new disk device interface for the specified MSD. 
-        /// Also determines the device's maximum size.
+        ///     Initialises a new disk device interface for the specified MSD.
+        ///     Also determines the device's maximum size.
         /// </summary>
         /// <param name="anMSD">The MSD to create an interface for.</param>
         public MassStorageDevice_DiskDevice(MassStorageDevice anMSD)
-            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true)
+            : base(
+                DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true
+                )
         {
             msd = anMSD;
 
-            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8, "MassStorageDevice : MassStorageDevice_DiskDevice()");
+            uint* capacityBuffer = (uint*) Heap.AllocZeroed(8, "MassStorageDevice : MassStorageDevice_DiskDevice()");
             try
             {
                 //Send SCSI Read Capacity (10) command
@@ -1512,18 +1558,18 @@ namespace Kernel.USB.Devices
 
                 // capacityBuffer[0] = Last LBA i.e. last addressable LBA
                 //      So the count of blocks is Last LBA + 1
-                blockCount = ((ulong)capacityBuffer[0]) + 1;
+                blockCount = (ulong) capacityBuffer[0] + 1;
                 // capacityBuffer[1] = Block size
-                blockSize = (ulong)capacityBuffer[1];
+                blockSize = (ulong) capacityBuffer[1];
             }
             finally
             {
-                FOS_System.Heap.Free(capacityBuffer);
+                Heap.Free(capacityBuffer);
             }
         }
 
         /// <summary>
-        /// See base class.
+        ///     See base class.
         /// </summary>
         /// <param name="aBlockNo">See base class.</param>
         /// <param name="aBlockCount">See base class.</param>
@@ -1536,14 +1582,14 @@ namespace Kernel.USB.Devices
 
             msd.Activate();
 
-            byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
+            byte* dataPtr = (byte*) ObjectUtilities.GetHandle(aData) + Array.FieldsBytesSize;
 #if MSD_TRACE
             BasicConsole.Write(((FOS_System.String)"Reading block: ") + i);
 #endif
 
-            if (!msd.Read((uint)(aBlockNo), aBlockCount, dataPtr))
+            if (!msd.Read((uint) aBlockNo, aBlockCount, dataPtr))
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Could not read from Mass Storage Device!"));
+                ExceptionMethods.Throw(new Exception("Could not read from Mass Storage Device!"));
             }
             dataPtr += BlockSize;
 
@@ -1557,8 +1603,9 @@ namespace Kernel.USB.Devices
             BasicConsole.WriteLine("Completed all reading.");
 #endif
         }
+
         /// <summary>
-        /// See base class.
+        ///     See base class.
         /// </summary>
         /// <param name="aBlockNo">See base class.</param>
         /// <param name="aBlockCount">See base class.</param>
@@ -1569,18 +1616,18 @@ namespace Kernel.USB.Devices
 
             if (aData == null)
             {
-                byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(NewBlockArray(1))) + FOS_System.Array.FieldsBytesSize;
+                byte* dataPtr = (byte*) ObjectUtilities.GetHandle(NewBlockArray(1)) + Array.FieldsBytesSize;
                 for (uint i = 0; i < aBlockCount; i++)
                 {
-                    msd.Write((uint)(aBlockNo + i), dataPtr);
+                    msd.Write((uint) (aBlockNo + i), dataPtr);
                 }
             }
             else
             {
-                byte* dataPtr = ((byte*)Utilities.ObjectUtilities.GetHandle(aData)) + FOS_System.Array.FieldsBytesSize;
+                byte* dataPtr = (byte*) ObjectUtilities.GetHandle(aData) + Array.FieldsBytesSize;
                 for (uint i = 0; i < aBlockCount; i++)
                 {
-                    msd.Write((uint)(aBlockNo + i), dataPtr);
+                    msd.Write((uint) (aBlockNo + i), dataPtr);
                     dataPtr += BlockSize;
                 }
             }
@@ -1589,7 +1636,7 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Tests writing and reading from the device.
+        ///     Tests writing and reading from the device.
         /// </summary>
         public void Test()
         {
@@ -1602,12 +1649,12 @@ namespace Kernel.USB.Devices
                 byte[] writeData = new byte[512];
                 for (int i = 0; i < writeData.Length; i++)
                 {
-                    writeData[i] = (byte)(i % 255);
+                    writeData[i] = (byte) (i%255);
                 }
-                for (int i = 0; i < (dataSize / 512); i++)
+                for (int i = 0; i < dataSize/512; i++)
                 {
                     BasicConsole.WriteLine("Writing data...");
-                    WriteBlock((uint)i, 1, null);
+                    WriteBlock((uint) i, 1, null);
                 }
 
                 BasicConsole.WriteLine("Syncing caches...");
@@ -1615,15 +1662,15 @@ namespace Kernel.USB.Devices
 
                 byte[] readData = new byte[512];
                 bool DataOK = true;
-                for (int i = 0; i < (dataSize / 512); i++)
+                for (int i = 0; i < dataSize/512; i++)
                 {
                     BasicConsole.WriteLine("Reading data...");
-                    ReadBlock((uint)i, 1, readData);
+                    ReadBlock((uint) i, 1, readData);
                     BasicConsole.WriteLine("Checking data...");
 
                     for (int j = 0; j < 512; j++)
                     {
-                        DataOK = (readData[j] == 0);//(j % 255));
+                        DataOK = readData[j] == 0; //(j % 255));
                         readData[j] = 0;
                         if (!DataOK)
                         {
@@ -1640,7 +1687,7 @@ namespace Kernel.USB.Devices
                         BasicConsole.WriteLine("Data not OK.");
                     }
 
-                    if(!DataOK)
+                    if (!DataOK)
                     {
                         break;
                     }
@@ -1654,7 +1701,7 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Makes sure all data is written to disk and not stored in hardware caches.
+        ///     Makes sure all data is written to disk and not stored in hardware caches.
         /// </summary>
         public override void CleanCaches()
         {
@@ -1662,7 +1709,7 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Destroys the MSD disk device.
+        ///     Destroys the MSD disk device.
         /// </summary>
         public void Destroy()
         {
@@ -1674,37 +1721,43 @@ namespace Kernel.USB.Devices
     }
 
     /// <summary>
-    /// The command block wrapper structure which makes up a SCSI command.
+    ///     The command block wrapper structure which makes up a SCSI command.
     /// </summary>
     public unsafe struct CommandBlockWrapper
     {
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
         public uint CBWSignature; // Offset: 0
+
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
         public uint CBWTag; // Offset: 4
+
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
         public uint CBWDataTransferLength; // Offset: 8
+
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
         public byte CBWFlags; // Offset: 12
+
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
-        public byte CBWLUN;           // only bits 3:0, Offset: 13
+        public byte CBWLUN; // only bits 3:0, Offset: 13
+
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
-        public byte CBWCBLength;      // only bits 4:0: Offset: 14
+        public byte CBWCBLength; // only bits 4:0: Offset: 14
+
         /// <summary>
-        /// Read the spec.
+        ///     Read the spec.
         /// </summary>
-        public fixed byte commandByte[16]; // Offset: 15
+        public fixed byte commandByte [16]; // Offset: 15
     }
 }

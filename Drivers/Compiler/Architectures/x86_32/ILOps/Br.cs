@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,115 +23,113 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Br : IL.ILOps.Br
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            ASMOps.JmpOp jumpOp = ASMOps.JmpOp.Jump;
+            JmpOp jumpOp = JmpOp.Jump;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Br:
                 case OpCodes.Br_S:
                     break;
                 case OpCodes.Brtrue:
-                    jumpOp = ASMOps.JmpOp.JumpNotZero;
+                    jumpOp = JmpOp.JumpNotZero;
                     break;
                 case OpCodes.Brtrue_S:
-                    jumpOp = ASMOps.JmpOp.JumpNotZero;
+                    jumpOp = JmpOp.JumpNotZero;
                     break;
                 case OpCodes.Brfalse:
-                    jumpOp = ASMOps.JmpOp.JumpZero;
+                    jumpOp = JmpOp.JumpZero;
                     break;
                 case OpCodes.Brfalse_S:
-                    jumpOp = ASMOps.JmpOp.JumpZero;
+                    jumpOp = JmpOp.JumpZero;
                     break;
                 case OpCodes.Beq:
-                    jumpOp = ASMOps.JmpOp.JumpEqual;
+                    jumpOp = JmpOp.JumpEqual;
                     break;
                 case OpCodes.Beq_S:
-                    jumpOp = ASMOps.JmpOp.JumpEqual;
+                    jumpOp = JmpOp.JumpEqual;
                     break;
                 case OpCodes.Bne_Un:
-                    jumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    jumpOp = JmpOp.JumpNotEqual;
                     break;
                 case OpCodes.Bne_Un_S:
-                    jumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    jumpOp = JmpOp.JumpNotEqual;
                     break;
                 case OpCodes.Bge:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
                     break;
                 case OpCodes.Bge_S:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
                     break;
                 case OpCodes.Bge_Un:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
                     break;
                 case OpCodes.Bge_Un_S:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
                     break;
                 case OpCodes.Ble:
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    jumpOp = JmpOp.JumpLessThanEqual;
                     break;
                 case OpCodes.Ble_S:
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    jumpOp = JmpOp.JumpLessThanEqual;
                     break;
                 case OpCodes.Ble_Un:
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    jumpOp = JmpOp.JumpLessThanEqual;
                     break;
                 case OpCodes.Ble_Un_S:
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
+                    jumpOp = JmpOp.JumpLessThanEqual;
                     break;
                 case OpCodes.Blt:
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Blt_S:
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Blt_Un:
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Blt_Un_S:
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Bgt:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     break;
                 case OpCodes.Bgt_S:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     break;
                 case OpCodes.Bgt_Un:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     break;
                 case OpCodes.Bgt_Un_S:
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     break;
             }
 
-            if (jumpOp == ASMOps.JmpOp.JumpZero || jumpOp == ASMOps.JmpOp.JumpNotZero)
+            if (jumpOp == JmpOp.JumpZero || jumpOp == JmpOp.JumpNotZero)
             {
                 //Pop from our stack the test item to use in the condition
                 StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             }
-            else if (jumpOp == ASMOps.JmpOp.JumpEqual || jumpOp == ASMOps.JmpOp.JumpNotEqual ||
-                         jumpOp == ASMOps.JmpOp.JumpGreaterThanEqual ||
-                         jumpOp == ASMOps.JmpOp.JumpLessThanEqual ||
-                         jumpOp == ASMOps.JmpOp.JumpLessThan ||
-                         jumpOp == ASMOps.JmpOp.JumpGreaterThan)
+            else if (jumpOp == JmpOp.JumpEqual || jumpOp == JmpOp.JumpNotEqual ||
+                     jumpOp == JmpOp.JumpGreaterThanEqual ||
+                     jumpOp == JmpOp.JumpLessThanEqual ||
+                     jumpOp == JmpOp.JumpLessThan ||
+                     jumpOp == JmpOp.JumpGreaterThan)
             {
                 //Pop from our stack the test items to use in the condition
                 StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
@@ -170,13 +169,14 @@ namespace Drivers.Compiler.Architectures.x86
             }
             return null;
         }
+
         private static int GetTargetILOffset(ILOp theOp)
         {
             //This will store the offset from the current next op's position
             //to the IL op to jump to.
             int ILOffset = 0;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -184,7 +184,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -192,7 +192,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -200,7 +200,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Beq:
@@ -209,7 +209,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bne_Un:
@@ -218,7 +218,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bge:
@@ -227,7 +227,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
@@ -235,7 +235,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Ble:
@@ -244,7 +244,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
@@ -252,7 +252,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Blt:
@@ -261,7 +261,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Blt_Un:
                     //See above : This is unsigned variant
@@ -269,7 +269,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bgt:
@@ -278,7 +278,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bgt_Un:
                     //See above : This is unsigned variant
@@ -286,7 +286,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
             }
 
@@ -294,13 +294,13 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if branch test operand value is a floating point value.
+        ///     Thrown if branch test operand value is a floating point value.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -308,16 +308,16 @@ namespace Drivers.Compiler.Architectures.x86
             //to the IL op to jump to.
             int ILOffset = 0;
             //This will store the jump operation - by default, the basic jump op
-            ASMOps.JmpOp jumpOp = ASMOps.JmpOp.Jump;
+            JmpOp jumpOp = JmpOp.Jump;
             bool UnsignedTest = false;
 
-            ASMOps.JmpOp inverseJumpOp = ASMOps.JmpOp.None;
+            JmpOp inverseJumpOp = JmpOp.None;
             bool isNegativeTest = false;
 
             //The value for the jump op to test against - currently always "0" since on jnz and jz ops are used.
             string testVal = "0";
-            
-            switch ((OpCodes)theOp.opCode.Value)
+
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -325,7 +325,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -333,13 +333,13 @@ namespace Drivers.Compiler.Architectures.x86
                     //Branch-if-true means we want to do the jump if the operand is not equal to 0
                     //i.e. not false
                     //Set the jump op to jnz - Jump if Not Zero
-                    jumpOp = ASMOps.JmpOp.JumpNotZero;
+                    jumpOp = JmpOp.JumpNotZero;
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpNotZero;
+                    jumpOp = JmpOp.JumpNotZero;
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -347,13 +347,13 @@ namespace Drivers.Compiler.Architectures.x86
                     //Branch-if-true means we want to do the jump if the operand is equal to 0
                     //i.e. is false
                     //Set the jump op to jz - Jump if Zero
-                    jumpOp = ASMOps.JmpOp.JumpZero;
+                    jumpOp = JmpOp.JumpZero;
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpZero;
+                    jumpOp = JmpOp.JumpZero;
                     break;
 
                 case OpCodes.Beq:
@@ -362,15 +362,15 @@ namespace Drivers.Compiler.Architectures.x86
                     //Branch-if-equal means we want to do the jump if the operand is equal to the other operand
                     //i.e. A == B
                     //Set the jump op to je - Jump if equal
-                    jumpOp = ASMOps.JmpOp.JumpEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    jumpOp = JmpOp.JumpEqual;
+                    inverseJumpOp = JmpOp.JumpNotEqual;
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    jumpOp = JmpOp.JumpEqual;
+                    inverseJumpOp = JmpOp.JumpNotEqual;
                     break;
 
                 case OpCodes.Bne_Un:
@@ -379,14 +379,14 @@ namespace Drivers.Compiler.Architectures.x86
                     //Branch-if-equal means we want to do the jump if the operand is equal to the other operand
                     //i.e. A == B
                     //Set the jump op to je - Jump if not equal
-                    jumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    jumpOp = JmpOp.JumpNotEqual;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpNotEqual;
+                    jumpOp = JmpOp.JumpNotEqual;
                     isNegativeTest = true;
                     break;
 
@@ -397,31 +397,31 @@ namespace Drivers.Compiler.Architectures.x86
                     //the other operand
                     //i.e. A >= B
                     //Set the jump op to jge - Jump if greater than or equal
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
+                    inverseJumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
+                    inverseJumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
+                    inverseJumpOp = JmpOp.JumpLessThan;
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpGreaterThanEqual;
+                    inverseJumpOp = JmpOp.JumpLessThan;
                     break;
 
                 case OpCodes.Ble:
@@ -431,31 +431,31 @@ namespace Drivers.Compiler.Architectures.x86
                     //the other operand
                     //i.e. A <= B
                     //Set the jump op to jle - Jump if less than or equal
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpLessThanEqual;
+                    inverseJumpOp = JmpOp.JumpGreaterThan;
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpLessThanEqual;
+                    inverseJumpOp = JmpOp.JumpGreaterThan;
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpLessThanEqual;
+                    inverseJumpOp = JmpOp.JumpGreaterThan;
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpLessThanEqual;
-                    inverseJumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpLessThanEqual;
+                    inverseJumpOp = JmpOp.JumpGreaterThan;
                     break;
 
                 case OpCodes.Blt:
@@ -465,14 +465,14 @@ namespace Drivers.Compiler.Architectures.x86
                     //the other operand
                     //i.e. A < B
                     //Set the jump op to jl - Jump if less than
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Blt_Un:
@@ -480,15 +480,15 @@ namespace Drivers.Compiler.Architectures.x86
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpLessThan;
+                    jumpOp = JmpOp.JumpLessThan;
                     isNegativeTest = true;
                     break;
 
@@ -499,14 +499,14 @@ namespace Drivers.Compiler.Architectures.x86
                     //the other operand
                     //i.e. A > B
                     //Set the jump op to jg - Jump if greater than
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bgt_Un:
@@ -514,24 +514,23 @@ namespace Drivers.Compiler.Architectures.x86
                     ILOffset = Utilities.ReadInt32(theOp.ValueBytes, 0);
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     isNegativeTest = true;
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (sbyte)theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
-                    jumpOp = ASMOps.JmpOp.JumpGreaterThan;
+                    jumpOp = JmpOp.JumpGreaterThan;
                     isNegativeTest = true;
                     break;
-
             }
 
             if (ILOffset == 0)
             {
                 //Err..why bother jumping at all if the offset is 0?
-                conversionState.Append(new ASMOps.Comment("No jump insert - pointless 0 distance jump"));
+                conversionState.Append(new Comment("No jump insert - pointless 0 distance jump"));
             }
             else
             {
@@ -539,18 +538,18 @@ namespace Drivers.Compiler.Architectures.x86
                 int startILNum = theOp.NextOffset;
                 //Add the offset to get the IL op num to jump to
                 int ILNumToGoTo = startILNum + ILOffset;
-                
+
                 //Find the IL op to jump to 
                 ILOp opToGoTo = conversionState.Input.At(ILNumToGoTo);
                 int opToGoToPosition = conversionState.PositionOf(opToGoTo);
                 int currOpPosition = conversionState.PositionOf(theOp);
-                
+
                 //If the jump op is not a straightforward jump i.e. has one or more conditions
-                if (jumpOp == ASMOps.JmpOp.JumpZero || jumpOp == ASMOps.JmpOp.JumpNotZero)
+                if (jumpOp == JmpOp.JumpZero || jumpOp == JmpOp.JumpNotZero)
                 {
                     //Pop from our stack the test item to use in the condition
                     StackItem testItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
-                    
+
                     if (testItem.isFloat)
                     {
                         //SUPPORT - floats
@@ -561,36 +560,41 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         //Compare first 32 bits (low bits)
                         //Then (if necessary) compare second 32 bits (high bits)
-                        
+
                         //Pop the low bits
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
                         //Compare the low bits to the test value
-                        conversionState.Append(new ASMOps.Cmp() { Arg2 = testVal, Arg1 = "EAX" });
+                        conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
                         //Pre-emptively pop the high bits
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                        
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+
                         //If we are testing for not equal to zero:
-                        if (jumpOp == ASMOps.JmpOp.JumpNotZero)
+                        if (jumpOp == JmpOp.JumpNotZero)
                         {
                             //If the low bits are not zero, do the jump
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition });
+                            conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                             //Otherwise, test if the high bits are not 0
                             //We use "cmp" not "test" as "cmp" uses +/- test val, "test" uses & with test val.
-                            conversionState.Append(new ASMOps.Cmp() { Arg2 = testVal, Arg1 = "EAX" });
+                            conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
                             //If the high bits are not zero, do the jump
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition });
+                            conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                         }
                         //If we are testing for equal to zero:
-                        else if (jumpOp == ASMOps.JmpOp.JumpZero)
+                        else if (jumpOp == JmpOp.JumpZero)
                         {
                             //If the low bits are not zero, jump to the end of these test as condition has not been met
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = ASMOps.JmpOp.JumpNotZero, DestILPosition = currOpPosition, Extension = "End" });
+                            conversionState.Append(new Jmp()
+                            {
+                                JumpType = JmpOp.JumpNotZero,
+                                DestILPosition = currOpPosition,
+                                Extension = "End"
+                            });
                             //Otherwise, test if the high bits are zero
-                            conversionState.Append(new ASMOps.Cmp() { Arg2 = testVal, Arg1 = "EAX" });
+                            conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
                             //If they are, do the jump
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition });
+                            conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
+                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
@@ -602,22 +606,22 @@ namespace Drivers.Compiler.Architectures.x86
                     else if (testItem.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
                         //Compare the test item to the test value
-                        conversionState.Append(new ASMOps.Cmp() { Arg2 = testVal, Arg1 = "EAX" });
+                        conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
                         //Do the specified jump
-                        conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition });
+                        conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                     }
                     else
                     {
                         throw new InvalidOperationException("Invalid stack operand sizes!");
                     }
                 }
-                else if (jumpOp == ASMOps.JmpOp.JumpEqual || jumpOp == ASMOps.JmpOp.JumpNotEqual ||
-                         jumpOp == ASMOps.JmpOp.JumpGreaterThanEqual ||
-                         jumpOp == ASMOps.JmpOp.JumpLessThanEqual ||
-                         jumpOp == ASMOps.JmpOp.JumpLessThan ||
-                         jumpOp == ASMOps.JmpOp.JumpGreaterThan)
+                else if (jumpOp == JmpOp.JumpEqual || jumpOp == JmpOp.JumpNotEqual ||
+                         jumpOp == JmpOp.JumpGreaterThanEqual ||
+                         jumpOp == JmpOp.JumpLessThanEqual ||
+                         jumpOp == JmpOp.JumpLessThan ||
+                         jumpOp == JmpOp.JumpGreaterThan)
                 {
                     //Pop from our stack the test items to use in the condition
                     StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
@@ -628,7 +632,7 @@ namespace Drivers.Compiler.Architectures.x86
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                    else if(itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
+                    else if (itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
                     {
                         throw new InvalidOperationException("Branch test operands must be same size!");
                     }
@@ -636,49 +640,75 @@ namespace Drivers.Compiler.Architectures.x86
                     else if (itemA.sizeOnStackInBytes == 8)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "ECX" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EDX" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
 
-                        if(!isNegativeTest)
+                        if (!isNegativeTest)
                         {
                             //Compare test item A high bits to test item B high bits
-                            conversionState.Append(new ASMOps.Cmp() { Arg2 = "ECX", Arg1 = "EDX" });
+                            conversionState.Append(new Cmp() {Arg2 = "ECX", Arg1 = "EDX"});
                             //If they are not equal, abort the testing
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = inverseJumpOp, DestILPosition = currOpPosition, Extension = "End", UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Jmp()
+                            {
+                                JumpType = inverseJumpOp,
+                                DestILPosition = currOpPosition,
+                                Extension = "End",
+                                UnsignedTest = UnsignedTest
+                            });
                             //Else the igh bits are equal so test low bits
                             //Compare test item A low bits to test item B low bits
-                            conversionState.Append(new ASMOps.Cmp() { Arg2 = "EBX", Arg1 = "EAX" });
+                            conversionState.Append(new Cmp() {Arg2 = "EBX", Arg1 = "EAX"});
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Jmp()
+                            {
+                                JumpType = jumpOp,
+                                DestILPosition = opToGoToPosition,
+                                UnsignedTest = UnsignedTest
+                            });
 
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
+                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
                             //Compare test item A high bits to test item B high bits
-                            conversionState.Append(new ASMOps.Cmp() { Arg2 = "ECX", Arg1 = "EDX" });
+                            conversionState.Append(new Cmp() {Arg2 = "ECX", Arg1 = "EDX"});
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Jmp()
+                            {
+                                JumpType = jumpOp,
+                                DestILPosition = opToGoToPosition,
+                                UnsignedTest = UnsignedTest
+                            });
                             //Compare test item A low bits to test item B low bits
-                            conversionState.Append(new ASMOps.Cmp() { Arg2 = "EBX", Arg1 = "EAX" });
+                            conversionState.Append(new Cmp() {Arg2 = "EBX", Arg1 = "EAX"});
                             //Do the specified jump
-                            conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                            conversionState.Append(new Jmp()
+                            {
+                                JumpType = jumpOp,
+                                DestILPosition = opToGoToPosition,
+                                UnsignedTest = UnsignedTest
+                            });
                         }
                     }
                     else if (itemA.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
                         //Compare test item A to test item B
-                        conversionState.Append(new ASMOps.Cmp() { Arg2 = "EBX", Arg1 = "EAX" });
+                        conversionState.Append(new Cmp() {Arg2 = "EBX", Arg1 = "EAX"});
                         //Do the specified jump
-                        conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition, UnsignedTest = UnsignedTest });
+                        conversionState.Append(new Jmp()
+                        {
+                            JumpType = jumpOp,
+                            DestILPosition = opToGoToPosition,
+                            UnsignedTest = UnsignedTest
+                        });
                     }
                     else
                     {
@@ -688,7 +718,7 @@ namespace Drivers.Compiler.Architectures.x86
                 else
                 {
                     //Do the straightforward jump...
-                    conversionState.Append(new ASMOps.Jmp() { JumpType = jumpOp, DestILPosition = opToGoToPosition });
+                    conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                 }
 
                 // Fork the stack after the processing of the jump (since processing of jump may pop some stuff)

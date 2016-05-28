@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,23 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// Represents an argument exception.
+    ///     Represents an argument exception.
     /// </summary>
-    public class ArgumentException : Framework.Exception
+    public class ArgumentException : Exception
     {
         /// <summary>
-        /// Sets the message to "Argument exception".
+        ///     Sets the message to "Argument exception".
         /// </summary>
         /// <param name="anExtendedMessage">
-        /// The extended message to append to the main message. Should specify which argument caused the exception.
+        ///     The extended message to append to the main message. Should specify which argument caused the exception.
         /// </param>
-        public ArgumentException(Framework.String anExtendedMessage)
+        public ArgumentException(String anExtendedMessage)
             : base("Argument exception. " + anExtendedMessage)
         {
         }

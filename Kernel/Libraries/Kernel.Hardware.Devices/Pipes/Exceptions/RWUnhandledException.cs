@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
 
 namespace Kernel.Pipes.Exceptions
 {
     /// <summary>
-    /// Read/Write Unhandled Exception. Used when a pipe RW method receives anything other than Fail or OK system call results.
+    ///     Read/Write Unhandled Exception. Used when a pipe RW method receives anything other than Fail or OK system call
+    ///     results.
     /// </summary>
-    public class RWUnhandledException : FOS_System.Exception
+    public class RWUnhandledException : Exception
     {
         /// <summary>
-        /// Creates a new RW Unhandled Exception with the specified extra message.
+        ///     Creates a new RW Unhandled Exception with the specified extra message.
         /// </summary>
         /// <param name="extraMessage">The message to append to "Pipe Read/Write Unhandled : ".</param>
-        public RWUnhandledException(FOS_System.String extraMessage)
+        public RWUnhandledException(String extraMessage)
             : base("Pipe Read/Write Unhandled : " + extraMessage)
         {
         }

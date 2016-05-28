@@ -4,8 +4,9 @@
     {
         public int Count;
     }
+
     public unsafe struct FilePipeDataFSInfo
     {
-        public fixed char Prefix[10];
+        public fixed char Prefix [10];
     }
 }

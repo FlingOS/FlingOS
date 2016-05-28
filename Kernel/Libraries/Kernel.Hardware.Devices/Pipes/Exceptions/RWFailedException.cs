@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,23 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.FOS_System;
 
 namespace Kernel.Pipes.Exceptions
 {
     /// <summary>
-    /// Read/Write Failed Exception. Used when a pipe RW method receives a Fail system call result.
+    ///     Read/Write Failed Exception. Used when a pipe RW method receives a Fail system call result.
     /// </summary>
-    public class RWFailedException : FOS_System.Exception
+    public class RWFailedException : Exception
     {
         /// <summary>
-        /// Creates a new RW Failed Exception with the specified extra message.
+        ///     Creates a new RW Failed Exception with the specified extra message.
         /// </summary>
         /// <param name="extraMessage">The message to append to "Pipe Read/Write Failed : ".</param>
-        public RWFailedException(FOS_System.String extraMessage)
+        public RWFailedException(String extraMessage)
             : base("Pipe Read/Write Failed : " + extraMessage)
         {
         }

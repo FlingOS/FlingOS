@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,107 +23,98 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using System;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Hardware.ATA
 {
     /// <summary>
-    /// Represents an ATA Pio device.
+    ///     Represents an ATA Pio device.
     /// </summary>
-    public class PATA : Devices.DiskDevice
+    public class PATA : DiskDevice
     {
         //TODO: This implementation does not support LBA48 mode.
 
         protected PATABase BaseDevice;
 
-        public FOS_System.String SerialNo
+        /// <summary>
+        ///     Initialises a new ATA pio device.
+        /// </summary>
+        public PATA(PATABase baseDevice)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATA Disk", baseDevice.Info, true)
+        {
+            BaseDevice = baseDevice;
+        }
+
+        public String SerialNo
         {
             get { return BaseDevice.SerialNo; }
         }
-        public FOS_System.String FirmwareRev
+
+        public String FirmwareRev
         {
             get { return BaseDevice.FirmwareRev; }
         }
-        public FOS_System.String ModelNo
+
+        public String ModelNo
         {
             get { return BaseDevice.ModelNo; }
         }
 
         public override ulong BlockCount
         {
-            get
-            {
-                return BaseDevice.BlockCount;
-            }
+            get { return BaseDevice.BlockCount; }
         }
+
         public override ulong BlockSize
         {
-            get
-            {
-                return BaseDevice.BlockSize;
-            }
+            get { return BaseDevice.BlockSize; }
         }
 
         public ATA.BusPosition BusPosition
         {
-            get
-            {
-                return BaseDevice.busPosition;
-            }
+            get { return BaseDevice.busPosition; }
         }
+
         public ATA.ControllerID ControllerID
         {
-            get
-            {
-                return BaseDevice.controllerId;
-            }
+            get { return BaseDevice.controllerId; }
         }
 
-        public UInt32 MaxWritePioBlocks
+        public uint MaxWritePioBlocks
         {
-            get
-            {
-                return BaseDevice.MaxWritePioBlocks;
-            }
+            get { return BaseDevice.MaxWritePioBlocks; }
         }
 
         /// <summary>
-        /// Initialises a new ATA pio device.
-        /// </summary>
-        public PATA(PATABase baseDevice)
-            : base (DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATA Disk", baseDevice.Info, true)
-        {
-            BaseDevice = baseDevice;
-        }
-        
-        /// <summary>
-        /// Selects the specified contiguous sectors on the drive.
+        ///     Selects the specified contiguous sectors on the drive.
         /// </summary>
         /// <param name="aSectorNo">The first sector to select.</param>
         /// <param name="aSectorCount">The number of contiguous sectors to select.</param>
-        protected void SelectSector(UInt64 aSectorNo, UInt32 aSectorCount)
+        protected void SelectSector(ulong aSectorNo, uint aSectorCount)
         {
             //TODO: Check for 48 bit sectorno mode and select 48 bits
-            BaseDevice.SelectDrive((byte)(aSectorNo >> 24), true);
+            BaseDevice.SelectDrive((byte) (aSectorNo >> 24), true);
 
             // Number of sectors to read
-            BaseDevice.IO.SectorCount.Write_Byte((byte)aSectorCount);
-            BaseDevice.IO.LBA0.Write_Byte((byte)(aSectorNo & 0xFF));
-            BaseDevice.IO.LBA1.Write_Byte((byte)((aSectorNo & 0xFF00) >> 8));
-            BaseDevice.IO.LBA2.Write_Byte((byte)((aSectorNo & 0xFF0000) >> 16));
+            BaseDevice.IO.SectorCount.Write_Byte((byte) aSectorCount);
+            BaseDevice.IO.LBA0.Write_Byte((byte) (aSectorNo & 0xFF));
+            BaseDevice.IO.LBA1.Write_Byte((byte) ((aSectorNo & 0xFF00) >> 8));
+            BaseDevice.IO.LBA2.Write_Byte((byte) ((aSectorNo & 0xFF0000) >> 16));
             //TODO: LBA3  ...
         }
+
         /// <summary>
-        /// Reads contiguous blocks from the drive.
+        ///     Reads contiguous blocks from the drive.
         /// </summary>
         /// <param name="aBlockNo">The number of the first block to read.</param>
         /// <param name="aBlockCount">The number of contiguous blocks to read.</param>
         /// <param name="aData">The data array to read into.</param>
-        public override void ReadBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
             if (!BaseDevice.initialised)
             {
@@ -133,13 +125,14 @@ namespace Kernel.Hardware.ATA
             BaseDevice.SendCmd(PATABase.Cmd.ReadPio);
             BaseDevice.IO.Data.Read_Bytes(aData);
         }
+
         /// <summary>
-        /// See base class.
+        ///     See base class.
         /// </summary>
         /// <param name="aBlockNo">See base class.</param>
         /// <param name="aBlockCount">See base class.</param>
         /// <param name="aData">See base class.</param>
-        public override void WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
             if (!BaseDevice.initialised)
             {
@@ -173,19 +166,19 @@ namespace Kernel.Hardware.ATA
 
                     SelectSector(aBlockNo + i, currBlockCount);
                     BaseDevice.SendCmd(PATABase.Cmd.WritePio);
-                    UInt16 xValue;
-                    for (int j = 0; j < (int)(((uint)BlockSize / 2) * currBlockCount); j++)
+                    ushort xValue;
+                    for (int j = 0; j < (int) ((uint) BlockSize/2*currBlockCount); j++)
                     {
-                        xValue = (UInt16)((aData[j * 2 + 1 + offset] << 8) | aData[j * 2 + offset]);
+                        xValue = (ushort) ((aData[j*2 + 1 + offset] << 8) | aData[j*2 + offset]);
                         BaseDevice.IO.Data.Write_UInt16(xValue);
                     }
-                    offset += (int)((uint)BlockSize * currBlockCount);
+                    offset += (int) ((uint) BlockSize*currBlockCount);
                     BaseDevice.SendCmd(PATABase.Cmd.CacheFlush);
                 }
             }
         }
 
-        private void _WriteBlock(UInt64 aBlockNo, UInt32 aBlockCount, byte[] aData)
+        private void _WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
             SelectSector(aBlockNo, aBlockCount);
             BaseDevice.SendCmd(PATABase.Cmd.WritePio);
@@ -193,7 +186,7 @@ namespace Kernel.Hardware.ATA
             if (aData == null)
             {
                 //TODO: Remove the cast-down - only due to division of longs not working...
-                ulong size = (aBlockCount * (uint)BlockSize) / 2;
+                ulong size = aBlockCount*(uint) BlockSize/2;
                 for (ulong i = 0; i < size; i++)
                 {
                     BaseDevice.IO.Data.Write_UInt16(0);
@@ -201,11 +194,11 @@ namespace Kernel.Hardware.ATA
             }
             else
             {
-                UInt16 xValue;
+                ushort xValue;
 
-                for (int i = 0; i < aData.Length / 2; i++)
+                for (int i = 0; i < aData.Length/2; i++)
                 {
-                    xValue = (UInt16)((aData[i * 2 + 1] << 8) | aData[i * 2]);
+                    xValue = (ushort) ((aData[i*2 + 1] << 8) | aData[i*2]);
                     BaseDevice.IO.Data.Write_UInt16(xValue);
                 }
             }
@@ -214,8 +207,8 @@ namespace Kernel.Hardware.ATA
         }
 
         /// <summary>
-        /// Cleans the software and hardware caches (if any) by writing cached data to disk 
-        /// if necessary before wiping the cache.
+        ///     Cleans the software and hardware caches (if any) by writing cached data to disk
+        ///     if necessary before wiping the cache.
         /// </summary>
         public override void CleanCaches()
         {

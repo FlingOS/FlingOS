@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,59 +23,63 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes.File
 {
     /// <summary>
-    /// Represents an inpoint for a standard in or standard out pipe.
+    ///     Represents an inpoint for a standard in or standard out pipe.
     /// </summary>
     public class FileDataInpoint : BasicInpoint
     {
         /// <summary>
-        /// The buffer to use when reading strings from the pipe.
+        ///     The buffer to use when reading strings from the pipe.
         /// </summary>
         protected byte[] ReadBuffer;
 
         /// <summary>
-        /// Creates and connects a new standard pipe to the target process as either a Standard In or Standard Out pipe.
+        ///     Creates and connects a new standard pipe to the target process as either a Standard In or Standard Out pipe.
         /// </summary>
         /// <param name="aOutProcessId">The target process Id.</param>
         public FileDataInpoint(uint aOutProcessId, bool OutputPipe)
-            : base(aOutProcessId, PipeClasses.File, (OutputPipe ? PipeSubclasses.File_Data_Out : PipeSubclasses.File_Data_In), 8192)
+            : base(
+                aOutProcessId, PipeClasses.File, OutputPipe ? PipeSubclasses.File_Data_Out : PipeSubclasses.File_Data_In,
+                8192)
         {
             ReadBuffer = new byte[BufferSize];
         }
 
         //TODO: Appropriate functions
 
-        public unsafe FOS_System.String[] ReadFSInfos(bool blocking)
+        public unsafe String[] ReadFSInfos(bool blocking)
         {
             int bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataHeader), blocking);
             if (bytesRead > 0)
             {
                 int Count;
                 {
-                    FilePipeDataHeader* HdrPtr = (FilePipeDataHeader*)((byte*)Utilities.ObjectUtilities.GetHandle(ReadBuffer) + FOS_System.Array.FieldsBytesSize);
+                    FilePipeDataHeader* HdrPtr =
+                        (FilePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
                     Count = HdrPtr->Count;
                 }
 
-                FilePipeDataFSInfo* DataPtr = (FilePipeDataFSInfo*)((byte*)Utilities.ObjectUtilities.GetHandle(ReadBuffer) + FOS_System.Array.FieldsBytesSize);
+                FilePipeDataFSInfo* DataPtr =
+                    (FilePipeDataFSInfo*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
 
-                FOS_System.String[] result = new FOS_System.String[Count];
+                String[] result = new String[Count];
                 for (int i = 0; i < Count; i++)
                 {
                     bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataFSInfo), blocking);
 
                     if (bytesRead <= 0)
                     {
-                        BasicConsole.WriteLine("FileDataInpoint : Error reading file system infos! Reading file system info data returned zero (or negative) byte count.");
+                        BasicConsole.WriteLine(
+                            "FileDataInpoint : Error reading file system infos! Reading file system info data returned zero (or negative) byte count.");
                     }
                     else
                     {
@@ -87,7 +92,7 @@ namespace Kernel.Pipes.File
                             }
                         }
 
-                        result[i] = FOS_System.String.New(charCount);
+                        result[i] = String.New(charCount);
                         for (int j = 0; j < charCount; j++)
                         {
                             result[i][j] = DataPtr->Prefix[j];
@@ -98,15 +103,16 @@ namespace Kernel.Pipes.File
             }
             else
             {
-                return new FOS_System.String[0];
+                return new String[0];
             }
         }
-        public unsafe FOS_System.String ReadString(bool blocking)
+
+        public unsafe String ReadString(bool blocking)
         {
             int bytesRead = base.Read(ReadBuffer, 0, BufferSize, blocking);
             if (bytesRead > 0)
             {
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
+                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint) bytesRead);
             }
             else
             {

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,16 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldind : IL.ILOps.Ldind
     {
@@ -43,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
             StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
                 case OpCodes.Ldind_I1:
@@ -71,12 +69,12 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
                 isGCManaged = false,
-                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
+                isValue = (OpCodes) theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -86,11 +84,11 @@ namespace Drivers.Compiler.Architectures.x86
             //Load indirect
             //Pop address
             //Push [address]
-            
+
             StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
-            
-            switch ((OpCodes)theOp.opCode.Value)
+
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
                 case OpCodes.Ldind_I1:
@@ -114,34 +112,34 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             //Pop address
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
 
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldind_Ref)
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldind_Ref)
             {
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX]" });
+                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX]"});
             }
             else
             {
                 if (bytesToLoad == 1)
                 {
-                    conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "[EBX]", Dest = "AL" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
+                    conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "[EBX]", Dest = "AL"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
                 }
                 else if (bytesToLoad == 2)
                 {
-                    conversionState.Append(new ASMOps.Xor() { Src = "EAX", Dest = "EAX" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "[EBX]", Dest = "AX" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EAX" });
+                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
+                    conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "[EBX]", Dest = "AX"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
                 }
                 else if (bytesToLoad == 4)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX]" });
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX]"});
                 }
                 else if (bytesToLoad == 8)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX+4]" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "[EBX]" });
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX+4]"});
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX]"});
                 }
             }
 
@@ -150,7 +148,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
                 isGCManaged = false,
-                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
+                isValue = (OpCodes) theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
     }

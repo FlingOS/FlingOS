@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,90 +23,129 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using Drivers.Compiler.Attributes;
 
 namespace Drivers.Compiler.Types
 {
     /// <summary>
-    /// Container for information about a method loaded from an IL library being compiled.
+    ///     Container for information about a method loaded from an IL library being compiled.
     /// </summary>
     public class MethodInfo
     {
         /// <summary>
-        /// The underlying System.Reflection.MethodInfo obtained from the library's Assembly.
-        /// </summary>
-        public System.Reflection.MethodBase UnderlyingInfo;
-        /// <summary>
-        /// The plug attribute obtained applied to the method (null if it was not applied).
-        /// </summary>
-        public Attributes.PluggedMethodAttribute PlugAttribute = null;
-
-        /// <summary>
-        /// List of information about the arguments of the method.
+        ///     List of information about the arguments of the method.
         /// </summary>
         public List<VariableInfo> ArgumentInfos = new List<VariableInfo>();
+
         /// <summary>
-        /// List of information about the local variables of the method.
+        ///     The ID of the method (can also be used as a label).
+        /// </summary>
+        private string id = null;
+
+        /// <summary>
+        ///     The unique identifier of the method (within a type).
+        /// </summary>
+        public int IDValue = int.MinValue;
+
+        /// <summary>
+        ///     List of information about the local variables of the method.
         /// </summary>
         public List<VariableInfo> LocalInfos = new List<VariableInfo>();
+
         /// <summary>
-        /// Information about the return value of the method.
+        ///     The method body (i.e. IL bytes) extracted from the underlying method base.
+        /// </summary>
+        private MethodBody methodBody;
+
+        /// <summary>
+        ///     The plug attribute obtained applied to the method (null if it was not applied).
+        /// </summary>
+        public PluggedMethodAttribute PlugAttribute = null;
+
+        /// <summary>
+        ///     Whether the method has been preprocessed or not.
+        /// </summary>
+        /// <remarks>
+        ///     Used to prevent the IL preprocessor executing more than once for the same method.
+        /// </remarks>
+        public bool Preprocessed = false;
+
+        /// <summary>
+        ///     The priority value of the method (if any).
+        /// </summary>
+        private long? priority = null;
+
+        /// <summary>
+        ///     Information about the return value of the method.
         /// </summary>
         public VariableInfo ReturnInfo = null;
 
         /// <summary>
-        /// Whether to apply the garbage collector modifications to the method or not.
+        ///     The signature of the method (used to construct to ID).
+        /// </summary>
+        public string signature = null;
+
+        /// <summary>
+        ///     The underlying System.Reflection.MethodInfo obtained from the library's Assembly.
+        /// </summary>
+        public MethodBase UnderlyingInfo;
+
+        /// <summary>
+        ///     Whether to apply the garbage collector modifications to the method or not.
         /// </summary>
         /// <value>Gets whether the method had the NoGC attribute applied or not.</value>
         public bool ApplyGC
         {
-            get
-            {
-                return UnderlyingInfo.GetCustomAttributes(typeof(Attributes.NoGCAttribute), false).Length == 0;
-            }
+            get { return UnderlyingInfo.GetCustomAttributes(typeof(NoGCAttribute), false).Length == 0; }
         }
+
         /// <summary>
-        /// Whether to apply the debug modifications to the method or not.
+        ///     Whether to apply the debug modifications to the method or not.
         /// </summary>
         /// <value>Gets whether the method had the NoDebug attribute applied or not.</value>
         public bool ApplyDebug
         {
-            get
-            {
-                return UnderlyingInfo.GetCustomAttributes(typeof(Attributes.NoDebugAttribute), false).Length == 0;
-            }
+            get { return UnderlyingInfo.GetCustomAttributes(typeof(NoDebugAttribute), false).Length == 0; }
         }
+
         /// <summary>
-        /// Whether the method is plugged or not.
+        ///     Whether the method is plugged or not.
         /// </summary>
         /// <value>Gets whether the method had the PluggedMethod attribute applied or not.</value>
-        public bool IsPlugged { get { return PlugAttribute != null; } }
+        public bool IsPlugged
+        {
+            get { return PlugAttribute != null; }
+        }
+
         /// <summary>
-        /// Whether the method is a constructor or not.
+        ///     Whether the method is a constructor or not.
         /// </summary>
         /// <value>Gets whether the underlying info is System.Reflection.ConstructorInfo or not.</value>
-        public bool IsConstructor { get { return UnderlyingInfo is System.Reflection.ConstructorInfo; } }
+        public bool IsConstructor
+        {
+            get { return UnderlyingInfo is ConstructorInfo; }
+        }
+
         /// <summary>
-        /// Whether the method is static or not.
+        ///     Whether the method is static or not.
         /// </summary>
         /// <value>Gets the value of the underlying info's IsStatic property.</value>
-        public bool IsStatic { get { return UnderlyingInfo.IsStatic; } }
-        
+        public bool IsStatic
+        {
+            get { return UnderlyingInfo.IsStatic; }
+        }
+
         /// <summary>
-        /// The method body (i.e. IL bytes) extracted from the underlying method base.
-        /// </summary>
-        private System.Reflection.MethodBody methodBody;
-        /// <summary>
-        /// The method body (i.e. IL bytes) extracted from the underlying method base.
+        ///     The method body (i.e. IL bytes) extracted from the underlying method base.
         /// </summary>
         /// <value>Gets the value of the methodBody field or generates the value if it is null.</value>
-        public System.Reflection.MethodBody MethodBody
+        public MethodBody MethodBody
         {
             get
             {
@@ -118,11 +158,7 @@ namespace Drivers.Compiler.Types
         }
 
         /// <summary>
-        /// The ID of the method (can also be used as a label).
-        /// </summary>
-        private string id = null;
-        /// <summary>
-        /// The ID of the method (can also be used as a label).
+        ///     The ID of the method (can also be used as a label).
         /// </summary>
         /// <value>Gets the value of the id field or generates the value if it is null.</value>
         public string ID
@@ -138,11 +174,7 @@ namespace Drivers.Compiler.Types
         }
 
         /// <summary>
-        /// The signature of the method (used to construct to ID).
-        /// </summary>
-        public string signature = null;
-        /// <summary>
-        /// The signature of the method (used to construct to ID).
+        ///     The signature of the method (used to construct to ID).
         /// </summary>
         /// <value>Gets the value of the signature field or generates the value if it is null.</value>
         public string Signature
@@ -158,16 +190,7 @@ namespace Drivers.Compiler.Types
         }
 
         /// <summary>
-        /// The unique identifier of the method (within a type).
-        /// </summary>
-        public int IDValue = int.MinValue;
-
-        /// <summary>
-        /// The priority value of the method (if any).
-        /// </summary>
-        private long? priority = null;
-        /// <summary>
-        /// The priority value of the method (if any).
+        ///     The priority value of the method (if any).
         /// </summary>
         /// <value>Gets the value of the priority field or generates the value if it is null.</value>
         public long Priority
@@ -176,10 +199,10 @@ namespace Drivers.Compiler.Types
             {
                 if (!priority.HasValue)
                 {
-                    object[] priorAttrs = UnderlyingInfo.GetCustomAttributes(typeof(Attributes.SequencePriorityAttribute), false);
+                    object[] priorAttrs = UnderlyingInfo.GetCustomAttributes(typeof(SequencePriorityAttribute), false);
                     if (priorAttrs.Length > 0)
                     {
-                        Attributes.SequencePriorityAttribute priorAttr = (Attributes.SequencePriorityAttribute)priorAttrs[0];
+                        SequencePriorityAttribute priorAttr = (SequencePriorityAttribute) priorAttrs[0];
                         priority = priorAttr.Priority;
                     }
                     else
@@ -190,29 +213,22 @@ namespace Drivers.Compiler.Types
                 return priority.Value;
             }
         }
-        
-        /// <summary>
-        /// Whether the method has been preprocessed or not.
-        /// </summary>
-        /// <remarks>
-        /// Used to prevent the IL preprocessor executing more than once for the same method.
-        /// </remarks>
-        public bool Preprocessed = false;
 
         /// <summary>
-        /// Gets a human-readable representation of the method.
+        ///     Gets a human-readable representation of the method.
         /// </summary>
         /// <remarks>
-        /// Generates a nice, human-readable name of the form NameSpace.DeclaringType.MethodName(ArgumentType, ArgumentType).
+        ///     Generates a nice, human-readable name of the form NameSpace.DeclaringType.MethodName(ArgumentType, ArgumentType).
         /// </remarks>
         /// <returns>The string representation.</returns>
         public override string ToString()
         {
             string result = UnderlyingInfo.DeclaringType.FullName + "." + UnderlyingInfo.Name + "(";
 
-            if (ArgumentInfos.Count-1 > 0)
+            if (ArgumentInfos.Count - 1 > 0)
             {
-                result += string.Join(", ", ArgumentInfos.ConvertAll(x => x.ToString()).ToArray(), 0, ArgumentInfos.Count - 1);
+                result += string.Join(", ", ArgumentInfos.ConvertAll(x => x.ToString()).ToArray(), 0,
+                    ArgumentInfos.Count - 1);
             }
 
             result += ")";
@@ -221,17 +237,17 @@ namespace Drivers.Compiler.Types
         }
 
         /// <summary>
-        /// Generates the signature string for the specified method.
+        ///     Generates the signature string for the specified method.
         /// </summary>
         /// <param name="aMethod">The method to generate the signature of.</param>
         /// <returns>The signature string.</returns>
-        public static string GetMethodSignature(System.Reflection.MethodBase aMethod)
+        public static string GetMethodSignature(MethodBase aMethod)
         {
             string[] paramTypes = aMethod.GetParameters().Select(x => x.ParameterType).Select(x => x.FullName).ToArray();
             string returnType = "";
             string declaringType = "";
             string methodName = "";
-            if (aMethod.IsConstructor || aMethod is System.Reflection.ConstructorInfo)
+            if (aMethod.IsConstructor || aMethod is ConstructorInfo)
             {
                 returnType = typeof(void).FullName;
                 declaringType = aMethod.DeclaringType.FullName;
@@ -239,22 +255,24 @@ namespace Drivers.Compiler.Types
             }
             else
             {
-                returnType = ((System.Reflection.MethodInfo)aMethod).ReturnType.FullName;
+                returnType = ((System.Reflection.MethodInfo) aMethod).ReturnType.FullName;
                 declaringType = aMethod.DeclaringType.FullName;
                 methodName = aMethod.Name;
             }
 
             return GetMethodSignature(returnType, declaringType, methodName, paramTypes);
         }
+
         /// <summary>
-        /// Generates a signature string using the specified parts.
+        ///     Generates a signature string using the specified parts.
         /// </summary>
         /// <param name="declaringType">The type which declares the method.</param>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="paramTypes">The list of the types of the method's arguments.</param>
         /// <param name="returnType">The return type of the method.</param>
         /// <returns>The signature string.</returns>
-        public static string GetMethodSignature(string returnType, string declaringType, string methodName, string[] paramTypes)
+        public static string GetMethodSignature(string returnType, string declaringType, string methodName,
+            string[] paramTypes)
         {
             string aMethodSignature = "";
             aMethodSignature = returnType + "_RETEND_" + declaringType + "_DECLEND_" + methodName + "_NAMEEND_(";
@@ -272,8 +290,9 @@ namespace Drivers.Compiler.Types
             aMethodSignature += ")";
             return aMethodSignature;
         }
+
         /// <summary>
-        /// Generates an ID (which can be used as a label) from the specified signature.
+        ///     Generates an ID (which can be used as a label) from the specified signature.
         /// </summary>
         /// <param name="methodSignature">The signature to use to generate the label.</param>
         /// <returns>The ID.</returns>

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,27 +23,33 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
+
+using Kernel.FOS_System;
+using Kernel.USB;
+using Kernel.USB.Devices;
 
 namespace Kernel.Hardware.Testing
 {
     public partial class USBTests : Test
     {
-        public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning, OutputErrorDel OutputError)
+        public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning,
+            OutputErrorDel OutputError)
         {
             OutputMessage("USBTests : Test_LongRead", "Test started.");
 
             // The device we are going to test
-            USB.Devices.MassStorageDevice_DiskDevice TestDevice = null;
+            MassStorageDevice_DiskDevice TestDevice = null;
 
             // Search for USB device
             OutputMessage("USBTests : Test_LongRead", "Searching for USB device...");
-            for (int i = 0; i < USB.USBManager.Devices.Count; i++)
+            for (int i = 0; i < USBManager.Devices.Count; i++)
             {
-                Device ADevice = (Device)USB.USBManager.Devices[i];
-                if (ADevice is USB.Devices.MassStorageDevice_DiskDevice)
+                Device ADevice = (Device) USBManager.Devices[i];
+                if (ADevice is MassStorageDevice_DiskDevice)
                 {
-                    TestDevice = (USB.Devices.MassStorageDevice_DiskDevice)ADevice;
+                    TestDevice = (MassStorageDevice_DiskDevice) ADevice;
                     break;
                 }
             }
@@ -60,14 +67,14 @@ namespace Kernel.Hardware.Testing
 
             // Create a buffer for storing up to 16 blocks of data
             OutputMessage("USBTests : Test_LongRead", "Creating data buffer...");
-            byte[] buffer = new byte[32 * (int)(uint)TestDevice.BlockSize];
+            byte[] buffer = new byte[32*(int) (uint) TestDevice.BlockSize];
             OutputMessage("USBTests : Test_LongRead", "done.");
 
             try
             {
                 OutputMessage("USBTests : Test_LongRead", "Calculating statistical data...");
-                ulong FractionOfDisk = TestDevice.BlockCount;// FOS_System.Math.Divide(TestDevice.BlockCount, 10);
-                ulong PercentileOfFraction = FOS_System.Math.Divide(FractionOfDisk, 100);
+                ulong FractionOfDisk = TestDevice.BlockCount; // FOS_System.Math.Divide(TestDevice.BlockCount, 10);
+                ulong PercentileOfFraction = Math.Divide(FractionOfDisk, 100);
                 ulong dist = 0;
                 bool a = true;
                 OutputMessage("USBTests : Test_LongRead", "done.");

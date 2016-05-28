@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,14 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
+
+using Kernel.FOS_System;
 
 namespace Kernel.Hardware.Processes.Scheduling
 {
-    public delegate void PreemptionHandler(FOS_System.Object state);
+    public delegate void PreemptionHandler(Object state);
 
-    public interface IScheduler : FOS_System.IObject
+    public interface IScheduler : IObject
     {
+        long PreemptionPeriod { get; }
+
         void InitProcess(Process process, Scheduler.Priority priority);
         void InitThread(Process process, Thread t);
 
@@ -43,11 +49,6 @@ namespace Kernel.Hardware.Processes.Scheduling
         void Enable();
         void Disable();
         bool IsEnabled();
-
-        long PreemptionPeriod
-        {
-            get;
-        }
 
         void UpdateList(Thread t);
     }

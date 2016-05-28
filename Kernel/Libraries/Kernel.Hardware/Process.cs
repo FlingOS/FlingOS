@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,43 +23,42 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define PROCESS_TRACE
 
-using System;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes.Synchronisation;
-using Kernel.Hardware;
-using Kernel.VirtualMemory;
 using Kernel.FOS_System.Processes;
+using Kernel.VirtualMemory;
 
 namespace Kernel.Hardware.Processes
 {
-    public unsafe class Process : FOS_System.Object
+    public unsafe class Process : Object
     {
-        public List Threads;
-        public MemoryLayout TheMemoryLayout;
-
-        public uint Id;
-        public FOS_System.String Name;
-        public Scheduler.Priority Priority;
         public readonly bool UserMode;
 
-        protected uint ThreadIdGenerator = 1;
+        public uint Id;
+        public IRQHanderDelegate IRQHandler = null;
+        public Bitmap IRQsToHandle = new Bitmap(256);
+        public ISRHanderDelegate ISRHandler = null;
+        public Bitmap ISRsToHandle = new Bitmap(256);
+        public String Name;
+        public Scheduler.Priority Priority;
+
+        public bool Registered = false;
+        public bool SwitchProcessForIRQs = true;
 
         public bool SwitchProcessForISRs = true;
-        public Bitmap ISRsToHandle = new Bitmap(256);
-        public ISRHanderDelegate ISRHandler = null;
-        public bool SwitchProcessForIRQs = true;
-        public Bitmap IRQsToHandle = new Bitmap(256);
-        public IRQHanderDelegate IRQHandler = null;
-        public Bitmap SyscallsToHandle = new Bitmap(256);
         public SyscallHanderDelegate SyscallHandler = null;
-        
-        public bool Registered = false;
+        public Bitmap SyscallsToHandle = new Bitmap(256);
+        public MemoryLayout TheMemoryLayout;
 
-        public Process(ThreadStartPoint StartPoint, uint AnId, FOS_System.String AName, bool userMode)
+        protected uint ThreadIdGenerator = 1;
+        public List Threads;
+
+        public Process(ThreadStartPoint StartPoint, uint AnId, String AName, bool userMode)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Constructing process object...");
@@ -78,14 +78,14 @@ namespace Kernel.Hardware.Processes
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: ctor: Initialising memory layout...");
 #endif
-            
+
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: ctor: Creating thread...");
 #endif
             CreateThread(StartPoint, "Main");
         }
 
-        public virtual Thread CreateThread(ThreadStartPoint StartPoint, FOS_System.String Name)
+        public virtual Thread CreateThread(ThreadStartPoint StartPoint, String Name)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
@@ -104,22 +104,24 @@ namespace Kernel.Hardware.Processes
 #endif
                 void* threadStackPhysAddr;
                 void* kernelStackPhysAddr;
-                Thread newThread = new Thread(this, StartPoint, ThreadIdGenerator++, UserMode, Name, out threadStackPhysAddr, out kernelStackPhysAddr);
+                Thread newThread = new Thread(this, StartPoint, ThreadIdGenerator++, UserMode, Name,
+                    out threadStackPhysAddr, out kernelStackPhysAddr);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif
                 // Add the page to the processes memory layout
-                uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
-                uint kernelStackVirtAddr = (uint)newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
+                uint threadStackVirtAddr = (uint) newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
+                uint kernelStackVirtAddr = (uint) newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
                 if (ProcessManager.KernelProcess != null && this != ProcessManager.KernelProcess)
                 {
-                    TheMemoryLayout.AddDataPage((uint)threadStackPhysAddr, threadStackVirtAddr);
-                    TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
-                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
+                    TheMemoryLayout.AddDataPage((uint) threadStackPhysAddr, threadStackVirtAddr);
+                    TheMemoryLayout.AddKernelPage((uint) kernelStackPhysAddr, kernelStackVirtAddr);
+                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage((uint) kernelStackPhysAddr,
+                        kernelStackVirtAddr);
                 }
                 else
                 {
-                    TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
+                    TheMemoryLayout.AddKernelPage((uint) kernelStackPhysAddr, kernelStackVirtAddr);
                 }
 
 #if PROCESS_TRACE
@@ -148,7 +150,7 @@ namespace Kernel.Hardware.Processes
                 ProcessManager.DisableKernelAccessToProcessMemory(this);
             }
         }
-        
+
         public virtual void SwitchFromLayout(MemoryLayout old)
         {
             TheMemoryLayout.SwitchFrom(UserMode, old);
@@ -158,14 +160,15 @@ namespace Kernel.Hardware.Processes
         {
             for (int i = 0; i < Threads.Count; i++)
             {
-                ((Thread)Threads[i]).Suspend = true;
+                ((Thread) Threads[i]).Suspend = true;
             }
         }
+
         public void ResumeThreads()
         {
             for (int i = 0; i < Threads.Count; i++)
             {
-                ((Thread)Threads[i]).Suspend = false;
+                ((Thread) Threads[i]).Suspend = false;
             }
         }
     }

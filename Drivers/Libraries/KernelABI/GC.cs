@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,24 +23,27 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Drivers.Compiler.Attributes;
+using Drivers.Framework;
 
 namespace KernelABI
 {
     public static class GC
     {
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.IncrementRefCountMethod]
-        public static void IncrementRefCount(Drivers.Framework.Object anObj)
+        [NoDebug]
+        [NoGC]
+        [IncrementRefCountMethod]
+        public static void IncrementRefCount(Object anObj)
         {
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.DecrementRefCountMethod]
-        public static void DecrementRefCount(Drivers.Framework.Object anObj)
+
+        [NoDebug]
+        [NoGC]
+        [DecrementRefCountMethod]
+        public static void DecrementRefCount(Object anObj)
         {
         }
     }

@@ -10,6 +10,7 @@
         BlockSize,
         CleanCaches
     }
+
     public struct StoragePipeCommand
     {
         public int Command;

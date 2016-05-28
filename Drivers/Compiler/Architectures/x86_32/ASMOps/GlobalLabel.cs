@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,18 +23,15 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Drivers.Compiler.ASM;
+using Drivers.Compiler.ASM.ASMOps;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class GlobalLabel : ASM.ASMOps.ASMGlobalLabel
+    public class GlobalLabel : ASMGlobalLabel
     {
         public GlobalLabel(string label) : base(label)
         {
@@ -44,7 +42,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         }
 
         /// <summary>
-        /// Generates the line of assembly for the global label.
+        ///     Generates the line of assembly for the global label.
         /// </summary>
         /// <param name="theBlock">The block for which the comment is to be generated.</param>
         /// <returns>The complete line of assembly code.</returns>

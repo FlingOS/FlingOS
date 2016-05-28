@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,16 +23,22 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define THREAD_TRACE
 
-using System;
+using System.Runtime.InteropServices;
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
+using Kernel.Utilities;
+using Kernel.VirtualMemory;
 
 namespace Kernel.Hardware.Processes
 {
-    public unsafe class Thread : FOS_System.Collections.Comparable
+    public unsafe class Thread : Comparable
     {
         public enum ActiveStates
         {
@@ -42,15 +49,134 @@ namespace Kernel.Hardware.Processes
             Terminated
         }
 
-        public Process Owner;
-        
+        public const int IndefiniteSleep = -1;
+
         private bool debug_Suspend;
+
+        public uint Id;
+        public String Name;
+
+        public Process Owner;
+
+        public ThreadState* State;
+        private bool suspend;
+
+        /// <remarks>
+        ///     Units of [time period of scheduler]
+        /// </remarks>
+        public int TimeToRun;
+
+        /// <remarks>
+        ///     Units of [time period of scheduler]
+        /// </remarks>
+        public int TimeToRunReload;
+
+        protected int timeToSleep = 0;
+
+        public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, String AName,
+            out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
+        {
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Constructing thread object...");
+#endif
+            LastActiveState = ActiveStates.NotStarted;
+            Owner = AnOwner;
+
+            //Init thread state
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating state memory...");
+#endif
+            State = (ThreadState*) Heap.AllocZeroed((uint) sizeof(ThreadState), "Thread : Thread() (1)");
+
+            // Init Id and EIP
+            //  Set EIP to the first instruction of the main method
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting thread info...");
+#endif
+            Id = AnId;
+            Name = AName;
+            State->StartEIP = (uint) ObjectUtilities.GetHandle(StartPoint);
+
+            // Allocate kernel memory for the kernel stack for this thread
+            //  Used when this thread is preempted or does a sys call. Stack is switched to
+            //  this thread-specific kernel stack
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating kernel stack...");
+#endif
+            State->KernelStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
+                UserMode
+                    ? VirtualMemoryImplementation.PageFlags.None
+                    : VirtualMemoryImplementation.PageFlags.KernelOnly, out KernelStackBottomPAddr) + KernelStackTopOffset;
+                //4KiB, page-aligned
+
+            // Allocate free memory for the user stack for this thread
+            //  Used by this thread in normal execution
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Mapping thread stack page...");
+#endif
+            State->UserMode = UserMode;
+            if (AnOwner == ProcessManager.KernelProcess)
+            {
+                State->ThreadStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
+                    UserMode
+                        ? VirtualMemoryImplementation.PageFlags.None
+                        : VirtualMemoryImplementation.PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
+                                        ThreadStackTopOffset; //4KiB, page-aligned
+            }
+            else
+            {
+                State->ThreadStackTop = (byte*) VirtualMemoryManager.MapFreePage(
+                    UserMode
+                        ? VirtualMemoryImplementation.PageFlags.None
+                        : VirtualMemoryImplementation.PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
+                                        ThreadStackTopOffset; //4KiB, page-aligned
+            }
+
+            // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
+            //  downwards
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting ESP...");
+#endif
+            State->ESP = (uint) State->ThreadStackTop;
+
+            // TimeToRun and TimeToRunReload are set up in Scheduler.InitProcess which
+            //      is called when a process is registered.
+
+            // Init SS
+            //  Stack Segment = User or Kernel space data segment selector offset
+            //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
+            //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
+            //          User data segment selector must also be or'ed with 3 for User Privilege level
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting SS...");
+#endif
+            State->SS = UserMode ? (ushort) 0x23 : (ushort) 0x10;
+
+            // Init Started
+            //  Not started yet so set to false
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting started...");
+#endif
+            State->Started = false;
+
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating exception state...");
+#endif
+            State->ExState = (ExceptionState*) (State->ThreadStackTop + 4);
+            byte* exStateBytePtr = (byte*) State->ExState;
+            for (int i = 0; i < sizeof(ExceptionState); i++)
+            {
+                *exStateBytePtr++ = 0;
+            }
+
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Done.");
+#endif
+        }
+
         public bool Debug_Suspend
         {
-            get
-            {
-                return debug_Suspend;
-            }
+            get { return debug_Suspend; }
             set
             {
                 LastActiveState = ActiveState;
@@ -58,13 +184,10 @@ namespace Kernel.Hardware.Processes
                 Scheduler.UpdateList(this);
             }
         }
-        private bool suspend;
+
         public bool Suspend
         {
-            get
-            {
-                return suspend;
-            }
+            get { return suspend; }
             set
             {
                 LastActiveState = ActiveState;
@@ -73,32 +196,12 @@ namespace Kernel.Hardware.Processes
             }
         }
 
-        public const int IndefiniteSleep = -1;
-
-        public uint Id;
-        public FOS_System.String Name;
-        
-        public ThreadState* State;
-
         /// <remarks>
-        /// Units of [time period of scheduler]
-        /// </remarks>
-        public int TimeToRun;
-        /// <remarks>
-        /// Units of [time period of scheduler]
-        /// </remarks>
-        public int TimeToRunReload;
-
-        protected int timeToSleep = 0;
-        /// <remarks>
-        /// Units of ms
+        ///     Units of ms
         /// </remarks>
         public int TimeToSleep
         {
-            get
-            {
-                return timeToSleep;
-            }
+            get { return timeToSleep; }
             set
             {
                 LastActiveState = ActiveState;
@@ -108,35 +211,33 @@ namespace Kernel.Hardware.Processes
 
         public bool IsSuspended
         {
-            get
-            {
-                return Debug_Suspend || Suspend || TimeToSleep == IndefiniteSleep;
-            }
+            get { return Debug_Suspend || Suspend || TimeToSleep == IndefiniteSleep; }
         }
+
         public bool IsActive
         {
-            get
-            {
-                return TimeToSleep == 0;
-            }
+            get { return TimeToSleep == 0; }
         }
+
         public ActiveStates ActiveState
         {
             get
             {
-                return 
-                    !State->Started ? ActiveStates.NotStarted : 
-                    State->Terminated ? ActiveStates.Terminated : 
-                    IsSuspended ? ActiveStates.Suspended : 
-                    IsActive ? ActiveStates.Active : 
-                    ActiveStates.Inactive;
+                return
+                    !State->Started
+                        ? ActiveStates.NotStarted
+                        : State->Terminated
+                            ? ActiveStates.Terminated
+                            : IsSuspended
+                                ? ActiveStates.Suspended
+                                : IsActive
+                                    ? ActiveStates.Active
+                                    : ActiveStates.Inactive;
             }
         }
-        public ActiveStates LastActiveState
-        {
-            get;
-            set;
-        }
+
+        public ActiveStates LastActiveState { get; set; }
+
         public override int Key
         {
             get
@@ -169,111 +270,12 @@ namespace Kernel.Hardware.Processes
 
         public static uint ThreadStackTopOffset
         {
-            get
-            {
-                return (uint)(4096 - sizeof(ExceptionState) - 4);
-            }
+            get { return (uint) (4096 - sizeof(ExceptionState) - 4); }
         }
+
         public static uint KernelStackTopOffset
         {
-            get
-            {
-                return (uint)(4096 - 4);
-            }
-        }
-
-        public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, FOS_System.String AName, out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
-        {
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Constructing thread object...");
-#endif
-            LastActiveState = ActiveStates.NotStarted;
-            Owner = AnOwner;
-
-            //Init thread state
-            #if THREAD_TRACE
-            BasicConsole.WriteLine("Allocating state memory...");
-#endif
-            State = (ThreadState*)FOS_System.Heap.AllocZeroed((uint)sizeof(ThreadState), "Thread : Thread() (1)");
-
-            // Init Id and EIP
-            //  Set EIP to the first instruction of the main method
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting thread info...");
-#endif
-            Id = AnId;
-            Name = AName;
-            State->StartEIP = (uint)Utilities.ObjectUtilities.GetHandle(StartPoint);
-
-            // Allocate kernel memory for the kernel stack for this thread
-            //  Used when this thread is preempted or does a sys call. Stack is switched to
-            //  this thread-specific kernel stack
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Allocating kernel stack...");
-#endif
-            State->KernelStackTop = (byte*)VirtualMemory.VirtualMemoryManager.MapFreePageForKernel(
-                UserMode ? VirtualMemory.VirtualMemoryImplementation.PageFlags.None :
-                           VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, out KernelStackBottomPAddr) + KernelStackTopOffset; //4KiB, page-aligned
-
-            // Allocate free memory for the user stack for this thread
-            //  Used by this thread in normal execution
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Mapping thread stack page...");
-#endif
-            State->UserMode = UserMode;
-            if (AnOwner == ProcessManager.KernelProcess)
-            {
-                State->ThreadStackTop = (byte*)VirtualMemory.VirtualMemoryManager.MapFreePageForKernel(
-                    UserMode ? VirtualMemory.VirtualMemoryImplementation.PageFlags.None :
-                               VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, out ThreadStackBottomPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
-            }
-            else
-            {
-                State->ThreadStackTop = (byte*)VirtualMemory.VirtualMemoryManager.MapFreePage(
-                UserMode ? VirtualMemory.VirtualMemoryImplementation.PageFlags.None :
-                           VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, out ThreadStackBottomPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
-            }
-
-            // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
-            //  downwards
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting ESP...");
-#endif
-            State->ESP = (uint)State->ThreadStackTop;
-
-            // TimeToRun and TimeToRunReload are set up in Scheduler.InitProcess which
-            //      is called when a process is registered.
-
-            // Init SS
-            //  Stack Segment = User or Kernel space data segment selector offset
-            //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
-            //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
-            //          User data segment selector must also be or'ed with 3 for User Privilege level
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting SS...");
-#endif
-            State->SS = UserMode ? (ushort)0x23 : (ushort)0x10;
-
-            // Init Started
-            //  Not started yet so set to false
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting started...");
-#endif
-            State->Started = false;
-
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Allocating exception state...");
-#endif
-            State->ExState = (ExceptionState*)(State->ThreadStackTop + 4);
-            byte* exStateBytePtr = (byte*)State->ExState;
-            for (int i = 0; i < sizeof(ExceptionState); i++)
-            {
-                *exStateBytePtr++ = 0;
-            }
-
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Done.");
-#endif
+            get { return (uint) (4096 - 4); }
         }
 
         /* 
@@ -284,192 +286,112 @@ namespace Kernel.Hardware.Processes
          *       Be careful not to accidentally cause stack underflow when accessing these.
          */
 
-        public UInt32 EAXFromInterruptStack
+        public uint EAXFromInterruptStack
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 44);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 44) = value;
-            }
-        }
-        public UInt32 EBXFromInterruptStack
-        {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 32);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 32) = value;
-            }
-        }
-        public UInt32 ECXFromInterruptStack
-        {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 40);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 40) = value;
-            }
-        }
-        public UInt32 EDXFromInterruptStack
-        {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 36);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 36) = value;
-            }
+            [NoDebug] get { return *(uint*) (State->ESP + 44); }
+            [NoDebug] set { *(uint*) (State->ESP + 44) = value; }
         }
 
-        public UInt32 ESPFromInterruptStack
+        public uint EBXFromInterruptStack
         {
-            [Drivers.Compiler.Attributes.NoDebug]
+            [NoDebug] get { return *(uint*) (State->ESP + 32); }
+            [NoDebug] set { *(uint*) (State->ESP + 32) = value; }
+        }
+
+        public uint ECXFromInterruptStack
+        {
+            [NoDebug] get { return *(uint*) (State->ESP + 40); }
+            [NoDebug] set { *(uint*) (State->ESP + 40) = value; }
+        }
+
+        public uint EDXFromInterruptStack
+        {
+            [NoDebug] get { return *(uint*) (State->ESP + 36); }
+            [NoDebug] set { *(uint*) (State->ESP + 36) = value; }
+        }
+
+        public uint ESPFromInterruptStack
+        {
+            [NoDebug]
             get
             {
                 // +12 to get over return pointer, CS and EFLAGS pushed by hardware on interrupt
-                return *(UInt32*)(State->ESP + 28) + 12;
+                return *(uint*) (State->ESP + 28) + 12;
             }
         }
-        public UInt32 EBPFromInterruptStack
+
+        public uint EBPFromInterruptStack
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 24);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 24) = value;
-            }
+            [NoDebug] get { return *(uint*) (State->ESP + 24); }
+            [NoDebug] set { *(uint*) (State->ESP + 24) = value; }
         }
-        public UInt32 EIPFromInterruptStack
+
+        public uint EIPFromInterruptStack
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 48);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 48) = value;
-            }
+            [NoDebug] get { return *(uint*) (State->ESP + 48); }
+            [NoDebug] set { *(uint*) (State->ESP + 48) = value; }
         }
-        public UInt32 EFLAGSFromInterruptStack
+
+        public uint EFLAGSFromInterruptStack
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return *(UInt32*)(State->ESP + 56);
-            }
-            [Drivers.Compiler.Attributes.NoDebug]
-            set
-            {
-                *(UInt32*)(State->ESP + 56) = value;
-            }
+            [NoDebug] get { return *(uint*) (State->ESP + 56); }
+            [NoDebug] set { *(uint*) (State->ESP + 56) = value; }
         }
-        
-        public UInt32 SysCallNumber
+
+        public uint SysCallNumber
         {
-            get
-            {
-                return EAXFromInterruptStack;
-            }
+            get { return EAXFromInterruptStack; }
         }
-        public UInt32 Param1
+
+        public uint Param1
         {
-            get
-            {
-                return EBXFromInterruptStack;
-            }
+            get { return EBXFromInterruptStack; }
         }
-        public UInt32 Param2
+
+        public uint Param2
         {
-            get
-            {
-                return ECXFromInterruptStack;
-            }
+            get { return ECXFromInterruptStack; }
         }
-        public UInt32 Param3
+
+        public uint Param3
         {
-            get
-            {
-                return EDXFromInterruptStack;
-            }
+            get { return EDXFromInterruptStack; }
         }
-        public UInt32 Return1
+
+        public uint Return1
         {
-            get
-            {
-                return EAXFromInterruptStack;
-            }
-            set
-            {
-                EAXFromInterruptStack = value;
-            }
+            get { return EAXFromInterruptStack; }
+            set { EAXFromInterruptStack = value; }
         }
-        public UInt32 Return2
+
+        public uint Return2
         {
-            get
-            {
-                return EBXFromInterruptStack;
-            }
-            set
-            {
-                EBXFromInterruptStack = value;
-            }
+            get { return EBXFromInterruptStack; }
+            set { EBXFromInterruptStack = value; }
         }
-        public UInt32 Return3
+
+        public uint Return3
         {
-            get
-            {
-                return ECXFromInterruptStack;
-            }
-            set
-            {
-                ECXFromInterruptStack = value;
-            }
+            get { return ECXFromInterruptStack; }
+            set { ECXFromInterruptStack = value; }
         }
-        public UInt32 Return4
+
+        public uint Return4
         {
-            get
-            {
-                return EDXFromInterruptStack;
-            }
-            set
-            {
-                EDXFromInterruptStack = value;
-            }
+            get { return EDXFromInterruptStack; }
+            set { EDXFromInterruptStack = value; }
         }
 
         //public static bool EnterSleepPrint = false;
 
         /// <remarks>
-        /// Call this instead of Thread.Sleep when inside an interrupt handler.
-        /// 
-        /// If inside an interrupt handler, you probably want to call 
-        /// Kernel.Hardware.Processes.Scheduler.UpdateCurrentState()
-        /// after calling this to immediately update the thread to return to.
+        ///     Call this instead of Thread.Sleep when inside an interrupt handler.
+        ///     If inside an interrupt handler, you probably want to call
+        ///     Kernel.Hardware.Processes.Scheduler.UpdateCurrentState()
+        ///     after calling this to immediately update the thread to return to.
         /// </remarks>
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoGC]
+        [NoDebug]
         public void _EnterSleep(int ms)
         {
             //if (EnterSleepPrint)
@@ -509,15 +431,16 @@ namespace Kernel.Hardware.Processes
 
             this.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             Scheduler.UpdateList(this);
-            
+
             //if (reenable)
             //{
             //    Scheduler.Enable();
             //}
             //}
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public bool _Sleep(int ms)
         {
             //Prevent getting stuck forever.
@@ -539,14 +462,16 @@ namespace Kernel.Hardware.Processes
 
             return true;
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public bool _Sleep_Indefinitely()
         {
             return this._Sleep(IndefiniteSleep);
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public void _Wake()
         {
             //bool reenable = Scheduler.Enabled;
@@ -558,15 +483,15 @@ namespace Kernel.Hardware.Processes
             this.TimeToSleep = 0;
             this.TimeToRun = this.TimeToRunReload;
             Scheduler.UpdateList(this);
-            
+
             //if (reenable)
             //{
             //    Scheduler.Enable();
             //}
         }
 
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoGC]
+        [NoDebug]
         public static void EnterSleep(int ms)
         {
             if (ProcessManager.CurrentThread == null)
@@ -576,8 +501,9 @@ namespace Kernel.Hardware.Processes
             }
             ProcessManager.CurrentThread._EnterSleep(ms);
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public static bool Sleep(int ms)
         {
             if (ProcessManager.CurrentThread == null)
@@ -587,8 +513,9 @@ namespace Kernel.Hardware.Processes
             }
             return ProcessManager.CurrentThread._Sleep(ms);
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public static bool Sleep_Indefinitely()
         {
             if (ProcessManager.CurrentThread == null)
@@ -598,8 +525,9 @@ namespace Kernel.Hardware.Processes
             }
             return ProcessManager.CurrentThread._Sleep_Indefinitely();
         }
-        [Drivers.Compiler.Attributes.NoGC]
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoGC]
+        [NoDebug]
         public static void Wake()
         {
             if (ProcessManager.CurrentThread == null)
@@ -611,22 +539,22 @@ namespace Kernel.Hardware.Processes
         }
     }
 
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct ThreadState
     {
         /* Do not re-order the fields in the structure. */
 
-        public bool Started;            // Offset: 0
-        
-        public uint ESP;                // Offset: 1
-        public ushort SS;               // Offset: 5
-        public byte* KernelStackTop;    // Offset: 7
-        public byte* ThreadStackTop;    // Offset: 11
-        
-        public uint StartEIP;           // Offset: 15
-        public bool Terminated;         // Offset: 19
+        public bool Started; // Offset: 0
 
-        public bool UserMode;           // Offset: 20
+        public uint ESP; // Offset: 1
+        public ushort SS; // Offset: 5
+        public byte* KernelStackTop; // Offset: 7
+        public byte* ThreadStackTop; // Offset: 11
+
+        public uint StartEIP; // Offset: 15
+        public bool Terminated; // Offset: 19
+
+        public bool UserMode; // Offset: 20
 
         public ExceptionState* ExState; // Offset: 21
     }

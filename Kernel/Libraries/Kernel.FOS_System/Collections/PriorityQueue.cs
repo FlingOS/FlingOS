@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,63 +23,58 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System.Exceptions;
 
 namespace Kernel.FOS_System.Collections
 {
     /// <summary>
-    /// Implements a reasonably efficient binary heap.
+    ///     Implements a reasonably efficient binary heap.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Implementation based on notes by Benjamin Sach at The University of Bristol from the COMS21103 Data Structures and Algorithms module.
-    /// </para>
-    /// <para>
-    /// Uses the List and Comparable classes for the underlying data structure creating an implicit tree. The use of List allows easy automatic
-    /// expansion and adding/removing items at the expense of some performance.
-    /// </para>
+    ///     <para>
+    ///         Implementation based on notes by Benjamin Sach at The University of Bristol from the COMS21103 Data Structures
+    ///         and Algorithms module.
+    ///     </para>
+    ///     <para>
+    ///         Uses the List and Comparable classes for the underlying data structure creating an implicit tree. The use of
+    ///         List allows easy automatic
+    ///         expansion and adding/removing items at the expense of some performance.
+    ///     </para>
     /// </remarks>
-    public class PriorityQueue : FOS_System.Object
+    public class PriorityQueue : Object
     {
+        private readonly List ImplicitHeap;
         public string Name = "[No Name]";
-
-        private List ImplicitHeap;
-
-        public int Count
-        {
-            get
-            {
-                return ImplicitHeap.Count;
-            }
-        }
-        public int Capacity
-        {
-            get
-            {
-                return ImplicitHeap.Capacity;
-            }
-            set
-            {
-                ImplicitHeap.Capacity = value;
-            }
-        }
 
         public PriorityQueue()
             : this(20)
         {
         }
+
         public PriorityQueue(int InitialCapacity)
         {
             ImplicitHeap = new List(InitialCapacity);
+        }
+
+        public int Count
+        {
+            get { return ImplicitHeap.Count; }
+        }
+
+        public int Capacity
+        {
+            get { return ImplicitHeap.Capacity; }
+            set { ImplicitHeap.Capacity = value; }
         }
 
         public void DecreaseKey(Comparable X, int NewKey)
         {
             if (NewKey > X.Key)
             {
-                ExceptionMethods.Throw(new Exceptions.ArgumentException("New key is larger than old key!"));
+                ExceptionMethods.Throw(new ArgumentException("New key is larger than old key!"));
             }
 
             X.Key = NewKey;
@@ -92,6 +88,7 @@ namespace Kernel.FOS_System.Collections
                 parent = Parent(X);
             }
         }
+
         public bool Insert(Comparable X)
         {
             //for (int i = 0; i < ImplicitHeap.Count; i++)
@@ -106,26 +103,27 @@ namespace Kernel.FOS_System.Collections
             //}
 
             X.Position = ImplicitHeap.Count + 1;
-            ImplicitHeap.Add((FOS_System.Object)X);
+            ImplicitHeap.Add((Object) X);
             DecreaseKey(X, X.Key);
             return true;
         }
+
         public Comparable ExtractMin()
         {
             Comparable result = null;
 
             if (ImplicitHeap.Count > 0)
             {
-                result = (Comparable)ImplicitHeap[0];
+                result = (Comparable) ImplicitHeap[0];
                 result.Position = 0;
 
                 if (ImplicitHeap.Count > 1)
                 {
-                    Comparable Y = (Comparable)ImplicitHeap.Last();
-                    ImplicitHeap.RemoveAt(Y.Position-1);
+                    Comparable Y = (Comparable) ImplicitHeap.Last();
+                    ImplicitHeap.RemoveAt(Y.Position - 1);
 
                     Y.Position = 1;
-                    ImplicitHeap[0] = (FOS_System.Object)Y;
+                    ImplicitHeap[0] = (Object) Y;
 
                     Rebalance(Y);
                 }
@@ -134,20 +132,22 @@ namespace Kernel.FOS_System.Collections
                     ImplicitHeap.RemoveAt(0);
                 }
             }
-            
+
             return result;
         }
+
         public Comparable PeekMin()
         {
             Comparable result = null;
 
             if (ImplicitHeap.Count > 0)
             {
-                result = (Comparable)ImplicitHeap[0];
+                result = (Comparable) ImplicitHeap[0];
             }
 
             return result;
         }
+
         public void Delete(Comparable X)
         {
             //BasicConsole.WriteLine("Deleting");
@@ -176,7 +176,7 @@ namespace Kernel.FOS_System.Collections
             if (ImplicitHeap.Count > 1)
             {
                 //BasicConsole.WriteLine("Using last item");
-                Comparable Y = (Comparable)ImplicitHeap.Last();
+                Comparable Y = (Comparable) ImplicitHeap.Last();
                 if (X != Y)
                 {
                     //BasicConsole.WriteLine("X not equal to Y");
@@ -186,7 +186,7 @@ namespace Kernel.FOS_System.Collections
                     //BasicConsole.WriteLine("Setting Y position");
                     Y.Position = X.Position;
                     //BasicConsole.WriteLine("Setting Y in array");
-                    ImplicitHeap[Y.Position - 1] = (FOS_System.Object)Y;
+                    ImplicitHeap[Y.Position - 1] = (Object) Y;
 
                     //BasicConsole.WriteLine("Rebalancing");
                     Rebalance(Y);
@@ -206,11 +206,12 @@ namespace Kernel.FOS_System.Collections
             //BasicConsole.WriteLine("Reset position");
             X.Position = 0;
         }
+
         public void DecreaseAllKeys(int amount, int min)
         {
             for (int i = 0; i < ImplicitHeap.Count; i++)
             {
-                Comparable x = ((Comparable)ImplicitHeap[i]);
+                Comparable x = (Comparable) ImplicitHeap[i];
                 int NewKey = x.Key - amount;
                 DecreaseKey(x, NewKey < min ? min : NewKey);
             }
@@ -222,9 +223,9 @@ namespace Kernel.FOS_System.Collections
 
             Comparable ALeftChild = LeftChild(Y);
             Comparable ARightChild = RightChild(Y);
-            
+
             while ((ALeftChild != null && Y.Key > ALeftChild.Key) ||
-                  (ARightChild != null && Y.Key > ARightChild.Key))
+                   (ARightChild != null && Y.Key > ARightChild.Key))
             {
                 //BasicConsole.WriteLine("Rebalance (2)");
 
@@ -249,13 +250,13 @@ namespace Kernel.FOS_System.Collections
             }
         }
 
-        public FOS_System.String ToString()
+        public String ToString()
         {
-            FOS_System.String result = "";
+            String result = "";
 
             for (int i = 0; i < ImplicitHeap.Count; i++)
             {
-                result += ((FOS_System.String)((Comparable)ImplicitHeap[i]).Key).PadRight(20, ' ');
+                result += ((String) ((Comparable) ImplicitHeap[i]).Key).PadRight(20, ' ');
             }
 
             return result;
@@ -267,60 +268,66 @@ namespace Kernel.FOS_System.Collections
             X.Position = Y.Position;
             Y.Position = tempPos;
 
-            ImplicitHeap[X.Position - 1] = (FOS_System.Object)X;
-            ImplicitHeap[Y.Position - 1] = (FOS_System.Object)Y;
+            ImplicitHeap[X.Position - 1] = (Object) X;
+            ImplicitHeap[Y.Position - 1] = (Object) Y;
         }
+
         private Comparable Parent(Comparable X)
         {
-            int idx = ParentIndex(X)-1;
+            int idx = ParentIndex(X) - 1;
             if (idx > -1)
             {
-                return (Comparable)ImplicitHeap[idx];
+                return (Comparable) ImplicitHeap[idx];
             }
             else
             {
                 return null;
             }
         }
+
         private Comparable LeftChild(Comparable X)
         {
-            int idx = LeftChildIndex(X)-1;
+            int idx = LeftChildIndex(X) - 1;
             if (idx < ImplicitHeap.Count)
             {
-                return (Comparable)ImplicitHeap[idx];
+                return (Comparable) ImplicitHeap[idx];
             }
             else
             {
                 return null;
             }
         }
+
         private Comparable RightChild(Comparable X)
         {
-            int idx = RightChildIndex(X)-1;
+            int idx = RightChildIndex(X) - 1;
             if (idx < ImplicitHeap.Count)
             {
-                return (Comparable)ImplicitHeap[idx];
+                return (Comparable) ImplicitHeap[idx];
             }
             else
             {
                 return null;
             }
         }
+
         private int ParentIndex(Comparable X)
         {
             if (X.Position > 1)
             {
-                return X.Position / 2;
+                return X.Position/2;
             }
             return 0;
         }
+
         private int LeftChildIndex(Comparable X)
         {
-            return X.Position * 2;
+            return X.Position*2;
         }
+
         private int RightChildIndex(Comparable X)
         {
-            return (X.Position * 2) + 1;
+            return X.Position*2 + 1;
         }
     }
 }

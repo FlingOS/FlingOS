@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,25 +23,22 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 namespace Drivers.Framework
 {
     /// <summary>
-    /// Replacement class for methods, properties and fields usually found on standard System.Int64 type.
+    ///     Replacement class for methods, properties and fields usually found on standard System.Int64 type.
     /// </summary>
     public static class Int64
     {
         /// <summary>
-        /// Returns the maximum value of an Int32.
+        ///     Returns the maximum value of an Int32.
         /// </summary>
         public static long MaxValue
         {
-            get
-            {
-                return 9223372036854775807;
-            }
+            get { return 9223372036854775807; }
         }
     }
 }

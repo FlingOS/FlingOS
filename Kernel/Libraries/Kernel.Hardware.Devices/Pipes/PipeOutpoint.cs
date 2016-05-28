@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,59 +23,68 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {
     /// <summary>
-    /// Represents a pipe outpoint. Used only within the core OS.
+    ///     Represents a pipe outpoint. Used only within the core OS.
     /// </summary>
     /// <remarks>
-    /// For outpoints used by processes, see <see cref="BasicOutpoint"/>.
+    ///     For outpoints used by processes, see <see cref="BasicOutpoint" />.
     /// </remarks>
-    public class PipeOutpoint : FOS_System.Object
+    public class PipeOutpoint : Object
     {
         /// <summary>
-        /// The Id of the process which owns the outpoint.
-        /// </summary>
-        public uint ProcessId;
-        /// <summary>
-        /// The class of pipe which can connect to the outpoint.
+        ///     The class of pipe which can connect to the outpoint.
         /// </summary>
         public PipeClasses Class;
+
         /// <summary>
-        /// The subclass of pipe which can connect to the outpoint.
+        ///     The maximum number of connections allowed to the outpoint. Also see
+        ///     <see cref="PipeConstants.UnlimitedConnections" />.
         /// </summary>
-        public PipeSubclasses Subclass;
-        /// <summary>
-        /// The maximum number of connections allowed to the outpoint. Also see <see cref="PipeConstants.UnlimitedConnections"/>.
-        /// </summary>
-        /// <seealso cref="PipeConstants.UnlimitedConnections"/>
+        /// <seealso cref="PipeConstants.UnlimitedConnections" />
         public int MaxConnections;
+
         /// <summary>
-        /// The number of pipes currently connected to the outpoint.
+        ///     The number of pipes currently connected to the outpoint.
         /// </summary>
         public int NumConnections;
 
         /// <summary>
-        /// List of threads waiting for a pipe to connect to the outpoint.
+        ///     The Id of the process which owns the outpoint.
+        /// </summary>
+        public uint ProcessId;
+
+        /// <summary>
+        ///     The subclass of pipe which can connect to the outpoint.
+        /// </summary>
+        public PipeSubclasses Subclass;
+
+        /// <summary>
+        ///     List of threads waiting for a pipe to connect to the outpoint.
         /// </summary>
         public UInt64List WaitingThreads;
 
         /// <summary>
-        /// Initialises a new instance of an outpoint.
+        ///     Initialises a new instance of an outpoint.
         /// </summary>
         /// <param name="OwnerProcessId">The Id of the process which owns the outpoint.</param>
         /// <param name="pipeClass">The class of pipe which can connect to the outpoint.</param>
         /// <param name="pipeSubclass">The subclass of pipe which can connect to the outpoint.</param>
-        /// <param name="MaximumConnections">The maximum number of connections allowed to the outpoint. Also see <see cref="PipeConstants.UnlimitedConnections"/>.</param>
-        /// <seealso cref="PipeConstants.UnlimitedConnections"/>
-        public PipeOutpoint(uint OwnerProcessId, PipeClasses pipeClass, PipeSubclasses pipeSubclass, int MaximumConnections)
+        /// <param name="MaximumConnections">
+        ///     The maximum number of connections allowed to the outpoint. Also see
+        ///     <see cref="PipeConstants.UnlimitedConnections" />.
+        /// </param>
+        /// <seealso cref="PipeConstants.UnlimitedConnections" />
+        public PipeOutpoint(uint OwnerProcessId, PipeClasses pipeClass, PipeSubclasses pipeSubclass,
+            int MaximumConnections)
         {
             ProcessId = OwnerProcessId;
             Class = pipeClass;

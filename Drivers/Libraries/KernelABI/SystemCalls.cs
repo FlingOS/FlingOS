@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,22 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
-#endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
-using Drivers.Framework;
-using Drivers.Framework.Utilities;
-//using Kernel.Shared;
+#endregion
+
+ //using Kernel.Shared;
 
 namespace KernelABI
 {
     public static class SystemCalls
     {
         public delegate void ThreadStartMethod();
+
         /*
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\SystemCalls")]
         public static void Call(Kernel.Shared.SystemCalls callNumber,

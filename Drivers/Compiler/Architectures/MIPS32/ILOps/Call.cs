@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,32 +23,34 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using MethodInfo = Drivers.Compiler.Types.MethodInfo;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Call : IL.ILOps.Call
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             MethodBase methodToCall = theOp.MethodToCall;
-            Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
+            MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
-            if (methodToCall is MethodInfo)
+            if (methodToCall is System.Reflection.MethodInfo)
             {
-                Type retType = ((MethodInfo)methodToCall).ReturnType;
-                Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                 StackItem returnItem = new StackItem()
                 {
                     isFloat = Utilities.IsFloat(retType),
@@ -55,9 +58,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     isGCManaged = retTypeInfo.IsGCManaged,
                     isValue = retTypeInfo.IsValueType
                 };
-                
+
                 int bytesToAdd = 0;
-                List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                List<Type> allParams =
+                    ((System.Reflection.MethodInfo) methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
                 if (!methodToCall.IsStatic)
                 {
                     allParams.Insert(0, methodToCall.DeclaringType);
@@ -81,7 +85,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else if (methodToCall is ConstructorInfo)
             {
-                ConstructorInfo aConstructor = (ConstructorInfo)methodToCall;
+                ConstructorInfo aConstructor = (ConstructorInfo) methodToCall;
                 if (aConstructor.IsStatic)
                 {
                     //Static constructors do not have parameters or return values
@@ -98,29 +102,29 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if any argument or the return value is a floating point number.
+        ///     Thrown if any argument or the return value is a floating point number.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             MethodBase methodToCall = theOp.MethodToCall;
-            Types.MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
+            MethodInfo methodToCallInfo = conversionState.TheILLibrary.GetMethodInfo(methodToCall);
 
             conversionState.AddExternalLabel(methodToCallInfo.ID);
 
             //The method to call is a method base
             //A method base can be either a method info i.e. a normal method
             //or a constructor method. The two types are treated separately.
-            if(methodToCall is MethodInfo)
+            if (methodToCall is System.Reflection.MethodInfo)
             {
                 //Allocate space on the stack for the return value as necessary
-                Type retType = ((MethodInfo)methodToCall).ReturnType;
-                Types.TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
+                Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                 StackItem returnItem = new StackItem()
                 {
                     isFloat = Utilities.IsFloat(retType),
@@ -140,12 +144,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     }
                     else if (returnItem.sizeOnStackInBytes == 4)
                     {
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                     }
                     else if (returnItem.sizeOnStackInBytes == 8)
                     {
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
                     }
                     else
                     {
@@ -154,16 +158,17 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
 
                 //Append the actual call
-                conversionState.Append(new ASMOps.Call() { Target = methodToCallInfo.ID });
+                conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
 
                 //After a call, we need to remove the return value and parameters from the stack
                 //This is most easily done by just adding the total number of bytes for params and
                 //return value to the stack pointer (ESP register).
-                
+
                 //Stores the number of bytes to add
                 int bytesToAdd = 0;
                 //All the parameters for the method that was called
-                List<Type> allParams = ((MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                List<Type> allParams =
+                    ((System.Reflection.MethodInfo) methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
                 //Go through each one
                 if (!methodToCall.IsStatic)
                 {
@@ -196,16 +201,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //We will push it back on after params are skipped over.
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t3" });
+                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
                         }
-                    }   
+                    }
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
+                    conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp"});
                     //If necessary, push the return value onto the stack.
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
@@ -215,12 +220,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //So push it back onto the stack
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t3" });
-                            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
                         }
                     }
                 }
@@ -232,20 +237,20 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(returnItem);
                 }
             }
-            else if(methodToCall is ConstructorInfo)
+            else if (methodToCall is ConstructorInfo)
             {
-                ConstructorInfo aConstructor = (ConstructorInfo)methodToCall;
+                ConstructorInfo aConstructor = (ConstructorInfo) methodToCall;
                 if (aConstructor.IsStatic)
                 {
                     //Static constructors do not have parameters or return values
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() { Target = methodToCallInfo.ID });
+                    conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
                 }
                 else
                 {
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() { Target = methodToCallInfo.ID });
+                    conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
 
                     //After a call, we need to remove the parameters from the stack
                     //This is most easily done by just adding the total number of bytes for params
@@ -270,7 +275,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     if (bytesToAdd > 0)
                     {
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp" });
+                        conversionState.Append(new ASMOps.Add()
+                        {
+                            Src1 = "$sp",
+                            Src2 = bytesToAdd.ToString(),
+                            Dest = "$sp"
+                        });
                     }
                 }
             }

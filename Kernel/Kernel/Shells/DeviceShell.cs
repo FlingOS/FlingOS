@@ -1,13 +1,10 @@
 ﻿using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware;
-using Kernel.Hardware.ATA;
-using Kernel.Hardware.Devices;
-using Kernel.Hardware.PCI;
-using Kernel.USB;
-using Kernel.Hardware.IO.Serial;
 using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Hardware;
+using Kernel.Hardware.Devices;
+using Kernel.Tasks;
+using Kernel.Tasks.Driver;
 
 namespace Kernel.Shells
 {
@@ -17,16 +14,17 @@ namespace Kernel.Shells
             : base()
         {
         }
+
         public DeviceShell(Console AConsole, Keyboard AKeyboard)
             : base(AConsole, AKeyboard)
         {
         }
-        
+
         public override void Execute()
         {
             try
-            {                
-                if (Tasks.Helpers.StartBuiltInProcess("DM", "ATA Driver", Tasks.Driver.ATADriverTask.Main, false))
+            {
+                if (Helpers.StartBuiltInProcess("DM", "ATA Driver", ATADriverTask.Main, false))
                 {
                     BasicConsole.WriteLine("DM > Couldn't start the ATA Driver!");
                 }
@@ -35,7 +33,7 @@ namespace Kernel.Shells
                     BasicConsole.WriteLine("DM > ATA Driver started.");
                 }
 
-                if (Tasks.Helpers.StartBuiltInProcess("DM", "PCI Driver", Tasks.Driver.PCIDriverTask.Main, false))
+                if (Helpers.StartBuiltInProcess("DM", "PCI Driver", PCIDriverTask.Main, false))
                 {
                     BasicConsole.WriteLine("DM > Couldn't start the PCI Driver!");
                 }
@@ -44,7 +42,7 @@ namespace Kernel.Shells
                     BasicConsole.WriteLine("DM > PCI Driver started.");
                 }
 
-                if (Tasks.Helpers.StartBuiltInProcess("DM", "USB Driver", Tasks.Driver.USBDriverTask.Main, false))
+                if (Helpers.StartBuiltInProcess("DM", "USB Driver", USBDriverTask.Main, false))
                 {
                     BasicConsole.WriteLine("DM > Couldn't start the USB Driver!");
                 }
@@ -105,14 +103,14 @@ namespace Kernel.Shells
                 {
                     for (int i = 0; i < DeviceList.Count; i++)
                     {
-                        Device ADevice = (Device)DeviceList[i];
-                        console.WriteLine("Id: " + (String)ADevice.Id);
+                        Device ADevice = (Device) DeviceList[i];
+                        console.WriteLine("Id: " + (String) ADevice.Id);
                         console.Write("Group: ");
-                        console.WriteLine_AsDecimal((int)ADevice.Group);
+                        console.WriteLine_AsDecimal((int) ADevice.Group);
                         console.Write("Class: ");
-                        console.WriteLine_AsDecimal((int)ADevice.Class);
+                        console.WriteLine_AsDecimal((int) ADevice.Class);
                         console.Write("Subclass: ");
-                        console.WriteLine_AsDecimal((int)ADevice.SubClass);
+                        console.WriteLine_AsDecimal((int) ADevice.SubClass);
                         console.Write("Name: ");
                         console.WriteLine(ADevice.Name);
                         console.Write("Info: ");

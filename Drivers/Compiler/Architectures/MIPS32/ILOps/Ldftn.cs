@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
+using Drivers.Compiler.ASM;
 using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldftn : IL.ILOps.Ldftn
     {
@@ -52,7 +52,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
         public override void Preprocess(ILPreprocessState preprocessState, ILOp theOp)
         {
-            Types.MethodInfo methodInfo = preprocessState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
+            MethodInfo methodInfo = preprocessState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
 
             if (theOp.LoadAtILOpAfterOp != null)
             {
@@ -75,7 +75,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -83,7 +83,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Get the ID (i.e. ASM label) of the method to load a pointer to
-            Types.MethodInfo methodInfo = conversionState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
+            MethodInfo methodInfo = conversionState.TheILLibrary.GetMethodInfo(theOp.MethodToCall);
             string methodID = methodInfo.ID;
             bool addExternalLabel = methodID != conversionState.Input.TheMethodInfo.ID;
 
@@ -93,14 +93,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);
                 int index = anILBlock.ILOps.IndexOf(theOp.LoadAtILOpAfterOp);
                 index++;
-                
-                methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.ILOps[index]));
+
+                methodID = ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.ILOps[index]));
             }
             else if (theOp.LoadAtILOffset != int.MaxValue)
             {
                 //Append the IL sub-label to the ID
                 ILBlock anILBlock = conversionState.TheILLibrary.GetILBlock(methodInfo);
-                methodID = ASM.ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.At(theOp.LoadAtILOffset)));
+                methodID = ASMBlock.GenerateLabel(methodID, anILBlock.PositionOf(anILBlock.At(theOp.LoadAtILOffset)));
 
                 //Note: This is used by try/catch/finally blocks for pushing pointers 
                 //      to catch/finally handlers and filters
@@ -112,8 +112,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
 
             //Push the pointer to the function
-            conversionState.Append(new ASMOps.La() { Dest = "$t4", Label = methodID });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+            conversionState.Append(new La() {Dest = "$t4", Label = methodID});
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {

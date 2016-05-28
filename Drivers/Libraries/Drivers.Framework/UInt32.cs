@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,34 +23,27 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Stubs
 {
     /// <summary>
-    /// Replacement class for methods, properties and fields usually found on standard System.Int32 type.
+    ///     Replacement class for methods, properties and fields usually found on standard System.Int32 type.
     /// </summary>
     public static class UInt32
     {
         /// <summary>
-        /// Returns the maximum value of an Int32.
+        ///     Returns the maximum value of an Int32.
         /// </summary>
         public static uint MaxValue
         {
-            get
-            {
-                return 4294967295;
-            }
+            get { return 4294967295; }
         }
 
-        public static Framework.String ToDecimalString(uint num)
+        public static String ToDecimalString(uint num)
         {
-            Framework.String result = "";
+            String result = "";
             //If the number is already 0, just output 0
             //  straight off. The algorithm below does not
             //  work if num is 0.
@@ -60,7 +54,7 @@ namespace Drivers.Framework.Stubs
                 while (num > 0)
                 {
                     //Get the units
-                    uint rem = num % 10;
+                    uint rem = num%10;
                     //Output the units character
                     switch (rem)
                     {

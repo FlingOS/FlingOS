@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,32 +23,26 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
 
 namespace Drivers.Framework.Collections
 {
-    public abstract class Comparable : Framework.Object
+    public abstract class Comparable : Object
     {
         public Comparable()
         {
         }
+
         public Comparable(int key)
         {
             Key = key;
         }
 
-        public virtual int Position
-        {
-            get;
-            set;
-        }
-        public virtual int Key
-        {
-            get;
-            set;
-        }
+        public virtual int Position { get; set; }
+
+        public virtual int Key { get; set; }
+
         public virtual int Compare(Comparable x, Comparable y)
         {
             return x.Key < y.Key ? -1 : x.Key == y.Key ? 0 : 1;

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,44 +23,31 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using Kernel.FOS_System;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Pipes.Exceptions;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes
 {
     /// <summary>
-    /// Represents a basic outpoint for any pipe class.
+    ///     Represents a basic outpoint for any pipe class.
     /// </summary>
-    public unsafe abstract class BasicOutpoint : FOS_System.Object
+    public abstract unsafe class BasicOutpoint : Object
     {
         /// <summary>
-        /// The class of pipe allowed to connect to the outpoint.
-        /// </summary>
-        public PipeClasses Class
-        {
-            get;
-            protected set;
-        }
-        /// <summary>
-        /// The subclass of pipe allowed to connect to the outpoint.
-        /// </summary>
-        public PipeSubclasses Subclass
-        {
-            get;
-            protected set;
-        }
-
-        /// <summary>
-        /// Creates and registers a new outpoint of the specified class and subclass.
+        ///     Creates and registers a new outpoint of the specified class and subclass.
         /// </summary>
         /// <param name="aClass">The class of pipe allowed to connect to the outpoint.</param>
         /// <param name="aSubclass">The subclass of pipe allowed to connect to the outpoint.</param>
         /// <param name="MaxConnections">
-        /// The maximum number of connections allowed. Use <see cref="PipeConstants.UnlimitedConnections"/> for unlimited connections.
+        ///     The maximum number of connections allowed. Use <see cref="PipeConstants.UnlimitedConnections" /> for unlimited
+        ///     connections.
         /// </param>
         public BasicOutpoint(PipeClasses aClass, PipeSubclasses aSubclass, int MaxConnections)
         {
@@ -71,24 +59,37 @@ namespace Kernel.Pipes
             {
                 case SystemCallResults.Unhandled:
                     //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Unhandled!");
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Register Pipe Outpoint system call unhandled!"));
+                    ExceptionMethods.Throw(
+                        new ArgumentException("BasicOutPipe : Register Pipe Outpoint system call unhandled!"));
                     break;
                 case SystemCallResults.Fail:
                     //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Failed!");
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Register Pipe Outpoint system call failed!"));
+                    ExceptionMethods.Throw(
+                        new ArgumentException("BasicOutPipe : Register Pipe Outpoint system call failed!"));
                     break;
                 case SystemCallResults.OK:
                     //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Succeeded.");
                     break;
                 default:
                     //BasicConsole.WriteLine("BasicOutPipe > RegisterPipeOutpoint: Unexpected system call result!");
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Register Pipe Outpoint system call unexpected result!"));
+                    ExceptionMethods.Throw(
+                        new ArgumentException("BasicOutPipe : Register Pipe Outpoint system call unexpected result!"));
                     break;
-            }            
+            }
         }
 
         /// <summary>
-        /// Waits for a pipe to connect to the outpoint.
+        ///     The class of pipe allowed to connect to the outpoint.
+        /// </summary>
+        public PipeClasses Class { get; protected set; }
+
+        /// <summary>
+        ///     The subclass of pipe allowed to connect to the outpoint.
+        /// </summary>
+        public PipeSubclasses Subclass { get; protected set; }
+
+        /// <summary>
+        ///     Waits for a pipe to connect to the outpoint.
         /// </summary>
         /// <returns>The Id of the newly connected pipe.</returns>
         public int WaitForConnect(out uint InProcessId)
@@ -96,7 +97,9 @@ namespace Kernel.Pipes
             int aPipeId = 0;
             InProcessId = 0;
 
-            WaitOnPipeCreateRequest* request = (WaitOnPipeCreateRequest*)Heap.AllocZeroed((uint)sizeof(WaitOnPipeCreateRequest), "BasicOutPipe : WaitForConnect");
+            WaitOnPipeCreateRequest* request =
+                (WaitOnPipeCreateRequest*)
+                    Heap.AllocZeroed((uint) sizeof(WaitOnPipeCreateRequest), "BasicOutPipe : WaitForConnect");
             try
             {
                 request->Class = Class;
@@ -107,11 +110,11 @@ namespace Kernel.Pipes
                 {
                     case SystemCallResults.Unhandled:
                         //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unhandled!");
-                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unhandled!"));
+                        ExceptionMethods.Throw(new ArgumentException("BasicOutPipe : Wait On Pipe Create unhandled!"));
                         break;
                     case SystemCallResults.Fail:
                         //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Failed!");
-                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create failed!"));
+                        ExceptionMethods.Throw(new ArgumentException("BasicOutPipe : Wait On Pipe Create failed!"));
                         break;
                     case SystemCallResults.OK:
                         aPipeId = request->Result.Id;
@@ -123,7 +126,8 @@ namespace Kernel.Pipes
                         break;
                     default:
                         //BasicConsole.WriteLine("BasicOutPipe > WaitOnPipeCreate: Unexpected system call result!");
-                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Wait On Pipe Create unexpected result!"));
+                        ExceptionMethods.Throw(
+                            new ArgumentException("BasicOutPipe : Wait On Pipe Create unexpected result!"));
                         break;
                 }
             }
@@ -139,7 +143,7 @@ namespace Kernel.Pipes
         }
 
         /// <summary>
-        /// Writes the specified buffer to the specified pipe.
+        ///     Writes the specified buffer to the specified pipe.
         /// </summary>
         /// <param name="PipeId">The Id of the pipe to write to.</param>
         /// <param name="Data">The buffer to write to the pipe.</param>
@@ -147,25 +151,27 @@ namespace Kernel.Pipes
         /// <param name="Length">The length of data to write from the buffer. (Clamped)</param>
         /// <param name="Blocking">Whether the write call should be blocking or not.</param>
         /// <remarks>
-        /// <para>
-        /// Id required since an outpoint can be connected to multiple 
-        /// </para>
-        /// <para>
-        /// Non-blocking calls will still be deferred but will fail if the data cannot be written 
-        /// on first pass through the pipe's R/W queue.
-        /// </para>
+        ///     <para>
+        ///         Id required since an outpoint can be connected to multiple
+        ///     </para>
+        ///     <para>
+        ///         Non-blocking calls will still be deferred but will fail if the data cannot be written
+        ///         on first pass through the pipe's R/W queue.
+        ///     </para>
         /// </remarks>
         public void Write(int PipeId, byte[] Data, int Offset, int Length, bool Blocking)
         {
-            WritePipeRequest* WritePipeRequestPtr = (WritePipeRequest*)Heap.AllocZeroed((uint)sizeof(WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
+            WritePipeRequest* WritePipeRequestPtr =
+                (WritePipeRequest*)
+                    Heap.AllocZeroed((uint) sizeof(WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
             try
             {
                 if (WritePipeRequestPtr != null)
                 {
                     WritePipeRequestPtr->Offset = Offset;
                     WritePipeRequestPtr->PipeId = PipeId;
-                    WritePipeRequestPtr->Length = FOS_System.Math.Min(Data.Length - Offset, Length);
-                    WritePipeRequestPtr->InBuffer = (byte*)Utilities.ObjectUtilities.GetHandle(Data) + FOS_System.Array.FieldsBytesSize;
+                    WritePipeRequestPtr->Length = Math.Min(Data.Length - Offset, Length);
+                    WritePipeRequestPtr->InBuffer = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
                     WritePipeRequestPtr->Blocking = Blocking;
 
                     SystemCallResults SysCallResult = SystemCalls.WritePipe(WritePipeRequestPtr);
@@ -173,17 +179,20 @@ namespace Kernel.Pipes
                     {
                         case SystemCallResults.Unhandled:
                             //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unhandled!");
-                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicOutPipe : Write Pipe unexpected unhandled!"));
+                            ExceptionMethods.Throw(
+                                new RWUnhandledException("BasicOutPipe : Write Pipe unexpected unhandled!"));
                             break;
                         case SystemCallResults.Fail:
                             //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Failed!");
                             if (Blocking)
                             {
-                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicOutPipe : Write Pipe unexpected failed! (Blocking call)"));
+                                ExceptionMethods.Throw(
+                                    new RWFailedException("BasicOutPipe : Write Pipe unexpected failed! (Blocking call)"));
                             }
                             else
                             {
-                                ExceptionMethods.Throw(new Exceptions.RWFailedException("BasicOutPipe : Write Pipe failed. (Non-blocking call)"));
+                                ExceptionMethods.Throw(
+                                    new RWFailedException("BasicOutPipe : Write Pipe failed. (Non-blocking call)"));
                             }
                             break;
                         case SystemCallResults.OK:
@@ -191,13 +200,15 @@ namespace Kernel.Pipes
                             break;
                         default:
                             //BasicConsole.WriteLine("BasicOutPipe > WritePipe: Unexpected system call result!");
-                            ExceptionMethods.Throw(new Exceptions.RWUnhandledException("BasicOutPipe : Write Pipe unexpected result!"));
+                            ExceptionMethods.Throw(
+                                new RWUnhandledException("BasicOutPipe : Write Pipe unexpected result!"));
                             break;
                     }
                 }
                 else
                 {
-                    ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicOutPipe : Couldn't allocate memory to write to pipe!"));
+                    ExceptionMethods.Throw(
+                        new ArgumentException("BasicOutPipe : Couldn't allocate memory to write to pipe!"));
                 }
             }
             finally
@@ -210,13 +221,14 @@ namespace Kernel.Pipes
         }
 
         /// <summary>
-        /// Gets the number of available outpoints of the specified class and subclass.
+        ///     Gets the number of available outpoints of the specified class and subclass.
         /// </summary>
         /// <param name="numOutpoints">Out : The number of outpoints (correct iff SysCallResult is OK).</param>
         /// <param name="SysCallResult">Out : The result of the system call. Check this is set to OK.</param>
         /// <param name="Class">The class of pipe to search for.</param>
         /// <param name="Subclass">The subclass of pipe to search for.</param>
-        public static void GetNumPipeOutpoints(out int numOutpoints, out SystemCallResults SysCallResult, PipeClasses Class, PipeSubclasses Subclass)
+        public static void GetNumPipeOutpoints(out int numOutpoints, out SystemCallResults SysCallResult,
+            PipeClasses Class, PipeSubclasses Subclass)
         {
             SysCallResult = SystemCalls.GetNumPipeOutpoints(Class, Subclass, out numOutpoints);
             switch (SysCallResult)
@@ -238,25 +250,32 @@ namespace Kernel.Pipes
                     break;
             }
         }
+
         /// <summary>
-        /// Gets the outpoint desciptors of the available outpoints of the specified class and subclass.
+        ///     Gets the outpoint desciptors of the available outpoints of the specified class and subclass.
         /// </summary>
         /// <param name="numOutpoints">The known number of available outpoints. Use GetNumPipeOutpoints to obtain this number.</param>
         /// <param name="SysCallResult">Out : The result of the system call. Check this is set to OK.</param>
         /// <param name="OutpointDescriptors">Out : The array of outpoint descriptors.</param>
         /// <param name="Class">The class of pipe to search for.</param>
         /// <param name="Subclass">The subclass of pipe to search for.</param>
-        public static void GetOutpointDescriptors(int numOutpoints, out SystemCallResults SysCallResult, out PipeOutpointDescriptor[] OutpointDescriptors, PipeClasses Class, PipeSubclasses Subclass)
+        public static void GetOutpointDescriptors(int numOutpoints, out SystemCallResults SysCallResult,
+            out PipeOutpointDescriptor[] OutpointDescriptors, PipeClasses Class, PipeSubclasses Subclass)
         {
             OutpointDescriptors = new PipeOutpointDescriptor[numOutpoints];
 
-            PipeOutpointsRequest* RequestPtr = (PipeOutpointsRequest*)Heap.AllocZeroed((uint)sizeof(PipeOutpointsRequest), "BasicServerHelpers : Alloc PipeOutpointsRequest");
+            PipeOutpointsRequest* RequestPtr =
+                (PipeOutpointsRequest*)
+                    Heap.AllocZeroed((uint) sizeof(PipeOutpointsRequest),
+                        "BasicServerHelpers : Alloc PipeOutpointsRequest");
             if (RequestPtr != null)
             {
                 try
                 {
                     RequestPtr->MaxDescriptors = numOutpoints;
-                    RequestPtr->Outpoints = (PipeOutpointDescriptor*)((byte*)Utilities.ObjectUtilities.GetHandle(OutpointDescriptors) + FOS_System.Array.FieldsBytesSize);
+                    RequestPtr->Outpoints =
+                        (PipeOutpointDescriptor*)
+                            ((byte*) ObjectUtilities.GetHandle(OutpointDescriptors) + Array.FieldsBytesSize);
                     if (RequestPtr->Outpoints != null)
                     {
                         SysCallResult = SystemCalls.GetPipeOutpoints(Class, Subclass, RequestPtr);
@@ -280,7 +299,9 @@ namespace Kernel.Pipes
                     {
                         SysCallResult = SystemCallResults.Fail;
                         //BasicConsole.WriteLine("BasicServerHelpers > RequestPtr->Outpoints null! No memory allocated.");
-                        ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicServerHelpers : Couldn't allocate memory outpoints list in outpoints request!"));
+                        ExceptionMethods.Throw(
+                            new ArgumentException(
+                                "BasicServerHelpers : Couldn't allocate memory outpoints list in outpoints request!"));
                     }
                 }
                 finally
@@ -292,7 +313,8 @@ namespace Kernel.Pipes
             {
                 SysCallResult = SystemCallResults.Fail;
                 //BasicConsole.WriteLine("BasicServerHelpers > RequestPtr null! No memory allocated.");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.ArgumentException("BasicServerHelpers : Couldn't allocate memory get outpoints request!"));
+                ExceptionMethods.Throw(
+                    new ArgumentException("BasicServerHelpers : Couldn't allocate memory get outpoints request!"));
             }
         }
     }

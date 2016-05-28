@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,26 +23,27 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes.Storage
 {
     /// <summary>
-    /// Represents an outpoint for a standard in or standard out pipe.
+    ///     Represents an outpoint for a standard in or standard out pipe.
     /// </summary>
     public class StorageDataOutpoint : BasicOutpoint
     {
         /// <summary>
-        /// Creates and registers an outpoint as either a Standard In or Standard Out pipe outpoint.
+        ///     Creates and registers an outpoint as either a Standard In or Standard Out pipe outpoint.
         /// </summary>
         public StorageDataOutpoint(int MaxConnections, bool OutputPipe)
-            : base(PipeClasses.Storage, (OutputPipe ? PipeSubclasses.Storage_Data_Out : PipeSubclasses.Storage_Data_In), MaxConnections)
+            : base(
+                PipeClasses.Storage, OutputPipe ? PipeSubclasses.Storage_Data_Out : PipeSubclasses.Storage_Data_In,
+                MaxConnections)
         {
         }
 
@@ -49,10 +51,13 @@ namespace Kernel.Pipes.Storage
 
         public unsafe void WriteDiskInfos(int PipeId, ulong[] DiskIds)
         {
-            byte[] buffer = new byte[sizeof(StoragePipeDataHeader) + (sizeof(StoragePipeDataDiskInfo) * DiskIds.Length)];
-            StoragePipeDataHeader* HdrPtr = (StoragePipeDataHeader*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize);
+            byte[] buffer = new byte[sizeof(StoragePipeDataHeader) + sizeof(StoragePipeDataDiskInfo)*DiskIds.Length];
+            StoragePipeDataHeader* HdrPtr =
+                (StoragePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
             HdrPtr->Count = DiskIds.Length;
-            StoragePipeDataDiskInfo* DataPtr = (StoragePipeDataDiskInfo*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize + sizeof(StoragePipeDataHeader));
+            StoragePipeDataDiskInfo* DataPtr =
+                (StoragePipeDataDiskInfo*)
+                    ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(StoragePipeDataHeader));
             for (int i = 0; i < DiskIds.Length; i++)
             {
                 DataPtr[i].Id = DiskIds[i];

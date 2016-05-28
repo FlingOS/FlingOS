@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
-#endregion
 
-using System;
+#endregion
 
 namespace Drivers.Framework
 {
-    public class DateTime : Framework.Object
+    public class DateTime : Object
     {
-        public byte Second;
-        public byte Minute;
-        public byte Hour;
         public byte Day;
+        public byte Hour;
+        public byte Minute;
         public byte Month;
+        public byte Second;
         public uint Year;
 
         public DateTime(byte aSecond, byte aMinute, byte anHour, byte aDay, byte aMonth, uint aYear)
@@ -46,44 +46,47 @@ namespace Drivers.Framework
             Month = aMonth;
             Year = aYear;
         }
-        public DateTime(UInt64 utc)
+
+        public DateTime(ulong utc)
         {
             //TODO: Decode UTC time from 64-bit value (when 64-bit division and modulo are supported)
-            UInt32 castUTC = (UInt32)utc;
-            Year = (castUTC / 31556926u) + 1970u;
-            
-            castUTC -= (Year-1970) * 31556926u;
-            Month = (byte)(castUTC / 2629743u);
+            uint castUTC = (uint) utc;
+            Year = castUTC/31556926u + 1970u;
 
-            castUTC -= Month * 2629743u;
-            Day = (byte)(castUTC / 86400u);
+            castUTC -= (Year - 1970)*31556926u;
+            Month = (byte) (castUTC/2629743u);
 
-            castUTC -= Day * 86400u;
-            Hour = (byte)(castUTC / 3600u);
+            castUTC -= Month*2629743u;
+            Day = (byte) (castUTC/86400u);
 
-            castUTC -= Hour * 3600u;
-            Minute = (byte)(castUTC / 60u);
-            
-            castUTC -= Minute * 60u;
-            Second = (byte)(castUTC);
+            castUTC -= Day*86400u;
+            Hour = (byte) (castUTC/3600u);
+
+            castUTC -= Hour*3600u;
+            Minute = (byte) (castUTC/60u);
+
+            castUTC -= Minute*60u;
+            Second = (byte) castUTC;
         }
 
-        public Framework.String ToString()
+        public String ToString()
         {
-            return Framework.Int32.ToDecimalString((int)Year) + "-" +
-                   Framework.Int32.ToDecimalString(Month).PadLeft(2, '0') + "-" +
-                   Framework.Int32.ToDecimalString(Day).PadLeft(2, '0') + " " +
-                   Framework.Int32.ToDecimalString(Hour).PadLeft(2, '0') + ":" +
-                   Framework.Int32.ToDecimalString(Minute).PadLeft(2, '0') + ":" +
-                   Framework.Int32.ToDecimalString(Second).PadLeft(2, '0');
+            return Int32.ToDecimalString((int) Year) + "-" +
+                   Int32.ToDecimalString(Month).PadLeft(2, '0') + "-" +
+                   Int32.ToDecimalString(Day).PadLeft(2, '0') + " " +
+                   Int32.ToDecimalString(Hour).PadLeft(2, '0') + ":" +
+                   Int32.ToDecimalString(Minute).PadLeft(2, '0') + ":" +
+                   Int32.ToDecimalString(Second).PadLeft(2, '0');
         }
-        public UInt64 ToUTC()
+
+        public ulong ToUTC()
         {
-            return DateTime.ToUTC(Second, Minute, Hour, Day, Month, Year);
+            return ToUTC(Second, Minute, Hour, Day, Month, Year);
         }
-        public static UInt64 ToUTC(byte aSecond, byte aMinute, byte anHour, byte aDay, byte aMonth, uint aYear)
+
+        public static ulong ToUTC(byte aSecond, byte aMinute, byte anHour, byte aDay, byte aMonth, uint aYear)
         {
-            return ((aYear - 1970) * 31556926u) + (aMonth * 2629743u) + (aDay * 86400u) + (anHour * 3600u) + (aMinute * 60u) + aSecond;
+            return (aYear - 1970)*31556926u + aMonth*2629743u + aDay*86400u + anHour*3600u + aMinute*60u + aSecond;
         }
     }
 }

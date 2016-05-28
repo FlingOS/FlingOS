@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldfld : IL.ILOps.Ldfld
     {
@@ -45,12 +45,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
 
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);
-            Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+            TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
 
             StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -73,14 +73,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if field to load is a floating value or the field to load
-        /// is not of size 4 or 8 bytes.
+        ///     Thrown if field to load is a floating value or the field to load
+        ///     is not of size 4 or 8 bytes.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -89,13 +89,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Get the field info from the referencing assembly
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
             //Get the database type information about the object that contains the field
-            Types.TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
+            TypeInfo objTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.DeclaringType);
             int offset = conversionState.TheILLibrary.GetFieldInfo(objTypeInfo, theField.Name).OffsetInBytes;
 
             //Is the value to load a floating pointer number?
             bool valueisFloat = Utilities.IsFloat(theField.FieldType);
             //Get the size of the value to load (in bytes, as it will appear on the stack)
-            Types.TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
+            TypeInfo fieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theField.FieldType);
             int stackSize = fieldTypeInfo.SizeOnStackInBytes;
             int memSize = theField.FieldType.IsValueType ? fieldTypeInfo.SizeOnHeapInBytes : stackSize;
 
@@ -110,11 +110,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
 
             //Pop object pointer
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t2" });
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
             {
-                conversionState.Append(new ASMOps.Add() { Src1 = "$t2", Src2 = offset.ToString(), Dest = "$t2" });
-                conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t2" });
+                conversionState.Append(new ASMOps.Add() {Src1 = "$t2", Src2 = offset.ToString(), Dest = "$t2"});
+                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t2"});
 
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                 {
@@ -128,25 +128,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 //Push value at pointer+offset
                 int sizeNotInMem = stackSize - memSize;
-                int sizeToSub = (sizeNotInMem / 2) * 2; //Rounds down
+                int sizeToSub = sizeNotInMem/2*2; //Rounds down
                 for (int i = 0; i < sizeToSub; i += 2)
                 {
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Halfword, Src = "$zero" });
+                    conversionState.Append(new Push() {Size = OperandSize.Halfword, Src = "$zero"});
                 }
-                for (int i = memSize + (memSize % 2); i > 0; i -= 2)
+                for (int i = memSize + memSize%2; i > 0; i -= 2)
                 {
                     if (sizeToSub != sizeNotInMem)
                     {
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.ImmediateToReg });
+                        conversionState.Append(new Mov()
+                        {
+                            Size = OperandSize.Halfword,
+                            Src = "0",
+                            Dest = "$t0",
+                            MoveType = Mov.MoveTypes.ImmediateToReg
+                        });
                         //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = (offset + i - 2).ToString() + "($t2)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", (offset + i - 2), 1);
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Halfword, Src = "$t0" });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", offset + i - 2, 1);
+                        conversionState.Append(new Push() {Size = OperandSize.Halfword, Src = "$t0"});
                     }
                     else
                     {
                         //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = (offset + i - 2).ToString() + "($t2)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", (offset + i - 2), 2);
-                        conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Halfword, Src = "$t0" });
+                        GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", offset + i - 2, 2);
+                        conversionState.Append(new Push() {Size = OperandSize.Halfword, Src = "$t0"});
                     }
                 }
 

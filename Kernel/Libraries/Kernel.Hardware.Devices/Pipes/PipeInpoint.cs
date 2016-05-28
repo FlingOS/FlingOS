@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,37 +23,39 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using System;
-using Kernel.FOS_System.Processes;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {
     /// <summary>
-    /// Represents a pipe inpoint. Used only within the core OS.
+    ///     Represents a pipe inpoint. Used only within the core OS.
     /// </summary>
     /// <remarks>
-    /// For inpoints used by processes, see <see cref="BasicInpoint"/>.
+    ///     For inpoints used by processes, see <see cref="BasicInpoint" />.
     /// </remarks>
-    public class PipeInpoint : FOS_System.Object
+    public class PipeInpoint : Object
     {
         /// <summary>
-        /// The Id of the process which owns the inpoint.
-        /// </summary>
-        public uint ProcessId;
-        /// <summary>
-        /// The class of pipe connected to the inpoint.
+        ///     The class of pipe connected to the inpoint.
         /// </summary>
         public PipeClasses Class;
+
         /// <summary>
-        /// The subclass of pipe connected to the inpoint.
+        ///     The Id of the process which owns the inpoint.
+        /// </summary>
+        public uint ProcessId;
+
+        /// <summary>
+        ///     The subclass of pipe connected to the inpoint.
         /// </summary>
         public PipeSubclasses Subclass;
 
         /// <summary>
-        /// Initialises a new inpoint instance.
+        ///     Initialises a new inpoint instance.
         /// </summary>
         /// <param name="OwnerProcessId">The process which owns the inpoint.</param>
         /// <param name="pipeClass">The class of pipe connected to the inpoint.</param>

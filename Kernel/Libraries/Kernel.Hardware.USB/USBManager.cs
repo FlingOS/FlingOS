@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,10 +23,12 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 //#define USB_TRACE
 
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
@@ -33,8 +36,8 @@ using Kernel.Hardware;
 using Kernel.Hardware.Devices;
 using Kernel.Hardware.PCI;
 using Kernel.Hardware.Processes;
-using Kernel.USB.HCIs;
 using Kernel.USB.Devices;
+using Kernel.USB.HCIs;
 
 namespace Kernel.USB
 {
@@ -49,7 +52,7 @@ namespace Kernel.USB
     //  Driver Framework, so for now, this will do.
 
     /// <summary>
-    /// Provides methods for managing USB access.
+    ///     Provides methods for managing USB access.
     /// </summary>
     public static unsafe class USBManager
     {
@@ -59,44 +62,32 @@ namespace Kernel.USB
         public static int UpdateSemaphoreId;
 
         /// <summary>
-        /// The number of UHCI devices detected.
+        ///     The number of UHCI devices detected.
         /// </summary>
-        public static int NumUHCIDevices
-        {
-            get;
-            private set;
-        }
-        /// <summary>
-        /// The number of OHCI devices detected.
-        /// </summary>
-        public static int NumOHCIDevices
-        {
-            get;
-            private set;
-        }
-        /// <summary>
-        /// The number of EHCI devices detected.
-        /// </summary>
-        public static int NumEHCIDevices
-        {
-            get;
-            private set;
-        }
-        /// <summary>
-        /// The number of xHCI devices detected.
-        /// </summary>
-        public static int NumxHCIDevices
-        {
-            get;
-            private set;
-        }
+        public static int NumUHCIDevices { get; private set; }
 
         /// <summary>
-        /// List of all the HCI device instances.
+        ///     The number of OHCI devices detected.
+        /// </summary>
+        public static int NumOHCIDevices { get; private set; }
+
+        /// <summary>
+        ///     The number of EHCI devices detected.
+        /// </summary>
+        public static int NumEHCIDevices { get; private set; }
+
+        /// <summary>
+        ///     The number of xHCI devices detected.
+        /// </summary>
+        public static int NumxHCIDevices { get; private set; }
+
+        /// <summary>
+        ///     List of all the HCI device instances.
         /// </summary>
         public static List HCIDevices;
+
         /// <summary>
-        /// List of all the USB device instances.
+        ///     List of all the USB device instances.
         /// </summary>
         public static List Devices;
 
@@ -107,14 +98,14 @@ namespace Kernel.USB
             HCIDevices = new List(3);
             Devices = new List(5);
 
-            if(SystemCalls.CreateSemaphore(0, out UpdateSemaphoreId) != SystemCallResults.OK)
+            if (SystemCalls.CreateSemaphore(0, out UpdateSemaphoreId) != SystemCallResults.OK)
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Couldn't allocate semaphore for USB Manager!"));
+                ExceptionMethods.Throw(new Exception("Couldn't allocate semaphore for USB Manager!"));
             }
         }
 
         /// <summary>
-        /// Initialises USB management. Scans the PCI bus for HCIs and initialises any supported HCIs that are found.
+        ///     Initialises USB management. Scans the PCI bus for HCIs and initialises any supported HCIs that are found.
         /// </summary>
         public static void InitHCIs()
         {
@@ -128,15 +119,16 @@ namespace Kernel.USB
             if (IgnoreUSB10and11Devices)
             {
                 BasicConsole.SetTextColour(BasicConsole.warning_colour);
-                BasicConsole.WriteLine("USB driver will ignore USB 1.0 and 1.1 mode devices (Low and full-speed devices).");
+                BasicConsole.WriteLine(
+                    "USB driver will ignore USB 1.0 and 1.1 mode devices (Low and full-speed devices).");
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }
-            
+
             List AllDevices = DeviceManager.GetDeviceList();
             List HCIPCIDevices = new List();
             for (int i = 0; i < AllDevices.Count; i++)
             {
-                Device aDevice = (Device)AllDevices[i];
+                Device aDevice = (Device) AllDevices[i];
                 if (!aDevice.Claimed)
                 {
                     if (aDevice.Class == DeviceClass.Generic && aDevice.SubClass == DeviceSubClass.PCI)
@@ -147,7 +139,8 @@ namespace Kernel.USB
 
                             if (DeviceManager.FillDeviceInfo(aDevice))
                             {
-                                PCIDevice pciDevice = new PCIDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2], "Generic PCI Device");
+                                PCIDevice pciDevice = new PCIDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2],
+                                    "Generic PCI Device");
                                 if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Normal)
                                 {
                                     pciDevice = new PCIDeviceNormal(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2]);
@@ -183,10 +176,10 @@ namespace Kernel.USB
                     }
                 }
             }
-            
+
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)(HCIPCIDevices[i]);
+                PCIDevice aDevice = (PCIDevice) HCIPCIDevices[i];
                 //xHCI = 0x30
                 if (aDevice.ProgIF == 0x30)
                 {
@@ -198,13 +191,13 @@ namespace Kernel.USB
                     //TODO: Add xHCI support
                     //Supported by VMWare
                     //  - This is USB 3.0
-                    
+
                     NumxHCIDevices++;
                 }
             }
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)(HCIPCIDevices[i]);
+                PCIDevice aDevice = (PCIDevice) HCIPCIDevices[i];
                 //EHCI = 0x20
                 if (aDevice.ProgIF == 0x20)
                 {
@@ -214,7 +207,7 @@ namespace Kernel.USB
 #endif
                     NumEHCIDevices++;
 
-                    PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                    PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal) aDevice;
                     EHCI_PCIDevice.Claimed = true;
 
                     //BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -229,7 +222,7 @@ namespace Kernel.USB
             }
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)(HCIPCIDevices[i]);
+                PCIDevice aDevice = (PCIDevice) HCIPCIDevices[i];
                 //UHCI = 0x00
                 if (aDevice.ProgIF == 0x00)
                 {
@@ -239,7 +232,7 @@ namespace Kernel.USB
 #endif
                     NumUHCIDevices++;
 
-                    PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
+                    PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal) aDevice;
                     UHCI_PCIDevice.Claimed = true;
 
                     UHCI newUHCI = new UHCI(UHCI_PCIDevice);
@@ -259,7 +252,7 @@ namespace Kernel.USB
                     //TODO: Add OHCI support
                     //Not supported by VMWare or my laptop 
                     //  so we aren't going to program this any further for now.
-                    
+
                     NumOHCIDevices++;
                 }
             }
@@ -274,25 +267,26 @@ namespace Kernel.USB
                 //ExceptionMethods.Throw(new FOS_System.Exception("USB Manager couldn't signal update semaphore!"));
             }
         }
+
         /// <summary>
-        /// Updates the USB manager and all host controller devices.
+        ///     Updates the USB manager and all host controller devices.
         /// </summary>
         public static void Update()
         {
             UpdateRequired = false;
-            for(int i = 0; i < HCIDevices.Count; i++)
+            for (int i = 0; i < HCIDevices.Count; i++)
             {
-                ((HCI)HCIDevices[i]).Update();
+                ((HCI) HCIDevices[i]).Update();
             }
         }
-        
+
         /// <summary>
-        /// Creates new device info for the specified port.
+        ///     Creates new device info for the specified port.
         /// </summary>
         /// <param name="hc">The host contorller which owns the port.</param>
         /// <param name="port">The port to create device info for.</param>
         /// <returns>The new device info.</returns>
-        public static Devices.USBDeviceInfo CreateDeviceInfo(HCI hc, HCPort port)
+        public static USBDeviceInfo CreateDeviceInfo(HCI hc, HCPort port)
         {
 #if USB_TRACE
             DBGMSG("Creating USB device...");
@@ -302,16 +296,17 @@ namespace Kernel.USB
             deviceInf.Interfaces = new List(1);
             deviceInf.Endpoints = new List(1);
             deviceInf.Endpoints.Add(new Endpoint());
-            ((Endpoint)deviceInf.Endpoints[0]).MPS = 64;
-            ((Endpoint)deviceInf.Endpoints[0]).Type = Endpoint.Types.BIDIR;
-            ((Endpoint)deviceInf.Endpoints[0]).Toggle = false;
+            ((Endpoint) deviceInf.Endpoints[0]).MPS = 64;
+            ((Endpoint) deviceInf.Endpoints[0]).Type = Endpoint.Types.BIDIR;
+            ((Endpoint) deviceInf.Endpoints[0]).Toggle = false;
 #if USB_TRACE
             DBGMSG("Created device.");
 #endif
             return deviceInf;
         }
+
         /// <summary>
-        /// Creates and initialises a new USb device for the specified device info and address.
+        ///     Creates and initialises a new USb device for the specified device info and address.
         /// </summary>
         /// <param name="deviceInfo">The device info to create a new device for.</param>
         /// <param name="address">The USB address for the new device.</param>
@@ -415,7 +410,7 @@ namespace Kernel.USB
 
                     deviceInfo.address = SetDeviceAddress(deviceInfo, address);
                 }
-                
+
                 bool hub = deviceInfo.usbClass == 0x09;
 #if USB_TRACE
                 if (hub)
@@ -449,7 +444,7 @@ namespace Kernel.USB
                 SetConfiguration(deviceInfo, wantedConfig); // set first configuration
 
 #if USB_TRACE
-                // Debug check: Check configuration set properly
+    // Debug check: Check configuration set properly
                 byte config = GetConfiguration(deviceInfo);
                 if (config == wantedConfig)
                 {
@@ -474,7 +469,8 @@ namespace Kernel.USB
 
                     //For now, create a completely generic device instance so we don't lose track of
                     //  this device entirely.
-                    USBDevice NewDevice = new USBDevice(deviceInfo, DeviceGroup.USB, DeviceClass.Generic, DeviceSubClass.USB, "USB Hub", true);
+                    USBDevice NewDevice = new USBDevice(deviceInfo, DeviceGroup.USB, DeviceClass.Generic,
+                        DeviceSubClass.USB, "USB Hub", true);
                     DeviceManager.RegisterDevice(NewDevice);
                     Devices.Add(NewDevice);
                 }
@@ -507,7 +503,8 @@ namespace Kernel.USB
 #endif
                     //For now, create a completely generic device instance so we don't lose track of
                     //  this device entirely.
-                    USBDevice NewDevice = new USBDevice(deviceInfo, DeviceGroup.USB, DeviceClass.Generic, DeviceSubClass.USB, "Unknown USB Device", true);
+                    USBDevice NewDevice = new USBDevice(deviceInfo, DeviceGroup.USB, DeviceClass.Generic,
+                        DeviceSubClass.USB, "Unknown USB Device", true);
                     DeviceManager.RegisterDevice(NewDevice);
                     Devices.Add(NewDevice);
                 }
@@ -527,8 +524,9 @@ namespace Kernel.USB
 #endif
             }
         }
+
         /// <summary>
-        /// Sets the USB device address of the specified device to the specified value.
+        ///     Sets the USB device address of the specified device to the specified value.
         /// </summary>
         /// <param name="device">The device to set the address of.</param>
         /// <param name="addr">The address to set to.</param>
@@ -554,9 +552,9 @@ namespace Kernel.USB
 #endif
             return new_address;
         }
-        
+
         /// <summary>
-        /// Gets the device descriptor from the specified device.
+        ///     Gets the device descriptor from the specified device.
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
@@ -566,13 +564,15 @@ namespace Kernel.USB
             DBGMSG("USB: GET_DESCRIPTOR Device");
 #endif
 
-            DeviceDescriptor* descriptor = (DeviceDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "USBManager : GetDeviceDescriptor");
+            DeviceDescriptor* descriptor =
+                (DeviceDescriptor*)
+                    Heap.AllocZeroed((uint) sizeof(DeviceDescriptor), "USBManager : GetDeviceDescriptor");
             USBTransfer transfer = new USBTransfer();
             try
             {
                 device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
-                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, (first8BytesOnly ? (ushort)8u : (ushort)18u));
-                device.hc.INTransaction(transfer, false, descriptor, (first8BytesOnly ? (ushort)8u : (ushort)18u));
+                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, first8BytesOnly ? (ushort) 8u : (ushort) 18u);
+                device.hc.INTransaction(transfer, false, descriptor, first8BytesOnly ? (ushort) 8u : (ushort) 18u);
                 device.hc.OUTTransaction(transfer, true, null, 0);
                 device.hc.IssueTransfer(transfer);
 
@@ -595,12 +595,13 @@ namespace Kernel.USB
             }
             finally
             {
-                FOS_System.Heap.Free(descriptor);
+                Heap.Free(descriptor);
             }
             return transfer.success;
         }
+
         /// <summary>
-        /// Parses the specified device descriptor. 
+        ///     Parses the specified device descriptor.
         /// </summary>
         /// <param name="d">The desxcriptor to parse.</param>
         /// <param name="usbDev">The device info for the device the descriptor came from.</param>
@@ -617,7 +618,7 @@ namespace Kernel.USB
             usbDev.productStringID = d->product;
             usbDev.serialNumberStringID = d->serialNumber;
             usbDev.numConfigurations = d->numConfigurations;
-            ((Endpoint)usbDev.Endpoints[0]).MPS = d->MaxPacketSize;
+            ((Endpoint) usbDev.Endpoints[0]).MPS = d->MaxPacketSize;
 
             usbDev.ManufacturerString = GetUnicodeStringDescriptor(usbDev, usbDev.manufacturerStringID);
             usbDev.ProductString = GetUnicodeStringDescriptor(usbDev, usbDev.productStringID);
@@ -625,7 +626,7 @@ namespace Kernel.USB
         }
 
         /// <summary>
-        /// Gets the configuration descriptor from the specified device.
+        ///     Gets the configuration descriptor from the specified device.
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
@@ -637,7 +638,7 @@ namespace Kernel.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            byte* buffer = (byte*)FOS_System.Heap.AllocZeroed(bufferSize, "USBManager: GetConfigDescriptor");
+            byte* buffer = (byte*) Heap.AllocZeroed(bufferSize, "USBManager: GetConfigDescriptor");
 
             bool success = false;
 
@@ -672,10 +673,10 @@ namespace Kernel.USB
 
                         if (length == 9 && type == 2)
                         {
-                            ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*)addr;
+                            ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*) addr;
 
                             Configuration config = new Configuration();
-                            config.Attribs = (Configuration.Attributes)descriptor->attributes;
+                            config.Attribs = (Configuration.Attributes) descriptor->attributes;
                             config.Selector = descriptor->configurationValue;
                             config.MaxPower = descriptor->maxPower;
                             config.NumInterfaces = descriptor->numInterfaces;
@@ -685,7 +686,11 @@ namespace Kernel.USB
                             }
                             else
                             {
-                                config.Description = new UnicodeString() { StringType = 0, Value = "[Unable to load at this time]" };
+                                config.Description = new UnicodeString()
+                                {
+                                    StringType = 0,
+                                    Value = "[Unable to load at this time]"
+                                };
                             }
 
                             device.Configurations.Add(config);
@@ -696,7 +701,7 @@ namespace Kernel.USB
                         }
                         else if (length == 9 && type == 4)
                         {
-                            InterfaceDescriptor* descriptor = (InterfaceDescriptor*)addr;
+                            InterfaceDescriptor* descriptor = (InterfaceDescriptor*) addr;
 
                             Interface interf = new Interface();
                             interf.InterfaceNumber = descriptor->interfaceNumber;
@@ -739,7 +744,7 @@ namespace Kernel.USB
                         addr += length;
                     }
 
-                    FOS_System.Object endpointZero = device.Endpoints[0];
+                    Object endpointZero = device.Endpoints[0];
                     device.Endpoints.Empty();
                     device.Endpoints.Add(endpointZero);
                     for (int i = 0; i < numEndpoints - 1; i++)
@@ -756,20 +761,20 @@ namespace Kernel.USB
 
                         if (length == 7 && type == 5)
                         {
-                            EndpointDescriptor* descriptor = (EndpointDescriptor*)addr;
+                            EndpointDescriptor* descriptor = (EndpointDescriptor*) addr;
 
-                            byte ep_id = (byte)(descriptor->endpointAddress & 0xF);
+                            byte ep_id = (byte) (descriptor->endpointAddress & 0xF);
 #if USB_TRACE
                             if (ep_id >= numEndpoints)
                             {
                                 DBGMSG("ep_id >= numEndpoints!!");
                             }
 #endif
-                            Endpoint endpoint = (Endpoint)device.Endpoints[ep_id];
+                            Endpoint endpoint = (Endpoint) device.Endpoints[ep_id];
 
                             endpoint.MPS = descriptor->maxPacketSize;
                             endpoint.Type = Endpoint.Types.BIDIR; // Can be overwritten below
-                            endpoint.Address = (byte)(descriptor->endpointAddress & 0xF);
+                            endpoint.Address = (byte) (descriptor->endpointAddress & 0xF);
                             endpoint.Attributes = descriptor->attributes;
                             endpoint.Interval = descriptor->interval;
 
@@ -807,14 +812,14 @@ namespace Kernel.USB
             }
             finally
             {
-                FOS_System.Heap.Free(buffer);
+                Heap.Free(buffer);
             }
 
             return success;
         }
 
         /// <summary>
-        /// Gets the device string descriptor from the specified device.
+        ///     Gets the device string descriptor from the specified device.
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
@@ -825,18 +830,20 @@ namespace Kernel.USB
 #endif
 
             StringInfo result = null;
-            StringDescriptor* descriptor = (StringDescriptor*)FOS_System.Heap.AllocZeroed((uint)sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
+            StringDescriptor* descriptor =
+                (StringDescriptor*)
+                    Heap.AllocZeroed((uint) sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
 
             try
             {
-                ushort size = (ushort)sizeof(StringDescriptor);
+                ushort size = (ushort) sizeof(StringDescriptor);
                 USBTransfer transfer = new USBTransfer();
                 device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
                 device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, 0, 0, size);
                 device.hc.INTransaction(transfer, false, descriptor, size);
                 device.hc.OUTTransaction(transfer, true, null, 0);
                 device.hc.IssueTransfer(transfer);
-             
+
                 if (transfer.success)
                 {
                     if (descriptor->length > 0)
@@ -879,14 +886,14 @@ namespace Kernel.USB
             }
             finally
             {
-                FOS_System.Heap.Free(descriptor);
+                Heap.Free(descriptor);
             }
 
             return result;
         }
 
         /// <summary>
-        /// Gets a unicode string descriptor from the specified device.
+        ///     Gets a unicode string descriptor from the specified device.
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <param name="stringIndex">The index of the string descriptor to get.</param>
@@ -914,7 +921,8 @@ namespace Kernel.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            StringDescriptorUnicode* buffer = (StringDescriptorUnicode*)FOS_System.Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor");
+            StringDescriptorUnicode* buffer =
+                (StringDescriptorUnicode*) Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor");
 
             try
             {
@@ -930,7 +938,10 @@ namespace Kernel.USB
                     result = new UnicodeString()
                     {
                         StringType = buffer->descriptorType,
-                        Value = buffer->length > 0 ? FOS_System.ByteConverter.GetASCIIStringFromUTF16((byte*)buffer->widechar, 0, buffer->length) : ""
+                        Value =
+                            buffer->length > 0
+                                ? ByteConverter.GetASCIIStringFromUTF16((byte*) buffer->widechar, 0, buffer->length)
+                                : ""
                     };
 
 #if USB_TRACE
@@ -940,14 +951,14 @@ namespace Kernel.USB
             }
             finally
             {
-                FOS_System.Heap.Free(buffer);
+                Heap.Free(buffer);
             }
 
             return result;
         }
 
         /// <summary>
-        /// Gets the current configuration number from the specified device.
+        ///     Gets the current configuration number from the specified device.
         /// </summary>
         /// <param name="device">The device info of the device to get the information from.</param>
         /// <returns>The current configuration value.</returns>
@@ -966,10 +977,11 @@ namespace Kernel.USB
             device.hc.OUTTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);
 
-            return (byte)configuration;
+            return (byte) configuration;
         }
+
         /// <summary>
-        /// Sets the current configuration number of the specified device.
+        ///     Sets the current configuration number of the specified device.
         /// </summary>
         /// <param name="device">The device info of the device to set the information in.</param>
         /// <param name="configuration">The configuration number to set.</param>
@@ -981,13 +993,14 @@ namespace Kernel.USB
 
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
-            device.hc.SETUPTransaction(transfer, 8, 0x00, 9, 0, configuration, 0, 0); // SETUP DATA0, 8 byte, request type, SET_CONFIGURATION(9), hi(reserved), configuration, index=0, length=0
+            device.hc.SETUPTransaction(transfer, 8, 0x00, 9, 0, configuration, 0, 0);
+                // SETUP DATA0, 8 byte, request type, SET_CONFIGURATION(9), hi(reserved), configuration, index=0, length=0
             device.hc.INTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);
         }
-        
+
         /// <summary>
-        /// Gets the specified endpoint's status.
+        ///     Gets the specified endpoint's status.
         /// </summary>
         /// <param name="device">The device info of the device to get the information from.</param>
         /// <param name="endpoint">The number of the endpoint to check the status of.</param>
@@ -1015,7 +1028,7 @@ namespace Kernel.USB
         }
 
         /// <summary>
-        /// Sets the HALT feature on the specified endpoint.
+        ///     Sets the HALT feature on the specified endpoint.
         /// </summary>
         /// <param name="device">The device info of the device to which the endpoint belongs.</param>
         /// <param name="endpoint">The endpoint number on which to set the halt.</param>
@@ -1035,8 +1048,9 @@ namespace Kernel.USB
             DBGMSG(((FOS_System.String)"Set HALT at endpoint: ") + endpoint);
 #endif
         }
+
         /// <summary>
-        /// Clears the HALT feature on the specified endpoint.
+        ///     Clears the HALT feature on the specified endpoint.
         /// </summary>
         /// <param name="device">The device info of the device to which the endpoint belongs.</param>
         /// <param name="endpoint">The endpoint number from which to clear the halt.</param>
@@ -1058,7 +1072,7 @@ namespace Kernel.USB
         }
 
         /// <remarks>
-        /// Called by Device Manager Task.
+        ///     Called by Device Manager Task.
         /// </remarks>
         public static void IRQHandler()
         {
@@ -1066,7 +1080,7 @@ namespace Kernel.USB
             {
                 for (int i = 0; i < HCIDevices.Count; i++)
                 {
-                    ((HCI)HCIDevices[i]).IRQHandler();
+                    ((HCI) HCIDevices[i]).IRQHandler();
                 }
             }
         }

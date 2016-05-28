@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,34 +23,36 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
+using Drivers.Compiler.ASM;
+using Drivers.Compiler.Attributes;
+using Drivers.Compiler.IL;
+using Drivers.Compiler.Types;
 
 namespace Drivers.Compiler
 {
     /// <summary>
-    /// Manages linking the object files into the final ELF/A file(s) or ISO file.
+    ///     Manages linking the object files into the final ELF/A file(s) or ISO file.
     /// </summary>
     public static class LinkManager
     {
-        static Dictionary<string, string> DependencyNameMapping = new Dictionary<string, string>();
-        static int NameGenerator = 0;
+        private static readonly Dictionary<string, string> DependencyNameMapping = new Dictionary<string, string>();
+        private static int NameGenerator = 0;
 
         /// <summary>
-        /// Performs the link.
+        ///     Performs the link.
         /// </summary>
         /// <param name="TheLibrary">The root library to link.</param>
         /// <returns>CompileResult.OK if the link succeeded. Otherwise, CompileResult.Fail.</returns>
-        public static CompileResult Link(IL.ILLibrary TheLibrary, bool dependency = false, string Name = null)
+        public static CompileResult Link(ILLibrary TheLibrary, bool dependency = false, string Name = null)
         {
             bool OK = true;
-            
+
             // If: Link to ELF and Libraries
             //      - Link sub-libs to .a files
             //      - Link main lib to .elf file (if present)
@@ -64,14 +67,14 @@ namespace Drivers.Compiler
                 // Check for main method. If found, that library gets linked to Executable not Shared Lib
 
                 List<string> depLibNames = new List<string>();
-                foreach (IL.ILLibrary depLib in TheLibrary.Dependencies)
+                foreach (ILLibrary depLib in TheLibrary.Dependencies)
                 {
                     string depLibName = Utilities.CleanFileName(depLib.TheAssembly.GetName().Name);
                     if (Options.ShortenDependencyNames)
                     {
                         if (!DependencyNameMapping.ContainsKey(depLibName))
                         {
-                            DependencyNameMapping.Add(depLibName, (NameGenerator++).ToString());
+                            DependencyNameMapping.Add(depLibName, NameGenerator++.ToString());
                         }
 
                         depLibName = DependencyNameMapping[depLibName];
@@ -90,24 +93,24 @@ namespace Drivers.Compiler
                     return CompileResult.Fail;
                 }
 
-                List<ASM.ASMBlock> SequencedASMBlocks = new List<ASM.ASMBlock>();
+                List<ASMBlock> SequencedASMBlocks = new List<ASMBlock>();
                 SequencedASMBlocks.AddRange(TheLibrary.TheASMLibrary.ASMBlocks);
                 SequencedASMBlocks.Sort(GetOrder);
-                SequencedASMBlocks.ForEach(delegate(ASM.ASMBlock block)
+                SequencedASMBlocks.ForEach(delegate(ASMBlock block)
                 {
                     if (block != null && block.OriginMethodInfo != null)
                     {
                         DebugDataWriter.AddMethodMapping(block.OriginMethodInfo.ID, block.ASMOutputFilePath);
                     }
                 });
-                
+
                 // Find start method if any, use as ENTRY point
                 bool ExecutableOutput = false;
                 string EntryPoint = null;
-                if (IL.ILLibrary.SpecialMethods.ContainsKey(typeof(Attributes.MainMethodAttribute)))
+                if (ILLibrary.SpecialMethods.ContainsKey(typeof(MainMethodAttribute)))
                 {
-                    Types.MethodInfo mainMethodInfo = IL.ILLibrary.SpecialMethods[typeof(Attributes.MainMethodAttribute)].First();
-                    IL.ILBlock mainMethodBlock = TheLibrary.GetILBlock(mainMethodInfo, false);
+                    MethodInfo mainMethodInfo = ILLibrary.SpecialMethods[typeof(MainMethodAttribute)].First();
+                    ILBlock mainMethodBlock = TheLibrary.GetILBlock(mainMethodInfo, false);
                     if (mainMethodBlock != null)
                     {
                         ExecutableOutput = true;
@@ -120,7 +123,9 @@ namespace Drivers.Compiler
                     Name = "Driver";
                 }
 
-                string AssemblyName = string.IsNullOrWhiteSpace(Name) ? Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name) : Name;
+                string AssemblyName = string.IsNullOrWhiteSpace(Name)
+                    ? Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name)
+                    : Name;
 
                 DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
                 DebugDataWriter.SaveLibraryInfo(Options.OutputPath, TheLibrary);
@@ -128,9 +133,12 @@ namespace Drivers.Compiler
                 LinkInformation LinkInfo = new LinkInformation()
                 {
                     ToolsPath = Options.ToolsPath,
-                    LinkScriptCmdPath = Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker_command.txt"),
+                    LinkScriptCmdPath =
+                        Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker_command.txt"),
                     LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\" + AssemblyName + "_linker.ld"),
-                    BinPath = Path.Combine(Options.OutputPath, "Output\\" + (ExecutableOutput ? AssemblyName + ".elf" : "Lib" + AssemblyName + ".a")),
+                    BinPath =
+                        Path.Combine(Options.OutputPath,
+                            "Output\\" + (ExecutableOutput ? AssemblyName + ".elf" : "Lib" + AssemblyName + ".a")),
                     MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map"),
                     ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm"),
                     LdWorkingDir = Path.Combine(Options.OutputPath, "") + "\\",
@@ -154,22 +162,22 @@ namespace Drivers.Compiler
             }
             else if (Options.LinkMode == Options.LinkModes.ISO)
             {
-                List<ASM.ASMBlock> SequencedASMBlocks = new List<ASM.ASMBlock>();
-                List<IL.ILLibrary> FlattenedLibs = TheLibrary.Flatten();
-                foreach (IL.ILLibrary depLib in FlattenedLibs)
+                List<ASMBlock> SequencedASMBlocks = new List<ASMBlock>();
+                List<ILLibrary> FlattenedLibs = TheLibrary.Flatten();
+                foreach (ILLibrary depLib in FlattenedLibs)
                 {
                     SequencedASMBlocks.AddRange(depLib.TheASMLibrary.ASMBlocks);
                     DebugDataWriter.SaveLibraryInfo(Options.OutputPath, depLib);
                 }
                 SequencedASMBlocks.Sort(GetOrder);
-                SequencedASMBlocks.ForEach(delegate(ASM.ASMBlock block)
+                SequencedASMBlocks.ForEach(delegate(ASMBlock block)
                 {
                     if (block != null && block.OriginMethodInfo != null)
                     {
                         DebugDataWriter.AddMethodMapping(block.OriginMethodInfo.ID, block.ASMOutputFilePath);
                     }
                 });
-                
+
                 string AssemblyName = Utilities.CleanFileName(TheLibrary.TheAssembly.GetName().Name);
 
                 DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
@@ -183,7 +191,10 @@ namespace Drivers.Compiler
                     ISODirPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO"),
                     LinkScriptPath = Path.Combine(Options.OutputPath, @"DriversCompiler\linker.ld"),
                     BinPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\Kernel.bin"),
-                    ISOLinuxPath = Path.Combine(Options.OutputPath, @"DriversCompiler\ISO\" + (Options.BuildMode == Options.BuildModes.Debug ? "isolinux-debug.bin" : "isolinux.bin")),
+                    ISOLinuxPath =
+                        Path.Combine(Options.OutputPath,
+                            @"DriversCompiler\ISO\" +
+                            (Options.BuildMode == Options.BuildModes.Debug ? "isolinux-debug.bin" : "isolinux.bin")),
                     ISOPath = Path.Combine(Options.OutputPath, AssemblyName + ".iso"),
                     MapPath = Path.Combine(Options.OutputPath, AssemblyName + ".map"),
                     ASMPath = Path.Combine(Options.OutputPath, AssemblyName + ".new.asm"),
@@ -209,10 +220,10 @@ namespace Drivers.Compiler
         }
 
         /// <summary>
-        /// Copies a directory from one location to another, optionally including sub directories.
+        ///     Copies a directory from one location to another, optionally including sub directories.
         /// </summary>
         /// <remarks>
-        /// From MSDN: https://msdn.microsoft.com/en-us/library/bb762914%28v=vs.110%29.aspx
+        ///     From MSDN: https://msdn.microsoft.com/en-us/library/bb762914%28v=vs.110%29.aspx
         /// </remarks>
         /// <param name="sourceDirName">The source directory path.</param>
         /// <param name="destDirName">The destination directory path.</param>
@@ -256,34 +267,35 @@ namespace Drivers.Compiler
         }
 
         /// <summary>
-        /// Gets the order of two ASM blocks based on their priorities.
+        ///     Gets the order of two ASM blocks based on their priorities.
         /// </summary>
         /// <param name="a">First block to order.</param>
         /// <param name="b">Second block to order.</param>
         /// <returns>/// -1 = a before b, 0 = a or b in either order, +1 = a after b.</returns>
-        public static int GetOrder(ASM.ASMBlock a, ASM.ASMBlock b)
+        public static int GetOrder(ASMBlock a, ASMBlock b)
         {
             return a.Priority.CompareTo(b.Priority);
         }
+
         /// <summary>
-        /// Sorts the list of blocks according to their priorities.
+        ///     Sorts the list of blocks according to their priorities.
         /// </summary>
         /// <param name="AllBlocks">The list of blocks to sort.</param>
-        private static void SortBlocks(List<ASM.ASMBlock> AllBlocks)
+        private static void SortBlocks(List<ASMBlock> AllBlocks)
         {
-            List<ASM.ASMBlock> LastLayerBlocks = AllBlocks.Where(x => x.ExternalLabels.Count == 0).ToList();
+            List<ASMBlock> LastLayerBlocks = AllBlocks.Where(x => x.ExternalLabels.Count == 0).ToList();
             long Priority = 0;
-            foreach (ASM.ASMBlock Layer0Block in LastLayerBlocks)
+            foreach (ASMBlock Layer0Block in LastLayerBlocks)
             {
                 Layer0Block.Priority = Priority;
             }
 
-            List<ASM.ASMBlock> CurrentLayerBlocks = null;
+            List<ASMBlock> CurrentLayerBlocks = null;
             do
             {
-                CurrentLayerBlocks = AllBlocks.Where(delegate(ASM.ASMBlock aBlock)
+                CurrentLayerBlocks = AllBlocks.Where(delegate(ASMBlock aBlock)
                 {
-                    foreach (ASM.ASMBlock lastBlock in LastLayerBlocks)
+                    foreach (ASMBlock lastBlock in LastLayerBlocks)
                     {
                         if (lastBlock.GlobalLabels.Intersect(aBlock.ExternalLabels).Count() > 0)
                         {
@@ -295,40 +307,39 @@ namespace Drivers.Compiler
                 }).ToList();
 
                 Priority = LastLayerBlocks[0].Priority + 1;
-                foreach (ASM.ASMBlock aBlock in CurrentLayerBlocks)
+                foreach (ASMBlock aBlock in CurrentLayerBlocks)
                 {
                     aBlock.Priority = Priority;
                 }
 
                 LastLayerBlocks = CurrentLayerBlocks;
-            }
-            while (CurrentLayerBlocks.Count > 0 &&
-                LastLayerBlocks.Count != CurrentLayerBlocks.Count);
+            } while (CurrentLayerBlocks.Count > 0 &&
+                     LastLayerBlocks.Count != CurrentLayerBlocks.Count);
         }
     }
 
     public class LinkInformation
     {
-        /* General link options */
-        public string ToolsPath;
-        public string LdWorkingDir;
-        public string LinkScriptPath;
-        public string BinPath;
-        public string MapPath;
         public string ASMPath;
-        public List<ASM.ASMBlock> SequencedASMBlocks;
+        public string BinPath;
+        public List<string> depLibNames;
+        public string EntryPoint;
+        public bool ExecutableOutput;
+        public string ISODirPath;
+
+        /* ISO Link options */
+        public string ISOGenPath;
+        public string ISOLinuxPath;
+        public string ISOPath;
+        public string ISOToolsDirPath;
+        public string LdWorkingDir;
 
         /* ELF Link options */
         public string LinkScriptCmdPath;
-        public bool ExecutableOutput;
-        public string EntryPoint;
-        public List<string> depLibNames;
-        
-        /* ISO Link options */
-        public string ISOGenPath;
-        public string ISOToolsDirPath;
-        public string ISODirPath;
-        public string ISOLinuxPath;
-        public string ISOPath;
+        public string LinkScriptPath;
+        public string MapPath;
+        public List<ASMBlock> SequencedASMBlocks;
+        /* General link options */
+        public string ToolsPath;
     }
 }

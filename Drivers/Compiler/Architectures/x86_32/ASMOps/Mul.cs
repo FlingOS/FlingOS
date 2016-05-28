@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,33 +23,33 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.ASM;
 
 namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
-    public class Mul : ASM.ASMOp
+    public class Mul : ASMOp
     {
         /// <summary>
-        /// Arg (which is Dest for signed mul with src/aux options).
+        ///     Arg (which is Dest for signed mul with src/aux options).
         /// </summary>
         public string Arg;
+
         /// <summary>
-        /// Optional (only available for signed mul)
-        /// </summary>
-        public string Src = null;
-        /// <summary>
-        /// Optional (only available for signed mul, requires Src)
+        ///     Optional (only available for signed mul, requires Src)
         /// </summary>
         public string Aux = null;
+
         public bool Signed = false;
 
-        public override string Convert(ASM.ASMBlock theBlock)
+        /// <summary>
+        ///     Optional (only available for signed mul)
+        /// </summary>
+        public string Src = null;
+
+        public override string Convert(ASMBlock theBlock)
         {
             if (Signed)
             {

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Rem : IL.ILOps.Rem
     {
@@ -57,16 +56,16 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
+        ///     Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either operand is &lt; 4 bytes long.
+        ///     Thrown if either operand is &lt; 4 bytes long.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -91,25 +90,25 @@ namespace Drivers.Compiler.Architectures.x86
                     itemB.sizeOnStackInBytes == 4)
                 {
                     //Pop item B
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EBX" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
                     //Pop item A
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                    if ((OpCodes)theOp.opCode.Value == OpCodes.Rem_Un)
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                    if ((OpCodes) theOp.opCode.Value == OpCodes.Rem_Un)
                     {
                         //Unsigned extend A to EAX:EDX
-                        conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "0", Dest = "EDX" });
+                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
                         //Do the division
-                        conversionState.Append(new ASMOps.Div() { Arg = "EBX" });
+                        conversionState.Append(new ASMOps.Div() {Arg = "EBX"});
                     }
                     else
                     {
                         //Sign extend A to EAX:EDX
-                        conversionState.Append(new ASMOps.Cdq());
+                        conversionState.Append(new Cdq());
                         //Do the division
-                        conversionState.Append(new ASMOps.Div() { Arg = "EBX", Signed = true });
+                        conversionState.Append(new ASMOps.Div() {Arg = "EBX", Signed = true});
                     }
                     //Result stored in edx
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Dword, Src = "EDX" });
+                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
@@ -120,14 +119,15 @@ namespace Drivers.Compiler.Architectures.x86
                     });
                 }
                 else if ((itemA.sizeOnStackInBytes == 8 &&
-                          itemB.sizeOnStackInBytes == 4) || 
+                          itemB.sizeOnStackInBytes == 4) ||
                          (itemA.sizeOnStackInBytes == 4 &&
                           itemB.sizeOnStackInBytes == 8))
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the 32-32 or 64-64.");
+                    throw new InvalidOperationException(
+                        "Invalid stack operand sizes! They should be the 32-32 or 64-64.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 8)
+                         itemB.sizeOnStackInBytes == 8)
                 {
                     //SUPPORT - 64-bit division
                     throw new NotSupportedException("64-bit by 64-bit modulo not supported yet!");

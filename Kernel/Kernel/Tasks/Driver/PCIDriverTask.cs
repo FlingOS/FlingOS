@@ -1,28 +1,26 @@
-﻿using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
-using Kernel.Hardware;
+﻿using Kernel.Consoles;
 using Kernel.Hardware.PCI;
 
 namespace Kernel.Tasks.Driver
 {
     public static class PCIDriverTask
     {
-        private static Consoles.VirtualConsole console;
+        private static VirtualConsole console;
 
         private static uint GCThreadId;
 
         public static void Main()
         {
             Helpers.ProcessInit("PCI Driver", out GCThreadId);
-            
+
             try
             {
                 BasicConsole.WriteLine("PCI Driver > Creating virtual console...");
-                console = new Consoles.VirtualConsole();
+                console = new VirtualConsole();
 
                 BasicConsole.WriteLine("PCI Driver > Connecting virtual console...");
                 console.Connect();
-                
+
                 BasicConsole.WriteLine("PCI Driver > Executing.");
 
                 try
@@ -54,13 +52,13 @@ namespace Kernel.Tasks.Driver
         }
 
         /// <summary>
-        /// Outputs the PCI system information.
+        ///     Outputs the PCI system information.
         /// </summary>
         private static void OutputPCI()
         {
             for (int i = 0; i < PCIManager.Devices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)PCIManager.Devices[i];
+                PCIDevice aDevice = (PCIDevice) PCIManager.Devices[i];
                 console.WriteLine(PCIDevice.DeviceClassInfo.GetString(aDevice));
                 console.Write(" - Address: ");
                 console.Write(aDevice.bus);

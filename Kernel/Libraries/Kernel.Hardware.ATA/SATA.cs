@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,14 +23,15 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Hardware.ATA
 {
-    public class SATA : Devices.DiskDevice
+    public class SATA : DiskDevice
     {
         public SATA()
             : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "SATA Disk", new uint[0], true)
@@ -39,6 +41,7 @@ namespace Kernel.Hardware.ATA
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
         }
+
         public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
         }

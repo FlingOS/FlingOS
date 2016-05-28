@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Div : IL.ILOps.Div
     {
@@ -58,16 +57,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
+        ///     Thrown if divide operands are floating point numbers or if attempting to divide 64-bit numbers.
         /// </exception>
         /// <exception cref="System.InvalidOperationException">
-        /// Thrown if either operand is &lt; 4 bytes long.
+        ///     Thrown if either operand is &lt; 4 bytes long.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
@@ -92,22 +91,22 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     itemB.sizeOnStackInBytes == 4)
                 {
                     //Pop item B
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
                     //Pop item A
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
-                    if ((OpCodes)theOp.opCode.Value == OpCodes.Div_Un)
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                    if ((OpCodes) theOp.opCode.Value == OpCodes.Div_Un)
                     {
                         //Do the division
-                        conversionState.Append(new ASMOps.Div() { Arg1 = "$t0", Arg2 = "$t1", Signed = false });
+                        conversionState.Append(new ASMOps.Div() {Arg1 = "$t0", Arg2 = "$t1", Signed = false});
                     }
                     else
                     {
                         //Do the division
-                        conversionState.Append(new ASMOps.Div() { Arg1 = "$t0", Arg2 = "$t1", Signed = true });
+                        conversionState.Append(new ASMOps.Div() {Arg1 = "$t0", Arg2 = "$t1", Signed = true});
                     }
                     //Result stored in $t0
-                    conversionState.Append(new ASMOps.Mflo() { Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Mflo() {Dest = "$t0"});
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
                     {
@@ -122,10 +121,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
                          (itemA.sizeOnStackInBytes == 4 &&
                           itemB.sizeOnStackInBytes == 8))
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the 32-32 or 64-64.");
+                    throw new InvalidOperationException(
+                        "Invalid stack operand sizes! They should be the 32-32 or 64-64.");
                 }
                 else if (itemA.sizeOnStackInBytes == 8 &&
-                    itemB.sizeOnStackInBytes == 8)
+                         itemB.sizeOnStackInBytes == 8)
                 {
                     //SUPPORT - 64-bit division
                     throw new NotSupportedException("64-bit by 64-bit division not supported yet!");

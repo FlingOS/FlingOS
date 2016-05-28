@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,23 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Framework.Exceptions
 {
     /// <summary>
-    /// Represents a stack exception.
-    /// Usually thrown by the hardware interrupt.
+    ///     Represents a stack exception.
+    ///     Usually thrown by the hardware interrupt.
     /// </summary>
-    public class StackException : Framework.Exception
+    public class StackException : Exception
     {
         /// <summary>
-        /// Sets the message to "Stack error."
+        ///     Sets the message to "Stack error."
         /// </summary>
         public StackException()
             : base("Stack error.")

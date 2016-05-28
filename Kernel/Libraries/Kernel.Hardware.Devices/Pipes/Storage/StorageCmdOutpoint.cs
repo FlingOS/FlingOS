@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,55 +23,61 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using Kernel.Hardware.Processes;
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Utilities;
 
 namespace Kernel.Pipes.Storage
 {
     /// <summary>
-    /// Represents an outpoint for a standard in or standard out pipe.
+    ///     Represents an outpoint for a standard in or standard out pipe.
     /// </summary>
     public class StorageCmdOutpoint : BasicOutpoint
     {
         /// <summary>
-        /// Creates and registers a storage command outpoint.
+        ///     Creates and registers a storage command outpoint.
         /// </summary>
         public StorageCmdOutpoint(int MaxConnections)
             : base(PipeClasses.Storage, PipeSubclasses.Storage_Command, MaxConnections)
         {
         }
 
-        private unsafe void WriteCommand(int PipeId, StorageCommands Command, ulong DiskId, ulong BlockNo, uint BlockCount)
+        private unsafe void WriteCommand(int PipeId, StorageCommands Command, ulong DiskId, ulong BlockNo,
+            uint BlockCount)
         {
             byte[] buffer = new byte[sizeof(StoragePipeCommand)];
-            StoragePipeCommand* CmdPtr = (StoragePipeCommand*)((byte*)Utilities.ObjectUtilities.GetHandle(buffer) + FOS_System.Array.FieldsBytesSize);
-            CmdPtr->Command = (int)Command;
+            StoragePipeCommand* CmdPtr =
+                (StoragePipeCommand*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
+            CmdPtr->Command = (int) Command;
             CmdPtr->DiskId = DiskId;
             CmdPtr->BlockNo = BlockNo;
             CmdPtr->BlockCount = BlockCount;
             base.Write(PipeId, buffer, 0, buffer.Length, true);
         }
+
         public unsafe void Send_DiskList(int PipeId)
         {
             WriteCommand(PipeId, StorageCommands.DiskList, 0, 0, 0);
         }
+
         public unsafe void Send_Read(int PipeId, ulong DiskId, ulong BlockNo, uint BlockCount)
         {
             WriteCommand(PipeId, StorageCommands.Read, DiskId, BlockNo, BlockCount);
         }
+
         public unsafe void Send_Write(int PipeId, ulong DiskId, ulong BlockNo, uint BlockCount)
         {
             WriteCommand(PipeId, StorageCommands.Write, DiskId, BlockNo, BlockCount);
         }
+
         public unsafe void Send_BlockSize(int PipeId, ulong DiskId)
         {
             WriteCommand(PipeId, StorageCommands.BlockSize, DiskId, 0, 0);
         }
+
         public unsafe void Send_CleanCaches(int PipeId, ulong DiskId)
         {
             WriteCommand(PipeId, StorageCommands.CleanCaches, DiskId, 0, 0);

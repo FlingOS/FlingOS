@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,6 +23,7 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 using Kernel.FOS_System;
@@ -30,18 +32,19 @@ using Kernel.FOS_System.Processes.Requests.Devices;
 namespace Kernel.Hardware.Devices
 {
     /// <summary>
-    /// Represents a disk device.
+    ///     Represents a disk device.
     /// </summary>
     public abstract class DiskDevice : BlockDevice
     {
-        public DiskDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, uint[] SomeInfo, bool IsClaimed)
+        public DiskDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName,
+            uint[] SomeInfo, bool IsClaimed)
             : base(AGroup, AClass, ASubClass, AName, SomeInfo, IsClaimed)
         {
         }
 
         /// <summary>
-        /// Cleans the software and hardware caches (if any) by writing necessary data
-        /// to disk before wiping the caches.
+        ///     Cleans the software and hardware caches (if any) by writing necessary data
+        ///     to disk before wiping the caches.
         /// </summary>
         public abstract void CleanCaches();
     }

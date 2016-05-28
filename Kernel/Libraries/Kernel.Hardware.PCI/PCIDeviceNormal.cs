@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,64 +23,25 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
+
+using Drivers.Compiler.Attributes;
 
 namespace Kernel.Hardware.PCI
 {
     /// <summary>
-    /// Represents a normal PCI device.
+    ///     Represents a normal PCI device.
     /// </summary>
     public class PCIDeviceNormal : PCIDevice
     {
         /// <summary>
-        /// The base address of the PCI device.
-        /// </summary>
-        public PCIBaseAddress[] BaseAddresses { get; private set; }
-
-        /// <summary>
-        /// The CardbusCISPointer of the device.
-        /// </summary>
-        public uint CardbusCISPointer { get; private set; }
-
-        /// <summary>
-        /// The device's SubsystemVendorID.
-        /// </summary>
-        public ushort SubsystemVendorID { get; private set; }
-        /// <summary>
-        /// The device's SubsystemID.
-        /// </summary>
-        public ushort SubsystemID { get; private set; }
-
-        /// <summary>
-        /// The device's ExpansionROMBaseAddress.
-        /// </summary>
-        public uint ExpansionROMBaseAddress { get; private set; }
-
-        /// <summary>
-        /// The device's CapabilitiesPointer.
-        /// </summary>
-        public byte CapabilitiesPointer { get; private set; }
-
-        /// <summary>
-        /// The device's MinGrant.
-        /// </summary>
-        public byte MinGrant { get; private set; }
-        /// <summary>
-        /// The device's MaxLatency.
-        /// </summary>
-        public byte MaxLatency { get; private set; }
-
-        /// <summary>
-        /// Initialises a new PCIDeviceNormal instance.
+        ///     Initialises a new PCIDeviceNormal instance.
         /// </summary>
         /// <param name="bus">The PCI device's Bus number.</param>
         /// <param name="slot">The PCI device's Slot number.</param>
         /// <param name="function">The PCI device's Function number.</param>
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public PCIDeviceNormal(uint bus, uint slot, uint function)
             : base(bus, slot, function, "Normal PCI Device")
         {
@@ -103,5 +65,45 @@ namespace Kernel.Hardware.PCI
             MinGrant = ReadRegister8(0x3E);
             MaxLatency = ReadRegister8(0x3F);
         }
+
+        /// <summary>
+        ///     The base address of the PCI device.
+        /// </summary>
+        public PCIBaseAddress[] BaseAddresses { get; }
+
+        /// <summary>
+        ///     The CardbusCISPointer of the device.
+        /// </summary>
+        public uint CardbusCISPointer { get; private set; }
+
+        /// <summary>
+        ///     The device's SubsystemVendorID.
+        /// </summary>
+        public ushort SubsystemVendorID { get; private set; }
+
+        /// <summary>
+        ///     The device's SubsystemID.
+        /// </summary>
+        public ushort SubsystemID { get; private set; }
+
+        /// <summary>
+        ///     The device's ExpansionROMBaseAddress.
+        /// </summary>
+        public uint ExpansionROMBaseAddress { get; private set; }
+
+        /// <summary>
+        ///     The device's CapabilitiesPointer.
+        /// </summary>
+        public byte CapabilitiesPointer { get; private set; }
+
+        /// <summary>
+        ///     The device's MinGrant.
+        /// </summary>
+        public byte MinGrant { get; private set; }
+
+        /// <summary>
+        ///     The device's MaxLatency.
+        /// </summary>
+        public byte MaxLatency { get; private set; }
     }
 }

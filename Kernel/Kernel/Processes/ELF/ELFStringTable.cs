@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,34 +23,32 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO;
-using Kernel.FOS_System.IO.Streams;
 
 namespace Kernel.Processes.ELF
 {
-    public unsafe class ELFStringTable : FOS_System.Object
+    public unsafe class ELFStringTable : Object
     {
         protected byte* data;
         protected uint size;
-        
+
         public ELFStringTable(uint anAddress, uint aSize)
         {
-            data = (byte*)anAddress;
+            data = (byte*) anAddress;
             size = aSize;
         }
-        
-        public FOS_System.String this[uint offset]
+
+        public String this[uint offset]
         {
             get
             {
-                FOS_System.String currString = "";
+                String currString = "";
                 if (offset < size)
                 {
-                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint)(size - offset));
+                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint) (size - offset));
                 }
                 return currString;
             }

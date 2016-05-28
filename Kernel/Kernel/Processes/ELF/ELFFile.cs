@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,81 +23,33 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using Kernel.FOS_System;
+using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using Kernel.FOS_System.IO.Streams;
-using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Stubs;
 
 namespace Kernel.Processes.ELF
 {
-    public unsafe class ELFFile : FOS_System.Object
+    public unsafe class ELFFile : Object
     {
-        private File theFile;
-        private FileStream theStream;
-        public File TheFile
-        {
-            get
-            {
-                return theFile;
-            }
-        }
-        public FileStream TheStream
-        {
-            get
-            {
-                return theStream;
-            }
-        }
-
-        private ELFHeader header;
-        public ELFHeader Header
-        {
-            get
-            {
-                if (header == null)
-                {
-                    ReadHeader();
-                }
-                return header;
-            }
-        }
-
-        public List Sections = new List();
-        public List Segments = new List();
-        public ELFStringTableSection NamesTable;
+        private uint baseAddress;
 
         public ELFDynamicSection DynamicSection;
         public ELFDynamicSymbolTableSection DynamicSymbolsSection;
 
         private bool FoundBaseAddress = false;
-        private uint baseAddress;
-        public uint BaseAddress
-        {
-            get
-            {
-                if (!FoundBaseAddress)
-                {
-                    FoundBaseAddress = true;
 
-                    baseAddress = FOS_System.Stubs.UInt32.MaxValue;
-                    for (int i = 0; i < Segments.Count; i++)
-                    {
-                        ELFSegment segment = (ELFSegment)Segments[i];
-                        if (segment.Header.Type == ELFSegmentType.Load)
-                        {
-                            if ((uint)segment.Header.VAddr < baseAddress)
-                            {
-                                baseAddress = (uint)segment.Header.VAddr;
-                            }
-                        }
-                    }
-                }
-                return baseAddress;
-            }
-        }
+        private ELFHeader header;
+        public ELFStringTableSection NamesTable;
+
+        public List Sections = new List();
+        public List Segments = new List();
+        private readonly File theFile;
+        private readonly FileStream theStream;
 
         public ELFFile(File file)
         {
@@ -119,15 +72,62 @@ namespace Kernel.Processes.ELF
                 Console.Default.WriteLine(".");
                 BasicConsole.WriteLine(".");
                 Console.Default.DefaultColour();
-                ExceptionMethods.Throw(new FOS_System.Exception("Error loading ELF file! Supplied file is null."));
+                ExceptionMethods.Throw(new Exception("Error loading ELF file! Supplied file is null."));
             }
             theStream = new CachedFileStream(theFile.GetStream());
             ReadHeader();
-            
+
             if (IsValidFile())
             {
                 ReadSectionHeaders();
                 ReadSegmentHeaders();
+            }
+        }
+
+        public File TheFile
+        {
+            get { return theFile; }
+        }
+
+        public FileStream TheStream
+        {
+            get { return theStream; }
+        }
+
+        public ELFHeader Header
+        {
+            get
+            {
+                if (header == null)
+                {
+                    ReadHeader();
+                }
+                return header;
+            }
+        }
+
+        public uint BaseAddress
+        {
+            get
+            {
+                if (!FoundBaseAddress)
+                {
+                    FoundBaseAddress = true;
+
+                    baseAddress = UInt32.MaxValue;
+                    for (int i = 0; i < Segments.Count; i++)
+                    {
+                        ELFSegment segment = (ELFSegment) Segments[i];
+                        if (segment.Header.Type == ELFSegmentType.Load)
+                        {
+                            if ((uint) segment.Header.VAddr < baseAddress)
+                            {
+                                baseAddress = (uint) segment.Header.VAddr;
+                            }
+                        }
+                    }
+                }
+                return baseAddress;
             }
         }
 
@@ -143,12 +143,13 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read header data from file!"));
+                ExceptionMethods.Throw(new Exception("Failed to read header data from file!"));
             }
         }
+
         public void ReadSectionHeaders()
         {
-            byte[] sectionsData = new byte[header.SecHeaderEntrySize * header.SecHeaderNumEntries];
+            byte[] sectionsData = new byte[header.SecHeaderEntrySize*header.SecHeaderNumEntries];
             theStream.Position = header.SecHeaderTableOffset;
             int bytesRead = theStream.Read(sectionsData, 0, sectionsData.Length);
 
@@ -164,20 +165,21 @@ namespace Kernel.Processes.ELF
                     {
                         if (!(newSection is ELFStringTableSection))
                         {
-                            ExceptionMethods.Throw(new FOS_System.Exception("Expected Strings Table section was not a strings table section!"));
+                            ExceptionMethods.Throw(
+                                new Exception("Expected Strings Table section was not a strings table section!"));
                         }
-                        NamesTable = (ELFStringTableSection)newSection;
+                        NamesTable = (ELFStringTableSection) newSection;
                     }
 
                     newSection.Read(theStream);
 
                     if (newSection is ELFDynamicSection)
                     {
-                        DynamicSection = (ELFDynamicSection)newSection;
+                        DynamicSection = (ELFDynamicSection) newSection;
                     }
                     else if (newSection is ELFDynamicSymbolTableSection)
                     {
-                        DynamicSymbolsSection = (ELFDynamicSymbolTableSection)newSection;
+                        DynamicSymbolsSection = (ELFDynamicSymbolTableSection) newSection;
                     }
 
                     Sections.Add(newSection);
@@ -336,12 +338,13 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read sections table data from file!"));
+                ExceptionMethods.Throw(new Exception("Failed to read sections table data from file!"));
             }
         }
+
         public void ReadSegmentHeaders()
         {
-            byte[] segmentsData = new byte[header.ProgHeaderEntrySize * header.ProgHeaderNumEntries];
+            byte[] segmentsData = new byte[header.ProgHeaderEntrySize*header.ProgHeaderNumEntries];
             theStream.Position = header.ProgHeaderTableOffset;
             int bytesRead = theStream.Read(segmentsData, 0, segmentsData.Length);
 
@@ -352,7 +355,7 @@ namespace Kernel.Processes.ELF
                 {
                     ELFSegmentHeader newHeader = new ELFSegmentHeader(segmentsData, ref offset);
                     ELFSegment newSegment = ELFSegment.GetSegment(newHeader);
-                    
+
                     newSegment.Read(theStream);
 
                     Segments.Add(newSegment);
@@ -391,13 +394,14 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to read segments table data from file!"));
+                ExceptionMethods.Throw(new Exception("Failed to read segments table data from file!"));
             }
         }
 
         public bool IsValidFile()
         {
             #region CHECK : Signature
+
             if (!CheckSiganture())
             {
                 Console.Default.WarningColour();
@@ -415,8 +419,11 @@ namespace Kernel.Processes.ELF
 
                 BasicConsole.WriteLine("ELF signature check passed.");
             }
+
             #endregion
+
             #region CHECK : File Class
+
             if (!CheckFileClass())
             {
                 Console.Default.WarningColour();
@@ -434,8 +441,11 @@ namespace Kernel.Processes.ELF
 
                 BasicConsole.WriteLine("ELF file class check passed.");
             }
+
             #endregion
+
             #region CHECK : Data Encoding
+
             if (!CheckDataEncoding())
             {
                 Console.Default.WarningColour();
@@ -453,8 +463,11 @@ namespace Kernel.Processes.ELF
 
                 BasicConsole.WriteLine("ELF data encoding check passed.");
             }
+
             #endregion
+
             #region CHECK : File Type
+
             if (!CheckFileType())
             {
                 Console.Default.WarningColour();
@@ -472,8 +485,11 @@ namespace Kernel.Processes.ELF
 
                 BasicConsole.WriteLine("ELF file type check passed.");
             }
+
             #endregion
+
             #region CHECK : Machine
+
             if (!CheckMachine())
             {
                 Console.Default.WarningColour();
@@ -491,17 +507,22 @@ namespace Kernel.Processes.ELF
 
                 BasicConsole.WriteLine("ELF machine check passed.");
             }
+
             #endregion
+
             #region INFO : Header Version
+
             Console.Default.Write("ELF Header version: ");
             Console.Default.WriteLine_AsDecimal(Header.HeaderVersion);
 
             BasicConsole.Write("ELF Header version: ");
             BasicConsole.WriteLine(Header.HeaderVersion);
+
             #endregion
 
             return true;
         }
+
         public bool CheckSiganture()
         {
             if (header != null)
@@ -510,10 +531,11 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check signature!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check signature!"));
             }
             return false;
         }
+
         public bool CheckFileClass()
         {
             if (header != null)
@@ -524,10 +546,11 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             }
             return false;
         }
+
         public bool CheckDataEncoding()
         {
             if (header != null)
@@ -536,26 +559,28 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check data encoding!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check data encoding!"));
             }
             return false;
         }
+
         public bool CheckFileType()
         {
             if (header != null)
             {
                 ELFFileType fileType = header.FileType;
-                return fileType == ELFFileType.None || 
+                return fileType == ELFFileType.None ||
                        fileType == ELFFileType.Executable ||
-                       fileType == ELFFileType.Relocatable || 
+                       fileType == ELFFileType.Relocatable ||
                        fileType == ELFFileType.Shared;
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             }
             return false;
         }
+
         public bool CheckMachine()
         {
             if (header != null)
@@ -564,7 +589,7 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             }
             return false;
         }
@@ -577,10 +602,11 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             }
             return false;
         }
+
         public bool IsSharedObject()
         {
             if (header != null)
@@ -589,7 +615,7 @@ namespace Kernel.Processes.ELF
             }
             else
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Failed to load ELF header so cannot check file class!"));
+                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             }
             return false;
         }
@@ -598,18 +624,19 @@ namespace Kernel.Processes.ELF
         {
             if (!IsExecutable())
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to load non-executable ELF as executable!"));
+                ExceptionMethods.Throw(new Exception("Attempted to load non-executable ELF as executable!"));
             }
 
             ELFProcess process = new ELFProcess(this);
             process.Load(UserMode);
             return process;
         }
+
         public ELFSharedObject LoadSharedObject(ELFProcess theProcess)
         {
             if (!IsSharedObject())
             {
-                ExceptionMethods.Throw(new FOS_System.Exception("Attempted to load non-shared ELF as shared object!"));
+                ExceptionMethods.Throw(new Exception("Attempted to load non-shared ELF as shared object!"));
             }
 
             ELFSharedObject sharedObject = new ELFSharedObject(this, theProcess);

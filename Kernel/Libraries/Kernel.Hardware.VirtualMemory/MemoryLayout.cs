@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,22 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 //#define MEMLAYOUT_TRACE
 //#define MEMLAYOUT_MERGE_TRACE
 
+using Drivers.Compiler.Attributes;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 
 namespace Kernel.VirtualMemory
 {
     /// <remarks>
-    /// Bit 1 of physical addresses is used to indicate whether the mapping came from a merge or not.
+    ///     Bit 1 of physical addresses is used to indicate whether the mapping came from a merge or not.
     /// </remarks>
-    public class MemoryLayout : FOS_System.Object
+    public class MemoryLayout : Object
     {
         //TODO: When do physical pages that are no longer in use (in any memory layout) get unmapped from the Virtual Memory Manager?
 
@@ -44,7 +48,7 @@ namespace Kernel.VirtualMemory
         public UInt32Dictionary DataPages = new UInt32Dictionary();
         public UInt32Dictionary KernelPages = new UInt32Dictionary();
 
-        [Drivers.Compiler.Attributes.NoDebug]
+        [NoDebug]
         public void AddCodePage(uint pAddr, uint vAddr)
         {
             //BasicConsole.WriteLine("Adding code page...");
@@ -55,21 +59,25 @@ namespace Kernel.VirtualMemory
 #if DEBUG
             else
             {
-                BasicConsole.WriteLine("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout.");
+                BasicConsole.WriteLine(
+                    "Cannot add code page to memory layout! Code virtual page already mapped in the memory layout.");
                 //ExceptionMethods.PrintStackTrace();
                 //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout."));
             }
 #endif
         }
+
         public void AddCodePages(uint vAddrStart, uint pAddrStart, uint count)
         {
             CodePages.AddRange(vAddrStart, 4096, pAddrStart, 0x1000, count);
         }
+
         public void AddCodePages(uint vAddrStart, uint[] pAddrs)
         {
             CodePages.AddRange(vAddrStart, 4096, pAddrs);
         }
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoDebug]
         public void AddDataPage(uint pAddr, uint vAddr)
         {
             if (AddAllDataToKernel)
@@ -92,13 +100,15 @@ namespace Kernel.VirtualMemory
 #if DEBUG
                 else
                 {
-                    BasicConsole.WriteLine("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout.");
+                    BasicConsole.WriteLine(
+                        "Cannot add data page to memory layout! Data virtual page already mapped in the memory layout.");
                     //ExceptionMethods.PrintStackTrace();
                     //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
                 }
 #endif
             }
         }
+
         public void AddDataPages(uint vAddrStart, uint pAddrStart, uint count)
         {
             if (AddAllDataToKernel)
@@ -110,6 +120,7 @@ namespace Kernel.VirtualMemory
                 DataPages.AddRange(vAddrStart, 4096, pAddrStart, 0x1000, count);
             }
         }
+
         public void AddDataPages(uint vAddrStart, uint[] pAddrs)
         {
             if (AddAllDataToKernel)
@@ -121,6 +132,7 @@ namespace Kernel.VirtualMemory
                 DataPages.AddRange(vAddrStart, 4096, pAddrs);
             }
         }
+
         public void AddKernelPage(uint pAddr, uint vAddr)
         {
             //BasicConsole.WriteLine("Adding kernel page...");
@@ -137,21 +149,25 @@ namespace Kernel.VirtualMemory
 #if DEBUG
             else
             {
-                BasicConsole.WriteLine("Cannot add kernel page to memory layout! Kernel virtual page already mapped in the memory layout.");
+                BasicConsole.WriteLine(
+                    "Cannot add kernel page to memory layout! Kernel virtual page already mapped in the memory layout.");
                 //ExceptionMethods.PrintStackTrace();
                 //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add kernel page to memory layout! Data virtual page already mapped in the memory layout."));
             }
 #endif
         }
+
         public void AddKernelPages(uint vAddrStart, uint[] pAddrs)
         {
             KernelPages.AddRange(vAddrStart, 4096, pAddrs);
         }
+
         public void AddKernelPages(uint vAddrStart, uint pAddrStart, uint count)
         {
             KernelPages.AddRange(vAddrStart, 4096, pAddrStart, 0x1000, count);
         }
-        [Drivers.Compiler.Attributes.NoDebug]
+
+        [NoDebug]
         public void RemovePage(uint vAddr)
         {
             //BasicConsole.WriteLine("Removing page...");
@@ -159,6 +175,7 @@ namespace Kernel.VirtualMemory
             DataPages.Remove(vAddr);
             KernelPages.Remove(vAddr);
         }
+
         public void RemovePages(uint vAddrStart, uint numPages)
         {
             //BasicConsole.WriteLine("Removing pages...");
@@ -166,11 +183,12 @@ namespace Kernel.VirtualMemory
             DataPages.RemoveRange(vAddrStart, 4096, numPages);
             KernelPages.RemoveRange(vAddrStart, 4096, numPages);
         }
-        
+
         public void ReplaceKernelPage(uint vAddr, uint newPAddr)
         {
             KernelPages[vAddr] = newPAddr;
-            VirtualMemoryManager.Map(newPAddr, vAddr, 0x1000, VirtualMemoryImplementation.PageFlags.KernelOnly, UpdateUsedPagesFlags.None);
+            VirtualMemoryManager.Map(newPAddr, vAddr, 0x1000, VirtualMemoryImplementation.PageFlags.KernelOnly,
+                UpdateUsedPagesFlags.None);
         }
 
         public void SwitchFrom(bool ProcessIsUM, MemoryLayout old)
@@ -240,7 +258,7 @@ namespace Kernel.VirtualMemory
 
                         unloaded++;
                         VirtualMemoryManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
-                        
+
                         //if (Processes.Scheduler.OutputMessages)
                         //{
                         //    BasicConsole.WriteLine("Debug Point 9.1.2-6");
@@ -272,7 +290,9 @@ namespace Kernel.VirtualMemory
             //}
 
             {
-                VirtualMemoryImplementation.PageFlags flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
+                VirtualMemoryImplementation.PageFlags flags = ProcessIsUM
+                    ? VirtualMemoryImplementation.PageFlags.None
+                    : VirtualMemoryImplementation.PageFlags.KernelOnly;
 
                 UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
                 while (iterator.HasNext())
@@ -294,7 +314,9 @@ namespace Kernel.VirtualMemory
                 //    BasicConsole.WriteLine("Debug Point 9.1.4");
                 //}
 
-                flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
+                flags = ProcessIsUM
+                    ? VirtualMemoryImplementation.PageFlags.None
+                    : VirtualMemoryImplementation.PageFlags.KernelOnly;
                 iterator = DataPages.GetIterator();
                 while (iterator.HasNext())
                 {
@@ -333,12 +355,11 @@ namespace Kernel.VirtualMemory
                     //}
 
                     VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
-                    
+
                     //if (Processes.Scheduler.OutputMessages)
                     //{
                     //    BasicConsole.WriteLine("Debug Point 9.1.4.6");
                     //}
-
                 }
                 iterator.RestoreState();
 
@@ -381,7 +402,9 @@ namespace Kernel.VirtualMemory
         {
             int loaded = 0;
 
-            VirtualMemoryImplementation.PageFlags flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
+            VirtualMemoryImplementation.PageFlags flags = ProcessIsUM
+                ? VirtualMemoryImplementation.PageFlags.None
+                : VirtualMemoryImplementation.PageFlags.KernelOnly;
 
             UInt32Dictionary.Iterator iterator = y.CodePages.GetIterator();
             while (iterator.HasNext())
@@ -416,7 +439,9 @@ namespace Kernel.VirtualMemory
 #endif
             }
 
-            flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
+            flags = ProcessIsUM
+                ? VirtualMemoryImplementation.PageFlags.None
+                : VirtualMemoryImplementation.PageFlags.KernelOnly;
             iterator = y.DataPages.GetIterator();
             while (iterator.HasNext())
             {
@@ -514,6 +539,7 @@ namespace Kernel.VirtualMemory
             //ExceptionMethods.FillString((uint)loaded, 21, loadedMsg);
             //BasicConsole.WriteLine(loadedMsg);
         }
+
         public void Unmerge(MemoryLayout y)
         {
             int unloaded = 0;
@@ -591,15 +617,16 @@ namespace Kernel.VirtualMemory
 
         public bool ContainsAnyVirtualAddresses(uint startAddr, int count)
         {
-            return CodePages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count) ||
-                   DataPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count) ||
-                   KernelPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count);
+            return CodePages.ContainsAnyKeyInRange(startAddr, startAddr + (uint) count) ||
+                   DataPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint) count) ||
+                   KernelPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint) count);
         }
+
         public bool ContainsAllVirtualAddresses(uint startAddr, uint count, uint step)
         {
             bool OK = true;
 
-            uint endAddr = startAddr + (count * step);
+            uint endAddr = startAddr + count*step;
             for (; startAddr < endAddr; startAddr += step)
             {
                 if (!CodePages.ContainsKey(startAddr) &&
@@ -613,17 +640,19 @@ namespace Kernel.VirtualMemory
 
             return OK;
         }
+
         public bool ContainsAnyPhysicalAddresses(uint startAddr, int count)
         {
-            return CodePages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count) ||
-                   DataPages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count) ||
-                   KernelPages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count);
+            return CodePages.ContainsAnyValueInRange(startAddr, startAddr + (uint) count) ||
+                   DataPages.ContainsAnyValueInRange(startAddr, startAddr + (uint) count) ||
+                   KernelPages.ContainsAnyValueInRange(startAddr, startAddr + (uint) count);
         }
+
         public bool ContainsAllPhysicalAddresses(uint startAddr, uint count, uint step)
         {
             bool OK = true;
 
-            uint endAddr = startAddr + (count * step);
+            uint endAddr = startAddr + count*step;
             for (; startAddr < endAddr; startAddr += step)
             {
                 if (!CodePages.ContainsValue(startAddr) &&
@@ -660,6 +689,7 @@ namespace Kernel.VirtualMemory
                 return 0xFFFFFFFF;
             }
         }
+
         public uint[] GetPhysicalAddresses(uint startAddr, uint count)
         {
             uint[] result = new uint[count];
@@ -671,6 +701,7 @@ namespace Kernel.VirtualMemory
 
             return result;
         }
+
         public uint GetVirtualAddress(uint physAddr)
         {
             if (CodePages.ContainsValue(physAddr))
@@ -703,9 +734,9 @@ namespace Kernel.VirtualMemory
             }
         }
 
-        public FOS_System.String ToString()
+        public String ToString()
         {
-            FOS_System.String result = "";
+            String result = "";
 
             result = result + "Code pages:\r\n";
             UInt32Dictionary.Iterator iterator = CodePages.GetIterator();

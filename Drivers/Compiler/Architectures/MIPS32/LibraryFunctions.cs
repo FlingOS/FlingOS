@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,33 +23,33 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Text;
+using Drivers.Compiler.ASM;
+using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     public class LibraryFunctions : TargetArchitectureFunctions
     {
-        public override void CleanUpAssemblyCode(ASM.ASMBlock TheBlock, ref string ASMText)
+        public override void CleanUpAssemblyCode(ASMBlock TheBlock, ref string ASMText)
         {
-            
         }
 
         /// <summary>
-        /// Executes NASM on the output file. It is assumed the output file now exists.
+        ///     Executes NASM on the output file. It is assumed the output file now exists.
         /// </summary>
         /// <param name="inputFilePath">Path to the ASM file to process.</param>
         /// <param name="outputFilePath">Path to output the object file to.</param>
         /// <param name="OnComplete">Handler to call once NASM has completed. Default: null.</param>
         /// <param name="state">The state object to use when calling the OnComplete handler. Default: null.</param>
         /// <returns>True if execution completed successfully. Otherwise false.</returns>
-        public override bool ExecuteAssemblyCodeCompiler(string inputFilePath, string outputFilePath, VoidDelegate OnComplete = null, object state = null)
+        public override bool ExecuteAssemblyCodeCompiler(string inputFilePath, string outputFilePath,
+            VoidDelegate OnComplete = null, object state = null)
         {
             bool OK = true;
 
@@ -64,24 +65,24 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 throw new NullReferenceException("ASM file does not exist! Path: \"" + inputFilePath + "\"");
             }
 
-            string inputCommand = String.Format("-mips32 -Os -EL -o \"{1}\" \"{2}\"",
-                                                  "elf",
-                                                  outputFilePath,
-                                                  inputFilePath,
-                                                  "ELF");
+            string inputCommand = string.Format("-mips32 -Os -EL -o \"{1}\" \"{2}\"",
+                "elf",
+                outputFilePath,
+                inputFilePath,
+                "ELF");
 
             //Logger.LogMessage(inputFilePath, 0, inputCommand);
 
             OK = Utilities.ExecuteProcess(Path.GetDirectoryName(outputFilePath), ToolPath, inputCommand, "MIPS:GCC",
-                                                  false,
-                                                  null,
-                                                  OnComplete,
-                                                  state);
+                false,
+                null,
+                OnComplete,
+                state);
 
             return OK;
         }
 
-        public override bool LinkISO(IL.ILLibrary TheLibrary, LinkInformation LinkInfo)
+        public override bool LinkISO(ILLibrary TheLibrary, LinkInformation LinkInfo)
         {
             //TODO: Update this to match the LinkISO of the x86 kernel
 
@@ -93,7 +94,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             StreamWriter ASMWriter = new StreamWriter(LinkInfo.ASMPath, false);
 
             StringBuilder CommandLineArgsBuilder = new StringBuilder();
-            CommandLineArgsBuilder.Append("--fatal-warnings -EL -Os -T \"" + LinkInfo.LinkScriptPath + "\" -o \"" + ElfPath + "\"");
+            CommandLineArgsBuilder.Append("--fatal-warnings -EL -Os -T \"" + LinkInfo.LinkScriptPath + "\" -o \"" +
+                                          ElfPath + "\"");
 
             StringBuilder LinkScript = new StringBuilder();
             LinkScript.Append(@"ENTRY(Kernel_Start)
@@ -109,7 +111,8 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.text);",
+                    LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
                 ASMWriter.WriteLine(File.ReadAllText(LinkInfo.SequencedASMBlocks[i].ASMOutputFilePath));
             }
             LinkScript.AppendLine(@"
@@ -122,7 +125,8 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.data);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.data);",
+                    LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
             }
             LinkScript.AppendLine(@"
    }
@@ -134,7 +138,8 @@ SECTIONS {
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
             {
-                LinkScript.AppendLine(string.Format("       \"{0}\" (.bss);", LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
+                LinkScript.AppendLine(string.Format("       \"{0}\" (.bss);",
+                    LinkInfo.SequencedASMBlocks[i].ObjectOutputFilePath));
             }
             LinkScript.AppendLine(@"
    }
@@ -148,7 +153,8 @@ SECTIONS {
             ASMWriter.Close();
 
             File.WriteAllText(LinkInfo.LinkScriptPath, LinkScript.ToString());
-            OK = Utilities.ExecuteProcess(LinkInfo.LdWorkingDir, Path.Combine(LinkInfo.ToolsPath, @"MIPS\mips-linux-gnu-ld.exe"), CommandLineArgsBuilder.ToString(), "Ld");
+            OK = Utilities.ExecuteProcess(LinkInfo.LdWorkingDir,
+                Path.Combine(LinkInfo.ToolsPath, @"MIPS\mips-linux-gnu-ld.exe"), CommandLineArgsBuilder.ToString(), "Ld");
 
             if (OK)
             {
@@ -157,7 +163,9 @@ SECTIONS {
                     File.Delete(BinPath);
                 }
 
-                OK = Utilities.ExecuteProcess(Options.OutputPath, Path.Combine(LinkInfo.ToolsPath, @"MIPS\mips-linux-gnu-objcopy.exe"), string.Format("-O binary \"{0}\" \"{1}\"", ElfPath, BinPath), "MIPS:ObjCopy");
+                OK = Utilities.ExecuteProcess(Options.OutputPath,
+                    Path.Combine(LinkInfo.ToolsPath, @"MIPS\mips-linux-gnu-objcopy.exe"),
+                    string.Format("-O binary \"{0}\" \"{1}\"", ElfPath, BinPath), "MIPS:ObjCopy");
 
                 if (OK)
                 {
@@ -166,13 +174,16 @@ SECTIONS {
                         File.Delete(LinkInfo.MapPath);
                     }
 
-                    OK = Utilities.ExecuteProcess(Options.OutputPath, Path.Combine(LinkInfo.ToolsPath, @"MIPS\mips-linux-gnu-objdump.exe"), string.Format("--wide --syms \"{0}\"", ElfPath), "MIPS:ObjDump", false, LinkInfo.MapPath);
+                    OK = Utilities.ExecuteProcess(Options.OutputPath,
+                        Path.Combine(LinkInfo.ToolsPath, @"MIPS\mips-linux-gnu-objdump.exe"),
+                        string.Format("--wide --syms \"{0}\"", ElfPath), "MIPS:ObjDump", false, LinkInfo.MapPath);
                 }
             }
 
             return OK;
         }
-        public override bool LinkELF(IL.ILLibrary TheLibrary, LinkInformation LinkInfo)
+
+        public override bool LinkELF(ILLibrary TheLibrary, LinkInformation LinkInfo)
         {
             return false;
         }

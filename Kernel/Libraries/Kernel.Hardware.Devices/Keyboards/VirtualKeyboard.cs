@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Kernel.Hardware.Devices;
 
 namespace Kernel.Hardware.Keyboards
 {
-    public class VirtualKeyboard : Devices.Keyboard
+    public class VirtualKeyboard : Keyboard
     {
         /// <summary>
-        /// Enables the virtual keyboard.
+        ///     Enables the virtual keyboard.
         /// </summary>
         public override void Enable()
         {
@@ -43,8 +42,9 @@ namespace Kernel.Hardware.Keyboards
                 enabled = true;
             }
         }
+
         /// <summary>
-        /// Disables the virtual keyboard.
+        ///     Disables the virtual keyboard.
         /// </summary>
         public override void Disable()
         {
@@ -62,7 +62,7 @@ namespace Kernel.Hardware.Keyboards
             if (released)
             {
                 //Clear the released bit so we get the correct key scancode
-                scancode = (byte)(scancode ^ 0x80);
+                scancode = (byte) (scancode ^ 0x80);
             }
 
             //And handle the (now corrected) scancode
@@ -72,38 +72,38 @@ namespace Kernel.Hardware.Keyboards
                 //Left and right shift keys
                 case 0x36:
                 case 0x2A:
-                    {
-                        shiftPressed = !released;
-                        break;
-                    }
+                {
+                    shiftPressed = !released;
+                    break;
+                }
                 //Ctrl key
                 case 0x1D:
-                    {
-                        ctrlPressed = !released;
-                        break;
-                    }
+                {
+                    ctrlPressed = !released;
+                    break;
+                }
                 //Alt key
                 case 0x38:
-                    {
-                        altPressed = !released;
-                        break;
-                    }
+                {
+                    altPressed = !released;
+                    break;
+                }
                 //All other keys
                 default:
+                {
+                    //If the key was just pressed, enqueue it
+                    if (!released)
                     {
-                        //If the key was just pressed, enqueue it
-                        if (!released)
+                        //If shift pressed, adjust the scancode appropriately.
+                        if (shiftPressed)
                         {
-                            //If shift pressed, adjust the scancode appropriately.
-                            if (shiftPressed)
-                            {
-                                scancode = scancode << 16;
-                            }
-
-                            Enqueue(scancode);
+                            scancode = scancode << 16;
                         }
-                        break;
+
+                        Enqueue(scancode);
                     }
+                    break;
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,48 +23,48 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.Types
 {
     /// <summary>
-    /// Container for information about a variable loaded from a method in a library being compiled.
+    ///     Container for information about a variable loaded from a method in a library being compiled.
     /// </summary>
     public class VariableInfo
     {
         /// <summary>
-        /// The type of the variable.
-        /// </summary>
-        public Type UnderlyingType;
-        /// <summary>
-        /// The type info for the variable.
-        /// </summary>
-        public TypeInfo TheTypeInfo;
-        /// <summary>
-        /// The position (as an index) of the variable.
-        /// </summary>
-        public int Position;
-        /// <summary>
-        /// The offset of the variable from EBP in bytes.
+        ///     The offset of the variable from EBP in bytes.
         /// </summary>
         public int Offset;
 
         /// <summary>
-        /// Whether to skip the GC Cleanup step (inject by ILPreprocessor) for the variable or not.
+        ///     The position (as an index) of the variable.
+        /// </summary>
+        public int Position;
+
+        /// <summary>
+        ///     Whether to skip the GC Cleanup step (inject by ILPreprocessor) for the variable or not.
         /// </summary>
         public bool SkipCleanup = false;
 
         /// <summary>
-        /// Gets a human-readable representation of the variable.
+        ///     The type info for the variable.
+        /// </summary>
+        public TypeInfo TheTypeInfo;
+
+        /// <summary>
+        ///     The type of the variable.
+        /// </summary>
+        public Type UnderlyingType;
+
+        /// <summary>
+        ///     Gets a human-readable representation of the variable.
         /// </summary>
         /// <remarks>
-        /// Uses the variable's full name.
+        ///     Uses the variable's full name.
         /// </remarks>
         /// <returns>The string representation.</returns>
         public override string ToString()

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,6 +23,7 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
 using Kernel.FOS_System;
@@ -33,21 +35,21 @@ using Kernel.Hardware.Processes;
 namespace Kernel.Hardware.Devices
 {
     /// <summary>
-    /// The global device manager for the kernel.
+    ///     The global device manager for the kernel.
     /// </summary>
     public static unsafe class DeviceManager
     {
         private static ulong IdGenerator;
 
         /// <summary>
-        /// The list of all the devices registered in the OS.
+        ///     The list of all the devices registered in the OS.
         /// </summary>
         /// <remarks>
-        /// Some items may be more specific instances of a device so duplicate references to one physical device may 
-        /// exist. For example, a PCIDevice instance and a EHCI instance would both exist for one physical EHCI device.
+        ///     Some items may be more specific instances of a device so duplicate references to one physical device may
+        ///     exist. For example, a PCIDevice instance and a EHCI instance would both exist for one physical EHCI device.
         /// </remarks>
         private static List Devices;
-        
+
         public static void Init()
         {
             IdGenerator = 1;
@@ -57,7 +59,8 @@ namespace Kernel.Hardware.Devices
         public static SystemCallResults RegisterDevice(Device TheDevice)
         {
             SystemCallResults result = SystemCallResults.Fail;
-            DeviceDescriptor * descriptor = (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : Register Device");
+            DeviceDescriptor* descriptor =
+                (DeviceDescriptor*) Heap.AllocZeroed((uint) sizeof(DeviceDescriptor), "DeviceManager : Register Device");
 
             try
             {
@@ -87,6 +90,7 @@ namespace Kernel.Hardware.Devices
             }
             return result;
         }
+
         public static List GetDeviceList()
         {
             List result = null;
@@ -98,7 +102,10 @@ namespace Kernel.Hardware.Devices
 
                 if (NumDevices > 0)
                 {
-                    DeviceDescriptor* DeviceList = (DeviceDescriptor*)Heap.AllocZeroed((uint)(sizeof(DeviceDescriptor) * NumDevices), "DeviceManager : GetDeviceList");
+                    DeviceDescriptor* DeviceList =
+                        (DeviceDescriptor*)
+                            Heap.AllocZeroed((uint) (sizeof(DeviceDescriptor)*NumDevices),
+                                "DeviceManager : GetDeviceList");
 
                     try
                     {
@@ -140,7 +147,8 @@ namespace Kernel.Hardware.Devices
         public static bool FillDeviceInfo(Device TheDevice)
         {
             bool result = false;
-            DeviceDescriptor* descriptor = (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : FillDeviceInfo");
+            DeviceDescriptor* descriptor =
+                (DeviceDescriptor*) Heap.AllocZeroed((uint) sizeof(DeviceDescriptor), "DeviceManager : FillDeviceInfo");
 
             try
             {
@@ -169,13 +177,15 @@ namespace Kernel.Hardware.Devices
         {
             return SystemCalls.ClaimDevice(TheDevice.Id) == SystemCallResults.OK;
         }
+
         public static bool ReleaseDevice(Device TheDevice)
         {
             return SystemCalls.ReleaseDevice(TheDevice.Id) == SystemCallResults.OK;
         }
 
 
-        public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId, Process CallerProcess)
+        public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId,
+            Process CallerProcess)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
@@ -235,6 +245,7 @@ namespace Kernel.Hardware.Devices
 
             return SystemCallResults.OK;
         }
+
         public static SystemCallResults DeregisterDevice(ulong DeviceId, Process CallerProcess)
         {
             Device TheDevice = GetDevice(DeviceId);
@@ -262,24 +273,28 @@ namespace Kernel.Hardware.Devices
             NumDevices = Devices.Count;
             return SystemCallResults.OK;
         }
-        public static SystemCallResults GetDeviceList(DeviceDescriptor* DeviceList, int MaxDescriptors, Process CallerProcess)
+
+        public static SystemCallResults GetDeviceList(DeviceDescriptor* DeviceList, int MaxDescriptors,
+            Process CallerProcess)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
             int pos = 0;
             for (int i = 0; i < Devices.Count && pos < MaxDescriptors; i++)
             {
-                Device aDevice = (Device)Devices[i];
-                DeviceDescriptor* TheDescriptor = DeviceList + (pos++);
-                aDevice.FillDeviceDescriptor(TheDescriptor, aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id);
+                Device aDevice = (Device) Devices[i];
+                DeviceDescriptor* TheDescriptor = DeviceList + pos++;
+                aDevice.FillDeviceDescriptor(TheDescriptor,
+                    aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id);
             }
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
             return SystemCallResults.OK;
         }
-        
-        public static SystemCallResults GetDeviceInfo(ulong DeviceId, DeviceDescriptor* TheDescriptor, Process CallerProcess)
+
+        public static SystemCallResults GetDeviceInfo(ulong DeviceId, DeviceDescriptor* TheDescriptor,
+            Process CallerProcess)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
@@ -304,7 +319,7 @@ namespace Kernel.Hardware.Devices
 
             return SystemCallResults.OK;
         }
-        
+
         public static SystemCallResults ClaimDevice(ulong DeviceId, Process CallerProcess)
         {
             Device TheDevice = GetDevice(DeviceId);
@@ -323,6 +338,7 @@ namespace Kernel.Hardware.Devices
 
             return SystemCallResults.OK;
         }
+
         public static SystemCallResults ReleaseDevice(ulong DeviceId, Process CallerProcess)
         {
             Device TheDevice = GetDevice(DeviceId);
@@ -350,7 +366,7 @@ namespace Kernel.Hardware.Devices
         {
             for (int i = 0; i < Devices.Count; i++)
             {
-                Device aDevice = (Device)Devices[i];
+                Device aDevice = (Device) Devices[i];
                 if (aDevice.Id == Id)
                 {
                     return aDevice;
@@ -359,17 +375,18 @@ namespace Kernel.Hardware.Devices
             return null;
         }
 
-        //public static Device FindDevice(FOS_System.Type DeviceType)
-        //{
-        //    for (int i = 0; i < Devices.Count; i++)
-        //    {
-        //        Device device = (Device)Devices[i];
-        //        if (device._Type == DeviceType)
-        //        {
-        //            return device;
-        //        }
-        //    }
-        //    return null;
         //}
+        //    return null;
+        //    }
+        //        }
+        //            return device;
+        //        {
+        //        if (device._Type == DeviceType)
+        //        Device device = (Device)Devices[i];
+        //    {
+        //    for (int i = 0; i < Devices.Count; i++)
+        //{
+
+        //public static Device FindDevice(FOS_System.Type DeviceType)
     }
 }

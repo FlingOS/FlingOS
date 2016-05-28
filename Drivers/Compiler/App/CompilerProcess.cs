@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,52 +23,58 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.IO;
+using Drivers.Compiler.ASM;
+using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.App
 {
     /// <summary>
-    /// The main compiler process for the command line app.
+    ///     The main compiler process for the command line app.
     /// </summary>
     public class CompilerProcess
     {
         /// <summary>
-        /// Summary error codes that can be returned by the Main method upon completion.
+        ///     Summary error codes that can be returned by the Main method upon completion.
         /// </summary>
         public enum ErrorCode : int
         {
             /// <summary>
-            /// Indicates no errors occurred during execution.
+            ///     Indicates no errors occurred during execution.
             /// </summary>
             NoError = 0,
+
             /// <summary>
-            /// Indicates one or more of the options specified on the command line are invalid.
+            ///     Indicates one or more of the options specified on the command line are invalid.
             /// </summary>
             InvalidOptions = 1,
+
             /// <summary>
-            /// Indicates the IL compiler step failed.
+            ///     Indicates the IL compiler step failed.
             /// </summary>
             ILCompilerFailed = 2,
+
             /// <summary>
-            /// Indicates the ASM compiler step failed.
+            ///     Indicates the ASM compiler step failed.
             /// </summary>
             ASMCompilerFailed = 3,
+
             /// <summary>
-            /// Indicates the linker step failed.
+            ///     Indicates the linker step failed.
             /// </summary>
             LinkerFailed = 4
         }
-        
+
         /// <summary>
-        /// The main entry point of the program.
+        ///     The main entry point of the program.
         /// </summary>
         /// <param name="args">The arguments specified on the command line.</param>
         /// <returns>Returns an error code.</returns>
-        /// <seealso cref="ErrorCode"/>
-        static int Main(string[] args)
+        /// <seealso cref="ErrorCode" />
+        private static int Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -79,8 +86,8 @@ namespace Drivers.Compiler.App
                 Options.OutputPath = args[1];
                 Options.ToolsPath = args[2];
 
-                Options.BuildMode = (args[3].ToLower() == "debug" ? Options.BuildModes.Debug : Options.BuildModes.Release);
-                Options.LinkMode = (args[5].ToLower() == "iso" ? Options.LinkModes.ISO : Options.LinkModes.ELF);
+                Options.BuildMode = args[3].ToLower() == "debug" ? Options.BuildModes.Debug : Options.BuildModes.Release;
+                Options.LinkMode = args[5].ToLower() == "iso" ? Options.LinkModes.ISO : Options.LinkModes.ELF;
                 Options.TargetArchitecture = args[4];
 
                 if (args.Length >= 7)
@@ -93,7 +100,7 @@ namespace Drivers.Compiler.App
                     }
                 }
 
-                result = (int)Execute(
+                result = (int) Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
                     Logger_OnLogError);
@@ -105,12 +112,13 @@ namespace Drivers.Compiler.App
 
             return result;
         }
+
         /// <summary>
-        /// Validates the specified command line arguments.
+        ///     Validates the specified command line arguments.
         /// </summary>
         /// <param name="args">The arguments to validate.</param>
         /// <returns>True if the arguments appear to be valid, otherwise false.</returns>
-        static bool ValidateArguments(string[] args)
+        private static bool ValidateArguments(string[] args)
         {
             if (args.Length < 6)
             {
@@ -129,7 +137,7 @@ namespace Drivers.Compiler.App
 
                 return false;
             }
-            
+
             if (args[3].ToLower() != "debug" && args[3].ToLower() != "release")
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -151,16 +159,16 @@ namespace Drivers.Compiler.App
         }
 
         /// <summary>
-        /// Executes the Drivers Compiler using the specified logging methods.
+        ///     Executes the Drivers Compiler using the specified logging methods.
         /// </summary>
         /// <param name="messageHandler">The handler for outputting ordinary messages.</param>
         /// <param name="warningHandler">The handler for outputting warning messages.</param>
         /// <param name="errorHandler">The handler for outputting error messages.</param>
         /// <returns>Returns an error code.</returns>
         public static ErrorCode Execute(
-            Logger.LogMessageEventHandler messageHandler, 
+            Logger.LogMessageEventHandler messageHandler,
             Logger.LogWarningEventHandler warningHandler,
-            Logger.LogErrorEventHandler   errorHandler)
+            Logger.LogErrorEventHandler errorHandler)
         {
             ErrorCode result = ErrorCode.NoError;
 
@@ -176,8 +184,10 @@ namespace Drivers.Compiler.App
             Logger.LogMessage("", 0, "Output path              = \"" + Options.OutputPath + "\"");
             Logger.LogMessage("", 0, "Tools path               = \"" + Options.ToolsPath + "\"");
             Logger.LogMessage("", 0, "Target architecture      = \"" + Options.TargetArchitecture + "\"");
-            Logger.LogMessage("", 0, "Build mode               = "   + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
-            Logger.LogMessage("", 0, "Link mode                = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
+            Logger.LogMessage("", 0,
+                "Build mode               = " + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
+            Logger.LogMessage("", 0,
+                "Link mode                = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
             Logger.LogMessage("", 0, "Base address             = " + Options.BaseAddress.ToString());
             Logger.LogMessage("", 0, "Load offset              = " + Options.LoadOffset.ToString());
 
@@ -233,14 +243,14 @@ namespace Drivers.Compiler.App
                 {
                     TargetArchitecture.Init();
 
-                    IL.ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
-                    
-                    CompileResult ILCompileResult = IL.ILCompiler.Compile(TheLibrary);
+                    ILLibrary TheLibrary = LibraryLoader.LoadILLibrary(Options.LibraryPath);
+
+                    CompileResult ILCompileResult = ILCompiler.Compile(TheLibrary);
 
                     if (ILCompileResult == CompileResult.OK ||
                         ILCompileResult == CompileResult.PartialFailure)
                     {
-                        CompileResult ASMCompileResult = ASM.ASMCompiler.Compile(TheLibrary);
+                        CompileResult ASMCompileResult = ASMCompiler.Compile(TheLibrary);
 
                         if (ASMCompileResult == CompileResult.OK)
                         {
@@ -260,7 +270,7 @@ namespace Drivers.Compiler.App
                             {
                                 //Fail
                                 Logger.LogError(Errors.Linker_LinkFailed_ErrorCode, "", 0,
-                                                Errors.ErrorMessages[Errors.Linker_LinkFailed_ErrorCode]);
+                                    Errors.ErrorMessages[Errors.Linker_LinkFailed_ErrorCode]);
                                 result = ErrorCode.LinkerFailed;
                             }
                         }
@@ -268,7 +278,7 @@ namespace Drivers.Compiler.App
                         {
                             //Fail
                             Logger.LogError(Errors.ASMCompiler_CompileFailed_ErrorCode, "", 0,
-                                            Errors.ErrorMessages[Errors.ASMCompiler_CompileFailed_ErrorCode]);
+                                Errors.ErrorMessages[Errors.ASMCompiler_CompileFailed_ErrorCode]);
                             result = ErrorCode.ASMCompilerFailed;
                         }
                     }
@@ -276,24 +286,24 @@ namespace Drivers.Compiler.App
                     {
                         //Fail
                         Logger.LogError(Errors.ILCompiler_CompileFailed_ErrorCode, "", 0,
-                                        Errors.ErrorMessages[Errors.ILCompiler_CompileFailed_ErrorCode]);
+                            Errors.ErrorMessages[Errors.ILCompiler_CompileFailed_ErrorCode]);
                         result = ErrorCode.ILCompilerFailed;
                     }
                 }
                 catch (NullReferenceException ex)
                 {
                     Logger.LogError(Errors.ILCompiler_NullRefException_ErrorCode, "", 0,
-                                    string.Format(
-                                        Errors.ErrorMessages[Errors.ILCompiler_NullRefException_ErrorCode],
-                                        ex.Message, ex.StackTrace));
+                        string.Format(
+                            Errors.ErrorMessages[Errors.ILCompiler_NullRefException_ErrorCode],
+                            ex.Message, ex.StackTrace));
                     result = ErrorCode.ILCompilerFailed;
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError(Errors.ILCompiler_UnexpectedException_ErrorCode, "", 0,
-                                    string.Format(
-                                        Errors.ErrorMessages[Errors.ILCompiler_UnexpectedException_ErrorCode],
-                                        ex.Message, ex.StackTrace));
+                        string.Format(
+                            Errors.ErrorMessages[Errors.ILCompiler_UnexpectedException_ErrorCode],
+                            ex.Message, ex.StackTrace));
                     result = ErrorCode.ILCompilerFailed;
                 }
             }
@@ -301,22 +311,22 @@ namespace Drivers.Compiler.App
             {
                 //Fail
                 Logger.LogError(Errors.PreReqs_OptionsInvalid_ErrorCode, "", 0,
-                                string.Format(
-                                    Errors.ErrorMessages[Errors.PreReqs_OptionsInvalid_ErrorCode],
-                                    ValidateOptions_Result.Item2));
+                    string.Format(
+                        Errors.ErrorMessages[Errors.PreReqs_OptionsInvalid_ErrorCode],
+                        ValidateOptions_Result.Item2));
                 result = ErrorCode.InvalidOptions;
             }
 
             DateTime endTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler finished @ " + endTime.ToLongTimeString());
             Logger.LogMessage("", 0, "            Compile time : " + (endTime - startTime).ToString());
-            Logger.LogMessage("", 0, "              Error code : " + System.Enum.GetName(typeof(ErrorCode), result));
-            
+            Logger.LogMessage("", 0, "              Error code : " + Enum.GetName(typeof(ErrorCode), result));
+
             return result;
         }
 
         /// <summary>
-        /// Logs an error message.
+        ///     Logs an error message.
         /// </summary>
         /// <param name="errorCode">The error code.</param>
         /// <param name="file">The file associated with the error.</param>
@@ -328,8 +338,9 @@ namespace Drivers.Compiler.App
             Console.WriteLine("Error : " + errorCode + ": " + message + " in " + file + ":" + lineNumber);
             Console.ForegroundColor = ConsoleColor.Gray;
         }
+
         /// <summary>
-        /// Logs an warning message.
+        ///     Logs an warning message.
         /// </summary>
         /// <param name="warningCode">The warning code.</param>
         /// <param name="file">The file associated with the warning.</param>
@@ -341,8 +352,9 @@ namespace Drivers.Compiler.App
             Console.WriteLine("Warning : " + warningCode + ": " + message + " in " + file + ":" + lineNumber);
             Console.ForegroundColor = ConsoleColor.Gray;
         }
+
         /// <summary>
-        /// Logs a message.
+        ///     Logs a message.
         /// </summary>
         /// <param name="file">The file associated with the message.</param>
         /// <param name="lineNumber">The line number in the file associated with the message.</param>

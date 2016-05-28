@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,28 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.Consoles;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Stubs;
+using Kernel.Hardware.Timers;
 
 namespace Kernel
 {
     /// <summary>
-    /// Represents a virtual Console input/output display. Also provides static methods for initialising the default
-    /// console.
+    ///     Represents a virtual Console input/output display. Also provides static methods for initialising the default
+    ///     console.
     /// </summary>
-    public abstract class Console : FOS_System.Object
+    public abstract class Console : Object
     {
+        /// <summary>
+        ///     The default console for the core kernel.
+        /// </summary>
+        public static Console Default;
+
         // Features:
         //  - Writing/reading
         //  - Scrolling
@@ -43,58 +53,65 @@ namespace Kernel
         //  - Cursor
 
         /// <summary>
-        /// The buffer of lines of text.
+        ///     The buffer of lines of text.
         /// </summary>
         protected List Buffer = new List(100);
-        /// <summary>
-        /// The current line where the cursor is in the buffer.
-        /// </summary>
-        protected Int32 CurrentLine = 0;
-        /// <summary>
-        /// The current character in the current line where the cursor is.
-        /// </summary>
-        protected Int32 CurrentChar = 0;
 
         /// <summary>
-        /// The maximum length of a line.
-        /// </summary>
-        public Int32 LineLength = 80;
-        /// <summary>
-        /// The maximum size of the buffer (in lines).
-        /// </summary>
-        protected Int32 MaxBufferSize = 200;
-        /// <summary>
-        /// The current character attribute.
+        ///     The current character attribute.
         /// </summary>
         protected ushort CurrentAttr = 0;
 
         /// <summary>
-        /// Screen-relative 0-based index of the character in a line the console starts on.
+        ///     The current character in the current line where the cursor is.
         /// </summary>
-        public int ScreenStartLineOffset = 0;
+        protected int CurrentChar = 0;
+
         /// <summary>
-        /// Screen-relative width of the console (in number of characters).
+        ///     The current line where the cursor is in the buffer.
         /// </summary>
-        public int ScreenLineWidth = 80;
+        protected int CurrentLine = 0;
+
         /// <summary>
-        /// Screen-relative 0-based index of the line the console starts on.
+        ///     The maximum length of a line.
         /// </summary>
-        public int ScreenStartLine = 0;
+        public int LineLength = 80;
+
         /// <summary>
-        /// Screen-relative height of the console (in number of lines).
+        ///     The maximum size of the buffer (in lines).
+        /// </summary>
+        protected int MaxBufferSize = 200;
+
+        /// <summary>
+        ///     Screen-relative height of the console (in number of lines).
         /// </summary>
         public int ScreenHeight = 25;
 
         /// <summary>
-        /// Whether to update the screen's cursor for this console or not.
+        ///     Screen-relative width of the console (in number of characters).
+        /// </summary>
+        public int ScreenLineWidth = 80;
+
+        /// <summary>
+        ///     Screen-relative 0-based index of the line the console starts on.
+        /// </summary>
+        public int ScreenStartLine = 0;
+
+        /// <summary>
+        ///     Screen-relative 0-based index of the character in a line the console starts on.
+        /// </summary>
+        public int ScreenStartLineOffset = 0;
+
+        /// <summary>
+        ///     Whether to update the screen's cursor for this console or not.
         /// </summary>
         /// <remarks>
-        /// Should be set to true for at most one instance of a given type of console.
+        ///     Should be set to true for at most one instance of a given type of console.
         /// </remarks>
         public bool UpdateScreenCursor = true;
 
         /// <summary>
-        /// Initialises a new instance of a Console.
+        ///     Initialises a new instance of a Console.
         /// </summary>
         public Console()
         {
@@ -103,13 +120,13 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Creates a blank line (a line filled with spaces set with the current attribute).
+        ///     Creates a blank line (a line filled with spaces set with the current attribute).
         /// </summary>
         /// <returns>The new line.</returns>
-        protected FOS_System.String CreateBlankLine()
+        protected String CreateBlankLine()
         {
             //Create a blank line (all characters set to 0s)
-            FOS_System.String str = FOS_System.String.New(LineLength);
+            String str = String.New(LineLength);
 
             //Set the attribute of all characters in the new blank line to
             //  the current character.
@@ -117,7 +134,7 @@ namespace Kernel
             //  colour otherwise they wouldn't show at all.
             for (int i = 0; i < str.length; i++)
             {
-                str[i] |= (char)CurrentAttr;
+                str[i] |= (char) CurrentAttr;
             }
 
             //Return the new blank line.
@@ -125,28 +142,30 @@ namespace Kernel
         }
 
         /// <summary>
-        /// When overridden in a derived class, updates the display output.
+        ///     When overridden in a derived class, updates the display output.
         /// </summary>
         public abstract void Update();
+
         /// <summary>
-        /// When overridden in a derived class, gets the offset from the current line to the actual line position of
-        /// the cursor.
+        ///     When overridden in a derived class, gets the offset from the current line to the actual line position of
+        ///     the cursor.
         /// </summary>
         /// <returns>The offset to be subtracted from the current line.</returns>
         protected abstract int GetDisplayOffset_Line();
+
         /// <summary>
-        /// When overridden in a derived class, gets the offset from the current character to the actual character 
-        /// position of the cursor.
+        ///     When overridden in a derived class, gets the offset from the current character to the actual character
+        ///     position of the cursor.
         /// </summary>
         /// <returns>The offset to be subtracted from the current character.</returns>
         protected abstract int GetDisplayOffset_Char();
 
         /// <summary>
-        /// Writes the specified text to the output. Overflows to the next line if necessary. 
-        /// "\n" characters will result in a new line being started.
+        ///     Writes the specified text to the output. Overflows to the next line if necessary.
+        ///     "\n" characters will result in a new line being started.
         /// </summary>
         /// <param name="str">The string to write.</param>
-        public virtual void Write(FOS_System.String str)
+        public virtual void Write(String str)
         {
             //Loop through each character, outputting them.
             for (int i = 0; i < str.length; i++)
@@ -189,7 +208,7 @@ namespace Kernel
                     if (CurrentLine > -1)
                     {
                         //Always delete a visible character
-                        ((FOS_System.String)Buffer[CurrentLine])[--CurrentChar] = (char)((' ' & 0xFF) | CurrentAttr);
+                        ((String) Buffer[CurrentLine])[--CurrentChar] = (char) ((' ' & 0xFF) | CurrentAttr);
                     }
                 }
                 //Else if upwards arrow character is found
@@ -220,37 +239,39 @@ namespace Kernel
                         //Strings in the core kernel are stored as 2-byte unicode but we output only ASCII
                         //  so the character must be and'ed with 0xFF to clear the top byte else it would
                         //  interfere with the attribute (colour).
-                        ((FOS_System.String)Buffer[CurrentLine])[CurrentChar++] = (char)((str[i] & 0xFF) | CurrentAttr);
+                        ((String) Buffer[CurrentLine])[CurrentChar++] = (char) ((str[i] & 0xFF) | CurrentAttr);
                     }
                 }
             }
             //Call update to update the screen with the new text.
             Update();
         }
+
         /// <summary>
-        /// Writes the specified number as an unsigned decimal string.
+        ///     Writes the specified number as an unsigned decimal string.
         /// </summary>
         /// <param name="num">The number to write as a decimal.</param>
-        public virtual void Write_AsDecimal(UInt32 num)
+        public virtual void Write_AsDecimal(uint num)
         {
             //Write the resulting number
-            Write(FOS_System.Stubs.UInt32.ToDecimalString(num));
-        }
-        /// <summary>
-        /// Writes the specified number as an signed decimal string.
-        /// </summary>
-        /// <param name="num">The number to write as a decimal.</param>
-        public virtual void Write_AsDecimal(Int32 num)
-        {
-            Write(FOS_System.Int32.ToDecimalString(num));
+            Write(UInt32.ToDecimalString(num));
         }
 
         /// <summary>
-        /// Writes a new line to the output.
+        ///     Writes the specified number as an signed decimal string.
+        /// </summary>
+        /// <param name="num">The number to write as a decimal.</param>
+        public virtual void Write_AsDecimal(int num)
+        {
+            Write(Int32.ToDecimalString(num));
+        }
+
+        /// <summary>
+        ///     Writes a new line to the output.
         /// </summary>
         public virtual void WriteLine()
         {
-            FOS_System.String line = null;
+            String line = null;
             //If we've reached the maximum number of lines
             //  to store in the buffer
             if (Buffer.Count == MaxBufferSize)
@@ -258,7 +279,7 @@ namespace Kernel
                 // Remove the first line (oldest line - appears at the top
                 //   of the screen if the user scrolls all the way to the top) 
                 //   to create space.
-                line = (FOS_System.String)Buffer[0];
+                line = (String) Buffer[0];
                 Buffer.RemoveAt(0);
 
                 // And make it into a new blank line
@@ -278,35 +299,27 @@ namespace Kernel
             //Update the current line / character
             CurrentLine = Buffer.Count - 1;
             CurrentChar = 0;
-            
+
             //Update the screen
             Update();
         }
+
         /// <summary>
-        /// Writes the specified string followed by a new line.
+        ///     Writes the specified string followed by a new line.
         /// </summary>
         /// <param name="str">The string to write before the new line.</param>
-        public virtual void WriteLine(FOS_System.String str)
+        public virtual void WriteLine(String str)
         {
             //Write the string followed by a new line
             Write(str);
             WriteLine();
         }
+
         /// <summary>
-        /// Writes the specified number as an unsigned decimal followed by a new line.
+        ///     Writes the specified number as an unsigned decimal followed by a new line.
         /// </summary>
         /// <param name="num">The number to write as a decimal.</param>
-        public virtual void WriteLine_AsDecimal(UInt32 num)
-        {
-            //Write the number followed by a new line
-            Write_AsDecimal(num);
-            WriteLine();
-        }
-        /// <summary>
-        /// Writes the specified number as an ssigned decimal followed by a new line.
-        /// </summary>
-        /// <param name="num">The number to write as a decimal.</param>
-        public virtual void WriteLine_AsDecimal(Int32 num)
+        public virtual void WriteLine_AsDecimal(uint num)
         {
             //Write the number followed by a new line
             Write_AsDecimal(num);
@@ -314,7 +327,18 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Clears the entire output.
+        ///     Writes the specified number as an ssigned decimal followed by a new line.
+        /// </summary>
+        /// <param name="num">The number to write as a decimal.</param>
+        public virtual void WriteLine_AsDecimal(int num)
+        {
+            //Write the number followed by a new line
+            Write_AsDecimal(num);
+            WriteLine();
+        }
+
+        /// <summary>
+        ///     Clears the entire output.
         /// </summary>
         public virtual void Clear()
         {
@@ -329,38 +353,39 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Plays the PC speaker for 500ms at (approx.) the frequency of low-B.
+        ///     Plays the PC speaker for 500ms at (approx.) the frequency of low-B.
         /// </summary>
         public virtual void Beep()
         {
             //Default beep - 245Hz for 0.5s
             Beep(245, 500);
         }
+
         /// <summary>
-        /// Plsy the PC speaker for the specified length of time (in milliseconds) at (approx.) the specified 
-        /// integer frequency.
+        ///     Plsy the PC speaker for the specified length of time (in milliseconds) at (approx.) the specified
+        ///     integer frequency.
         /// </summary>
         /// <param name="freq">The frequency to play at.</param>
         /// <param name="duration">The duration of the beep (in milliseconds).</param>
-        public virtual void Beep(Int32 freq, UInt32 duration)
+        public virtual void Beep(int freq, uint duration)
         {
-            Hardware.Timers.PIT.ThePIT.PlaySound(freq);
-            Hardware.Timers.PIT.ThePIT.Wait(duration);
-            Hardware.Timers.PIT.ThePIT.MuteSound();
+            PIT.ThePIT.PlaySound(freq);
+            PIT.ThePIT.Wait(duration);
+            PIT.ThePIT.MuteSound();
         }
 
         /// <summary>
-        /// Sets the cursor position.
+        ///     Sets the cursor position.
         /// </summary>
         /// <param name="character">The offset from the start of the line to the cursor.</param>
         /// <param name="line">The line number (from the display perspective, not the buffer perspective) of the cursor.</param>
         public abstract void SetCursorPosition(ushort character, ushort line);
 
         /// <summary>
-        /// Scrolls the display the specified distance.
+        ///     Scrolls the display the specified distance.
         /// </summary>
         /// <param name="dist">The distance to scroll. +ve scrolls downwards, -ve scrolls upwards.</param>
-        public virtual void Scroll(Int32 dist)
+        public virtual void Scroll(int dist)
         {
             //Move the current line the specified distance
             CurrentLine += dist;
@@ -378,38 +403,41 @@ namespace Kernel
         }
 
         /// <summary>
-        /// Sets the current text (foreground) colour.
+        ///     Sets the current text (foreground) colour.
         /// </summary>
         /// <param name="col">The colour to set as the text colour.</param>
         public virtual void Colour(byte col)
         {
-            CurrentAttr = (ushort)((CurrentAttr & 0x00FF) | (col << 8));
+            CurrentAttr = (ushort) ((CurrentAttr & 0x00FF) | (col << 8));
 
-            FOS_System.String str = (FOS_System.String)Buffer[CurrentLine];
+            String str = (String) Buffer[CurrentLine];
 
             //Set the attr of all characters in the rest of the line to
             //  the current colour.
             for (int i = CurrentChar; i < str.length; i++)
             {
-                str[i] = (char)((str[i] & 0x00FF) | CurrentAttr);
+                str[i] = (char) ((str[i] & 0x00FF) | CurrentAttr);
             }
         }
+
         /// <summary>
-        /// Sets the text colour to the default colour (white).
+        ///     Sets the text colour to the default colour (white).
         /// </summary>
         public virtual void DefaultColour()
         {
             Colour(0x0F);
         }
+
         /// <summary>
-        /// Sets the text colour to the warning colour (yellow).
+        ///     Sets the text colour to the warning colour (yellow).
         /// </summary>
         public virtual void WarningColour()
         {
             Colour(0x0E);
         }
+
         /// <summary>
-        /// Sets the text colour to the error colour (red).
+        ///     Sets the text colour to the error colour (red).
         /// </summary>
         public virtual void ErrorColour()
         {
@@ -417,21 +445,18 @@ namespace Kernel
         }
 
         /// <summary>
-        /// The default console for the core kernel.
-        /// </summary>
-        public static Console Default;
-        /// <summary>
-        /// Initialises the default console.
+        ///     Initialises the default console.
         /// </summary>
         public static void InitDefault()
         {
             if (Default == null)
             {
-                Default = new Consoles.AdvancedConsole();
+                Default = new AdvancedConsole();
             }
         }
+
         /// <summary>
-        /// Cleans up the default console.
+        ///     Cleans up the default console.
         /// </summary>
         public static void CleanDefault()
         {

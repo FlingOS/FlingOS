@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,28 +23,24 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
     /// <summary>
-    /// Represents a label which external ASM blocks can depend upon i.e. a global label.
+    ///     Represents a label which external ASM blocks can depend upon i.e. a global label.
     /// </summary>
     [ASMOpTarget(Target = OpCodes.GlobalLabel)]
     public abstract class ASMGlobalLabel : ASMOp
     {
         /// <summary>
-        /// The global label.
+        ///     The global label.
         /// </summary>
         public string Label;
+
         /// <summary>
-        /// The type specifier for the label. e.g. "function" or "data".
+        ///     The type specifier for the label. e.g. "function" or "data".
         /// </summary>
         public string LabelType = "function";
 
@@ -59,19 +56,20 @@ namespace Drivers.Compiler.ASM.ASMOps
         }
 
         /// <summary>
-        /// Gets a hash code for the global label which can be used for comparison to prevent
-        /// duplicate global labels being added.
+        ///     Gets a hash code for the global label which can be used for comparison to prevent
+        ///     duplicate global labels being added.
         /// </summary>
         /// <remarks>
-        /// Uses the hash code of (Label + ":" + LabelType).
+        ///     Uses the hash code of (Label + ":" + LabelType).
         /// </remarks>
         /// <returns>The hash code value.</returns>
         public override int GetHashCode()
         {
             return (Label + ":" + LabelType).GetHashCode();
         }
+
         /// <summary>
-        /// Compares the global label to the specified object.
+        ///     Compares the global label to the specified object.
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
         /// <returns>True if the object is a global label and has the same value for Label and LabelType. Otherwise, false.</returns>
@@ -79,8 +77,8 @@ namespace Drivers.Compiler.ASM.ASMOps
         {
             if (obj is ASMGlobalLabel)
             {
-                return Label.Equals(((ASMGlobalLabel)obj).Label) &&
-                       LabelType.Equals(((ASMGlobalLabel)obj).LabelType);
+                return Label.Equals(((ASMGlobalLabel) obj).Label) &&
+                       LabelType.Equals(((ASMGlobalLabel) obj).LabelType);
             }
             return base.Equals(obj);
         }

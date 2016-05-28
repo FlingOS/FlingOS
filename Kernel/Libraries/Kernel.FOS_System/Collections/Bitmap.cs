@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,59 +23,54 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Attributes;
 
 namespace Kernel.FOS_System.Collections
 {
-    public class Bitmap : FOS_System.Object
+    public class Bitmap : Object
     {
-        private byte[] bitmap;
+        private readonly byte[] bitmap;
         private int setCount = 0;
+
+        [NoDebug]
+        public Bitmap(int size)
+        {
+            bitmap = new byte[size/8];
+        }
 
         public int Count
         {
-            [Drivers.Compiler.Attributes.NoDebug]
-            get
-            {
-                return setCount;
-            }
+            [NoDebug] get { return setCount; }
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        public Bitmap(int size)
-        {
-            bitmap = new byte[size / 8];
-        }
-
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public void Set(int entry)
         {
-            bitmap[entry / 8] = (byte)(bitmap[entry / 8] | (1 << (entry % 8)));
+            bitmap[entry/8] = (byte) (bitmap[entry/8] | (1 << (entry%8)));
             setCount++;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         public void Clear(int entry)
         {
-            bitmap[entry / 8] = (byte)(bitmap[entry / 8] & ~(1 << (entry % 8)));
+            bitmap[entry/8] = (byte) (bitmap[entry/8] & ~(1 << (entry%8)));
             setCount--;
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public bool IsSet(int entry)
         {
-            return (bitmap[entry / 8] & (1 << (entry % 8))) != 0;
+            return (bitmap[entry/8] & (1 << (entry%8))) != 0;
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public int FindFirstClearEntry()
         {
             for (int i = 0; i < bitmap.Length; i++)
@@ -83,14 +79,15 @@ namespace Kernel.FOS_System.Collections
                 {
                     if ((bitmap[i] & j) == 0)
                     {
-                        return (i * 8) + x;
+                        return i*8 + x;
                     }
                 }
             }
             return -1;
         }
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+
+        [NoDebug]
+        [NoGC]
         public int FindLastClearEntry()
         {
             for (int i = bitmap.Length - 1; i > -1; i--)
@@ -99,21 +96,21 @@ namespace Kernel.FOS_System.Collections
                 {
                     if ((bitmap[i] & j) == 0)
                     {
-                        return (i * 8) + x;
+                        return i*8 + x;
                     }
                 }
             }
             return -1;
         }
 
-        [Drivers.Compiler.Attributes.NoDebug]
-        [Drivers.Compiler.Attributes.NoGC]
+        [NoDebug]
+        [NoGC]
         public int FindContiguousClearEntries(int num)
         {
             int contiguousEntries = 0;
             int testPos = 0;
             int startPos = 0;
-            int length = bitmap.Length * 8;
+            int length = bitmap.Length*8;
             while (contiguousEntries != num && testPos < length)
             {
                 if (!IsSet(testPos))
@@ -122,7 +119,7 @@ namespace Kernel.FOS_System.Collections
                     {
                         startPos = testPos;
                     }
-                    
+
                     contiguousEntries++;
                 }
                 else

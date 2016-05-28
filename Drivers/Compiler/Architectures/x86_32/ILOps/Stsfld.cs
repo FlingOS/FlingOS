@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,19 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
+using Drivers.Compiler.Architectures.x86.ASMOps;
 using Drivers.Compiler.IL;
+using TypeInfo = Drivers.Compiler.Types.TypeInfo;
 
 namespace Drivers.Compiler.Architectures.x86
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Stsfld : IL.ILOps.Stsfld
     {
@@ -45,29 +45,31 @@ namespace Drivers.Compiler.Architectures.x86
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
         /// <returns>See base class documentation.</returns>
         /// <exception cref="System.NotSupportedException">
-        /// Thrown if the value to store is floating point.
+        ///     Thrown if the value to store is floating point.
         /// </exception>
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
             Types.FieldInfo theFieldInfo = conversionState.GetFieldInfo(theField.DeclaringType, theField.Name);
-            Types.TypeInfo theFieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theFieldInfo.FieldType);
+            TypeInfo theFieldTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theFieldInfo.FieldType);
 
             string fieldId = theFieldInfo.ID;
-            int size = theFieldTypeInfo.IsValueType ? theFieldTypeInfo.SizeOnHeapInBytes : theFieldTypeInfo.SizeOnStackInBytes;
+            int size = theFieldTypeInfo.IsValueType
+                ? theFieldTypeInfo.SizeOnHeapInBytes
+                : theFieldTypeInfo.SizeOnStackInBytes;
             bool isFloat = Utilities.IsFloat(theField.FieldType);
 
             conversionState.AddExternalLabel(fieldId);
 
             StackItem value = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
-            
+
             if (isFloat)
             {
                 //SUPPORT - floats
@@ -76,42 +78,68 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (size == 1)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "]" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "]"});
             }
             else if (size == 2)
             {
-                conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "]" });
+                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "]"});
             }
             else if (size >= 4)
             {
                 for (int i = 0; i < size; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Dword, Dest = "EAX" });
+                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
 
                     switch (size - i)
                     {
                         case 1:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Byte,
+                                Src = "AL",
+                                Dest = "[" + fieldId + "+" + i + "]"
+                            });
                             break;
                         case 2:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Word,
+                                Src = "AX",
+                                Dest = "[" + fieldId + "+" + i + "]"
+                            });
                             break;
                         case 3:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "+" + i + "]" });
-                            conversionState.Append(new ASMOps.Shr() { Src = "16", Dest = "EAX" });
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "+" + (i+1) + "]" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Byte,
+                                Src = "AL",
+                                Dest = "[" + fieldId + "+" + i + "]"
+                            });
+                            conversionState.Append(new ASMOps.Shr() {Src = "16", Dest = "EAX"});
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Word,
+                                Src = "AX",
+                                Dest = "[" + fieldId + "+" + (i + 1) + "]"
+                            });
                             break;
                         default:
-                            conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "EAX", Dest = "[" + fieldId + "+" + i + "]" });
+                            conversionState.Append(new Mov()
+                            {
+                                Size = OperandSize.Dword,
+                                Src = "EAX",
+                                Dest = "[" + fieldId + "+" + i + "]"
+                            });
                             break;
                     }
                 }
             }
             else
             {
-                throw new ArgumentOutOfRangeException("Storing static field with unsupported size! Size: " + size.ToString());
+                throw new ArgumentOutOfRangeException("Storing static field with unsupported size! Size: " +
+                                                      size.ToString());
             }
         }
     }

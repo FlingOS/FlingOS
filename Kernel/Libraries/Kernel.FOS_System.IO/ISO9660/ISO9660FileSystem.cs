@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,16 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 
 namespace Kernel.FOS_System.IO.ISO9660
 {
     public class ISO9660FileSystem : FileSystem
     {
-        protected ISO9660.ISO9660Directory RootDirectory;
+        protected ISO9660Directory RootDirectory;
 
         public ISO9660FileSystem(Disk.ISO9660.PrimaryVolumeDescriptor primaryVolume)
             : base(primaryVolume)
@@ -48,12 +50,15 @@ namespace Kernel.FOS_System.IO.ISO9660
 
         public override Directory NewDirectory(String name, Directory parent)
         {
-            ExceptionMethods.Throw(new Exceptions.NotSupportedException("Cannot modify contents of ISO9660 disc (yet)! (FileSystem)"));
+            ExceptionMethods.Throw(
+                new NotSupportedException("Cannot modify contents of ISO9660 disc (yet)! (FileSystem)"));
             return null;
         }
+
         public override File NewFile(String name, Directory parent)
         {
-            ExceptionMethods.Throw(new Exceptions.NotSupportedException("Cannot modify contents of ISO9660 disc (yet)! (FileSystem)"));
+            ExceptionMethods.Throw(
+                new NotSupportedException("Cannot modify contents of ISO9660 disc (yet)! (FileSystem)"));
             return null;
         }
 

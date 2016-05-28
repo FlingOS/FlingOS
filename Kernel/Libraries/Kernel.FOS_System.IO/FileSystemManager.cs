@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,33 +23,33 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 #define FSM_TRACE
 
-using Kernel.FOS_System.IO.Disk;
+using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Devices;
-using Kernel.Pipes.Storage;
 using Kernel.Pipes.File;
 
 namespace Kernel.FOS_System.IO
 {
     /// <summary>
-    /// Provides management for file systems in the kernel.
+    ///     Provides management for file systems in the kernel.
     /// </summary>
     public static class FileSystemManager
     {
         /// <summary>
-        /// The delimiter that separates mapping prefixes and directory/file names in a path.
+        ///     The delimiter that separates mapping prefixes and directory/file names in a path.
         /// </summary>
         public const char PathDelimiter = '/';
 
         private static int MappingsListSemaphoreId;
+
         /// <summary>
-        /// The list of file system mappings.
+        ///     The list of file system mappings.
         /// </summary>
         public static List FileSystemMappings;
 
@@ -60,8 +61,8 @@ namespace Kernel.FOS_System.IO
         public static bool Terminating;
 
         /// <summary>
-        /// Initializes all available file systems by searching for 
-        /// valid partitions on the available disk devices.
+        ///     Initializes all available file systems by searching for
+        ///     valid partitions on the available disk devices.
         /// </summary>
         public static void Init()
         {
@@ -74,13 +75,13 @@ namespace Kernel.FOS_System.IO
             if (SystemCalls.CreateSemaphore(1, out MappingsListSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (1)");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
 
             if (SystemCalls.CreateSemaphore(1, out ClientListSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (2)");
-                ExceptionMethods.Throw(new FOS_System.Exceptions.NullReferenceException());
+                ExceptionMethods.Throw(new NullReferenceException());
             }
 
             if (SystemCalls.StartThread(WaitForClients, out WaitForClientsThreadId) != SystemCallResults.OK)
@@ -94,9 +95,9 @@ namespace Kernel.FOS_System.IO
             //TODO: Don't use the count to generate the drive letter
             //  Because if we allowed detach/removal/eject in future, it could cause naming conflicts
             String mappingPrefix = String.New(3);
-            mappingPrefix[0] = (char)((int)('A') + FileSystemMappings.Count);
+            mappingPrefix[0] = (char) ((int) 'A' + FileSystemMappings.Count);
             mappingPrefix[1] = ':';
-            mappingPrefix[2] = FileSystemManager.PathDelimiter;
+            mappingPrefix[2] = PathDelimiter;
             newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
             aPartition.Mapped = true;
 
@@ -106,12 +107,13 @@ namespace Kernel.FOS_System.IO
             BasicConsole.WriteLine("Calling InitFS system call...");
             SystemCalls.InitFS();
         }
+
         /// <summary>
-        /// Gets the file system mapping for the specified path.
+        ///     Gets the file system mapping for the specified path.
         /// </summary>
         /// <param name="aPath">The path to get the mapping for.</param>
         /// <returns>The file system mapping or null if none exists.</returns>
-        public static FileSystemMapping GetMapping(FOS_System.String aPath)
+        public static FileSystemMapping GetMapping(String aPath)
         {
             FileSystemMapping result = null;
 
@@ -120,7 +122,7 @@ namespace Kernel.FOS_System.IO
             {
                 for (int i = 0; i < FileSystemMappings.Count; i++)
                 {
-                    FileSystemMapping aMapping = (FileSystemMapping)FileSystemMappings[i];
+                    FileSystemMapping aMapping = (FileSystemMapping) FileSystemMappings[i];
                     if (aMapping.PathMatchesMapping(aPath))
                     {
                         result = aMapping;
@@ -135,8 +137,9 @@ namespace Kernel.FOS_System.IO
 
             return result;
         }
+
         /// <summary>
-        /// Determines whether the specified partition has any file system mappings associated with it.
+        ///     Determines whether the specified partition has any file system mappings associated with it.
         /// </summary>
         /// <param name="part">The partition to check.</param>
         /// <returns>Whether there are any file system mappings for the partition.</returns>
@@ -144,7 +147,7 @@ namespace Kernel.FOS_System.IO
         {
             for (int i = 0; i < FileSystemMappings.Count; i++)
             {
-                FileSystemMapping mapping = (FileSystemMapping)FileSystemMappings[i];
+                FileSystemMapping mapping = (FileSystemMapping) FileSystemMappings[i];
                 if (mapping.TheFileSystem.ThePartition == part)
                 {
                     return true;
@@ -152,10 +155,12 @@ namespace Kernel.FOS_System.IO
             }
             return false;
         }
+
         public static bool LockMappingsList()
         {
             return SystemCalls.WaitSemaphore(MappingsListSemaphoreId) == SystemCallResults.OK;
         }
+
         public static bool UnlockMappingsList()
         {
             return SystemCalls.SignalSemaphore(MappingsListSemaphoreId) == SystemCallResults.OK;
@@ -170,7 +175,7 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int DataOutPipeId = DataOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("File System Manager > File data output connected.");
-                
+
                 FileCmdInpoint CmdInPipe = new FileCmdInpoint(InProcessId);
                 FileDataInpoint DataInPipe = new FileDataInpoint(InProcessId, false);
 
@@ -204,12 +209,13 @@ namespace Kernel.FOS_System.IO
                 }
             }
         }
+
         private static unsafe void ManageClient()
         {
             FileSystemClient TheClient = null;
             if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
             {
-                TheClient = (FileSystemClient)Clients[Clients.Count - 1];
+                TheClient = (FileSystemClient) Clients[Clients.Count - 1];
 
                 if (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
                 {

@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,47 +23,26 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Synchronisation;
 
 namespace Kernel.Hardware.Processes.Synchronisation
 {
-    public class Semaphore : FOS_System.Object
+    public class Semaphore : Object
     {
-        protected int id;
-        public int Id
-        {
-            get
-            {
-                return id;
-            }
-        }
-
         protected int count = 0;
-        public int Count
-        {
-            get
-            {
-                return count;
-            }
-        }
+
+        private readonly SpinLock ExclLock = new SpinLock();
+        protected int id;
 
         protected int limit = 0;
-        public int Limit
-        {
-            get
-            {
-                return limit;
-            }
-        }
-
-        SpinLock ExclLock = new SpinLock();
-        UInt64List WaitingThreads = new UInt64List();
 
         public UInt32List OwnerProcesses = new UInt32List(2);
+        private readonly UInt64List WaitingThreads = new UInt64List();
 
         public Semaphore(int anId, int aLimit)
         {
@@ -70,9 +50,24 @@ namespace Kernel.Hardware.Processes.Synchronisation
             count = (limit = aLimit) == -1 ? 0 : limit;
         }
 
+        public int Id
+        {
+            get { return id; }
+        }
+
+        public int Count
+        {
+            get { return count; }
+        }
+
+        public int Limit
+        {
+            get { return limit; }
+        }
+
         public void Wait()
         {
-            ulong identifier = ((UInt64)ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
+            ulong identifier = ((ulong) ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
 
             ExclLock.Enter();
             bool notLocked = count > 0;
@@ -88,10 +83,11 @@ namespace Kernel.Hardware.Processes.Synchronisation
                 Thread.Sleep(Thread.IndefiniteSleep);
             }
         }
+
         public bool WaitOnBehalf(Process aProcess, Thread aThread)
         {
-            ulong identifier = ((UInt64)aProcess.Id << 32) | aThread.Id;
-        
+            ulong identifier = ((ulong) aProcess.Id << 32) | aThread.Id;
+
             ExclLock.Enter();
             bool notLocked = count > 0;
             if (notLocked)
@@ -106,10 +102,11 @@ namespace Kernel.Hardware.Processes.Synchronisation
             ExclLock.Exit();
             return notLocked;
         }
+
         public void SignalOnBehalf()
         {
             ExclLock.Enter();
-            
+
             if (WaitingThreads.Count > 0)
             {
                 //BasicConsole.WriteLine("Waiting threads > 0");
@@ -120,8 +117,8 @@ namespace Kernel.Hardware.Processes.Synchronisation
                     WaitingThreads.RemoveAt(0);
                     //BasicConsole.Write("Identifier: ");
                     //BasicConsole.WriteLine(identifier);
-                }
-                while (!ProcessManager.WakeThread((uint)(identifier >> 32), (uint)identifier) && WaitingThreads.Count > 0);
+                } while (!ProcessManager.WakeThread((uint) (identifier >> 32), (uint) identifier) &&
+                         WaitingThreads.Count > 0);
             }
             else if (count < limit || limit == -1)
             {

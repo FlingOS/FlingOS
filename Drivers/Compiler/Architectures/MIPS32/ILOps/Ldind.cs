@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,19 +23,16 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Ldind : IL.ILOps.Ldind
     {
@@ -43,7 +41,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
 
-            switch ((OpCodes)theOp.opCode.Value)
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
                 case OpCodes.Ldind_I1:
@@ -71,12 +69,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
                 isGCManaged = false,
-                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
+                isValue = (OpCodes) theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -86,11 +84,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Load indirect
             //Pop address
             //Push [address]
-            
+
             StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
-            
-            switch ((OpCodes)theOp.opCode.Value)
+
+            switch ((OpCodes) theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
                 case OpCodes.Ldind_I1:
@@ -116,148 +114,401 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int currOpPosition = conversionState.PositionOf(theOp);
 
             //Pop address
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t1" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
 
             if (bytesToLoad != 1)
             {
                 // Alignment tests
-                conversionState.Append(new ASMOps.And() { Src1 = "$t1", Src2 = "3", Dest = "$t5" });
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchEqual, Src1 = "$t5", Src2 = "1", DestILPosition = currOpPosition, Extension = "ByteAligned" });
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchEqual, Src1 = "$t5", Src2 = "2", DestILPosition = currOpPosition, Extension = "HalfwordAligned" });
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.BranchEqual, Src1 = "$t5", Src2 = "3", DestILPosition = currOpPosition, Extension = "ByteAligned" });
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "WordAligned" });
+                conversionState.Append(new ASMOps.And() {Src1 = "$t1", Src2 = "3", Dest = "$t5"});
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.BranchEqual,
+                    Src1 = "$t5",
+                    Src2 = "1",
+                    DestILPosition = currOpPosition,
+                    Extension = "ByteAligned"
+                });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.BranchEqual,
+                    Src1 = "$t5",
+                    Src2 = "2",
+                    DestILPosition = currOpPosition,
+                    Extension = "HalfwordAligned"
+                });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.BranchEqual,
+                    Src1 = "$t5",
+                    Src2 = "3",
+                    DestILPosition = currOpPosition,
+                    Extension = "ByteAligned"
+                });
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.Branch,
+                    DestILPosition = currOpPosition,
+                    Extension = "WordAligned"
+                });
             }
 
-            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldind_Ref)
+            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldind_Ref)
             {
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ByteAligned" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "3($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "2($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 16 });
-                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 8 });
-                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ByteAligned"});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = "3($t1)",
+                    Dest = "$t0",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
+                conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 24});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = "2($t1)",
+                    Dest = "$t4",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
+                conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 16});
+                conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = "1($t1)",
+                    Dest = "$t4",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
+                conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 8});
+                conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Byte,
+                    Src = "0($t1)",
+                    Dest = "$t4",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
+                conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.Branch,
+                    DestILPosition = currOpPosition,
+                    Extension = "End"
+                });
 
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "HalfwordAligned" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "2($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "HalfwordAligned"});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Halfword,
+                    Src = "2($t1)",
+                    Dest = "$t0",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
+                conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 16});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Halfword,
+                    Src = "0($t1)",
+                    Dest = "$t4",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
+                conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                conversionState.Append(new Branch()
+                {
+                    BranchType = BranchOp.Branch,
+                    DestILPosition = currOpPosition,
+                    Extension = "End"
+                });
 
-                conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "WordAligned" });
-                conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "WordAligned"});
+                conversionState.Append(new Mov()
+                {
+                    Size = OperandSize.Word,
+                    Src = "0($t1)",
+                    Dest = "$t0",
+                    MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                });
             }
             else
             {
                 if (bytesToLoad == 1)
                 {
-                    conversionState.Append(new ASMOps.Xor() { Src1 = "$t0", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new ASMOps.Xor() {Src1 = "$t0", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "0($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
                 }
                 else if (bytesToLoad == 2)
                 {
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ByteAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 8 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ByteAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "1($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 8});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "0($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "End"
+                    });
 
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "HalfwordAligned" });
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "WordAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "HalfwordAligned"});
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "WordAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "0($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
                 }
                 else if (bytesToLoad == 4)
                 {
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ByteAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "3($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "2($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 16 });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 8 });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ByteAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "3($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 24});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "2($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 16});
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "1($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 8});
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "0($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "End"
+                    });
 
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "HalfwordAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "2($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "HalfwordAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "2($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 16});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "0($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "End"
+                    });
 
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "WordAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "WordAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "0($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
                 }
                 else if (bytesToLoad == 8)
                 {
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "ByteAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "7($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "6($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 16 });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "4($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 8 });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "5($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ByteAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "7($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 24});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "6($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 16});
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "4($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 8});
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "5($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
 
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "3($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 24 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "2($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 16 });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "1($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t4", Dest = "$t4", Bits = 8 });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "3($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 24});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "2($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 16});
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "1($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t4", Dest = "$t4", Bits = 8});
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Byte,
+                        Src = "0($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "End"
+                    });
 
 
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "HalfwordAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "6($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "4($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "HalfwordAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "6($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 16});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "4($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
 
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "2($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Sll() { Src = "$t0", Dest = "$t0", Bits = 16 });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Halfword, Src = "0($t1)", Dest = "$t4", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Or() { Src1 = "$t4", Src2 = "$t0", Dest = "$t0" });
-                    conversionState.Append(new ASMOps.Branch() { BranchType = ASMOps.BranchOp.Branch, DestILPosition = currOpPosition, Extension = "End" });
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "2($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Sll() {Src = "$t0", Dest = "$t0", Bits = 16});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Halfword,
+                        Src = "0($t1)",
+                        Dest = "$t4",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new ASMOps.Or() {Src1 = "$t4", Src2 = "$t0", Dest = "$t0"});
+                    conversionState.Append(new Branch()
+                    {
+                        BranchType = BranchOp.Branch,
+                        DestILPosition = currOpPosition,
+                        Extension = "End"
+                    });
 
 
-                    conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "WordAligned" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "4($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
-                    conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
-                    conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t1)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
+                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "WordAligned"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "4($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                    conversionState.Append(new Mov()
+                    {
+                        Size = OperandSize.Word,
+                        Src = "0($t1)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
                 }
             }
 
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "End" });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
                 isGCManaged = false,
-                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
+                isValue = (OpCodes) theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
     }

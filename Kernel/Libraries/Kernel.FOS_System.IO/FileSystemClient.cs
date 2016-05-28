@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,26 +23,23 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using Kernel.FOS_System.IO.Disk;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Devices;
-using Kernel.Pipes.Storage;
+using Kernel.FOS_System.Processes;
 using Kernel.Pipes.File;
 
 namespace Kernel.FOS_System.IO
 {
     public class FileSystemClient : Object
     {
-        public uint ManagementThreadId;
-        public uint RemoteProcessId;
-        public int DataOutPipeId;
-        public FileDataOutpoint DataOutPipe;
         public FileCmdInpoint CmdInPipe;
         public FileDataInpoint DataInPipe;
+        public FileDataOutpoint DataOutPipe;
+        public int DataOutPipeId;
+        public uint ManagementThreadId;
+        public uint RemoteProcessId;
 
         public bool Terminating = false;
 
@@ -53,7 +51,7 @@ namespace Kernel.FOS_System.IO
                 {
                     FilePipeCommand* CommandPtr = CmdInPipe.Read();
 
-                    switch ((FileCommands)CommandPtr->Command)
+                    switch ((FileCommands) CommandPtr->Command)
                     {
                         case FileCommands.StatFS:
                             StatFS();
@@ -71,6 +69,7 @@ namespace Kernel.FOS_System.IO
                 }
             }
         }
+
         private void StatFS()
         {
             String FSPath = DataInPipe.ReadString(true);
@@ -91,7 +90,7 @@ namespace Kernel.FOS_System.IO
                     Prefixes = new String[FileSystemManager.FileSystemMappings.Count];
                     for (int i = 0; i < Prefixes.Length; i++)
                     {
-                        Prefixes[i] = ((FileSystemMapping)FileSystemManager.FileSystemMappings[i]).Prefix;
+                        Prefixes[i] = ((FileSystemMapping) FileSystemManager.FileSystemMappings[i]).Prefix;
                     }
                 }
                 finally
@@ -109,6 +108,7 @@ namespace Kernel.FOS_System.IO
                 }
             }
         }
+
         private void ListDir()
         {
             String Path = DataInPipe.ReadString(true);
@@ -118,17 +118,17 @@ namespace Kernel.FOS_System.IO
                 Directory DirectoryListing;
                 if (BaseListing.IsDirectory)
                 {
-                    DirectoryListing = (Directory)BaseListing;
+                    DirectoryListing = (Directory) BaseListing;
                 }
                 else
                 {
-                    DirectoryListing = ((File)BaseListing).Parent;
+                    DirectoryListing = ((File) BaseListing).Parent;
                 }
                 List Listings = DirectoryListing.GetListings();
                 String Output = "";
                 for (int i = 0; i < Listings.Count; i++)
                 {
-                    Base AListing = (Base)Listings[i];
+                    Base AListing = (Base) Listings[i];
                     if (AListing.IsDirectory)
                     {
                         Output += AListing.Name + FileSystemManager.PathDelimiter;

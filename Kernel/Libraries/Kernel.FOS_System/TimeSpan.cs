@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,104 +23,109 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
 
 namespace Kernel.FOS_System
 {
-    public class TimeSpan : FOS_System.Object
+    public class TimeSpan : Object
     {
-        private System.Int64 seconds;
-        
+        private readonly long seconds;
+
+        public TimeSpan(long aSeconds)
+        {
+            seconds = aSeconds;
+        }
+
         //TODO: Remove cast downs when signed 64-bit division is supported
 
         public int Years
         {
             get
             {
-                int castTime = (int)seconds;
-                return (castTime / 31556926);
+                int castTime = (int) seconds;
+                return castTime/31556926;
             }
         }
+
         public int Months
         {
             get
             {
-                int castTime = (int)seconds;
-                castTime -= (castTime / 31556926) * 31556926;
-                return (castTime / 2629743);
+                int castTime = (int) seconds;
+                castTime -= castTime/31556926*31556926;
+                return castTime/2629743;
             }
         }
+
         public int Days
         {
             get
             {
-                int castTime = (int)seconds;
-                castTime -= (castTime / 31556926) * 31556926;
-                castTime -= (castTime / 2629743) * 2629743;
-                return (castTime / 86400);
+                int castTime = (int) seconds;
+                castTime -= castTime/31556926*31556926;
+                castTime -= castTime/2629743*2629743;
+                return castTime/86400;
             }
         }
+
         public int Hours
         {
             get
             {
-                int castTime = (int)seconds;
-                castTime -= (castTime / 31556926) * 31556926;
-                castTime -= (castTime / 2629743) * 2629743;
-                castTime -= (castTime / 86400) * 86400;
-                return (castTime / 3600);
+                int castTime = (int) seconds;
+                castTime -= castTime/31556926*31556926;
+                castTime -= castTime/2629743*2629743;
+                castTime -= castTime/86400*86400;
+                return castTime/3600;
             }
         }
+
         public int Minutes
         {
             get
             {
-                int castTime = (int)seconds;
-                castTime -= (castTime / 31556926) * 31556926;
-                castTime -= (castTime / 2629743) * 2629743;
-                castTime -= (castTime / 86400) * 86400;
-                castTime -= (castTime / 3600) * 3600;
-                return (castTime / 60);
+                int castTime = (int) seconds;
+                castTime -= castTime/31556926*31556926;
+                castTime -= castTime/2629743*2629743;
+                castTime -= castTime/86400*86400;
+                castTime -= castTime/3600*3600;
+                return castTime/60;
             }
         }
+
         public int Seconds
         {
             get
             {
-                int castTime = (int)seconds;
-                castTime -= (castTime / 31556926) * 31556926;
-                castTime -= (castTime / 2629743) * 2629743;
-                castTime -= (castTime / 86400) * 86400;
-                castTime -= (castTime / 3600) * 3600;
-                castTime -= (castTime / 60) * 60;
+                int castTime = (int) seconds;
+                castTime -= castTime/31556926*31556926;
+                castTime -= castTime/2629743*2629743;
+                castTime -= castTime/86400*86400;
+                castTime -= castTime/3600*3600;
+                castTime -= castTime/60*60;
                 return castTime;
             }
         }
 
-        public TimeSpan(System.Int64 aSeconds)
+        public String ToShortString()
         {
-            seconds = aSeconds;
+            return Int32.ToDecimalString(Years) + ":" +
+                   Int32.ToDecimalString(Months) + ":" +
+                   Int32.ToDecimalString(Days) + ":" +
+                   Int32.ToDecimalString(Hours) + ":" +
+                   Int32.ToDecimalString(Minutes) + ":" +
+                   Int32.ToDecimalString(Seconds);
         }
 
-        public FOS_System.String ToShortString()
+        public String ToLongString()
         {
-            return FOS_System.Int32.ToDecimalString(Years) + ":" +
-                   FOS_System.Int32.ToDecimalString(Months) + ":" +
-                   FOS_System.Int32.ToDecimalString(Days) + ":" +
-                   FOS_System.Int32.ToDecimalString(Hours) + ":" +
-                   FOS_System.Int32.ToDecimalString(Minutes) + ":" +
-                   FOS_System.Int32.ToDecimalString(Seconds);
-        }
-        public FOS_System.String ToLongString()
-        {
-            return FOS_System.Int32.ToDecimalString(Years) + " years, " +
-                   FOS_System.Int32.ToDecimalString(Months) + " months, " +
-                   FOS_System.Int32.ToDecimalString(Days) + " days, " +
-                   FOS_System.Int32.ToDecimalString(Hours) + " hours, " +
-                   FOS_System.Int32.ToDecimalString(Minutes) + " minutes, " +
-                   FOS_System.Int32.ToDecimalString(Seconds) + " seconds.";
+            return Int32.ToDecimalString(Years) + " years, " +
+                   Int32.ToDecimalString(Months) + " months, " +
+                   Int32.ToDecimalString(Days) + " days, " +
+                   Int32.ToDecimalString(Hours) + " hours, " +
+                   Int32.ToDecimalString(Minutes) + " minutes, " +
+                   Int32.ToDecimalString(Seconds) + " seconds.";
         }
     }
 }

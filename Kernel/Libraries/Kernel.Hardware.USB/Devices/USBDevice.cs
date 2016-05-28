@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,35 +23,29 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
 
-using Kernel.FOS_System;    
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
+using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware;
+using Kernel.USB.HCIs;
 
 namespace Kernel.USB.Devices
 {
     /// <summary>
-    /// Represents a USB device.
+    ///     Represents a USB device.
     /// </summary>
     public class USBDevice : Device
     {
         /// <summary>
-        /// The device info that specifies the physical device to communicate with.
-        /// </summary>
-        public USBDeviceInfo DeviceInfo
-        {
-            get;
-            protected set;
-        }
-
-        /// <summary>
-        /// Initialises a new USB device with specified USB device info. Includes adding it to Devices lists in
-        /// device manager and USB manager.
+        ///     Initialises a new USB device with specified USB device info. Includes adding it to Devices lists in
+        ///     device manager and USB manager.
         /// </summary>
         /// <param name="aDeviceInfo">The device info of the physical device.</param>
-        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, bool IsClaimed)
+        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass,
+            String AName, bool IsClaimed)
             : base(AGroup, AClass, ASubClass, AName, new uint[5], IsClaimed)
         {
             DeviceInfo = aDeviceInfo;
@@ -63,7 +58,12 @@ namespace Kernel.USB.Devices
         }
 
         /// <summary>
-        /// Destroys the USB device including removing it from Devices lists in device manager and USB manager.
+        ///     The device info that specifies the physical device to communicate with.
+        /// </summary>
+        public USBDeviceInfo DeviceInfo { get; protected set; }
+
+        /// <summary>
+        ///     Destroys the USB device including removing it from Devices lists in device manager and USB manager.
         /// </summary>
         public virtual void Destroy()
         {
@@ -73,126 +73,146 @@ namespace Kernel.USB.Devices
             USBManager.Devices.Remove(this);
         }
     }
+
     /// <summary>
-    /// Stores information which describes a particular, physical USB device.
+    ///     Stores information which describes a particular, physical USB device.
     /// </summary>
-    public class USBDeviceInfo : FOS_System.Object
+    public class USBDeviceInfo : Object
     {
         /// <summary>
-        /// The port number of the device.
-        /// </summary>
-        public byte portNum;
-        /// <summary>
-        /// The device address.
+        ///     The device address.
         /// </summary>
         public byte address;
-        /// <summary>
-        /// The host controller to which the device is attached.
-        /// </summary>
-        public HCIs.HCI hc;
 
         /// <summary>
-        /// The list of Configurations that have been detected on the USB device.
+        ///     The list of Configurations that have been detected on the USB device.
         /// </summary>
         public List Configurations;
+
         /// <summary>
-        /// The list of Interfaces that have been detected on the USB device.
-        /// </summary>
-        public List Interfaces;
-        /// <summary>
-        /// The list of Endpoints that have been detected on the USB device.
+        ///     The list of Endpoints that have been detected on the USB device.
         /// </summary>
         public List Endpoints;
 
         /// <summary>
-        /// The USb specification number reported by the device.
+        ///     The host controller to which the device is attached.
         /// </summary>
-        public ushort usbSpec;
-        /// <summary>
-        /// The USb class code reported by the device.
-        /// </summary>
-        public byte usbClass;
-        /// <summary>
-        /// The USB sub-class code reported by the device.
-        /// </summary>
-        public byte usbSubclass;
-        /// <summary>
-        /// The USB protocol version number reported by the device.
-        /// </summary>
-        public byte usbProtocol;
-        /// <summary>
-        /// The device Vendor ID.
-        /// </summary>
-        public ushort vendor;
-        /// <summary>
-        /// The device product ID.
-        /// </summary>
-        public ushort product;
-        /// <summary>
-        /// The device release number.
-        /// </summary>
-        public ushort releaseNumber;
-        /// <summary>
-        /// The manufacturer's string Id.
-        /// </summary>
-        public byte manufacturerStringID;
-        /// <summary>
-        /// The product's string Id.
-        /// </summary>
-        public byte productStringID;
-        /// <summary>
-        /// The serial number string Id.
-        /// </summary>
-        public byte serialNumberStringID;
-        /// <summary>
-        /// The number of configurations reported by the device.
-        /// </summary>
-        public byte numConfigurations;
+        public HCI hc;
 
         /// <summary>
-        /// The interface class code reported by the device.
+        ///     The interface class code reported by the device.
         /// </summary>
         public byte InterfaceClass;
+
         /// <summary>
-        /// The interface sub-class code reported by the device.
+        ///     The list of Interfaces that have been detected on the USB device.
+        /// </summary>
+        public List Interfaces;
+
+        /// <summary>
+        ///     The interface sub-class code reported by the device.
         /// </summary>
         public byte InterfaceSubclass;
 
         public UnicodeString ManufacturerString;
-        public UnicodeString ProductString;
-        public UnicodeString SerialNumberString;
 
         /// <summary>
-        /// The mass storage bulk-transfer interface number, if any and only if the device is an MSD.
+        ///     The manufacturer's string Id.
         /// </summary>
-        public byte MSD_InterfaceNum;
+        public byte manufacturerStringID;
+
         /// <summary>
-        /// The mass storage bulk-transfer IN-direction enpdoint Id, if any and only if the device is an MSD.
+        ///     The mass storage bulk-transfer IN-direction enpdoint Id, if any and only if the device is an MSD.
         /// </summary>
         public byte MSD_INEndpointID;
+
         /// <summary>
-        /// The mass storage bulk-transfer OUT-direction enpdoint Id, if any and only if the device is an MSD.
+        ///     The mass storage bulk-transfer interface number, if any and only if the device is an MSD.
+        /// </summary>
+        public byte MSD_InterfaceNum;
+
+        /// <summary>
+        ///     The mass storage bulk-transfer OUT-direction enpdoint Id, if any and only if the device is an MSD.
         /// </summary>
         public byte MSD_OUTEndpointID;
 
         /// <summary>
-        /// Initialises a new USB Device Info but does not attempt to get/fill out the information.
-        /// That job is left to the USB manager.
+        ///     The number of configurations reported by the device.
+        /// </summary>
+        public byte numConfigurations;
+
+        /// <summary>
+        ///     The port number of the device.
+        /// </summary>
+        public byte portNum;
+
+        /// <summary>
+        ///     The device product ID.
+        /// </summary>
+        public ushort product;
+
+        public UnicodeString ProductString;
+
+        /// <summary>
+        ///     The product's string Id.
+        /// </summary>
+        public byte productStringID;
+
+        /// <summary>
+        ///     The device release number.
+        /// </summary>
+        public ushort releaseNumber;
+
+        public UnicodeString SerialNumberString;
+
+        /// <summary>
+        ///     The serial number string Id.
+        /// </summary>
+        public byte serialNumberStringID;
+
+        /// <summary>
+        ///     The USb class code reported by the device.
+        /// </summary>
+        public byte usbClass;
+
+        /// <summary>
+        ///     The USB protocol version number reported by the device.
+        /// </summary>
+        public byte usbProtocol;
+
+        /// <summary>
+        ///     The USb specification number reported by the device.
+        /// </summary>
+        public ushort usbSpec;
+
+        /// <summary>
+        ///     The USB sub-class code reported by the device.
+        /// </summary>
+        public byte usbSubclass;
+
+        /// <summary>
+        ///     The device Vendor ID.
+        /// </summary>
+        public ushort vendor;
+
+        /// <summary>
+        ///     Initialises a new USB Device Info but does not attempt to get/fill out the information.
+        ///     That job is left to the USB manager.
         /// </summary>
         /// <param name="aPortNum">The port number of the physical device.</param>
         /// <param name="aHC">The host controller which the device is connected to.</param>
-        public USBDeviceInfo(byte aPortNum, HCIs.HCI aHC)
+        public USBDeviceInfo(byte aPortNum, HCI aHC)
         {
             portNum = aPortNum;
             hc = aHC;
         }
 
         /// <summary>
-        /// Frees the port and destroys the USB device instance.
+        ///     Frees the port and destroys the USB device instance.
         /// </summary>
         public void FreePort()
         {
-            HCIs.HCPort port = hc.GetPort(portNum);
+            HCPort port = hc.GetPort(portNum);
             if (port.device != null)
             {
                 port.device.Destroy();
@@ -200,7 +220,7 @@ namespace Kernel.USB.Devices
             }
             port.deviceInfo = null;
             port.connected = false;
-            port.speed = HCIs.USBPortSpeed.UNSET;
+            port.speed = USBPortSpeed.UNSET;
         }
     }
 }

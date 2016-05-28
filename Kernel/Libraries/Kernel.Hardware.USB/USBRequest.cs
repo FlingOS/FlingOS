@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,40 +23,46 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using System.Runtime.InteropServices;
 
 namespace Kernel.USB
 {
     /// <summary>
-    /// The USB Request structure used for sending USB requests under the USB protocol.
+    ///     The USB Request structure used for sending USB requests under the USB protocol.
     /// </summary>
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct USBRequest
     {
         /// <summary>
-        /// The USB request type.
+        ///     The USB request type.
         /// </summary>
         public byte type;
+
         /// <summary>
-        /// The specific USB request.
+        ///     The specific USB request.
         /// </summary>
         public byte request;
+
         /// <summary>
-        /// The USB request lo-val.
+        ///     The USB request lo-val.
         /// </summary>
         public byte valueLo;
+
         /// <summary>
-        /// The USB request hi-val.
+        ///     The USB request hi-val.
         /// </summary>
         public byte valueHi;
+
         /// <summary>
-        /// The request index.
+        ///     The request index.
         /// </summary>
         public ushort index;
+
         /// <summary>
-        /// The length of the request.
+        ///     The length of the request.
         /// </summary>
         public ushort length;
     }

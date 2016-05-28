@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,20 +23,17 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+using Drivers.Compiler.Architectures.MIPS32.ASMOps;
 using Drivers.Compiler.IL;
 
 namespace Drivers.Compiler.Architectures.MIPS32
 {
     /// <summary>
-    /// See base class documentation.
+    ///     See base class documentation.
     /// </summary>
     public class Newarr : IL.ILOps.Newarr
     {
@@ -52,7 +50,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         }
 
         /// <summary>
-        /// See base class documentation.
+        ///     See base class documentation.
         /// </summary>
         /// <param name="theOp">See base class documentation.</param>
         /// <param name="conversionState">See base class documentation.</param>
@@ -84,33 +82,43 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(elementType).ID;
             conversionState.AddExternalLabel(typeIdStr);
-            conversionState.Append(new ASMOps.La() { Label = typeIdStr, Dest = "$t4" });
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t4" });
+            conversionState.Append(new La() {Label = typeIdStr, Dest = "$t4"});
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
             //Push a dword for return value (i.e. new array pointer)
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$zero" });
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
             //Get the GC.NewArr method ID (i.e. ASM label)
             string methodLabel = conversionState.GetNewArrMethodInfo().ID;
             //Call GC.NewArr
-            conversionState.Append(new ASMOps.Call() { Target = methodLabel });
+            conversionState.Append(new ASMOps.Call() {Target = methodLabel});
             //Pop the return value (i.e. new array pointer)
-            conversionState.Append(new ASMOps.Pop() { Size = ASMOps.OperandSize.Word, Dest = "$t0" });
+            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
             //Remove args from stack
-            conversionState.Append(new ASMOps.Add() { Src1 = "$sp", Src2 = "8", Dest = "$sp" });
+            conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = "8", Dest = "$sp"});
             //Check if pointer == 0?
             //If it isn't 0, not out of memory so continue execution
-            conversionState.Append(new ASMOps.Branch() { Src1 = "$t0", BranchType = ASMOps.BranchOp.BranchNotZero, DestILPosition = currOpPosition, Extension = "NotNullMem", UnsignedTest = true });
+            conversionState.Append(new Branch()
+            {
+                Src1 = "$t0",
+                BranchType = BranchOp.BranchNotZero,
+                DestILPosition = currOpPosition,
+                Extension = "NotNullMem",
+                UnsignedTest = true
+            });
             //If we are out of memory, we have a massive problem
             //Because it means we don't have space to create a new exception object
             //So ultimately we just have to throw a kernel panic
             //Throw a panic attack... ( :/ ) by calling kernel Halt(uint lastAddress)
-            conversionState.Append(new ASMOps.Call() { Target = "GetEIP" });
+            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call() { Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID });
+            conversionState.Append(new ASMOps.Call()
+            {
+                Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
+            });
             //Insert the not null label
-            conversionState.Append(new ASMOps.Label() { ILPosition = currOpPosition, Extension = "NotNullMem" });
+            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotNullMem"});
 
             //Push new array pointer
-            conversionState.Append(new ASMOps.Push() { Size = ASMOps.OperandSize.Word, Src = "$t0" });
+            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
 
             conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
             {

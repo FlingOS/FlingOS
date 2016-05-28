@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,21 +23,21 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
-#endregion
-    
-using System;
 
-//using Kernel.Shared;
+#endregion
+
+ //using Kernel.Shared;
 
 namespace TestDriver
 {
     public static class TestClass
     {
         public static int SemaphorHandle = -1;
+
         /// <summary>
-        /// This serves a purpose. We can't use while(true) on its own in any thread 
-        /// methods because the compiler has a bug in the way it handles injection of 
-        /// GC cleanup / exception handling.
+        ///     This serves a purpose. We can't use while(true) on its own in any thread
+        ///     methods because the compiler has a bug in the way it handles injection of
+        ///     GC cleanup / exception handling.
         /// </summary>
         public static bool Terminating = false;
 

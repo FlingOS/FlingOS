@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,23 +23,18 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Drivers.Compiler.ASM.ASMOps
 {
-    [ASMOpTarget(Target=OpCodes.StringLiteral)]
+    [ASMOpTarget(Target = OpCodes.StringLiteral)]
     public abstract class ASMStringLiteral : ASMOp
     {
-        public string Id;
-        public string StringTypeId;
-        public byte[] LengthBytes;
         public char[] Characters;
+        public string Id;
+        public byte[] LengthBytes;
+        public string StringTypeId;
 
         public ASMStringLiteral(string id, string stringTypeId, byte[] lengthBytes, char[] characters)
         {

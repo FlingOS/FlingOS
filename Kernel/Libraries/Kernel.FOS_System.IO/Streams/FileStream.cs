@@ -1,4 +1,5 @@
 ﻿#region LICENSE
+
 // ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
@@ -22,36 +23,30 @@
 //		For paper mail address, please contact via email for details.
 //
 // ------------------------------------------------------------------------------ //
+
 #endregion
-    
-using System;
+
+using Kernel.FOS_System.IO.FAT;
+using Kernel.FOS_System.IO.ISO9660;
+using Kernel.FOS_System.IO.Streams.FAT;
+using Kernel.FOS_System.IO.Streams.ISO9660;
 
 namespace Kernel.FOS_System.IO.Streams
 {
     /// <summary>
-    /// Represents a file stream which can read and write to files in a file system.
+    ///     Represents a file stream which can read and write to files in a file system.
     /// </summary>
     public abstract class FileStream : Stream
     {
         //TODO: This implementation has no way of shrinking files - only growing them!
 
         /// <summary>
-        /// The file which the stream reads/writes from/to.
+        ///     The file which the stream reads/writes from/to.
         /// </summary>
         protected File theFile;
-        /// <summary>
-        /// The file which the stream reads/writes from/to.
-        /// </summary>
-        public File TheFile
-        {
-            get
-            {
-                return theFile;
-            }
-        }
 
         /// <summary>
-        /// Initializes a new file stream for the specified file.
+        ///     Initializes a new file stream for the specified file.
         /// </summary>
         /// <param name="aFile">The file which the file stream is reading from.</param>
         public FileStream(File aFile)
@@ -60,22 +55,30 @@ namespace Kernel.FOS_System.IO.Streams
         }
 
         /// <summary>
-        /// Creates a file stream for the specified file. Handles creating
-        /// the correct type of file stream for the file system to which 
-        /// the file belongs.
+        ///     The file which the stream reads/writes from/to.
+        /// </summary>
+        public File TheFile
+        {
+            get { return theFile; }
+        }
+
+        /// <summary>
+        ///     Creates a file stream for the specified file. Handles creating
+        ///     the correct type of file stream for the file system to which
+        ///     the file belongs.
         /// </summary>
         /// <param name="aFile">The file to get a stream to.</param>
         /// <returns>The new file stream.</returns>
         public static FileStream Create(File aFile)
         {
             //TODO: Change this to a factory pattern or something
-            if (aFile is IO.FAT.FATFile)
+            if (aFile is FATFile)
             {
-                return new FAT.FATFileStream((IO.FAT.FATFile)aFile, false);
+                return new FATFileStream((FATFile) aFile, false);
             }
-            else if (aFile is IO.ISO9660.ISO9660File)
+            else if (aFile is ISO9660File)
             {
-                return new ISO9660.ISO9660FileStream((IO.ISO9660.ISO9660File)aFile);
+                return new ISO9660FileStream((ISO9660File) aFile);
             }
             else
             {
