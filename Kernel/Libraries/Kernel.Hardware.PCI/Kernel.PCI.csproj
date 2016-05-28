@@ -104,9 +104,9 @@
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Hardware.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj">
+    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.IO.csproj">
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.Hardware.IO</Name>
+      <Name>Kernel.IO</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

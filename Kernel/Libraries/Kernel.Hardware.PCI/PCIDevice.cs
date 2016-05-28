@@ -29,7 +29,7 @@
 using System;
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.IO;
+using Kernel.IO;
 using PCI_IO = Kernel.PCI.PCIManager;
 using String = Kernel.FOS_System.String;
 using Kernel.Hardware;

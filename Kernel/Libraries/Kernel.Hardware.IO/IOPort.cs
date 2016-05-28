@@ -29,7 +29,7 @@
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 
-namespace Kernel.Hardware.IO
+namespace Kernel.IO
 {
     /// <summary>
     ///     Represents an IO port.

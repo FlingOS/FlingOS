@@ -30,7 +30,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Exceptions;
 using Kernel.Hardware.Devices;
-using Kernel.Hardware.IO.Serial;
+using Kernel.IO.Serial;
 using Kernel.Hardware.Processes;
 using Kernel.Hardware.Processes.Scheduling;
 using Kernel.Hardware.Timers;

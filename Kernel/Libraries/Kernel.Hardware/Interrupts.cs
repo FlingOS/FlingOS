@@ -29,7 +29,7 @@
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
-using Kernel.Hardware.IO;
+using Kernel.IO;
 using Kernel.Hardware.Processes;
 
 namespace Kernel.Hardware.Interrupts

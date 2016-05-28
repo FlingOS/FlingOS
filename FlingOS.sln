@@ -99,7 +99,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.VirtualMemory", "Ker
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.PCI", "Kernel\Libraries\Kernel.Hardware.PCI\Kernel.PCI.csproj", "{02D891E8-4AAA-48FA-8608-5135FB4DC493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.IO", "Kernel\Libraries\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj", "{9FEB0B47-9730-44FA-A5CB-0E47194176F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.IO", "Kernel\Libraries\Kernel.Hardware.IO\Kernel.IO.csproj", "{9FEB0B47-9730-44FA-A5CB-0E47194176F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

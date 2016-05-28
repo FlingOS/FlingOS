@@ -136,9 +136,9 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj">
+    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.IO.csproj">
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.Hardware.IO</Name>
+      <Name>Kernel.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>

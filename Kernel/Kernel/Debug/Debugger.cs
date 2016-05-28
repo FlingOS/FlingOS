@@ -33,7 +33,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Interrupts;
-using Kernel.Hardware.IO.Serial;
+using Kernel.IO.Serial;
 using Kernel.Hardware.Processes;
 using NoDebug = Drivers.Compiler.Attributes.NoDebugAttribute;
 using NoGC = Drivers.Compiler.Attributes.NoGCAttribute;

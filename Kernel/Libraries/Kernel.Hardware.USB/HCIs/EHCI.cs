@@ -362,12 +362,9 @@ namespace Kernel.USB.HCIs
     /// </summary>
     public unsafe class EHCI : HCI
     {
-        //TODO: Perhaps should avoid using identity mapping for registers etc? 
         //TODO: Periodic schedule support
         //TODO: Isochronous transfer support
-
-        //TODO: This driver needs updating to stop using Kernel Task memory directly by making it use system calls etc.
-
+        
         /*
          * Based on the Intel EHCI Specification for USB 2.0
          *  http://www.intel.co.uk/content/dam/www/public/us/en/documents/technical-specifications/ehci-specification-for-usb.pdf

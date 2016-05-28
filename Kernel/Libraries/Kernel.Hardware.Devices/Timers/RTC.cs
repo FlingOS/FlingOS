@@ -28,7 +28,7 @@
 
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.IO;
+using Kernel.IO;
 
 namespace Kernel.Hardware.Timers
 {

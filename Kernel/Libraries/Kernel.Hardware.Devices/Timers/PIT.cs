@@ -32,7 +32,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware.Devices;
-using Kernel.Hardware.IO;
+using Kernel.IO;
 
 namespace Kernel.Hardware.Timers
 {

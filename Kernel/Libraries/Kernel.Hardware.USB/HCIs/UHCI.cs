@@ -31,7 +31,7 @@
 using System.Runtime.InteropServices;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware.IO;
+using Kernel.IO;
 using Kernel.PCI;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.ConstantsUtils;

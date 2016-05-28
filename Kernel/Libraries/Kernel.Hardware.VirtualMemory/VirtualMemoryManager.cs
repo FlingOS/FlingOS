@@ -38,8 +38,6 @@ namespace Kernel.VirtualMemory
     /// </summary>
     public static unsafe class VirtualMemoryManager
     {
-        //TODO: Calls to GetPhysicalAddress, MapFreePage(s), Map and Unmap must be wrapped by system calls
-
         /// <summary>
         ///     The specific virtual memory implementation to use.
         /// </summary>

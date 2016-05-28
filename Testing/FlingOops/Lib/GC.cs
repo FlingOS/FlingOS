@@ -43,8 +43,6 @@ namespace FlingOops
     /// </remarks>
     public static unsafe class GC
     {
-        //TODO: GC needs an object reference tree to do a thorough scan to find reference loops
-
         /// <summary>
         ///     Whether the GC has been initialised yet or not.
         ///     Used to prevent the GC running before it has been initialised properly.

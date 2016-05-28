@@ -7,8 +7,8 @@
     <ProjectGuid>{9FEB0B47-9730-44FA-A5CB-0E47194176F0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.Hardware.IO</RootNamespace>
-    <AssemblyName>Kernel.Hardware.IO</AssemblyName>
+    <RootNamespace>Kernel.IO</RootNamespace>
+    <AssemblyName>Kernel.IO</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.IO.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.IO.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.IO.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.IO.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,7 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.IO.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.IO.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
@@ -72,7 +72,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.IO.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.IO.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
