@@ -29,6 +29,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.IO;
 using System;
 using Kernel.Hardware.Processes;
+using Kernel.Hardware.VirtMem;
 
 namespace Kernel
 {
@@ -75,9 +76,7 @@ namespace Kernel
 
                 BasicConsole.SecondaryOutput = Kernel.BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
-
-                Hardware.Devices.CPU.InitDefault();
-                
+                                
                 BasicConsole.WriteLine("Creating kernel process...");
                 Process KernelProcess = new Process(Tasks.KernelTask.Main, ProcessManager.ProcessIdGenerator++, "Kernel Task", false);
                 //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
@@ -88,9 +87,9 @@ namespace Kernel
                 Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
 
                 BasicConsole.WriteLine("Initialising kernel thread stack...");
-                Hardware.VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+                VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
                 KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
-                Hardware.VirtMemManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
+                VirtMemManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
                 KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
                 KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
                 KernelThread.State->ExState = (ExceptionState*)(KernelThread.State->ThreadStackTop + 4);
@@ -109,7 +108,8 @@ namespace Kernel
                 KernelProcess.IRQsToHandle.Set(0);
 
                 BasicConsole.WriteLine("Initialising default timer...");
-                Hardware.Devices.Timer.InitDefault();
+                Hardware.Timers.PIT.Init();
+                Hardware.Devices.Timer.Default = Hardware.Timers.PIT.ThePIT;
 
 
 
@@ -204,7 +204,17 @@ namespace Kernel
                 //    bpm);
 
                 BasicConsole.WriteLine("Starting scheduler...");
-                Scheduler.Start();
+                Hardware.Processes.Scheduling.PreemptionHandler PreempHandler = Scheduler.Start();
+                Hardware.Devices.Timer.Default.RegisterHandler((Hardware.Devices.TimerHandler)(object)PreempHandler, Scheduler.PreemptionPeriod, true, Scheduler.PreemptionState);
+                Scheduler.Enable();
+                
+                // Busy wait until the scheduler interrupts us. 
+                while (true)
+                {
+                    ;
+                }
+                // We will never return to this point since there is no way for the scheduler to point
+                //  to it.
             }
             catch
             {
@@ -242,16 +252,7 @@ namespace Kernel
         public static void Halt(uint lastAddress)
         {
             BasicConsole.PrimaryOutputEnabled = true;
-
-            try
-            {
-                Hardware.Devices.Keyboard.CleanDefault();
-                Hardware.Devices.Timer.CleanDefault();
-            }
-            catch
-            {
-            }
-
+            
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             BasicConsole.Write("Halt Reason: ");
             BasicConsole.WriteLine(ExceptionMethods.HaltReason);

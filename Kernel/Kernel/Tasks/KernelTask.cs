@@ -32,6 +32,7 @@
 
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Processes;
+using Kernel.Hardware.VirtMem;
 using SystemCalls = Kernel.FOS_System.Processes.SystemCalls;
 using SystemCallNumbers = Kernel.FOS_System.Processes.SystemCallNumbers;
 using SystemCallResults = Kernel.FOS_System.Processes.SystemCallResults;
@@ -817,13 +818,13 @@ namespace Kernel.Tasks
                                 void* unusedPAddr;
                                 if (CallerProcess == ProcessManager.KernelProcess)
                                 {
-                                    ptr = (uint)Hardware.VirtMemManager.MapFreePagesForKernel(
+                                    ptr = (uint)VirtMemManager.MapFreePagesForKernel(
                                                         CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                         Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
                                 else
                                 {
-                                    ptr = (uint)Hardware.VirtMemManager.MapFreePages(
+                                    ptr = (uint)VirtMemManager.MapFreePages(
                                                         CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                         Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
@@ -837,13 +838,13 @@ namespace Kernel.Tasks
                                 BasicConsole.WriteLine("Request virtual address: " + (FOS_System.String)Param2);
                                 BasicConsole.WriteLine("Request count: " + (FOS_System.String)count);
 #endif
-                                if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
+                                if (!VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
 #if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
                                     void* unusedPAddr;
-                                    ptr = (uint)Hardware.VirtMemManager.MapFreePages(
+                                    ptr = (uint)VirtMemManager.MapFreePages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, out unusedPAddr);
                                 }
@@ -864,20 +865,20 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Specific physical, Any virtual");
 #endif
-                                if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
+                                if (!VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                 {
 #if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
                                     if (CallerProcess == ProcessManager.KernelProcess)
                                     {
-                                        ptr = (uint)Hardware.VirtMemManager.MapFreePhysicalPagesForKernel(
+                                        ptr = (uint)VirtMemManager.MapFreePhysicalPagesForKernel(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
                                     }
                                     else
                                     {
-                                        ptr = (uint)Hardware.VirtMemManager.MapFreePhysicalPages(
+                                        ptr = (uint)VirtMemManager.MapFreePhysicalPages(
                                                     CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                     Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param1);
                                     }
@@ -890,14 +891,14 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Specific physical, Specific virtual");
 #endif
-                                if (!Hardware.VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
+                                if (!VirtMemManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
-                                    if (!Hardware.VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
+                                    if (!VirtMemManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                     {
 #if DSC_TRACE
                                         BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
-                                        ptr = (uint)Hardware.VirtMemManager.MapFreePages(
+                                        ptr = (uint)VirtMemManager.MapFreePages(
                                                         CallerProcess.UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                                         Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, count, Param2, Param1);
                                     }
@@ -914,7 +915,7 @@ namespace Kernel.Tasks
                             pAddrs = new uint[count];
                             for (uint currPtr = ptr, i = 0; i < count; currPtr += 4096, i++)
                             {
-                                pAddrs[i] = Hardware.VirtMemManager.GetPhysicalAddress(currPtr);
+                                pAddrs[i] = VirtMemManager.GetPhysicalAddress(currPtr);
                             }
 
                             // Add allocated new process's memory to layout

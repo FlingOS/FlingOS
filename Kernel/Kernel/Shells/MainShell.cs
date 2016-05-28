@@ -756,7 +756,7 @@ namespace Kernel.Shells
                                     }
                                     else if (opt1 == "virtmem")
                                     {
-                                        Hardware.VirtMemManager.Test();
+                                        Hardware.VirtMem.VirtMemManager.Test();
                                     }
                                     else if (opt1 == "longs")
                                     {

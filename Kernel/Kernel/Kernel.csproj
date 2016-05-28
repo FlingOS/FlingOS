@@ -145,6 +145,18 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.ATA\Kernel.Hardware.ATA.csproj">
+      <Project>{2d18c11e-3c86-4131-8de9-c4385c9131b4}</Project>
+      <Name>Kernel.Hardware.ATA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj">
+      <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
+      <Name>Kernel.Hardware.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.USB\Kernel.Hardware.USB.csproj">
+      <Project>{63c61b22-f7fb-4de2-8d25-73bc0d1dc04f}</Project>
+      <Name>Kernel.Hardware.USB</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.Hardware\Kernel.Hardware.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
       <Name>Kernel.Hardware</Name>

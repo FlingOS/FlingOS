@@ -23,11 +23,8 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using Kernel.Hardware.VirtMem;
 
-namespace Kernel.Hardware
+namespace Kernel.Hardware.VirtMem
 {
     /// <summary>
     /// The virtual memory manager for the kernel. Wraps the specific implementation to allow targetting different architectures without

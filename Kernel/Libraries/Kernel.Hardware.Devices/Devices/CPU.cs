@@ -30,34 +30,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.Hardware.CPUs
+namespace Kernel.Hardware.Devices
 {
     /// <summary>
-    /// Represents an x86 32-bit CPU.
+    /// Represents a CPU in the machine.
     /// </summary>
-    public class CPUx86_32 : Devices.CPU
+    public abstract class CPU : Device
     {
         /// <summary>
-        /// Halts the CPU using the Hlt instruction.
+        /// Halts the CPU (e.g. using x86 hlt instruction)
         /// </summary>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\CPUs\CPUx86_32\Halt")]
-        public override void Halt()
-        {
-        }
+        public abstract void Halt();
 
         /// <summary>
-        /// The main x86 CPU instance.
+        /// The default CPU.
         /// </summary>
-        public static CPUx86_32 TheCPU;
-        /// <summary>
-        /// Initialises the main x86 CPU instance.
-        /// </summary>
-        public static void Init()
-        {
-            if (TheCPU == null)
-            {
-                TheCPU = new CPUx86_32();
-            }
-        }
+        public static CPU Default;
     }
 }

@@ -492,24 +492,6 @@ namespace Kernel.Hardware.Devices
         /// The default keyboard device for the core kernel.
         /// </summary>
         public static Keyboard Default;
-        /// <summary>
-        /// Initialises the default keyboard including enabling it.
-        /// </summary>
-        public static void InitDefault()
-        {
-            Keyboards.PS2.Init();
-            Default = Keyboards.PS2.ThePS2;
-        }
-        /// <summary>
-        /// Cleans up the default keyboard including disabling it.
-        /// </summary>
-        public static void CleanDefault()
-        {
-            if (Default != null)
-            {
-                Default.Disable();
-            }
-        }
     }
     /// <summary>
     /// Represents a key mapping that maps a scancode to a character and a keyboard key.

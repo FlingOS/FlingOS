@@ -30,7 +30,7 @@ using Kernel.FOS_System.Processes.Requests.Devices;
 
 namespace Kernel.Hardware.Devices
 {
-    public delegate void TimerHandler(FOS_System.Object state);
+    public delegate void TimerHandler(FOS_System.IObject state);
 
     /// <summary>
     /// Represents a timer device. Also contains static methods for handling the default timer.
@@ -79,30 +79,12 @@ namespace Kernel.Hardware.Devices
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
-        public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.Object state);
+        public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, FOS_System.IObject state);
         public abstract void UnregisterHandler(int handlerId);
 
         /// <summary>
         /// The default timer device for the core kernel.
         /// </summary>
         public static Timer Default;
-        /// <summary>
-        /// Initialises the default timer including enabling it.
-        /// </summary>
-        public static void InitDefault()
-        {
-            Timers.PIT.Init();
-            Default = Timers.PIT.ThePIT;
-        }
-        /// <summary>
-        /// Cleans up the default timer including disabling it.
-        /// </summary>
-        public static void CleanDefault()
-        {
-            if (Default != null)
-            {
-                Default.Disable();
-            }
-        }
     }
 }

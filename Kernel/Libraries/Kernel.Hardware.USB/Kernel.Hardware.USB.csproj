@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F59B042C-435D-48ED-AD7B-23666931A952}</ProjectGuid>
+    <ProjectGuid>{63C61B22-F7FB-4DE2-8D25-73BC0D1DC04F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.Hardware</RootNamespace>
-    <AssemblyName>Kernel.Hardware</AssemblyName>
+    <RootNamespace>Kernel.Hardware.USB</RootNamespace>
+    <AssemblyName>Kernel.Hardware.USB</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,15 +20,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.USB.XML</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;x86</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -37,9 +37,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Docs|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;x86;UKKEYBOARD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.USB.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,15 +53,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.USB.XML</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|MIPS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;MIPS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -70,9 +70,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|MIPS'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Hardware.USB.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -85,24 +85,24 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interrupts\Interrupts.cs" />
-    <Compile Include="Processes\Process.cs" />
-    <Compile Include="Processes\ProcessManager.cs" />
-    <Compile Include="Processes\Scheduler.cs" />
-    <Compile Include="Processes\Scheduling\IScheduler.cs" />
-    <Compile Include="Processes\Scheduling\PriorityQueueScheduler.cs" />
-    <Compile Include="Processes\Synchronisation\Semaphore.cs" />
-    <Compile Include="Processes\SystemCalls_Handlers.cs" />
-    <Compile Include="Processes\Thread.cs" />
-    <Compile Include="IO\IOPort.cs" />
-    <Compile Include="VirtMem\VirtMemManager.cs" />
+    <Compile Include="Devices\MassStorageDevice.cs" />
+    <Compile Include="Devices\USBDevice.cs" />
+    <Compile Include="HCIs\EHCI.cs" />
+    <Compile Include="HCIs\EHCITesting.cs" />
+    <Compile Include="HCIs\HCI.cs" />
+    <Compile Include="HCIs\UHCI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VirtMem\MemoryLayout.cs" />
-    <Compile Include="VirtMem\VirtMemImpl.cs" />
-    <Compile Include="VirtMem\x86.cs" />
+    <Compile Include="USBDescriptors.cs" />
+    <Compile Include="USBManager.cs" />
+    <Compile Include="USBRequest.cs" />
+    <Compile Include="USBTests.cs" />
+    <Compile Include="USBTransaction.cs" />
+    <Compile Include="USBTransfer.cs" />
+    <Compile Include="Tests_USB_RW.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
@@ -113,30 +113,15 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj">
+      <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
+      <Name>Kernel.Hardware.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.csproj">
+      <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
+      <Name>Kernel.Hardware</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="ASM\Interrupts\Interrupts.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\IO\IOPort\Read.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\IO\IOPort\Write.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Processes\Scheduler.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\VirtMem\x86.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Kernel\Kernel.licenseheader">
-      <Link>Kernel.licenseheader</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

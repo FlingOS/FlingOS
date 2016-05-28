@@ -23,13 +23,6 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HardwareATA = Kernel.Hardware.ATA;
 
 namespace Kernel.Hardware.Testing
 {

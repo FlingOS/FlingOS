@@ -46,11 +46,20 @@ namespace Kernel.Hardware.Processes.Scheduling
         //private List SuspendedList = new List(1024);
         
         private bool Enabled = false;
-        private bool Initialised = false;
+        private bool Started = false;
         
         private const int MSFreq = 5;
         private int UpdatePeriod = MSFreq;
         private int UpdateCountdown;
+
+        public long PreemptionPeriod
+        {
+            get
+            {
+                /*Multiply by 1000000 to get from ms to ns*/
+                return MSFreq * 1000000;
+            }
+        }
 
         //private int LockupCounter = 0;
 
@@ -84,7 +93,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             InactiveQueue.Name = "Inactive Queue";
         }
         [Drivers.Compiler.Attributes.NoDebug]
-        public void Start()
+        public PreemptionHandler Start()
         {
             //Load first process and first thread
 #if SCHEDULER_TRACE
@@ -125,14 +134,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             BasicConsole.WriteLine(" > Loading TR...");
 #endif
             Scheduler.LoadTR();
-
-            //Enable timer
-#if SCHEDULER_TRACE
-            BasicConsole.WriteLine(" > Adding timer handler...");
-#endif
-            /*Multiply by 1000000 to get from ms to ns*/
-            Hardware.Devices.Timer.Default.RegisterHandler(OnTimerInterrupt, MSFreq * 1000000, true, null);
-
+            
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Enabling process switching...");
 #endif
@@ -143,10 +145,9 @@ namespace Kernel.Hardware.Processes.Scheduling
             //#endif
             UpdateCountdown = UpdatePeriod;
 
-            Initialised = true;
-            Enable();
+            Started = true;
 
-            Scheduler.Started();
+            return OnTimerInterrupt;
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
@@ -277,7 +278,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             //    BasicConsole.WriteLine("Debug Point 3");
             //}
 
-            if (!ThePQScheduler.Enabled || !ThePQScheduler.Initialised)
+            if (!((PriorityQueueScheduler)state).Enabled || !((PriorityQueueScheduler)state).Started)
             {
                 //BasicConsole.Write("D");
                 return;
@@ -300,7 +301,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             //    BasicConsole.WriteLine("Debug Point 4");
             //}
 
-            ThePQScheduler.UpdateCurrentState();
+            ((PriorityQueueScheduler)state).UpdateCurrentState();
             //}
         }
         [Drivers.Compiler.Attributes.NoDebug]
@@ -651,6 +652,7 @@ namespace Kernel.Hardware.Processes.Scheduling
         }
 
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Enable()
         {
             //BasicConsole.WriteLine("Enabling scheduler...");
@@ -659,6 +661,7 @@ namespace Kernel.Hardware.Processes.Scheduling
             //Hardware.Interrupts.Interrupts.EnableInterrupts();
         }
         [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public void Disable(/*FOS_System.String disabler*/)
         {
             //Hardware.Interrupts.Interrupts.DisableInterrupts();
@@ -667,6 +670,8 @@ namespace Kernel.Hardware.Processes.Scheduling
             //BasicConsole.WriteLine(disabler);
             //BasicConsole.DelayOutput(1);
         }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public bool IsEnabled()
         {
             return Enabled;

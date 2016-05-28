@@ -130,6 +130,10 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj">
+      <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
+      <Name>Kernel.Hardware.Devices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
       <Name>Kernel.Hardware</Name>

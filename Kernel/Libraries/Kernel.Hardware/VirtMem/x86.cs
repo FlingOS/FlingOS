@@ -174,9 +174,6 @@ namespace Kernel.Hardware.VirtMem
             }
 
             BasicConsole.WriteLine("Test completed.");
-
-            Hardware.Devices.Timer.InitDefault();
-            Hardware.Devices.Timer.Default.Wait(3000);
         }
         /// <summary>
         /// Prints out information about the free physical and virtual pages.

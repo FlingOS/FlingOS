@@ -30,6 +30,7 @@ using Kernel.FOS_System.IO;
 using Kernel.FOS_System.IO.Streams;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
+using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Processes.ELF
 {
@@ -76,7 +77,7 @@ namespace Kernel.Processes.ELF
                     mainMethod, theFile.TheFile.Name, UserMode);
 
                 uint threadStackVirtAddr = (uint)((Hardware.Processes.Thread)theProcess.Threads[0]).State->ThreadStackTop - Hardware.Processes.Thread.ThreadStackTopOffset;
-                uint threadStackPhysAddr = (uint)Hardware.VirtMemManager.GetPhysicalAddress(threadStackVirtAddr);
+                uint threadStackPhysAddr = (uint)VirtMemManager.GetPhysicalAddress(threadStackVirtAddr);
                 Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
                 
                 // Load the ELF segments (i.e. the program code and data)

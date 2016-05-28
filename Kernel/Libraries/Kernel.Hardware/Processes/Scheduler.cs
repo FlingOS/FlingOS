@@ -47,6 +47,20 @@ namespace Kernel.Hardware.Processes
         [Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Hardware")]
         private static Scheduling.IScheduler TheScheduler;
         
+        public static long PreemptionPeriod
+        {
+            get
+            {
+                return TheScheduler.PreemptionPeriod;
+            }
+        }
+        public static FOS_System.IObject PreemptionState
+        {
+            get
+            {
+                return TheScheduler;
+            }
+        }
 
         public static void Init()
         {
@@ -55,19 +69,9 @@ namespace Kernel.Hardware.Processes
             TheScheduler = new Scheduling.PriorityQueueScheduler();
             TheScheduler.Init();
         }
-        public static void Start()
+        public static Scheduling.PreemptionHandler Start()
         {
-            TheScheduler.Start();
-        }
-        internal static void Started()
-        {
-            // Busy wait until the scheduler interrupts us. 
-            while (true)
-            {
-                ;
-            }
-            // We will never return to this point since there is no way for the scheduler to point
-            //  to it.
+            return TheScheduler.Start();
         }
 
 
@@ -90,15 +94,20 @@ namespace Kernel.Hardware.Processes
             TheScheduler.UpdateCurrentState();
         }
 
-
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Enable()
         {
             TheScheduler.Enable();
         }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static void Disable()
         {
             TheScheduler.Disable();
         }
+        [Drivers.Compiler.Attributes.NoDebug]
+        [Drivers.Compiler.Attributes.NoGC]
         public static bool IsEnabled()
         {
             return TheScheduler.IsEnabled();

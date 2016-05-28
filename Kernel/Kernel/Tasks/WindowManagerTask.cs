@@ -130,7 +130,8 @@ namespace Kernel.Tasks
             }
             
             BasicConsole.WriteLine("WM > Init keyboard");
-            Keyboard.InitDefault();
+            Hardware.Keyboards.PS2.Init();
+            Keyboard.Default = Hardware.Keyboards.PS2.ThePS2;
             BasicConsole.WriteLine("WM > Register IRQ 1 handler");
             SystemCalls.RegisterIRQHandler(1, HandleIRQ);
 

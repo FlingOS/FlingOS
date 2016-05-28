@@ -30,33 +30,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.Hardware.Devices
+namespace Kernel.Hardware.CPUs
 {
     /// <summary>
-    /// Represents a CPU in the machine.
+    /// Represents an x86 32-bit CPU.
     /// </summary>
-    public abstract class CPU : Device
+    public class CPUx86_32 : Devices.CPU
     {
-        /// <summary>
-        /// Halts the CPU (e.g. using x86 hlt instruction)
-        /// </summary>
-        public abstract void Halt();
+#if x86
+        static CPUx86_32()
+        {
+            Init();
+            Default = TheCPU;
+        }
+#endif
 
         /// <summary>
-        /// The default CPU.
+        /// Halts the CPU using the Hlt instruction.
         /// </summary>
-        public static CPU Default;
-        /// <summary>
-        /// Initialises the default CPU.
-        /// </summary>
-        /// <remarks>
-        /// Currently just straight up initialises the x86 CPU class. Should actually detect,
-        /// either at compile time or runtime, which CPU architecture the OS is being run on.
-        /// </remarks>
-        public static void InitDefault()
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath=@"ASM\CPUs\CPUx86_32\Halt")]
+        public override void Halt()
         {
-            CPUs.CPUx86_32.Init();
-            Default = CPUs.CPUx86_32.TheCPU;
+        }
+
+        /// <summary>
+        /// The main x86 CPU instance.
+        /// </summary>
+        public static CPUx86_32 TheCPU;
+        /// <summary>
+        /// Initialises the main x86 CPU instance.
+        /// </summary>
+        public static void Init()
+        {
+            if (TheCPU == null)
+            {
+                TheCPU = new CPUx86_32();
+            }
         }
     }
 }

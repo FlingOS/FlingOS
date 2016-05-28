@@ -176,7 +176,7 @@ namespace Kernel.Hardware.Tasks
             }
         }
 
-        private static void SysCall_StopNoteHandler(FOS_System.Object objState)
+        private static void SysCall_StopNoteHandler(FOS_System.IObject objState)
         {
             NoteState state = (NoteState)objState;
             if (state.dur_ms >= 0)

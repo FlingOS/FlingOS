@@ -32,10 +32,17 @@ using System.Threading.Tasks;
 
 namespace Kernel.FOS_System
 {
+    public interface IObject
+    {
+        Type _Type
+        {
+            get;
+        }
+    }
     /// <summary>
     /// All objects (that are GC managed) should derive from this type.
     /// </summary>
-    public class Object
+    public class Object : IObject
     {
         internal Type _type;
 

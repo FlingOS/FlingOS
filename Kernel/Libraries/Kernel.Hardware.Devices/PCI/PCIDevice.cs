@@ -407,7 +407,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The byte that has been read.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        internal byte ReadRegister8(byte aRegister)
+        public byte ReadRegister8(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
@@ -420,7 +420,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        internal void WriteRegister8(byte aRegister, byte value)
+        public void WriteRegister8(byte aRegister, byte value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
@@ -433,7 +433,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The UInt16 that has been read.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        internal UInt16 ReadRegister16(byte aRegister)
+        public UInt16 ReadRegister16(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
@@ -446,7 +446,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        internal void WriteRegister16(byte aRegister, ushort value)
+        public void WriteRegister16(byte aRegister, ushort value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
@@ -459,7 +459,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to read.</param>
         /// <returns>The UInt32 that has been read.</returns>
         [Drivers.Compiler.Attributes.NoDebug]
-        internal UInt32 ReadRegister32(byte aRegister)
+        public UInt32 ReadRegister32(byte aRegister)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
@@ -472,7 +472,7 @@ namespace Kernel.Hardware.PCI
         /// <param name="aRegister">The register to write.</param>
         /// <param name="value">The value to write.</param>
         [Drivers.Compiler.Attributes.NoDebug]
-        internal void WriteRegister32(byte aRegister, uint value)
+        public void WriteRegister32(byte aRegister, uint value)
         {
             UInt32 xAddr = GetAddressBase(bus, slot, function) | ((UInt32)(aRegister & 0xFC));
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);

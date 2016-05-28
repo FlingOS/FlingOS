@@ -3,7 +3,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;
-using Kernel.Hardware;
+using Kernel.Hardware.VirtMem;
 
 namespace Kernel.Tasks
 {

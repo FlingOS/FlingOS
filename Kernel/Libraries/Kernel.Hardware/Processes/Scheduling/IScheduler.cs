@@ -26,20 +26,28 @@
 
 namespace Kernel.Hardware.Processes.Scheduling
 {
-    public interface IScheduler
+    public delegate void PreemptionHandler(FOS_System.Object state);
+
+    public interface IScheduler : FOS_System.IObject
     {
         void InitProcess(Process process, Scheduler.Priority priority);
         void InitThread(Process process, Thread t);
 
         void Init();
-        void Start();
+        PreemptionHandler Start();
 
         void HandlePageFault(uint eip, uint errorCode, uint address);
 
         void UpdateCurrentState();
+
         void Enable();
         void Disable();
         bool IsEnabled();
+
+        long PreemptionPeriod
+        {
+            get;
+        }
 
         void UpdateList(Thread t);
     }

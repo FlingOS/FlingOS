@@ -211,7 +211,7 @@ namespace Kernel.Hardware.Processes
 #if THREAD_TRACE
             BasicConsole.WriteLine("Allocating kernel stack...");
 #endif
-            State->KernelStackTop = (byte*)Hardware.VirtMemManager.MapFreePageForKernel(
+            State->KernelStackTop = (byte*)VirtMem.VirtMemManager.MapFreePageForKernel(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                            Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out KernelStackBottomPAddr) + KernelStackTopOffset; //4KiB, page-aligned
 
@@ -223,13 +223,13 @@ namespace Kernel.Hardware.Processes
             State->UserMode = UserMode;
             if (AnOwner == ProcessManager.KernelProcess)
             {
-                State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePageForKernel(
+                State->ThreadStackTop = (byte*)VirtMem.VirtMemManager.MapFreePageForKernel(
                     UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                                Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ThreadStackBottomPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
             }
             else
             {
-                State->ThreadStackTop = (byte*)Hardware.VirtMemManager.MapFreePage(
+                State->ThreadStackTop = (byte*)VirtMem.VirtMemManager.MapFreePage(
                 UserMode ? Hardware.VirtMem.VirtMemImpl.PageFlags.None :
                            Hardware.VirtMem.VirtMemImpl.PageFlags.KernelOnly, out ThreadStackBottomPAddr) + ThreadStackTopOffset; //4KiB, page-aligned
             }
