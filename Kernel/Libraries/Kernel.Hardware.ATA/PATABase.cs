@@ -142,7 +142,7 @@ namespace Kernel.Hardware.ATA
             ///     Default value.
             /// </summary>
             Default = 0xA0
-        };
+        }
 
         /// <summary>
         ///     Error masks.
@@ -189,7 +189,7 @@ namespace Kernel.Hardware.ATA
             ///     AMNF error.
             /// </summary>
             ATA_ER_AMNF = 0x01
-        };
+        }
 
         /// <summary>
         ///     Specification levels (Drive types and identifiers)
@@ -289,9 +289,9 @@ namespace Kernel.Hardware.ATA
             Error = 0x01,
 
             Timeout = 0xFF
-        };
+        }
 
-        internal bool initialised = false;
+        internal bool initialised;
 
         /// <summary>
         ///     IO ports for this device.
@@ -310,7 +310,7 @@ namespace Kernel.Hardware.ATA
         /// </summary>
         internal String mFirmwareRev;
 
-        internal bool mLBA48Mode = false;
+        internal bool mLBA48Mode;
 
         /// <summary>
         ///     Drive's model number.
@@ -331,7 +331,7 @@ namespace Kernel.Hardware.ATA
 
             // Disable IRQs, we use polling currently
             SelectDrive(0, false);
-            IO.Control.Write_Byte((byte) 0x02);
+            IO.Control.Write_Byte(0x02);
 
             mDriveType = DiscoverDrive();
 
@@ -442,7 +442,7 @@ namespace Kernel.Hardware.ATA
             if (xLba48Capable)
             {
                 blockCount = ((ulong) deviceInfoBuffer[103] << 48 | (ulong) deviceInfoBuffer[102] << 32 |
-                              (ulong) deviceInfoBuffer[101] << 16 | (ulong) deviceInfoBuffer[100]) - 1;
+                              (ulong) deviceInfoBuffer[101] << 16 | deviceInfoBuffer[100]) - 1;
                 mLBA48Mode = true;
             }
         }
@@ -541,19 +541,16 @@ namespace Kernel.Hardware.ATA
                 {
                     return SpecLevel.PATAPI;
                 }
-                else if (typeId == (ushort) SpecLevel.SATAPI)
+                if (typeId == (ushort) SpecLevel.SATAPI)
                 {
                     return SpecLevel.SATAPI;
                 }
-                else if (typeId == (ushort) SpecLevel.SATA)
+                if (typeId == (ushort) SpecLevel.SATA)
                 {
                     return SpecLevel.SATA;
                 }
-                else
-                {
-                    // Unknown type. Might not be a device.
-                    return SpecLevel.Null;
-                }
+                // Unknown type. Might not be a device.
+                return SpecLevel.Null;
             }
 
             // No drive found, go to next
@@ -573,15 +570,15 @@ namespace Kernel.Hardware.ATA
                 {
                     return SpecLevel.PATAPI;
                 }
-                else if (typeId == (ushort) SpecLevel.SATAPI)
+                if (typeId == (ushort) SpecLevel.SATAPI)
                 {
                     return SpecLevel.SATAPI;
                 }
-                else if (typeId == (ushort) SpecLevel.SATA)
+                if (typeId == (ushort) SpecLevel.SATA)
                 {
                     return SpecLevel.SATA;
                 }
-                else if (typeId != 0u)
+                if (typeId != 0u)
                 {
                     // Unknown type. Might not be a device.
                     return SpecLevel.Null;

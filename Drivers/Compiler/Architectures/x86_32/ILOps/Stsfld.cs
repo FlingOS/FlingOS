@@ -78,24 +78,24 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (size == 1)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "]"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Mov {Size = OperandSize.Byte, Src = "AL", Dest = "[" + fieldId + "]"});
             }
             else if (size == 2)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "]"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Mov {Size = OperandSize.Word, Src = "AX", Dest = "[" + fieldId + "]"});
             }
             else if (size >= 4)
             {
                 for (int i = 0; i < size; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
                     switch (size - i)
                     {
                         case 1:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Byte,
                                 Src = "AL",
@@ -103,7 +103,7 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             break;
                         case 2:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Word,
                                 Src = "AX",
@@ -111,14 +111,14 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             break;
                         case 3:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Byte,
                                 Src = "AL",
                                 Dest = "[" + fieldId + "+" + i + "]"
                             });
-                            conversionState.Append(new ASMOps.Shr() {Src = "16", Dest = "EAX"});
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new ASMOps.Shr {Src = "16", Dest = "EAX"});
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Word,
                                 Src = "AX",
@@ -126,7 +126,7 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             break;
                         default:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Dword,
                                 Src = "EAX",
@@ -139,7 +139,7 @@ namespace Drivers.Compiler.Architectures.x86
             else
             {
                 throw new ArgumentOutOfRangeException("Storing static field with unsupported size! Size: " +
-                                                      size.ToString());
+                                                      size);
             }
         }
     }

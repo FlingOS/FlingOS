@@ -58,7 +58,7 @@ namespace Kernel.Pipes.Storage
 
         public unsafe ulong[] ReadDiskInfos(bool blocking)
         {
-            int bytesRead = base.Read(ReadBuffer, 0, sizeof(StoragePipeDataHeader), blocking);
+            int bytesRead = Read(ReadBuffer, 0, sizeof(StoragePipeDataHeader), blocking);
             if (bytesRead > 0)
             {
                 int Count;
@@ -74,7 +74,7 @@ namespace Kernel.Pipes.Storage
                 ulong[] result = new ulong[Count];
                 for (int i = 0; i < Count; i++)
                 {
-                    bytesRead = base.Read(ReadBuffer, 0, sizeof(StoragePipeDataDiskInfo), blocking);
+                    bytesRead = Read(ReadBuffer, 0, sizeof(StoragePipeDataDiskInfo), blocking);
                     if (bytesRead <= 0)
                     {
                         BasicConsole.WriteLine(
@@ -87,10 +87,7 @@ namespace Kernel.Pipes.Storage
                 }
                 return result;
             }
-            else
-            {
-                return new ulong[0];
-            }
+            return new ulong[0];
         }
     }
 }

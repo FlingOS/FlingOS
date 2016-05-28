@@ -42,12 +42,12 @@ namespace Kernel.FOS_System.IO.Disk
         /// <summary>
         ///     Whether the MBR is valid or not.
         /// </summary>
-        public readonly bool IsValid = false;
+        public readonly bool IsValid;
 
         /// <summary>
         ///     The number of partitions set in the Partitions array.
         /// </summary>
-        protected uint numPartitions = 0;
+        protected uint numPartitions;
 
         /*
          * For details see these articles: 
@@ -72,7 +72,7 @@ namespace Kernel.FOS_System.IO.Disk
         ///     Initializes a new MBR from the specified MBR data.
         /// </summary>
         /// <param name="aMBR">The MBR data read from the disk.</param>
-        public unsafe MBR(byte[] aMBR)
+        public MBR(byte[] aMBR)
         {
 #if MBR_TRACE
             BasicConsole.WriteLine("MBR: 1");
@@ -194,14 +194,12 @@ namespace Kernel.FOS_System.IO.Disk
                 //http://thestarman.pcministry.com/asm/mbr/PartTables2.htm
                 return new PartitionInfo(ByteConverter.ToUInt32(aMBR, aLoc + 8));
             }
-            else
-            {
 #if MBR_TRACE
                 BasicConsole.WriteLine("MBR: 7");
 #endif
 
-                uint startSector = ByteConverter.ToUInt32(aMBR, aLoc + 8);
-                uint sectorCount = ByteConverter.ToUInt32(aMBR, aLoc + 12);
+            uint startSector = ByteConverter.ToUInt32(aMBR, aLoc + 8);
+            uint sectorCount = ByteConverter.ToUInt32(aMBR, aLoc + 12);
 
 #if MBR_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"startSector: ") + startSector);
@@ -212,9 +210,8 @@ namespace Kernel.FOS_System.IO.Disk
 #if MBR_TRACE
                 BasicConsole.WriteLine("MBR: 8");
 #endif
-                bool bootable = aMBR[aLoc + 0] == 0x81;
-                return new PartitionInfo(bootable, systemID, startSector, sectorCount);
-            }
+            bool bootable = aMBR[aLoc + 0] == 0x81;
+            return new PartitionInfo(bootable, systemID, startSector, sectorCount);
         }
 
         /// <summary>
@@ -390,7 +387,7 @@ namespace Kernel.FOS_System.IO.Disk
             /// <summary>
             ///     The location of the Extended Boot Record information.
             /// </summary>
-            public uint EBRLocation = 0;
+            public uint EBRLocation;
 
             /// <summary>
             ///     Initializes new partition information with only EBR information.

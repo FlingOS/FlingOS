@@ -139,7 +139,7 @@ namespace FlingOops
         /// <returns>The new string.</returns>
         [NoGC]
         [NoDebug]
-        public static unsafe String Concat(String str1, String str2)
+        public static String Concat(String str1, String str2)
         {
             String newStr = New(str1.length + str2.length);
 
@@ -174,7 +174,7 @@ namespace FlingOops
         {
             String result = New(totalLength);
 
-            if (this.length >= totalLength)
+            if (length >= totalLength)
             {
                 for (int i = 0; i < result.length; i++)
                 {
@@ -183,8 +183,8 @@ namespace FlingOops
                 return result;
             }
 
-            int offset = totalLength - this.length;
-            for (int i = 0; i < this.length; i++)
+            int offset = totalLength - length;
+            for (int i = 0; i < length; i++)
             {
                 result[i + offset] = this[i];
             }
@@ -211,12 +211,9 @@ namespace FlingOops
                 {
                     return null;
                 }
-                else
-                {
-                    return y;
-                }
+                return y;
             }
-            else if (y == null)
+            if (y == null)
             {
                 return x;
             }
@@ -576,7 +573,7 @@ namespace FlingOops
         {
             uint part1 = (uint) x;
             uint part2 = (uint) (x >> 16 >> 16);
-            return (String) part2 + " " + (String) part1;
+            return (String) part2 + " " + part1;
         }
 
         /// <summary>

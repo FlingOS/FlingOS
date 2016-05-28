@@ -153,7 +153,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -161,7 +161,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -169,7 +169,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Beq:
@@ -178,7 +178,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bne_Un:
@@ -187,7 +187,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bge:
@@ -196,7 +196,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
@@ -204,7 +204,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Ble:
@@ -213,7 +213,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
@@ -221,7 +221,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Blt:
@@ -230,7 +230,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Blt_Un:
                     //See above : This is unsigned variant
@@ -238,7 +238,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bgt:
@@ -247,7 +247,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bgt_Un:
                     //See above : This is unsigned variant
@@ -255,7 +255,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
             }
 
@@ -306,7 +306,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -318,7 +318,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchNotZero;
                     break;
@@ -332,7 +332,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchZero;
                     break;
@@ -348,7 +348,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchEqual;
                     inverseBranchOp = BranchOp.BranchNotEqual;
@@ -365,7 +365,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchNotEqual;
                     isNegativeTest = true;
@@ -383,7 +383,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchGreaterThanEqual;
                     inverseBranchOp = BranchOp.BranchLessThan;
@@ -398,7 +398,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchGreaterThanEqual;
@@ -417,7 +417,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchLessThanEqual;
                     inverseBranchOp = BranchOp.BranchGreaterThan;
@@ -432,7 +432,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchLessThanEqual;
@@ -451,7 +451,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchLessThan;
                     isNegativeTest = true;
@@ -466,7 +466,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchLessThan;
@@ -485,7 +485,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchGreaterThan;
                     isNegativeTest = true;
@@ -500,7 +500,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (int) (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte) theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchGreaterThan;
@@ -536,22 +536,22 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                    //If the test item is Int64 or UInt64
-                    else if (testItem.sizeOnStackInBytes == 8)
+                        //If the test item is Int64 or UInt64
+                    if (testItem.sizeOnStackInBytes == 8)
                     {
                         //Compare first 32 bits (low bits)
                         //Then (if necessary) compare second 32 bits (high bits)
 
                         //Pop the low bits
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
                         //Pop the high bits
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
 
                         //If we are testing for not equal to zero:
                         if (branchOp == BranchOp.BranchNotZero)
                         {
                             //If the low bits are not zero, do the jump
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = branchOp,
                                 Src2 = testVal,
@@ -559,7 +559,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                                 DestILPosition = opToGoToPosition
                             });
                             //If the high bits are not zero, do the jump
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = branchOp,
                                 Src1 = "$t1",
@@ -571,7 +571,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         else if (branchOp == BranchOp.BranchZero)
                         {
                             //If the low bits are not zero, jump to the end of these tests as condition has not been met
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = BranchOp.BranchNotZero,
                                 Src1 = "$t0",
@@ -579,14 +579,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                                 Extension = "End"
                             });
                             //If the high bits are zero, do the jump
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = branchOp,
                                 Src1 = "$t1",
                                 DestILPosition = opToGoToPosition
                             });
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+                            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
@@ -598,9 +598,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     else if (testItem.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
                         //Do the specified jump
-                        conversionState.Append(new Branch()
+                        conversionState.Append(new Branch
                         {
                             BranchType = branchOp,
                             Src1 = "$t0",
@@ -628,24 +628,24 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                    else if (itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
+                    if (itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
                     {
                         throw new InvalidOperationException("Branch test operands must be same size!");
                     }
-                    else if (itemA.sizeOnStackInBytes == 8)
+                    if (itemA.sizeOnStackInBytes == 8)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t2"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t3"});
 
                         if (!isNegativeTest)
                         {
                             //Compare test item A high bits to test item B high bits
                             //If they are not equal, abort the testing
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = inverseBranchOp,
                                 Src1 = "$t3",
@@ -658,7 +658,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             //Else the igh bits are equal so test low bits
                             //Compare test item A low bits to test item B low bits
                             //Do the specified jump
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = branchOp,
                                 Src1 = "$t1",
@@ -668,13 +668,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             });
 
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+                            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
                             //Compare test item A high bits to test item B high bits
                             //Do the specified jump
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = branchOp,
                                 Src1 = "$t3",
@@ -684,7 +684,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                             });
                             //Compare test item A low bits to test item B low bits
                             //Do the specified jump
-                            conversionState.Append(new Branch()
+                            conversionState.Append(new Branch
                             {
                                 BranchType = branchOp,
                                 Src1 = "$t1",
@@ -697,12 +697,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     else if (itemA.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
                         //Compare test item A to test item B
                         //Do the specified jump
-                        conversionState.Append(new Branch()
+                        conversionState.Append(new Branch
                         {
                             BranchType = branchOp,
                             Src1 = "$t0",
@@ -719,7 +719,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 else
                 {
                     //Do the straightforward jump...
-                    conversionState.Append(new Branch() {BranchType = branchOp, DestILPosition = opToGoToPosition});
+                    conversionState.Append(new Branch {BranchType = branchOp, DestILPosition = opToGoToPosition});
                 }
             }
         }

@@ -59,20 +59,20 @@ namespace Drivers.Compiler.Architectures.x86
                     index = 3;
                     break;
                 case OpCodes.Ldarg_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ldarga:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldarga_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
             }
 
             if ((OpCodes) theOp.opCode.Value == OpCodes.Ldarga ||
                 (OpCodes) theOp.opCode.Value == OpCodes.Ldarga_S)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -85,7 +85,7 @@ namespace Drivers.Compiler.Architectures.x86
                 VariableInfo argInfo = conversionState.Input.TheMethodInfo.ArgumentInfos[index];
                 TypeInfo paramTypeInfo = argInfo.TheTypeInfo;
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = bytesForArg,
                     isFloat = false,
@@ -137,13 +137,13 @@ namespace Drivers.Compiler.Architectures.x86
                     index = 3;
                     break;
                 case OpCodes.Ldarg_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ldarga:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldarga_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
             }
 
@@ -162,12 +162,12 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 //Push the address of the argument onto the stack
 
-                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EBP", Dest = "ECX"});
-                conversionState.Append(new ASMOps.Add() {Src = BytesOffsetFromEBP.ToString(), Dest = "ECX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "ECX"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EBP", Dest = "ECX"});
+                conversionState.Append(new ASMOps.Add {Src = BytesOffsetFromEBP.ToString(), Dest = "ECX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "ECX"});
 
                 //Push the address onto our stack
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -191,15 +191,15 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     bytesForArg -= 4;
 
-                    conversionState.Append(new Push()
+                    conversionState.Append(new Push
                     {
                         Size = OperandSize.Dword,
-                        Src = "[EBP+" + (BytesOffsetFromEBP + bytesForArg).ToString() + "]"
+                        Src = "[EBP+" + (BytesOffsetFromEBP + bytesForArg) + "]"
                     });
                 }
 
                 //Push the arg onto our stack
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = paramTypeInfo.SizeOnStackInBytes,
                     isFloat = false,

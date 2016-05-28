@@ -68,11 +68,11 @@ namespace Drivers.Compiler.Architectures.x86
             //      3.2.2.2   False: Jump back to (3)
 
             // 1. Pop object ref
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
             // 1.1. Test if object ref is null:
-            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "0"});
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpNotEqual,
                 DestILPosition = currOpPosition,
@@ -80,14 +80,14 @@ namespace Drivers.Compiler.Architectures.x86
             });
 
             // 1.1.1 True: Push null and continue
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-            conversionState.Append(new Jmp() {JumpType = JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
+            conversionState.Append(new Jmp {JumpType = JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End"});
 
             // 1.1.2 False: Go to 2
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "False1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "False1"});
 
             // 2. Load object type
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[EAX]", Dest = "EBX"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[EAX]", Dest = "EBX"});
 
             // 3. Test if object type == provided type:
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
@@ -96,12 +96,12 @@ namespace Drivers.Compiler.Architectures.x86
             string TestTypeId = theTypeInfo.ID;
             conversionState.AddExternalLabel(TestTypeId);
 
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = TestTypeId, Dest = "ECX"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = TestTypeId, Dest = "ECX"});
 
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Label3"});
-            conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "ECX"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Label3"});
+            conversionState.Append(new Cmp {Arg1 = "EBX", Arg2 = "ECX"});
 
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpNotEqual,
                 DestILPosition = currOpPosition,
@@ -109,15 +109,15 @@ namespace Drivers.Compiler.Architectures.x86
             });
 
             //      3.1 True: Push object ref and continue
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
-            conversionState.Append(new Jmp() {JumpType = JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
+            conversionState.Append(new Jmp {JumpType = JmpOp.Jump, DestILPosition = currOpPosition, Extension = "End"});
 
             //      3.2 False: 
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "False2"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "False2"});
 
             //      3.2.1. Move to base type
             int baseTypeOffset = conversionState.GetTypeFieldOffset("TheBaseType");
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
                 Src = "[EBX+" + baseTypeOffset + "]",
@@ -125,10 +125,10 @@ namespace Drivers.Compiler.Architectures.x86
             });
 
             //      3.2.2. Test if base type null:
-            conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "0"});
+            conversionState.Append(new Cmp {Arg1 = "EBX", Arg2 = "0"});
 
             //      3.2.2.2   False: Jump back to (3)
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpNotEqual,
                 DestILPosition = currOpPosition,
@@ -136,9 +136,9 @@ namespace Drivers.Compiler.Architectures.x86
             });
 
             //      3.2.2.1   True: Push null and continue
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
 
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
         }
     }
 }

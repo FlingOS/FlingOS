@@ -68,7 +68,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
             //Load the object onto the stack
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
                 Dest = "ECX",
@@ -76,24 +76,24 @@ namespace Drivers.Compiler.Architectures.x86
             });
             if (size == 1)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "AL", Dest = "[ECX]"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Mov {Size = OperandSize.Byte, Src = "AL", Dest = "[ECX]"});
             }
             else if (size == 2)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "AX", Dest = "[ECX]"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Mov {Size = OperandSize.Word, Src = "AX", Dest = "[ECX]"});
             }
             else if (size >= 4)
             {
                 for (int i = 0; i < size; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
                     switch (size - i)
                     {
                         case 1:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Byte,
                                 Src = "AL",
@@ -101,7 +101,7 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             break;
                         case 2:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Word,
                                 Src = "AX",
@@ -109,14 +109,14 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             break;
                         case 3:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Byte,
                                 Src = "AL",
                                 Dest = "[ECX+" + i + "]"
                             });
-                            conversionState.Append(new ASMOps.Shr() {Src = "16", Dest = "EAX"});
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new ASMOps.Shr {Src = "16", Dest = "EAX"});
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Word,
                                 Src = "AX",
@@ -124,7 +124,7 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             break;
                         default:
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Dword,
                                 Src = "EAX",
@@ -136,10 +136,10 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                throw new ArgumentOutOfRangeException("Storing object with unsupported size! Size: " + size.ToString());
+                throw new ArgumentOutOfRangeException("Storing object with unsupported size! Size: " + size);
             }
 
-            conversionState.Append(new ASMOps.Add() {Dest = "ESP", Src = "4"});
+            conversionState.Append(new ASMOps.Add {Dest = "ESP", Src = "4"});
         }
     }
 }

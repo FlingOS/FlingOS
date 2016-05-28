@@ -75,12 +75,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 throw new NotSupportedException("Storing static fields of type float not supported yet!");
             }
 
-            conversionState.Append(new La() {Dest = "$t4", Label = fieldId});
+            conversionState.Append(new La {Dest = "$t4", Label = fieldId});
 
             if (size == 1)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Byte,
                     Src = "$t1",
@@ -90,8 +90,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else if (size == 2)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Halfword,
                     Src = "$t1",
@@ -101,8 +101,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else if (size == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
@@ -112,16 +112,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else if (size == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
                     Dest = "0($t4)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
@@ -137,7 +137,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (value.sizeOnStackInBytes - size > 0)
             {
-                conversionState.Append(new ASMOps.Add()
+                conversionState.Append(new ASMOps.Add
                 {
                     Src1 = "$sp",
                     Src2 = (value.sizeOnStackInBytes - size).ToString(),

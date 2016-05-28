@@ -84,13 +84,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //SUPPORT - floats
                     throw new NotSupportedException("Floats return type not supported yet!");
                 }
-                //Otherwise, store the return value at [ebp+8]
-                //[ebp+8] because that is last "argument"
-                //      - read the calling convention spec
-                else if (retSize == 4)
+                    //Otherwise, store the return value at [ebp+8]
+                    //[ebp+8] because that is last "argument"
+                    //      - read the calling convention spec
+                if (retSize == 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Dest = "8($fp)",
@@ -100,8 +100,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 else if (retSize == 8)
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Dest = "8($fp)",
@@ -109,8 +109,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory
                     });
 
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Dest = "12($fp)",
@@ -136,11 +136,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
                 }
                 //Move esp past the locals
-                conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = totalBytes.ToString(), Dest = "$sp"});
+                conversionState.Append(new ASMOps.Add {Src1 = "$sp", Src2 = totalBytes.ToString(), Dest = "$sp"});
             }
 
             //Restore ebp to previous method's ebp
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$fp"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$fp"});
             //This pop also takes last value off the stack which
             //means top item is the return address
             //So ret command can now be correctly executed.

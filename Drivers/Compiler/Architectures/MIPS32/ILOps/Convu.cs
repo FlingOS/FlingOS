@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             bool pushEDX = numBytesToConvertTo == 8;
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = pushEDX ? 8 : 4,
                 isFloat = false,
@@ -108,32 +108,32 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 case 1:
                     //Convert to UInt8 (byte)
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "0",
                         Dest = "$t0",
                         MoveType = Mov.MoveTypes.ImmediateToReg
                     });
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Halfword, Dest = "$t0"});
-                    conversionState.Append(new ASMOps.And() {Src1 = "$t0", Src2 = "0x000000FF", Dest = "$t0"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Halfword, Dest = "$t0"});
+                    conversionState.Append(new ASMOps.And {Src1 = "$t0", Src2 = "0x000000FF", Dest = "$t0"});
                     bytesPopped = 2;
                     break;
                 case 2:
                     //Convert to UInt16 (halfword)
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "0",
                         Dest = "$t0",
                         MoveType = Mov.MoveTypes.ImmediateToReg
                     });
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Halfword, Dest = "$t0"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Halfword, Dest = "$t0"});
                     bytesPopped = 2;
                     break;
                 case 4:
                     //Convert to UInt32 (word)
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
                     bytesPopped = 4;
                     break;
                 case 8:
@@ -141,15 +141,15 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     if (itemToConvert.sizeOnStackInBytes == 8)
                     {
                         //Result stored in $t0:$t3
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t3"});
                         bytesPopped = 8;
                     }
                     else
                     {
                         //Result stored in $t0:$t3
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Word,
                             Src = "0",
@@ -165,16 +165,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int bytesDiff = itemToConvert.sizeOnStackInBytes - bytesPopped;
             if (bytesDiff > 0)
             {
-                conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = bytesDiff.ToString(), Dest = "$sp"});
+                conversionState.Append(new ASMOps.Add {Src1 = "$sp", Src2 = bytesDiff.ToString(), Dest = "$sp"});
             }
 
             if (pushEDX)
             {
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t3"});
             }
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = pushEDX ? 8 : 4,
                 isFloat = false,

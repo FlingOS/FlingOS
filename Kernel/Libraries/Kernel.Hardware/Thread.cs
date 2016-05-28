@@ -71,7 +71,7 @@ namespace Kernel.Hardware.Processes
         /// </remarks>
         public int TimeToRunReload;
 
-        protected int timeToSleep = 0;
+        protected int timeToSleep;
 
         public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, String AName,
             out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
@@ -106,8 +106,9 @@ namespace Kernel.Hardware.Processes
             State->KernelStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
                 UserMode
                     ? VirtualMemoryImplementation.PageFlags.None
-                    : VirtualMemoryImplementation.PageFlags.KernelOnly, out KernelStackBottomPAddr) + KernelStackTopOffset;
-                //4KiB, page-aligned
+                    : VirtualMemoryImplementation.PageFlags.KernelOnly, out KernelStackBottomPAddr) +
+                                    KernelStackTopOffset;
+            //4KiB, page-aligned
 
             // Allocate free memory for the user stack for this thread
             //  Used by this thread in normal execution
@@ -246,10 +247,7 @@ namespace Kernel.Hardware.Processes
                 {
                     return TimeToSleep;
                 }
-                else
-                {
-                    return TimeToRun;
-                }
+                return TimeToRun;
             }
             set
             {
@@ -275,7 +273,7 @@ namespace Kernel.Hardware.Processes
 
         public static uint KernelStackTopOffset
         {
-            get { return (uint) (4096 - 4); }
+            get { return 4096 - 4; }
         }
 
         /* 
@@ -429,7 +427,7 @@ namespace Kernel.Hardware.Processes
             //    Scheduler.Disable();
             //}
 
-            this.TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
+            TimeToSleep = ms /* x * 1ms / [Scheduler period in ns] = x * 1 = x */;
             Scheduler.UpdateList(this);
 
             //if (reenable)
@@ -451,7 +449,7 @@ namespace Kernel.Hardware.Processes
                 return false;
             }
 
-            this._EnterSleep(ms);
+            _EnterSleep(ms);
             // Busy wait for the scheduler to interrupt the thread, sleep it and
             //  then as soon as the sleep is over this condition will go false
             //  so the thread will continue
@@ -467,7 +465,7 @@ namespace Kernel.Hardware.Processes
         [NoDebug]
         public bool _Sleep_Indefinitely()
         {
-            return this._Sleep(IndefiniteSleep);
+            return _Sleep(IndefiniteSleep);
         }
 
         [NoGC]
@@ -480,8 +478,8 @@ namespace Kernel.Hardware.Processes
             //    Scheduler.Disable();
             //}
 
-            this.TimeToSleep = 0;
-            this.TimeToRun = this.TimeToRunReload;
+            TimeToSleep = 0;
+            TimeToRun = TimeToRunReload;
             Scheduler.UpdateList(this);
 
             //if (reenable)

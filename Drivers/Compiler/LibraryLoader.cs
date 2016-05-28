@@ -60,7 +60,7 @@ namespace Drivers.Compiler
 
                 return null;
             }
-            else if (!File.Exists(FilePath))
+            if (!File.Exists(FilePath))
             {
                 Logger.LogError(Errors.Loader_LibraryFileDoesntExist_ErrorCode, FilePath, 0,
                     Errors.ErrorMessages[Errors.Loader_LibraryFileDoesntExist_ErrorCode]);
@@ -132,17 +132,14 @@ namespace Drivers.Compiler
                 {
                     throw new NullReferenceException("Loaded dependency library was null!");
                 }
+                if (LibraryCache.ContainsKey(refLibrary.ToString()))
+                {
+                    aLibrary.Dependencies.Add(LibraryCache[refLibrary.ToString()]);
+                }
                 else
                 {
-                    if (LibraryCache.ContainsKey(refLibrary.ToString()))
-                    {
-                        aLibrary.Dependencies.Add(LibraryCache[refLibrary.ToString()]);
-                    }
-                    else
-                    {
-                        aLibrary.Dependencies.Add(refLibrary);
-                        LibraryCache.Add(refLibrary.ToString(), refLibrary);
-                    }
+                    aLibrary.Dependencies.Add(refLibrary);
+                    LibraryCache.Add(refLibrary.ToString(), refLibrary);
                 }
             }
 

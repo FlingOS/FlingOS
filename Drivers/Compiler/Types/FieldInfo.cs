@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Types
     /// </summary>
     public class FieldInfo
     {
-        private string group = null;
+        private string group;
 
         /// <summary>
         ///     The underlying System.Reflection.FieldInfo obtained from the library's Assembly.
@@ -103,13 +103,10 @@ namespace Drivers.Compiler.Types
                                                                      UnderlyingInfo.DeclaringType.FullName + "." +
                                                                      UnderlyingInfo.Name);
                 }
-                else
-                {
-                    return "field_" +
-                           Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" +
-                                                                     UnderlyingInfo.DeclaringType.FullName + "." +
-                                                                     UnderlyingInfo.Name);
-                }
+                return "field_" +
+                       Utilities.FilterIdentifierForInvalidChars(UnderlyingInfo.FieldType.FullName + "-" +
+                                                                 UnderlyingInfo.DeclaringType.FullName + "." +
+                                                                 UnderlyingInfo.Name);
             }
         }
 

@@ -107,7 +107,7 @@ namespace Drivers.Compiler
                             {
                                 string LabelStr =
                                     ProcessedLine.Substring(17)
-                                        .Split(new char[] {' '}, 3, StringSplitOptions.RemoveEmptyEntries)
+                                        .Split(new[] {' '}, 3, StringSplitOptions.RemoveEmptyEntries)
                                         .Last();
                                 ResultLines.Add(AddressStr + "¬" + LabelStr);
                             }
@@ -177,30 +177,30 @@ namespace Drivers.Compiler
                     {
                         Str.WriteLine("¬BaseTypeID:" + TheLibrary.GetTypeInfo(ATypeInfo.UnderlyingType.BaseType).ID);
                     }
-                    Str.WriteLine("¬IsGCManaged:" + ATypeInfo.IsGCManaged.ToString());
-                    Str.WriteLine("¬IsPointer:" + ATypeInfo.IsPointer.ToString());
-                    Str.WriteLine("¬IsValueType:" + ATypeInfo.IsValueType.ToString());
-                    Str.WriteLine("¬SizeOnHeapInBytes:" + ATypeInfo.SizeOnHeapInBytes.ToString());
-                    Str.WriteLine("¬SizeOnStackInBytes:" + ATypeInfo.SizeOnStackInBytes.ToString());
+                    Str.WriteLine("¬IsGCManaged:" + ATypeInfo.IsGCManaged);
+                    Str.WriteLine("¬IsPointer:" + ATypeInfo.IsPointer);
+                    Str.WriteLine("¬IsValueType:" + ATypeInfo.IsValueType);
+                    Str.WriteLine("¬SizeOnHeapInBytes:" + ATypeInfo.SizeOnHeapInBytes);
+                    Str.WriteLine("¬SizeOnStackInBytes:" + ATypeInfo.SizeOnStackInBytes);
 
                     foreach (FieldInfo AFieldInfo in ATypeInfo.FieldInfos)
                     {
                         Str.WriteLine("|Field:" + AFieldInfo.ID);
                         Str.WriteLine("~Type:" + TheLibrary.GetTypeInfo(AFieldInfo.FieldType).ID);
-                        Str.WriteLine("~IsStatic:" + AFieldInfo.IsStatic.ToString());
+                        Str.WriteLine("~IsStatic:" + AFieldInfo.IsStatic);
                         Str.WriteLine("~Name:" + AFieldInfo.Name);
-                        Str.WriteLine("~OffsetInBytes:" + AFieldInfo.OffsetInBytes.ToString());
+                        Str.WriteLine("~OffsetInBytes:" + AFieldInfo.OffsetInBytes);
                     }
 
                     foreach (MethodInfo AMethodInfo in ATypeInfo.MethodInfos)
                     {
                         Str.WriteLine("|Method:" + AMethodInfo.ID);
-                        Str.WriteLine("~ApplyDebug:" + AMethodInfo.ApplyDebug.ToString());
-                        Str.WriteLine("~ApplyGC:" + AMethodInfo.ApplyGC.ToString());
-                        Str.WriteLine("~IDValue:" + AMethodInfo.IDValue.ToString());
-                        Str.WriteLine("~IsConstructor:" + AMethodInfo.IsConstructor.ToString());
-                        Str.WriteLine("~IsPlugged:" + AMethodInfo.IsPlugged.ToString());
-                        Str.WriteLine("~IsStatic:" + AMethodInfo.IsStatic.ToString());
+                        Str.WriteLine("~ApplyDebug:" + AMethodInfo.ApplyDebug);
+                        Str.WriteLine("~ApplyGC:" + AMethodInfo.ApplyGC);
+                        Str.WriteLine("~IDValue:" + AMethodInfo.IDValue);
+                        Str.WriteLine("~IsConstructor:" + AMethodInfo.IsConstructor);
+                        Str.WriteLine("~IsPlugged:" + AMethodInfo.IsPlugged);
+                        Str.WriteLine("~IsStatic:" + AMethodInfo.IsStatic);
                         Str.WriteLine("~Signature:" + AMethodInfo.Signature);
 
                         Type RetType = AMethodInfo.IsConstructor
@@ -210,13 +210,13 @@ namespace Drivers.Compiler
 
                         foreach (VariableInfo AnArgumentInfo in AMethodInfo.ArgumentInfos)
                         {
-                            Str.WriteLine("~Argument:" + AnArgumentInfo.Offset.ToString() + "|" +
-                                          AnArgumentInfo.Position.ToString() + "|" + AnArgumentInfo.TheTypeInfo.ID);
+                            Str.WriteLine("~Argument:" + AnArgumentInfo.Offset + "|" +
+                                          AnArgumentInfo.Position + "|" + AnArgumentInfo.TheTypeInfo.ID);
                         }
                         foreach (VariableInfo ALocalInfo in AMethodInfo.LocalInfos)
                         {
-                            Str.WriteLine("~Local:" + ALocalInfo.Offset.ToString() + "|" +
-                                          ALocalInfo.Position.ToString() + "|" + ALocalInfo.TheTypeInfo.ID);
+                            Str.WriteLine("~Local:" + ALocalInfo.Offset + "|" +
+                                          ALocalInfo.Position + "|" + ALocalInfo.TheTypeInfo.ID);
                         }
                     }
                 }

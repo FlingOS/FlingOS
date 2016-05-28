@@ -51,7 +51,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                 TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                StackItem returnItem = new StackItem()
+                StackItem returnItem = new StackItem
                 {
                     isFloat = Utilities.IsFloat(retType),
                     sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -126,7 +126,7 @@ namespace Drivers.Compiler.Architectures.x86
                 //Allocate space on the stack for the return value as necessary
                 Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                 TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                StackItem returnItem = new StackItem()
+                StackItem returnItem = new StackItem
                 {
                     isFloat = Utilities.IsFloat(retType),
                     sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -143,14 +143,14 @@ namespace Drivers.Compiler.Architectures.x86
                         //SUPPORT - floats
                         throw new NotSupportedException("Cannot handle float return values!");
                     }
-                    else if (returnItem.sizeOnStackInBytes == 4)
+                    if (returnItem.sizeOnStackInBytes == 4)
                     {
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
                     }
                     else if (returnItem.sizeOnStackInBytes == 8)
                     {
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
                     }
                     else
                     {
@@ -159,7 +159,7 @@ namespace Drivers.Compiler.Architectures.x86
                 }
 
                 //Append the actual call
-                conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
+                conversionState.Append(new ASMOps.Call {Target = methodToCallInfo.ID});
 
                 //After a call, we need to remove the return value and parameters from the stack
                 //This is most easily done by just adding the total number of bytes for params and
@@ -202,16 +202,16 @@ namespace Drivers.Compiler.Architectures.x86
                         //We will push it back on after params are skipped over.
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
+                            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
                         }
                     }
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() {Src = bytesToAdd.ToString(), Dest = "ESP"});
+                    conversionState.Append(new ASMOps.Add {Src = bytesToAdd.ToString(), Dest = "ESP"});
                     //If necessary, push the return value onto the stack.
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
@@ -221,12 +221,12 @@ namespace Drivers.Compiler.Architectures.x86
                         //So push it back onto the stack
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                         }
                     }
                 }
@@ -246,12 +246,12 @@ namespace Drivers.Compiler.Architectures.x86
                     //Static constructors do not have parameters or return values
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
+                    conversionState.Append(new ASMOps.Call {Target = methodToCallInfo.ID});
                 }
                 else
                 {
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
+                    conversionState.Append(new ASMOps.Call {Target = methodToCallInfo.ID});
 
                     //After a call, we need to remove the parameters from the stack
                     //This is most easily done by just adding the total number of bytes for params
@@ -276,7 +276,7 @@ namespace Drivers.Compiler.Architectures.x86
                     if (bytesToAdd > 0)
                     {
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add() {Src = bytesToAdd.ToString(), Dest = "ESP"});
+                        conversionState.Append(new ASMOps.Add {Src = bytesToAdd.ToString(), Dest = "ESP"});
                     }
                 }
             }

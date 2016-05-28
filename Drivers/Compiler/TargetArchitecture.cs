@@ -49,7 +49,7 @@ namespace Drivers.Compiler
         ///     Used for loading IL and ASM ops used to convert IL to ASM and ASM to machine code
         ///     for the target architecture.
         /// </remarks>
-        private static Assembly TargetArchitectureAssembly = null;
+        private static Assembly TargetArchitectureAssembly;
 
         public static TargetArchitectureFunctions TargetFunctions;
 
@@ -160,12 +160,9 @@ namespace Drivers.Compiler
                                     throw new Exception(
                                         "ILScanner could not load target architecture ILOp because target attribute was not specified!");
                                 }
-                                else
+                                foreach (ILOpTargetAttribute targetAttr in targetAttrs)
                                 {
-                                    foreach (ILOpTargetAttribute targetAttr in targetAttrs)
-                                    {
-                                        TargetILOps.Add(targetAttr.Target, (ILOp) Activator.CreateInstance(aType));
-                                    }
+                                    TargetILOps.Add(targetAttr.Target, (ILOp) Activator.CreateInstance(aType));
                                 }
                             }
                         }

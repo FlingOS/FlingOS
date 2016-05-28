@@ -45,7 +45,7 @@ namespace Drivers.Debugger
     /// </remarks>
     public sealed class Serial : IDisposable
     {
-        public bool AbortRead = false;
+        public bool AbortRead;
 
         /// <summary>
         ///     The underlying pipe.
@@ -89,7 +89,7 @@ namespace Drivers.Debugger
                     ThePipe = new NamedPipeServerStream(pipe, PipeDirection.InOut, 1, PipeTransmissionMode.Byte,
                         PipeOptions.Asynchronous);
                     ThePipe.ReadMode = PipeTransmissionMode.Byte;
-                    ThePipe.BeginWaitForConnection(new AsyncCallback(delegate(IAsyncResult result)
+                    ThePipe.BeginWaitForConnection(delegate(IAsyncResult result)
                     {
                         try
                         {
@@ -104,7 +104,7 @@ namespace Drivers.Debugger
                         {
                             //Ignore as probably error while terminating
                         }
-                    }), null);
+                    }, null);
                 }
                 catch
                 {
@@ -183,7 +183,7 @@ namespace Drivers.Debugger
         {
             if (Connected)
             {
-                ThePipe.Write(new byte[] {aByte}, 0, 1);
+                ThePipe.Write(new[] {aByte}, 0, 1);
             }
         }
 

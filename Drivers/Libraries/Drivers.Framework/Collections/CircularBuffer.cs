@@ -33,10 +33,10 @@ namespace Drivers.Framework.Collections
 {
     public class CircularBuffer : Object
     {
-        public readonly bool ThrowExceptions;
         private readonly Object[] _array;
 
         private readonly SpinLock AccessLock = new SpinLock();
+        public readonly bool ThrowExceptions;
         private int ReadIdx = -1;
         private int WriteIdx = -1;
 
@@ -64,14 +64,11 @@ namespace Drivers.Framework.Collections
                 {
                     return 0;
                 }
-                else if (WriteIdx <= ReadIdx)
+                if (WriteIdx <= ReadIdx)
                 {
                     return _array.Length - ReadIdx + WriteIdx;
                 }
-                else
-                {
-                    return WriteIdx - ReadIdx;
-                }
+                return WriteIdx - ReadIdx;
             }
         }
 

@@ -630,7 +630,7 @@ namespace Kernel.USB
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
-        public static unsafe bool GetConfigurationDescriptors(USBDeviceInfo device)
+        public static bool GetConfigurationDescriptors(USBDeviceInfo device)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR Config");
@@ -686,7 +686,7 @@ namespace Kernel.USB
                             }
                             else
                             {
-                                config.Description = new UnicodeString()
+                                config.Description = new UnicodeString
                                 {
                                     StringType = 0,
                                     Value = "[Unable to load at this time]"
@@ -857,7 +857,7 @@ namespace Kernel.USB
                             }
                         }
 
-                        result = new StringInfo()
+                        result = new StringInfo
                         {
                             LanguageIds = new ushort[totalLangs]
                         };
@@ -873,7 +873,7 @@ namespace Kernel.USB
                     }
                     else
                     {
-                        result = new StringInfo()
+                        result = new StringInfo
                         {
                             LanguageIds = new ushort[0]
                         };
@@ -906,14 +906,14 @@ namespace Kernel.USB
 
             if (stringIndex == 0)
             {
-                return new UnicodeString()
+                return new UnicodeString
                 {
                     StringType = 0,
                     Value = "[NONE]"
                 };
             }
 
-            UnicodeString result = new UnicodeString()
+            UnicodeString result = new UnicodeString
             {
                 StringType = 0,
                 Value = "[Failed to load]"
@@ -935,12 +935,12 @@ namespace Kernel.USB
 
                 if (transfer.success)
                 {
-                    result = new UnicodeString()
+                    result = new UnicodeString
                     {
                         StringType = buffer->descriptorType,
                         Value =
                             buffer->length > 0
-                                ? ByteConverter.GetASCIIStringFromUTF16((byte*) buffer->widechar, 0, buffer->length)
+                                ? ByteConverter.GetASCIIStringFromUTF16(buffer->widechar, 0, buffer->length)
                                 : ""
                     };
 
@@ -962,7 +962,7 @@ namespace Kernel.USB
         /// </summary>
         /// <param name="device">The device info of the device to get the information from.</param>
         /// <returns>The current configuration value.</returns>
-        public static unsafe byte GetConfiguration(USBDeviceInfo device)
+        public static byte GetConfiguration(USBDeviceInfo device)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_CONFIGURATION");
@@ -994,7 +994,7 @@ namespace Kernel.USB
             USBTransfer transfer = new USBTransfer();
             device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
             device.hc.SETUPTransaction(transfer, 8, 0x00, 9, 0, configuration, 0, 0);
-                // SETUP DATA0, 8 byte, request type, SET_CONFIGURATION(9), hi(reserved), configuration, index=0, length=0
+            // SETUP DATA0, 8 byte, request type, SET_CONFIGURATION(9), hi(reserved), configuration, index=0, length=0
             device.hc.INTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);
         }
@@ -1005,7 +1005,7 @@ namespace Kernel.USB
         /// <param name="device">The device info of the device to get the information from.</param>
         /// <param name="endpoint">The number of the endpoint to check the status of.</param>
         /// <returns>The status value.</returns>
-        public static unsafe ushort GetStatus(USBDeviceInfo device, byte endpoint)
+        public static ushort GetStatus(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
             DBGMSG(((FOS_System.String)"USB: GetStatus, endpoint: ") + endpoint);

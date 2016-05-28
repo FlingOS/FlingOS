@@ -65,31 +65,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (itemA.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
                 //To not, arg Xor -1
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Dest = "$t4",
                     Src = "0xFFFFFFFF",
                     MoveType = Mov.MoveTypes.ImmediateToReg
                 });
-                conversionState.Append(new ASMOps.Xor() {Dest = "$t0", Src1 = "$t0", Src2 = "$t4"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new ASMOps.Xor {Dest = "$t0", Src1 = "$t0", Src2 = "$t4"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
             else if (itemA.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t3"});
+                conversionState.Append(new Mov
                 {
                     Dest = "$t4",
                     Src = "0xFFFFFFFF",
                     MoveType = Mov.MoveTypes.ImmediateToReg
                 });
-                conversionState.Append(new ASMOps.Xor() {Dest = "$t0", Src1 = "$t0", Src2 = "$t4"});
-                conversionState.Append(new ASMOps.Xor() {Dest = "$t3", Src1 = "$t3", Src2 = "$t4"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new ASMOps.Xor {Dest = "$t0", Src1 = "$t0", Src2 = "$t4"});
+                conversionState.Append(new ASMOps.Xor {Dest = "$t3", Src1 = "$t3", Src2 = "$t4"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t3"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
             else
             {

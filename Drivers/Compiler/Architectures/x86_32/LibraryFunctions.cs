@@ -133,7 +133,7 @@ SECTIONS {
 
    Kernel_MemStart = .;
 
-   .text : AT(ADDR(.text) - " + Options.LoadOffset.ToString() + @") {
+   .text : AT(ADDR(.text) - " + Options.LoadOffset + @") {
 ");
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
@@ -154,7 +154,7 @@ SECTIONS {
 
    . = ALIGN(0x1000);
     data_start = .;
-   .data : AT(ADDR(.data) - " + Options.LoadOffset.ToString() + @") {
+   .data : AT(ADDR(.data) - " + Options.LoadOffset + @") {
 ");
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)
@@ -173,7 +173,7 @@ SECTIONS {
 
    . = ALIGN(0x1000);
     __bss_start = .;
-   .bss : AT(ADDR(.bss) - " + Options.LoadOffset.ToString() + @") {
+   .bss : AT(ADDR(.bss) - " + Options.LoadOffset + @") {
 ");
 
             for (int i = 0; i < LinkInfo.SequencedASMBlocks.Count; i++)

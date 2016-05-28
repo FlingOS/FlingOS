@@ -51,13 +51,13 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Push the previous method's ebp
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBP"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EBP"});
             //Set ebp for this method
             //See calling convention spec - this allows easy access of
             //args and locals within the method without having to track
             //temporary values (which would be a nightmare with the
             //exception handling implementation that the kernel uses!)
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "ESP", Dest = "EBP"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "ESP", Dest = "EBP"});
 
             //Allocate stack space for locals
             //Only bother if there are any locals
@@ -74,7 +74,7 @@ namespace Drivers.Compiler.Architectures.x86
                 //This prevents errors in the GC.
                 for (int i = 0; i < totalBytes/4; i++)
                 {
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
                 }
                 //result.AppendLine(string.Format("sub esp, {0}", totalBytes));
             }

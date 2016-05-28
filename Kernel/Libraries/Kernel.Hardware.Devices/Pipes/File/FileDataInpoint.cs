@@ -58,7 +58,7 @@ namespace Kernel.Pipes.File
 
         public unsafe String[] ReadFSInfos(bool blocking)
         {
-            int bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataHeader), blocking);
+            int bytesRead = Read(ReadBuffer, 0, sizeof(FilePipeDataHeader), blocking);
             if (bytesRead > 0)
             {
                 int Count;
@@ -74,7 +74,7 @@ namespace Kernel.Pipes.File
                 String[] result = new String[Count];
                 for (int i = 0; i < Count; i++)
                 {
-                    bytesRead = base.Read(ReadBuffer, 0, sizeof(FilePipeDataFSInfo), blocking);
+                    bytesRead = Read(ReadBuffer, 0, sizeof(FilePipeDataFSInfo), blocking);
 
                     if (bytesRead <= 0)
                     {
@@ -101,23 +101,17 @@ namespace Kernel.Pipes.File
                 }
                 return result;
             }
-            else
-            {
-                return new String[0];
-            }
+            return new String[0];
         }
 
-        public unsafe String ReadString(bool blocking)
+        public String ReadString(bool blocking)
         {
-            int bytesRead = base.Read(ReadBuffer, 0, BufferSize, blocking);
+            int bytesRead = Read(ReadBuffer, 0, BufferSize, blocking);
             if (bytesRead > 0)
             {
                 return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint) bytesRead);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

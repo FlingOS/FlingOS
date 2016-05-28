@@ -105,9 +105,6 @@ namespace Kernel.VirtualMemory.Implementations
         ///     Bitmap of all the virtual pages that have ever been mapped.
         /// </summary>
         private readonly Bitmap AllUsedVirtPages = new Bitmap(1048576);
-            //TODO: This doesn't take into account pages that are removed from all memory layouts so may no longer be in use anywhere.
-
-        private uint[] BuiltInProcessVAddrs = null;
 
         //1024 * 1024 = 1048576
         /// <summary>
@@ -119,6 +116,10 @@ namespace Kernel.VirtualMemory.Implementations
         ///     Bitmap of all the free (unmapped) virtual pages of memory.
         /// </summary>
         private readonly Bitmap UsedVirtPages = new Bitmap(1048576);
+
+        //TODO: This doesn't take into account pages that are removed from all memory layouts so may no longer be in use anywhere.
+
+        private uint[] BuiltInProcessVAddrs;
 
         /// <summary>
         ///     Initialises the new x86 object.

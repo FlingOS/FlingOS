@@ -57,19 +57,13 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
                 {
                     return "imul " + Arg + ", " + Src + ", " + Aux;
                 }
-                else if (!string.IsNullOrWhiteSpace(Src))
+                if (!string.IsNullOrWhiteSpace(Src))
                 {
                     return "imul " + Arg + ", " + Src;
                 }
-                else
-                {
-                    return "imul " + Arg;
-                }
+                return "imul " + Arg;
             }
-            else
-            {
-                return "mul " + Arg;
-            }
+            return "mul " + Arg;
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Kernel
         {
             #region ExInfo
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "ExInfo",
                 CommandNameLower = "exinfo",
@@ -80,7 +80,7 @@ namespace Kernel
 
             #region Halt
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Halt",
                 CommandNameLower = "halt",
@@ -91,7 +91,7 @@ namespace Kernel
 
             #region Init
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Init",
                 CommandNameLower = "init",
@@ -110,7 +110,7 @@ Possible options:
 
             #region Output
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Output",
                 CommandNameLower = "output",
@@ -122,66 +122,66 @@ Possible options:
     ATA => Output information about ATA/PATA/SATA device,
     USB => Output information about USB interfaces and USB devices,
     FS  => Output partition and file system statuses,
-    Memory = > Output Heap memory and GC status.",
+    Memory = > Output Heap memory and GC status."
             });
 
             #endregion
 
             #region CheckDisk
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "CheckDisk",
                 CommandNameLower = "checkdisk",
                 Description = @"CheckDisk/ChkD  { Drive# }
 Check disks passed in option for errors.
-",
+"
             });
 
             #endregion
 
             #region chkd
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Chkd",
                 CommandNameLower = "chkd",
                 Description = @"CheckDisk/ChkD  { Drive# }
 Alias for CheckDisk commmand.
-",
+"
             });
 
             #endregion
 
             #region FormatDisk
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "FormatDisk",
                 CommandNameLower = "formatdisk",
                 Description = @"FormatDisk/FmtD { Drive# }
 Formats a disk passed in option in FAT 32 format.
-",
+"
             });
 
             #endregion
 
             #region Fmtd
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Fmtd",
                 CommandNameLower = "fmtd",
                 Description = @"FormatDisk/FmtD { Drive# }
 Alias for FormatDisk.
-",
+"
             });
 
             #endregion
 
             #region Dir
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Dir",
                 CommandNameLower = "dir",
@@ -193,14 +193,14 @@ Dir Delete <Path>: Delete specified directory.
 Dir Copy <SrcPath> <DestPath> : Copy specified directory in SrcPath to DestPath.
 On changing directory, it will set ./ to current directory.
 To refer current directory, you can use ./ and for the parent directory, use ../
-",
+"
             });
 
             #endregion
 
             #region File
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "File",
                 CommandNameLower = "file",
@@ -208,40 +208,40 @@ To refer current directory, you can use ./ and for the parent directory, use ../
 File Open <File> : Open a file  and outputs its content.
 File Delete <File> : Delete a specified File.
 File Copy <SrcFile> <DestFile>  : Copies specified source file <SrcFile> to destination.
-",
+"
             });
 
             #endregion
 
             #region GC
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "GC",
                 CommandNameLower = "gc",
                 Description = @"GC { [Cleanup] }
 Calls garbage collection and performs memory clean up.
 Cleanup: This argument is optional and doesn't modify the behaviour.
-",
+"
             });
 
             #endregion
 
             #region Clear
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Clear",
                 CommandNameLower = "clear",
                 Description = @"Clear
-Clears the command shell and displays the empty prompt.",
+Clears the command shell and displays the empty prompt."
             });
 
             #endregion
 
             #region Show
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Show",
                 CommandNameLower = "show",
@@ -255,7 +255,7 @@ Show c: Show the license conditions."
 
             #region Reboot
 
-            CommandDescriptions.Add(new CommandDescription()
+            CommandDescriptions.Add(new CommandDescription
             {
                 CommandName = "Reboot",
                 CommandNameLower = "reboot",

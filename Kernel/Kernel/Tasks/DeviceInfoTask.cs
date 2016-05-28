@@ -36,7 +36,7 @@ using Kernel.Shells;
 
 namespace Kernel.Tasks
 {
-    public static unsafe class DeviceInfoTask
+    public static class DeviceInfoTask
     {
         public static bool Terminating = false;
 

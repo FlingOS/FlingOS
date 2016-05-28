@@ -73,20 +73,20 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //TODO: Support floats
                 throw new NotSupportedException("Switch for floats no supported!");
             }
-            else if (testItem.sizeOnStackInBytes != 4)
+            if (testItem.sizeOnStackInBytes != 4)
             {
                 //TODO: Support other sizes
                 throw new NotSupportedException("Switch for non-int32s not supported!");
             }
 
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
             for (int i = 0; i < theOp.ValueBytes.Length/4; i++)
             {
                 int branchOffset = theOp.NextOffset + Utilities.ReadInt32(theOp.ValueBytes, i*4);
                 ILOp opToGoTo = conversionState.Input.At(branchOffset);
                 int branchPos = conversionState.PositionOf(opToGoTo);
 
-                conversionState.Append(new Branch()
+                conversionState.Append(new Branch
                 {
                     BranchType = BranchOp.BranchEqual,
                     Src2 = i.ToString(),

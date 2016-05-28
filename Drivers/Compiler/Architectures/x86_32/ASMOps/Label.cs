@@ -34,7 +34,6 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
     public class Label : ASMLabel
     {
         public Label()
-            : base()
         {
         }
 
@@ -59,10 +58,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             {
                 return theBlock.GenerateMethodLabel() + ":";
             }
-            else
-            {
-                return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":";
-            }
+            return theBlock.GenerateILOpLabel(ILPosition, Extension) + ":";
         }
     }
 }

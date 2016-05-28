@@ -62,10 +62,10 @@ namespace Drivers.Compiler.Architectures.x86
                 string methodID = anInfo.ID;
                 conversionState.AddExternalLabel(anInfo.ID);
                 //Append the actual call
-                conversionState.Append(new ASMOps.Call() {Target = methodID});
+                conversionState.Append(new ASMOps.Call {Target = methodID});
             }
 
-            conversionState.Append(new ASMOps.Add() {Src = theItem.sizeOnStackInBytes.ToString(), Dest = "ESP"});
+            conversionState.Append(new ASMOps.Add {Src = theItem.sizeOnStackInBytes.ToString(), Dest = "ESP"});
         }
     }
 }

@@ -75,7 +75,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Starg_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
             }
 
@@ -118,31 +118,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int bytesForArg = conversionState.TheILLibrary.GetTypeInfo(allParams[index]).SizeOnStackInBytes;
             if (bytesForArg == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
-                    Dest = BytesOffsetFromFp.ToString() + "($fp)",
+                    Dest = BytesOffsetFromFp + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
             }
             else if (bytesForArg == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
-                    Dest = BytesOffsetFromFp.ToString() + "($fp)",
+                    Dest = BytesOffsetFromFp + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
-                    Dest = (BytesOffsetFromFp + 4).ToString() + "($fp)",
+                    Dest = BytesOffsetFromFp + 4 + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
             }

@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             try
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -81,9 +81,9 @@ namespace Drivers.Compiler.Architectures.x86
                 string typeTableId = conversionState.TheILLibrary.GetTypeInfo(theType).ID;
                 conversionState.AddExternalLabel(typeTableId);
 
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = typeTableId});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = typeTableId});
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,

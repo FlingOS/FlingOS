@@ -66,7 +66,7 @@ namespace Kernel
 
         [Group(Name = "IsolatedKernel_FOS_System")] public static ExceptionState* kernel_state;
 
-        private static bool HasErrored = false;
+        private static bool HasErrored;
 
         public static PageFaultHandler ThePageFaultHandler = null;
 
@@ -86,10 +86,7 @@ namespace Kernel
                 {
                     return state;
                 }
-                else
-                {
-                    return kernel_state;
-                }
+                return kernel_state;
             }
             [NoDebug]
             [NoGC]
@@ -121,13 +118,13 @@ namespace Kernel
             }
         }
 
-        public static unsafe byte* StackPointer
+        public static byte* StackPointer
         {
             [PluggedMethod(ASMFilePath = @"ASM\Exceptions\StackPointer")] get { return null; }
             [PluggedMethod(ASMFilePath = null)] set { }
         }
 
-        public static unsafe byte* BasePointer
+        public static byte* BasePointer
         {
             [PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")] get { return null; }
             [PluggedMethod(ASMFilePath = null)] set { }
@@ -145,7 +142,7 @@ namespace Kernel
         [AddExceptionHandlerInfoMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void AddExceptionHandlerInfo(
+        public static void AddExceptionHandlerInfo(
             void* handlerPtr,
             void* filterPtr)
         {
@@ -219,7 +216,7 @@ namespace Kernel
         /// <param name="ex">The exception to throw.</param>
         [NoDebug]
         [NoGC]
-        public static unsafe void Throw(Exception ex)
+        public static void Throw(Exception ex)
         {
             if (ex != null)
             {
@@ -279,7 +276,7 @@ namespace Kernel
         [HandleExceptionMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleException()
+        public static void HandleException()
         {
             //BasicConsole.WriteLine("Handle exception");
 
@@ -332,7 +329,7 @@ namespace Kernel
         [ExceptionsHandleLeaveMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleLeave(void* continuePtr)
+        public static void HandleLeave(void* continuePtr)
         {
             if (State == null ||
                 State->CurrentHandlerPtr == null)
@@ -509,7 +506,7 @@ namespace Kernel
         [ExceptionsHandleEndFinallyMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleEndFinally()
+        public static void HandleEndFinally()
         {
             if (State == null ||
                 State->CurrentHandlerPtr == null)
@@ -615,7 +612,7 @@ namespace Kernel
         /// </summary>
         [NoDebug]
         [NoGC]
-        private static unsafe void MoveToPreviousHandler()
+        private static void MoveToPreviousHandler()
         {
             State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
             State->depth--;

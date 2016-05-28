@@ -93,7 +93,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,
@@ -170,7 +170,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I4_S:
-                    iValue = (int) (sbyte) theOp.ValueBytes[0];
+                    iValue = (sbyte) theOp.ValueBytes[0];
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I8:
@@ -196,11 +196,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //SUPPORT - floats
                 throw new NotSupportedException("Float constants not supported yet!");
             }
-            else
-            {
-                //Get the bytes for the value
-                valueBytes = BitConverter.GetBytes(iValue);
-            }
+            //Get the bytes for the value
+            valueBytes = BitConverter.GetBytes(iValue);
 
             //If pushing Int64:
             if (numBytes == 8)
@@ -215,14 +212,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Byte,
                     Src = valueToPush,
                     Dest = "$t0",
                     MoveType = Mov.MoveTypes.ImmediateToReg
                 });
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
 
                 //Then push the low-bits as a word
                 //See above
@@ -232,14 +229,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Byte,
                     Src = valueToPush,
                     Dest = "$t0",
                     MoveType = Mov.MoveTypes.ImmediateToReg
                 });
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
             else
             {
@@ -250,18 +247,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Byte,
                     Src = valueToPush,
                     Dest = "$t0",
                     MoveType = Mov.MoveTypes.ImmediateToReg
                 });
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
 
             //Push the constant onto our stack
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,

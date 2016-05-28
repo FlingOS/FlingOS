@@ -34,7 +34,7 @@ namespace Drivers.Compiler.Attributes
     ///     Indicates the method is the kernel's GC.DecrementRefCount method.
     ///     Note: There should only ever be one of these used!
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class DecrementRefCountMethodAttribute : Attribute
     {
     }

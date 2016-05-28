@@ -59,10 +59,7 @@ namespace Kernel.Pipes.File
             {
                 return (FilePipeCommand*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

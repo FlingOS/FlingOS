@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             try
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -81,10 +81,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 string typeTableId = conversionState.TheILLibrary.GetTypeInfo(theType).ID;
                 conversionState.AddExternalLabel(typeTableId);
 
-                conversionState.Append(new La() {Dest = "$t4", Label = typeTableId});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
+                conversionState.Append(new La {Dest = "$t4", Label = typeTableId});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t4"});
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,

@@ -140,10 +140,10 @@ namespace Kernel.Consoles
                 //  (not number of bytes).
                 ushort offset = (ushort) (line*ScreenLineWidth + character);
                 //Output the high-byte
-                CursorCmdPort.Write_Byte((byte) 14);
+                CursorCmdPort.Write_Byte(14);
                 CursorDataPort.Write_Byte((byte) (offset >> 8));
                 //Output the low-byte
-                CursorCmdPort.Write_Byte((byte) 15);
+                CursorCmdPort.Write_Byte(15);
                 CursorDataPort.Write_Byte((byte) offset);
             }
         }

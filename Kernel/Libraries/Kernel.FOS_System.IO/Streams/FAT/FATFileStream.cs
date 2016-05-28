@@ -57,15 +57,15 @@ namespace Kernel.FOS_System.IO.Streams.FAT
         ///     Directories having file size 0 makes perfect sense when you study
         ///     the structure of a directory file.
         /// </remarks>
-        public bool IgnoreFileSize = false;
+        public bool IgnoreFileSize;
 
         /// <summary>
         ///     The position (as an offset from the start of the file) of the stream in the file.
         /// </summary>
-        protected ulong position = 0;
+        protected ulong position;
 
-        private byte[] ReadClusterBuffer = null;
-        private uint ReadClusterSize = 0;
+        private byte[] ReadClusterBuffer;
+        private uint ReadClusterSize;
 
         /// <summary>
         ///     Initializes a new FAT file stream for the specified file.
@@ -274,12 +274,9 @@ namespace Kernel.FOS_System.IO.Streams.FAT
                         {
                             break;
                         }
-                        else
-                        {
-                            CurrentClusterIdx++;
-                            CurrentClusterNum++;
-                            ContiguousClusters++;
-                        }
+                        CurrentClusterIdx++;
+                        CurrentClusterNum++;
+                        ContiguousClusters++;
                     }
 
                     TheFS.ReadClusters(StartClusterNum, ContiguousClusters, ReadClusterBuffer);
@@ -305,10 +302,7 @@ namespace Kernel.FOS_System.IO.Streams.FAT
 
                 return read;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
         /// <summary>

@@ -42,7 +42,6 @@ namespace FlingOops
         ///     Creates a new, empty exception.
         /// </summary>
         public Exception()
-            : base()
         {
         }
 
@@ -51,7 +50,6 @@ namespace FlingOops
         /// </summary>
         /// <param name="aMessage">The exception message.</param>
         public Exception(String aMessage)
-            : base()
         {
             Message = aMessage;
         }

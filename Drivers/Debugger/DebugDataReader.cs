@@ -35,15 +35,14 @@ namespace Drivers.Debugger
 {
     public class DebugDataReader
     {
+        private readonly Dictionary<string, string> MethodASMCache = new Dictionary<string, string>();
+        private readonly List<string> ProcessedAssemblies = new List<string>();
         public Dictionary<uint, List<string>> AddressMappings = new Dictionary<uint, List<string>>();
         public Dictionary<string, List<string>> DebugOps = new Dictionary<string, List<string>>();
         public Dictionary<string, uint> LabelMappings = new Dictionary<string, uint>();
-
-        private readonly Dictionary<string, string> MethodASMCache = new Dictionary<string, string>();
         public Dictionary<string, string> MethodFileMappings = new Dictionary<string, string>();
 
         public Dictionary<string, MethodInfo> Methods = new Dictionary<string, MethodInfo>();
-        private readonly List<string> ProcessedAssemblies = new List<string>();
         public Dictionary<string, TypeInfo> Types = new Dictionary<string, TypeInfo>();
 
         public void ReadDataFiles(string FolderPath, string AssemblyName)
@@ -198,7 +197,7 @@ namespace Drivers.Debugger
                                 switch (LineParts[0])
                                 {
                                     case "Field":
-                                        CurrentFieldInfo = new FieldInfo()
+                                        CurrentFieldInfo = new FieldInfo
                                         {
                                             ID = LineParts[1]
                                         };
@@ -206,7 +205,7 @@ namespace Drivers.Debugger
                                         CurrentMethodInfo = null;
                                         break;
                                     case "Method":
-                                        CurrentMethodInfo = new MethodInfo()
+                                        CurrentMethodInfo = new MethodInfo
                                         {
                                             ID = LineParts[1]
                                         };
@@ -293,7 +292,7 @@ namespace Drivers.Debugger
                                             int Offset = int.Parse(SubParts[0]);
                                             int Position = int.Parse(SubParts[1]);
                                             string TypeID = SubParts[2];
-                                            CurrentMethodInfo.Arguments.Add(Offset, new VariableInfo()
+                                            CurrentMethodInfo.Arguments.Add(Offset, new VariableInfo
                                             {
                                                 Offset = Offset,
                                                 Position = Position,
@@ -309,7 +308,7 @@ namespace Drivers.Debugger
                                             int Offset = int.Parse(SubParts[0]);
                                             int Position = int.Parse(SubParts[1]);
                                             string TypeID = SubParts[2];
-                                            CurrentMethodInfo.Locals.Add(Offset, new VariableInfo()
+                                            CurrentMethodInfo.Locals.Add(Offset, new VariableInfo
                                             {
                                                 Offset = Offset,
                                                 Position = Position,
@@ -335,7 +334,7 @@ namespace Drivers.Debugger
                             {
                                 skip = false;
 
-                                CurrentTypeInfo = new TypeInfo()
+                                CurrentTypeInfo = new TypeInfo
                                 {
                                     ID = line
                                 };
@@ -361,10 +360,7 @@ namespace Drivers.Debugger
                 }
                 return MethodASMCache[MethodLabel];
             }
-            else
-            {
-                return "";
-            }
+            return "";
         }
     }
 }

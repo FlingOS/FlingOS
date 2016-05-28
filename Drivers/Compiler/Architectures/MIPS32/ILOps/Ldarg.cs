@@ -61,13 +61,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     index = 3;
                     break;
                 case OpCodes.Ldarg_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ldarga:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldarga_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
             }
 
@@ -81,7 +81,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if ((OpCodes) theOp.opCode.Value == OpCodes.Ldarga ||
                 (OpCodes) theOp.opCode.Value == OpCodes.Ldarga_S)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -93,7 +93,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 TypeInfo paramTypeInfo = conversionState.TheILLibrary.GetTypeInfo(allParams[index]);
                 int bytesForArg = paramTypeInfo.SizeOnStackInBytes;
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = bytesForArg,
                     isFloat = false,
@@ -145,13 +145,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     index = 3;
                     break;
                 case OpCodes.Ldarg_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ldarga:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldarga_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
             }
 
@@ -170,23 +170,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 //Push the address of the argument onto the stack
 
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$fp",
                     Dest = "$t2",
                     MoveType = Mov.MoveTypes.RegToReg
                 });
-                conversionState.Append(new ASMOps.Add()
+                conversionState.Append(new ASMOps.Add
                 {
                     Src1 = "$t2",
                     Src2 = BytesOffsetFromEBP.ToString(),
                     Dest = "$t2"
                 });
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t2"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t2"});
 
                 //Push the address onto our stack
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = 4,
                     isFloat = false,
@@ -210,18 +210,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     bytesForArg -= 4;
 
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
-                        Src = (BytesOffsetFromEBP + bytesForArg).ToString() + "($fp)",
+                        Src = BytesOffsetFromEBP + bytesForArg + "($fp)",
                         Dest = "$t0",
                         MoveType = Mov.MoveTypes.SrcMemoryToDestReg
                     });
-                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
                 }
 
                 //Push the arg onto our stack
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     sizeOnStackInBytes = paramTypeInfo.SizeOnStackInBytes,
                     isFloat = false,

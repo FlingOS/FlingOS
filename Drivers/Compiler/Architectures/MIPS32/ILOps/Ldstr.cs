@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = 4,
                 isFloat = false,
@@ -67,10 +67,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.AddExternalLabel(theStringID);
 
             //Push the address of the string (i.e. address of ID - ASM label)
-            conversionState.Append(new La() {Dest = "$t4", Label = theStringID});
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
+            conversionState.Append(new La {Dest = "$t4", Label = theStringID});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t4"});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = 4,
                 isFloat = false,

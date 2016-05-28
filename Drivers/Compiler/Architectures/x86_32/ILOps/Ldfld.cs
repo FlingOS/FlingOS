@@ -52,7 +52,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = valueisFloat,
                     sizeOnStackInBytes = stackSize,
@@ -119,133 +119,130 @@ namespace Drivers.Compiler.Architectures.x86
                     throw new NotSupportedException(
                         "Can't load address of field of value type instance that's no longer on the stack!");
                 }
-                else
+                // Move field to top of stack
+                // Remove everything else
+
+                // Stack before:
+                //  TOP - Value bytes...
+                //      - Wanted value bytes
+                //      - ...value bytes
+                //      - ...rest of stack...
+
+                // Stack afterwards:
+                //  TOP - Wanted value bytes    = ESP - Size of object
+                //      - Padding bytes         = ESP - Size of object + size of field bytes
+                //      - ...rest of stack...
+
+                // Copy value as efficiently as possible (to ESP-Size of object)
+
+                int i = fieldMemSize;
+                for (; i >= 4;)
                 {
-                    // Move field to top of stack
-                    // Remove everything else
-
-                    // Stack before:
-                    //  TOP - Value bytes...
-                    //      - Wanted value bytes
-                    //      - ...value bytes
-                    //      - ...rest of stack...
-
-                    // Stack afterwards:
-                    //  TOP - Wanted value bytes    = ESP - Size of object
-                    //      - Padding bytes         = ESP - Size of object + size of field bytes
-                    //      - ...rest of stack...
-
-                    // Copy value as efficiently as possible (to ESP-Size of object)
-
-                    int i = fieldMemSize;
-                    for (; i >= 4;)
+                    i -= 4;
+                    conversionState.Append(new Mov
                     {
-                        i -= 4;
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Dword,
-                            Dest = "EBX",
-                            Src = "[ESP+" + (offset + i) + "]"
-                        });
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Dword,
-                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
-                            Src = "EBX"
-                        });
-                    }
-                    for (; i >= 2;)
+                        Size = OperandSize.Dword,
+                        Dest = "EBX",
+                        Src = "[ESP+" + (offset + i) + "]"
+                    });
+                    conversionState.Append(new Mov
                     {
-                        i -= 2;
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Word,
-                            Dest = "BX",
-                            Src = "[ESP+" + (offset + i) + "]"
-                        });
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Word,
-                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
-                            Src = "BX"
-                        });
-                    }
-                    for (; i >= 1;)
-                    {
-                        i -= 1;
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Byte,
-                            Dest = "BL",
-                            Src = "[ESP+" + (offset + i) + "]"
-                        });
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Byte,
-                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
-                            Src = "BL"
-                        });
-                    }
-
-                    // Move in padding 0s
-                    int paddingSize = fieldStackSize - fieldMemSize;
-                    switch (paddingSize)
-                    {
-                        case 1:
-                            conversionState.Append(new Mov()
-                            {
-                                Size = OperandSize.Byte,
-                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
-                                Src = "0"
-                            });
-                            break;
-                        case 2:
-                            conversionState.Append(new Mov()
-                            {
-                                Size = OperandSize.Word,
-                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
-                                Src = "0"
-                            });
-                            break;
-                        case 3:
-                            conversionState.Append(new Mov()
-                            {
-                                Size = OperandSize.Byte,
-                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
-                                Src = "0"
-                            });
-                            conversionState.Append(new Mov()
-                            {
-                                Size = OperandSize.Word,
-                                Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize + 1) + "]",
-                                Src = "0"
-                            });
-                            break;
-                    }
-
-                    // Remove everything else
-                    int sizeToRemove = objStackItem.sizeOnStackInBytes - fieldStackSize;
-                    conversionState.Append(new ASMOps.Add() {Dest = "ESP", Src = sizeToRemove.ToString()});
-
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = valueisFloat,
-                        sizeOnStackInBytes = fieldStackSize,
-                        isGCManaged = fieldTypeInfo.IsGCManaged,
-                        isValue = fieldTypeInfo.IsValueType
+                        Size = OperandSize.Dword,
+                        Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
+                        Src = "EBX"
                     });
                 }
+                for (; i >= 2;)
+                {
+                    i -= 2;
+                    conversionState.Append(new Mov
+                    {
+                        Size = OperandSize.Word,
+                        Dest = "BX",
+                        Src = "[ESP+" + (offset + i) + "]"
+                    });
+                    conversionState.Append(new Mov
+                    {
+                        Size = OperandSize.Word,
+                        Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
+                        Src = "BX"
+                    });
+                }
+                for (; i >= 1;)
+                {
+                    i -= 1;
+                    conversionState.Append(new Mov
+                    {
+                        Size = OperandSize.Byte,
+                        Dest = "BL",
+                        Src = "[ESP+" + (offset + i) + "]"
+                    });
+                    conversionState.Append(new Mov
+                    {
+                        Size = OperandSize.Byte,
+                        Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - fieldStackSize + i) + "]",
+                        Src = "BL"
+                    });
+                }
+
+                // Move in padding 0s
+                int paddingSize = fieldStackSize - fieldMemSize;
+                switch (paddingSize)
+                {
+                    case 1:
+                        conversionState.Append(new Mov
+                        {
+                            Size = OperandSize.Byte,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
+                            Src = "0"
+                        });
+                        break;
+                    case 2:
+                        conversionState.Append(new Mov
+                        {
+                            Size = OperandSize.Word,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
+                            Src = "0"
+                        });
+                        break;
+                    case 3:
+                        conversionState.Append(new Mov
+                        {
+                            Size = OperandSize.Byte,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize) + "]",
+                            Src = "0"
+                        });
+                        conversionState.Append(new Mov
+                        {
+                            Size = OperandSize.Word,
+                            Dest = "[ESP+" + (objStackItem.sizeOnStackInBytes - paddingSize + 1) + "]",
+                            Src = "0"
+                        });
+                        break;
+                }
+
+                // Remove everything else
+                int sizeToRemove = objStackItem.sizeOnStackInBytes - fieldStackSize;
+                conversionState.Append(new ASMOps.Add {Dest = "ESP", Src = sizeToRemove.ToString()});
+
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
+                {
+                    isFloat = valueisFloat,
+                    sizeOnStackInBytes = fieldStackSize,
+                    isGCManaged = fieldTypeInfo.IsGCManaged,
+                    isValue = fieldTypeInfo.IsValueType
+                });
             }
             else
             {
                 //Pop object pointer
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
                 if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
                 {
-                    conversionState.Append(new ASMOps.Add() {Src = offset.ToString(), Dest = "ECX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "ECX"});
+                    conversionState.Append(new ASMOps.Add {Src = offset.ToString(), Dest = "ECX"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "ECX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -260,34 +257,34 @@ namespace Drivers.Compiler.Architectures.x86
                     int sizeToSub = sizeNotInMem/2*2; //Rounds down
                     for (int i = 0; i < sizeToSub; i += 2)
                     {
-                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "0"});
+                        conversionState.Append(new Push {Size = OperandSize.Word, Src = "0"});
                     }
                     for (int i = fieldMemSize + fieldMemSize%2; i > 0; i -= 2)
                     {
                         if (sizeToSub != sizeNotInMem)
                         {
-                            conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "0", Dest = "AX"});
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov {Size = OperandSize.Word, Src = "0", Dest = "AX"});
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Byte,
-                                Src = "[ECX+" + (offset + i - 2).ToString() + "]",
+                                Src = "[ECX+" + (offset + i - 2) + "]",
                                 Dest = "AL"
                             });
-                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "AX"});
+                            conversionState.Append(new Push {Size = OperandSize.Word, Src = "AX"});
                         }
                         else
                         {
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Word,
-                                Src = "[ECX+" + (offset + i - 2).ToString() + "]",
+                                Src = "[ECX+" + (offset + i - 2) + "]",
                                 Dest = "AX"
                             });
-                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "AX"});
+                            conversionState.Append(new Push {Size = OperandSize.Word, Src = "AX"});
                         }
                     }
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
                         isFloat = valueisFloat,
                         sizeOnStackInBytes = fieldStackSize,

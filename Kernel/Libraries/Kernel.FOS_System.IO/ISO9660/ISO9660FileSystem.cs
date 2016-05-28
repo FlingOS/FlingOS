@@ -68,12 +68,9 @@ namespace Kernel.FOS_System.IO.ISO9660
             {
                 return RootDirectory;
             }
-            else
-            {
-                List nameParts = aName.Split(FileSystemManager.PathDelimiter);
-                List listings = RootDirectory.GetListings();
-                return GetListingFromListings(nameParts, null, listings);
-            }
+            List nameParts = aName.Split(FileSystemManager.PathDelimiter);
+            List listings = RootDirectory.GetListings();
+            return GetListingFromListings(nameParts, null, listings);
         }
     }
 }

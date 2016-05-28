@@ -64,7 +64,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                         throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (DestIsMemory)");
                 }
             }
-            else if (MoveType == MoveTypes.SrcMemoryToDestReg)
+            if (MoveType == MoveTypes.SrcMemoryToDestReg)
             {
                 if (SignExtend)
                 {
@@ -80,29 +80,23 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                             throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
                     }
                 }
-                else
+                switch (Size)
                 {
-                    switch (Size)
-                    {
-                        case OperandSize.Byte:
-                            return "lbu " + Dest + ", " + Src;
-                        case OperandSize.Halfword:
-                            return "lhu " + Dest + ", " + Src;
-                        case OperandSize.Word:
-                            return "lw " + Dest + ", " + Src;
-                        default:
-                            throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
-                    }
+                    case OperandSize.Byte:
+                        return "lbu " + Dest + ", " + Src;
+                    case OperandSize.Halfword:
+                        return "lhu " + Dest + ", " + Src;
+                    case OperandSize.Word:
+                        return "lw " + Dest + ", " + Src;
+                    default:
+                        throw new NotSupportedException("MIPS: Unrecognised move operand sizes. (SrcIsMemory)");
                 }
             }
-            else if (MoveType == MoveTypes.ImmediateToReg)
+            if (MoveType == MoveTypes.ImmediateToReg)
             {
                 return "add " + Dest + ", $zero, " + Src;
             }
-            else
-            {
-                return "move " + Dest + ", " + Src;
-            }
+            return "move " + Dest + ", " + Src;
         }
     }
 }

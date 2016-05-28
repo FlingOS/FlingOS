@@ -51,8 +51,8 @@ namespace Kernel.Hardware.Processes.Scheduling
 
         //private List SuspendedList = new List(1024);
 
-        private bool Enabled = false;
-        private bool Started = false;
+        private bool Enabled;
+        private bool Started;
 
         private const int MSFreq = 5;
         private readonly int UpdatePeriod = MSFreq;

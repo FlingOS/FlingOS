@@ -40,7 +40,7 @@ namespace Kernel.Hardware.Processes
 {
     public static class Scheduler
     {
-        public enum Priority : int
+        public enum Priority
         {
             ZeroTimed = 100,
             Low = 15,

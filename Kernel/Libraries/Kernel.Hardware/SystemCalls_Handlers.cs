@@ -35,7 +35,7 @@ namespace Kernel.Hardware.Processes
     /// <summary>
     ///     Contains callers and handlers for system calls.
     /// </summary>
-    public static unsafe class SystemCallHandlers
+    public static class SystemCallHandlers
     {
         /// <summary>
         ///     Main interrupt handler routine for system calls.
@@ -280,7 +280,7 @@ namespace Kernel.Hardware.Processes
 
     #region Play Note
 
-    public enum MusicalNote : int
+    public enum MusicalNote
     {
         Silent = 0,
         C0 = 16,

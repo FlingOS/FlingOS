@@ -39,7 +39,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -82,21 +82,21 @@ namespace Drivers.Compiler.Architectures.x86
             //Push type reference
             string typeIdStr = conversionState.TheILLibrary.GetTypeInfo(elementType).ID;
             conversionState.AddExternalLabel(typeIdStr);
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = typeIdStr});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = typeIdStr});
             //Push a dword for return value (i.e. new array pointer)
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
             //Get the GC.NewArr method ID (i.e. ASM label)
             string methodLabel = conversionState.GetNewArrMethodInfo().ID;
             //Call GC.NewArr
-            conversionState.Append(new ASMOps.Call() {Target = methodLabel});
+            conversionState.Append(new ASMOps.Call {Target = methodLabel});
             //Pop the return value (i.e. new array pointer)
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
             //Remove args from stack
-            conversionState.Append(new ASMOps.Add() {Src = "8", Dest = "ESP"});
+            conversionState.Append(new ASMOps.Add {Src = "8", Dest = "ESP"});
             //Check if pointer == 0?
-            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
+            conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "0"});
             //If it isn't 0, not out of memory so continue execution
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpNotZero,
                 DestILPosition = currOpPosition,
@@ -118,19 +118,19 @@ namespace Drivers.Compiler.Architectures.x86
             //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_Heap_PreventAllocation], 0");
             //result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
-            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
+            conversionState.Append(new ASMOps.Call {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
             });
             //Insert the not null label
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotNullMem"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "NotNullMem"});
 
             //Push new array pointer
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,

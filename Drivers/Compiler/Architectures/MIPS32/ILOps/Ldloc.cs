@@ -64,7 +64,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ldloc_S:
                 case OpCodes.Ldloca_S:
-                    localIndex = (ushort) theOp.ValueBytes[0];
+                    localIndex = theOp.ValueBytes[0];
                     break;
             }
 
@@ -72,7 +72,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (loadAddr)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -84,7 +84,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 int pushedLocalSizeVal = theLoc.TheTypeInfo.SizeOnStackInBytes;
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,
@@ -132,7 +132,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ldloc_S:
                 case OpCodes.Ldloca_S:
-                    localIndex = (ushort) theOp.ValueBytes[0];
+                    localIndex = theOp.ValueBytes[0];
                     break;
             }
 
@@ -151,17 +151,17 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (loadAddr)
             {
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$fp",
                     Dest = "$t0",
                     MoveType = Mov.MoveTypes.RegToReg
                 });
-                conversionState.Append(new ASMOps.Sub() {Src1 = "$t0", Src2 = bytesOffset.ToString(), Dest = "$t0"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new ASMOps.Sub {Src1 = "$t0", Src2 = bytesOffset.ToString(), Dest = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -177,22 +177,19 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 {
                     throw new NotSupportedException("Invalid local bytes size!");
                 }
-                else
+                for (int i = bytesOffset - (pushedLocalSizeVal - 4); i <= bytesOffset; i += 4)
                 {
-                    for (int i = bytesOffset - (pushedLocalSizeVal - 4); i <= bytesOffset; i += 4)
+                    conversionState.Append(new Mov
                     {
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Word,
-                            Src = "-" + i.ToString() + "($fp)",
-                            Dest = "$t0",
-                            MoveType = Mov.MoveTypes.SrcMemoryToDestReg
-                        });
-                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
-                    }
+                        Size = OperandSize.Word,
+                        Src = "-" + i + "($fp)",
+                        Dest = "$t0",
+                        MoveType = Mov.MoveTypes.SrcMemoryToDestReg
+                    });
+                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
                 }
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,

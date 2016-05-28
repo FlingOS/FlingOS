@@ -48,7 +48,7 @@ namespace Kernel.Processes.ELF
                 String currString = "";
                 if (offset < size)
                 {
-                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint) (size - offset));
+                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, size - offset);
                 }
                 return currString;
             }

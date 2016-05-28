@@ -92,24 +92,15 @@ namespace Kernel.FOS_System.IO
             {
                 if (Parent != null)
                 {
-                    return Parent.GetFullPath() + this.Name + FileSystemManager.PathDelimiter;
+                    return Parent.GetFullPath() + Name + FileSystemManager.PathDelimiter;
                 }
-                else
-                {
-                    return TheFileSystem.TheMapping.Prefix + this.Name + FileSystemManager.PathDelimiter;
-                }
+                return TheFileSystem.TheMapping.Prefix + Name + FileSystemManager.PathDelimiter;
             }
-            else
+            if (Parent != null)
             {
-                if (Parent != null)
-                {
-                    return Parent.GetFullPath() + this.Name;
-                }
-                else
-                {
-                    return TheFileSystem.TheMapping.Prefix + this.Name;
-                }
+                return Parent.GetFullPath() + Name;
             }
+            return TheFileSystem.TheMapping.Prefix + Name;
         }
 
         /// <summary>

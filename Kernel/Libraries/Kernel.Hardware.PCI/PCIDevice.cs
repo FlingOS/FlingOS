@@ -251,17 +251,17 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         ///     The device's bus number.
         /// </summary>
-        public uint bus = 0;
+        public uint bus;
 
         /// <summary>
         ///     The device's function number.
         /// </summary>
-        public uint function = 0;
+        public uint function;
 
         /// <summary>
         ///     The device's slot number.
         /// </summary>
-        public uint slot = 0;
+        public uint slot;
 
         /// <summary>
         ///     Initialises a new, generic PCI device.
@@ -401,15 +401,13 @@ namespace Kernel.Hardware.PCI
         {
             // 31 	        30 - 24    23 - 16      15 - 11 	    10 - 8 	          7 - 2 	        1 - 0
             // Enable Bit 	Reserved   Bus Number 	Device Number 	Function Number   Register Number 	00 
-            return (uint) (
-                // Enable bit - must be set
-                0x80000000
-                    // Bits 23-16
-                | (aBus << 16)
-                    // Bits 15-11
-                | ((aSlot & 0x1F) << 11)
-                    // Bits 10-8
-                | ((aFunction & 0x07) << 8));
+            return 0x80000000
+                // Bits 23-16
+                   | (aBus << 16)
+                // Bits 15-11
+                   | ((aSlot & 0x1F) << 11)
+                // Bits 10-8
+                   | ((aFunction & 0x07) << 8);
         }
 
         /// <summary>
@@ -539,46 +537,43 @@ namespace Kernel.Hardware.PCI
                         {
                             return "Mass Storage Controller (SCSI)";
                         }
-                        else if (device.Subclass == 0x01)
+                        if (device.Subclass == 0x01)
                         {
                             return "Mass Storage Controller (IDE)";
                         }
-                        else if (device.Subclass == 0x02)
+                        if (device.Subclass == 0x02)
                         {
                             return "Mass Storage Controller (Floppy)";
                         }
-                        else if (device.Subclass == 0x03)
+                        if (device.Subclass == 0x03)
                         {
                             return "Mass Storage Controller (IPI)";
                         }
-                        else if (device.Subclass == 0x04)
+                        if (device.Subclass == 0x04)
                         {
                             return "Mass Storage Controller (RAID)";
                         }
-                        else if (device.Subclass == 0x05)
+                        if (device.Subclass == 0x05)
                         {
                             return "Mass Storage Controller (ATA)";
                         }
-                        else if (device.Subclass == 0x06)
+                        if (device.Subclass == 0x06)
                         {
                             return "Mass Storage Controller (SATA)";
                         }
-                        else if (device.Subclass == 0x07)
+                        if (device.Subclass == 0x07)
                         {
                             return "Mass Storage Controller (Serial Attached SCSI)";
                         }
-                        else if (device.Subclass == 0x08)
+                        if (device.Subclass == 0x08)
                         {
                             return "Mass Storage Controller (Non-volatile memory)";
                         }
-                        else if (device.Subclass == 0x80)
+                        if (device.Subclass == 0x80)
                         {
                             return "Mass Storage Controller (Other)";
                         }
-                        else
-                        {
-                            return "Mass Storage Controller (Unrecognised)";
-                        }
+                        return "Mass Storage Controller (Unrecognised)";
 
                         #endregion
 
@@ -610,11 +605,11 @@ namespace Kernel.Hardware.PCI
                         {
                             return "FireWire (IEEE 1394) Controller";
                         }
-                        else if (device.Subclass == 0x02)
+                        if (device.Subclass == 0x02)
                         {
                             return "ACCESS Bus";
                         }
-                        else if (device.Subclass == 0x03)
+                        if (device.Subclass == 0x03)
                         {
                             switch (device.ProgIF)
                             {

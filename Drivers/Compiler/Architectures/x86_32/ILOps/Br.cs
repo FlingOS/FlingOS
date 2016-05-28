@@ -555,46 +555,46 @@ namespace Drivers.Compiler.Architectures.x86
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                    //If the test item is Int64 or UInt64           TODO: or Struct
-                    else if (testItem.sizeOnStackInBytes == 8)
+                        //If the test item is Int64 or UInt64           TODO: or Struct
+                    if (testItem.sizeOnStackInBytes == 8)
                     {
                         //Compare first 32 bits (low bits)
                         //Then (if necessary) compare second 32 bits (high bits)
 
                         //Pop the low bits
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
                         //Compare the low bits to the test value
-                        conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
+                        conversionState.Append(new Cmp {Arg2 = testVal, Arg1 = "EAX"});
                         //Pre-emptively pop the high bits
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
                         //If we are testing for not equal to zero:
                         if (jumpOp == JmpOp.JumpNotZero)
                         {
                             //If the low bits are not zero, do the jump
-                            conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
+                            conversionState.Append(new Jmp {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                             //Otherwise, test if the high bits are not 0
                             //We use "cmp" not "test" as "cmp" uses +/- test val, "test" uses & with test val.
-                            conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
+                            conversionState.Append(new Cmp {Arg2 = testVal, Arg1 = "EAX"});
                             //If the high bits are not zero, do the jump
-                            conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
+                            conversionState.Append(new Jmp {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                         }
                         //If we are testing for equal to zero:
                         else if (jumpOp == JmpOp.JumpZero)
                         {
                             //If the low bits are not zero, jump to the end of these test as condition has not been met
-                            conversionState.Append(new Jmp()
+                            conversionState.Append(new Jmp
                             {
                                 JumpType = JmpOp.JumpNotZero,
                                 DestILPosition = currOpPosition,
                                 Extension = "End"
                             });
                             //Otherwise, test if the high bits are zero
-                            conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
+                            conversionState.Append(new Cmp {Arg2 = testVal, Arg1 = "EAX"});
                             //If they are, do the jump
-                            conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
+                            conversionState.Append(new Jmp {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+                            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
@@ -606,11 +606,11 @@ namespace Drivers.Compiler.Architectures.x86
                     else if (testItem.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
                         //Compare the test item to the test value
-                        conversionState.Append(new Cmp() {Arg2 = testVal, Arg1 = "EAX"});
+                        conversionState.Append(new Cmp {Arg2 = testVal, Arg1 = "EAX"});
                         //Do the specified jump
-                        conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
+                        conversionState.Append(new Jmp {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                     }
                     else
                     {
@@ -632,26 +632,26 @@ namespace Drivers.Compiler.Architectures.x86
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                    else if (itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
+                    if (itemA.sizeOnStackInBytes != itemB.sizeOnStackInBytes)
                     {
                         throw new InvalidOperationException("Branch test operands must be same size!");
                     }
-                    //If the test item is Int64 or UInt64           TODO: or Struct
-                    else if (itemA.sizeOnStackInBytes == 8)
+                        //If the test item is Int64 or UInt64           TODO: or Struct
+                    if (itemA.sizeOnStackInBytes == 8)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
 
                         if (!isNegativeTest)
                         {
                             //Compare test item A high bits to test item B high bits
-                            conversionState.Append(new Cmp() {Arg2 = "ECX", Arg1 = "EDX"});
+                            conversionState.Append(new Cmp {Arg2 = "ECX", Arg1 = "EDX"});
                             //If they are not equal, abort the testing
-                            conversionState.Append(new Jmp()
+                            conversionState.Append(new Jmp
                             {
                                 JumpType = inverseJumpOp,
                                 DestILPosition = currOpPosition,
@@ -660,9 +660,9 @@ namespace Drivers.Compiler.Architectures.x86
                             });
                             //Else the igh bits are equal so test low bits
                             //Compare test item A low bits to test item B low bits
-                            conversionState.Append(new Cmp() {Arg2 = "EBX", Arg1 = "EAX"});
+                            conversionState.Append(new Cmp {Arg2 = "EBX", Arg1 = "EAX"});
                             //Do the specified jump
-                            conversionState.Append(new Jmp()
+                            conversionState.Append(new Jmp
                             {
                                 JumpType = jumpOp,
                                 DestILPosition = opToGoToPosition,
@@ -670,23 +670,23 @@ namespace Drivers.Compiler.Architectures.x86
                             });
 
                             //Insert the end label to be jumped to if condition is not met (see above)
-                            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+                            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
                         }
                         else
                         {
                             //Compare test item A high bits to test item B high bits
-                            conversionState.Append(new Cmp() {Arg2 = "ECX", Arg1 = "EDX"});
+                            conversionState.Append(new Cmp {Arg2 = "ECX", Arg1 = "EDX"});
                             //Do the specified jump
-                            conversionState.Append(new Jmp()
+                            conversionState.Append(new Jmp
                             {
                                 JumpType = jumpOp,
                                 DestILPosition = opToGoToPosition,
                                 UnsignedTest = UnsignedTest
                             });
                             //Compare test item A low bits to test item B low bits
-                            conversionState.Append(new Cmp() {Arg2 = "EBX", Arg1 = "EAX"});
+                            conversionState.Append(new Cmp {Arg2 = "EBX", Arg1 = "EAX"});
                             //Do the specified jump
-                            conversionState.Append(new Jmp()
+                            conversionState.Append(new Jmp
                             {
                                 JumpType = jumpOp,
                                 DestILPosition = opToGoToPosition,
@@ -697,13 +697,13 @@ namespace Drivers.Compiler.Architectures.x86
                     else if (itemA.sizeOnStackInBytes == 4)
                     {
                         //Pop the test item B
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
                         //Pop the test item A
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
                         //Compare test item A to test item B
-                        conversionState.Append(new Cmp() {Arg2 = "EBX", Arg1 = "EAX"});
+                        conversionState.Append(new Cmp {Arg2 = "EBX", Arg1 = "EAX"});
                         //Do the specified jump
-                        conversionState.Append(new Jmp()
+                        conversionState.Append(new Jmp
                         {
                             JumpType = jumpOp,
                             DestILPosition = opToGoToPosition,
@@ -718,7 +718,7 @@ namespace Drivers.Compiler.Architectures.x86
                 else
                 {
                     //Do the straightforward jump...
-                    conversionState.Append(new Jmp() {JumpType = jumpOp, DestILPosition = opToGoToPosition});
+                    conversionState.Append(new Jmp {JumpType = jumpOp, DestILPosition = opToGoToPosition});
                 }
 
                 // Fork the stack after the processing of the jump (since processing of jump may pop some stuff)

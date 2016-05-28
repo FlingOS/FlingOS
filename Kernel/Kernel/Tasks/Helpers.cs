@@ -42,7 +42,7 @@ namespace Kernel.Tasks
                 uint[] DataPages = VirtualMemoryManager.GetBuiltInProcessVAddrs();
                 StartRequest->DataPages = (uint*) ((byte*) ObjectUtilities.GetHandle(DataPages) + Array.FieldsBytesSize);
                 StartRequest->DataPagesCount = (uint) DataPages.Length;
-                StartRequest->MainMethod = (void*) ObjectUtilities.GetHandle(MainMethod);
+                StartRequest->MainMethod = ObjectUtilities.GetHandle(MainMethod);
 
                 uint ATADriverProcessId;
                 uint ATADriverThreadId;

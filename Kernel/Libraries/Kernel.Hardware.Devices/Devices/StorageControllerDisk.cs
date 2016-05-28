@@ -6,13 +6,12 @@ namespace Kernel.Hardware.Devices
 {
     public class StorageControllerDisk : DiskDevice
     {
+        private readonly byte[] JunkData;
         public StorageCmdOutpoint CmdPipe;
         public int CmdPipeId;
         public StorageDataInpoint DataInPipe;
         public StorageDataOutpoint DataOutPipe;
         public int DataOutPipeId;
-
-        private readonly byte[] JunkData;
         public uint RemoteProcessId;
 
         public StorageControllerDisk(ulong AnId, uint ARemoteProcessId, int ACmdPipeId, StorageCmdOutpoint ACmdPipe,

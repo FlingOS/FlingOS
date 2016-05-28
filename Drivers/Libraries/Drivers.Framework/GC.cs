@@ -51,7 +51,7 @@ namespace Drivers.Framework
         ///     Whether the GC has been initialised yet or not.
         ///     Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        public static bool Enabled = false;
+        public static bool Enabled;
 
         private static GCState state;
 
@@ -76,10 +76,7 @@ namespace Drivers.Framework
                 {
                     return state.OutputTrace;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             [NoGC]
             [NoDebug]
@@ -102,10 +99,7 @@ namespace Drivers.Framework
                 {
                     return state.InsideGC;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             [NoGC]
             [NoDebug]
@@ -128,10 +122,7 @@ namespace Drivers.Framework
                 {
                     return state.AccessLockInitialised;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -159,10 +150,7 @@ namespace Drivers.Framework
                 {
                     return state.NumObjs;
                 }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
             [NoGC]
             [NoDebug]
@@ -184,10 +172,7 @@ namespace Drivers.Framework
                 {
                     return state.NumStrings;
                 }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
             [NoGC]
             set
@@ -208,10 +193,7 @@ namespace Drivers.Framework
                 {
                     return state.lastEnabler;
                 }
-                else
-                {
-                    return "";
-                }
+                return "";
             }
             [NoDebug]
             set
@@ -252,10 +234,7 @@ namespace Drivers.Framework
                 {
                     return state.lastLocker;
                 }
-                else
-                {
-                    return "";
-                }
+                return "";
             }
             [NoDebug]
             set
@@ -277,10 +256,7 @@ namespace Drivers.Framework
                 {
                     return state.CleanupList;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             [NoGC]
             [NoDebug]
@@ -924,7 +900,7 @@ namespace Drivers.Framework
         /// <returns>True if the signature is found and is correct.</returns>
         [NoDebug]
         [NoGC]
-        public static unsafe bool CheckSignature(GCHeader* headerPtr)
+        public static bool CheckSignature(GCHeader* headerPtr)
         {
             bool OK = headerPtr->Sig1 == 0x5C0EADE2U;
             OK = OK && headerPtr->Sig2 == 0x5C0EADE2U;
@@ -1208,8 +1184,8 @@ namespace Drivers.Framework
 
     public unsafe class GCState : Object
     {
-        public SpinLock AccessLock = null;
-        public bool AccessLockInitialised = false;
+        public SpinLock AccessLock;
+        public bool AccessLockInitialised;
 
         /// <summary>
         ///     The linked-list of objects to clean up.
@@ -1220,7 +1196,7 @@ namespace Drivers.Framework
         ///     Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
         ///     called methods re-calling the GC!)
         /// </summary>
-        public bool InsideGC = false;
+        public bool InsideGC;
 
         public String lastDisabler = "";
 
@@ -1230,14 +1206,14 @@ namespace Drivers.Framework
         /// <summary>
         ///     The total number of objects currently allocated by the GC.
         /// </summary>
-        public int NumObjs = 0;
+        public int NumObjs;
 
         /// <summary>
         ///     The number of strings currently allocated on the heap.
         /// </summary>
-        public int NumStrings = 0;
+        public int NumStrings;
 
-        public bool OutputTrace = false;
+        public bool OutputTrace;
     }
 
     /// <summary>

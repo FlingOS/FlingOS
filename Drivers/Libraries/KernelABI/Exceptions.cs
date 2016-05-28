@@ -51,7 +51,7 @@ namespace KernelABI
         [ExceptionsHandleEndFinallyMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleEndFinally()
+        public static void HandleEndFinally()
         {
         }
     }

@@ -444,7 +444,7 @@ namespace Kernel.USB.Devices
                     cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
                     cbw->commandByte[5] = (byte) LBA; // LBA LSB
                     cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
-                        // MSB <--- blocks not byte!
+                    // MSB <--- blocks not byte!
                     cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
                     break;
                 // Write (10)
@@ -457,7 +457,7 @@ namespace Kernel.USB.Devices
                     cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
                     cbw->commandByte[5] = (byte) LBA; // LBA LSB
                     cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
-                        // MSB <--- blocks not byte!
+                    // MSB <--- blocks not byte!
                     cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
                     break;
                 // Synchronise Cache (10)
@@ -471,7 +471,7 @@ namespace Kernel.USB.Devices
                     cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
                     cbw->commandByte[5] = (byte) LBA; // LBA LSB
                     cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
-                        // MSB <--- blocks not byte!
+                    // MSB <--- blocks not byte!
                     cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
                     break;
                 // Start Stop Unit (6)
@@ -861,13 +861,6 @@ namespace Kernel.USB.Devices
                     }
 #endif
                 }
-                else
-                {
-                    // TODO: Handle failure/timeout
-#if MSD_TRACE
-                    DBGMSG("SCSI OUT command failed!");
-#endif
-                }
             }
             finally
             {
@@ -1002,13 +995,6 @@ namespace Kernel.USB.Devices
                     }
                     #endif
                 }
-                else
-                {
-                    // TODO: Handle failure/timeout
-#if MSD_TRACE
-                    DBGMSG("SCSI SyncCache (10) (Out) command failed!");
-                    #endif
-                }
             }
             finally
             {
@@ -1122,13 +1108,6 @@ namespace Kernel.USB.Devices
                     }
 #endif
                 }
-                else
-                {
-                    // TODO: Handle failure/timeout
-#if MSD_TRACE
-                    DBGMSG("SCSI StartStop Unit (10) (Out) command failed!");
-#endif
-                }
             }
             finally
             {
@@ -1213,10 +1192,7 @@ namespace Kernel.USB.Devices
                     timeout = 0;
                     break;
                 }
-                else
-                {
-                    SystemCalls.SleepThread(50);
-                }
+                SystemCalls.SleepThread(50);
             }
 
             return statusByte;
@@ -1560,7 +1536,7 @@ namespace Kernel.USB.Devices
                 //      So the count of blocks is Last LBA + 1
                 blockCount = (ulong) capacityBuffer[0] + 1;
                 // capacityBuffer[1] = Block size
-                blockSize = (ulong) capacityBuffer[1];
+                blockSize = capacityBuffer[1];
             }
             finally
             {

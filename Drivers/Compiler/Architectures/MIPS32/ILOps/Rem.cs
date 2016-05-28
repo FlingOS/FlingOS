@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -78,56 +78,53 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-            else if (itemB.isFloat || itemA.isFloat)
+            if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Divide floats is unsupported!");
             }
-            else
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
+                //Pop item A
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                if ((OpCodes) theOp.opCode.Value == OpCodes.Rem_Un)
                 {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
-                    //Pop item A
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                    if ((OpCodes) theOp.opCode.Value == OpCodes.Rem_Un)
-                    {
-                        //Do the division
-                        conversionState.Append(new ASMOps.Div() {Arg1 = "$t0", Arg2 = "$t1", Signed = false});
-                    }
-                    else
-                    {
-                        //Do the division
-                        conversionState.Append(new ASMOps.Div() {Arg1 = "$t0", Arg2 = "$t1", Signed = true});
-                    }
-                    //Result stored in $t3
-                    conversionState.Append(new Mfhi() {Dest = "$t3"});
-                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
+                    //Do the division
+                    conversionState.Append(new ASMOps.Div {Arg1 = "$t0", Arg2 = "$t1", Signed = false});
+                }
+                else
+                {
+                    //Do the division
+                    conversionState.Append(new ASMOps.Div {Arg1 = "$t0", Arg2 = "$t1", Signed = true});
+                }
+                //Result stored in $t3
+                conversionState.Append(new Mfhi {Dest = "$t3"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t3"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 4,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
-                else if ((itemA.sizeOnStackInBytes == 8 &&
-                          itemB.sizeOnStackInBytes == 4) ||
-                         (itemA.sizeOnStackInBytes == 4 &&
-                          itemB.sizeOnStackInBytes == 8))
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    throw new InvalidOperationException(
-                        "Invalid stack operand sizes! They should be the 32-32 or 64-64.");
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 8)
-                {
-                    //SUPPORT - 64-bit division
-                    throw new NotSupportedException("64-bit by 64-bit modulo not supported yet!");
-                }
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
+            }
+            else if ((itemA.sizeOnStackInBytes == 8 &&
+                      itemB.sizeOnStackInBytes == 4) ||
+                     (itemA.sizeOnStackInBytes == 4 &&
+                      itemB.sizeOnStackInBytes == 8))
+            {
+                throw new InvalidOperationException(
+                    "Invalid stack operand sizes! They should be the 32-32 or 64-64.");
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                //SUPPORT - 64-bit division
+                throw new NotSupportedException("64-bit by 64-bit modulo not supported yet!");
             }
         }
     }

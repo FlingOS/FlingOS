@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             //Ignore for now
             //TODO: Initialise the structure to 0
-            conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = "4", Dest = "$sp", Unsigned = false});
+            conversionState.Append(new ASMOps.Add {Src1 = "$sp", Src2 = "4", Dest = "$sp", Unsigned = false});
         }
     }
 }

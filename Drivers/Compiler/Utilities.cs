@@ -152,7 +152,7 @@ namespace Drivers.Compiler
         /// <returns>The number.</returns>
         public static float ReadFloat32(byte[] bytes, int offset)
         {
-            return (float) BitConverter.ToSingle(bytes, 0);
+            return BitConverter.ToSingle(bytes, 0);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Drivers.Compiler
         /// <returns>The number.</returns>
         public static double ReadFloat64(byte[] bytes, int offset)
         {
-            return (double) BitConverter.ToDouble(bytes, 0);
+            return BitConverter.ToDouble(bytes, 0);
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace Drivers.Compiler
                         Logger.LogError("", "", 0, ex.Message);
                     }
                 };
-                process.Disposed += delegate(object sender, EventArgs e) { };
+                process.Disposed += delegate { };
 
                 process.Start();
                 lock (CallbacksLock)

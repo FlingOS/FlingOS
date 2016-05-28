@@ -39,7 +39,7 @@ namespace Kernel.Hardware.Keyboards
         /// <summary>
         ///     The (only) PS2 keyboard instance.
         /// </summary>
-        public static PS2 ThePS2 = null;
+        public static PS2 ThePS2;
 
         /// <summary>
         ///     The keyboard command port.

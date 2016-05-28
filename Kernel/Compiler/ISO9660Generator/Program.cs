@@ -44,7 +44,7 @@ namespace ISO9660Generator
             bool BootInfoTable = bool.Parse(args[3]);
             string FilePath = args[4];
 
-            Options opts = new Options()
+            Options opts = new Options
             {
                 BootLoadSize = BootLoadSize,
                 IsoFileName = IsoFileName,

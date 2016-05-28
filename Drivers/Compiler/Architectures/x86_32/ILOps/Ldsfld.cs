@@ -52,7 +52,7 @@ namespace Drivers.Compiler.Architectures.x86
                     int size = theTypeInfo.SizeOnStackInBytes;
                     bool isFloat = Utilities.IsFloat(theField.FieldType);
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
                         isFloat = isFloat,
                         sizeOnStackInBytes = size == 8 ? 8 : 4,
@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.x86
                 }
                     break;
                 case OpCodes.Ldsflda:
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,
@@ -112,25 +112,25 @@ namespace Drivers.Compiler.Architectures.x86
 
                     if (size == 1)
                     {
-                        conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Byte,
                             Src = "[" + fieldID + "]",
                             Dest = "AL"
                         });
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                     }
                     else if (size == 2)
                     {
-                        conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Word,
                             Src = "[" + fieldID + "]",
                             Dest = "AX"
                         });
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                     }
                     else
                     {
@@ -142,56 +142,56 @@ namespace Drivers.Compiler.Architectures.x86
                             switch (diff)
                             {
                                 case 1:
-                                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Byte,
                                         Src = "[" + fieldID + " + " + i + "]",
                                         Dest = "AL"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                                     break;
                                 case 2:
-                                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Word,
                                         Src = "[" + fieldID + " + " + i + "]",
                                         Dest = "AX"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                                     break;
                                 case 3:
-                                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Byte,
                                         Src = "[" + fieldID + " + " + i + "]",
                                         Dest = "AL"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "AX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "AX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Word,
                                         Src = "[" + fieldID + " + " + (i + 1) + "]",
                                         Dest = "AX"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "AX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "AX"});
                                     break;
                                 default:
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Dword,
                                         Src = "[" + fieldID + " + " + i + "]",
                                         Dest = "EAX"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                                     break;
                             }
                         }
                     }
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
                         isFloat = isFloat,
                         sizeOnStackInBytes = theTypeInfo.SizeOnStackInBytes,
@@ -202,9 +202,9 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ldsflda:
                     //Load the address of the field i.e. address of the ASM label
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = fieldID});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = fieldID});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
                         isFloat = false,
                         sizeOnStackInBytes = 4,

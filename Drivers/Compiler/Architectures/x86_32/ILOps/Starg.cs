@@ -72,7 +72,7 @@ namespace Drivers.Compiler.Architectures.x86
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Starg_S:
-                    index = (short) theOp.ValueBytes[0];
+                    index = theOp.ValueBytes[0];
                     break;
             }
 
@@ -84,7 +84,7 @@ namespace Drivers.Compiler.Architectures.x86
             int bytesForArg = argInfo.TheTypeInfo.SizeOnStackInBytes;
             for (int i = 0; i < bytesForArg; i += 4)
             {
-                conversionState.Append(new ASMOps.Pop()
+                conversionState.Append(new ASMOps.Pop
                 {
                     Size = OperandSize.Dword,
                     Dest = "[EBP+" + (BytesOffsetFromEBP + i) + "]"

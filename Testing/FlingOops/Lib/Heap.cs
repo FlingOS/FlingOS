@@ -83,7 +83,7 @@ namespace FlingOops
         /// <summary>
         ///     Whether the kernel's fixed heap has been initialised or not.
         /// </summary>
-        private static bool FixedHeapInitialised = false;
+        private static bool FixedHeapInitialised;
 
         [NoDebug]
         [NoGC]
@@ -460,7 +460,6 @@ namespace FlingOops
 
                             /* x will be incremented by one ONCE more in our FOR loop */
                             x += y - 1;
-                            continue;
                         }
                     }
                 }
@@ -498,7 +497,7 @@ namespace FlingOops
                     /* found block */
                     ptroff = (uint) ptr - (uint) &b[1]; /* get offset to get block */
                     /* block offset in BM */
-                    bi = (uint) ptroff/b->bsize;
+                    bi = ptroff/b->bsize;
                     /* .. */
                     bm = (byte*) &b[1];
                     /* clear allocation */

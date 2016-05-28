@@ -83,7 +83,7 @@ namespace Drivers.Compiler.IL
 
             // Create / Add Static Fields ASM Blocks
             Dictionary<string, ASMBlock> StaticFieldsBlocks = new Dictionary<string, ASMBlock>();
-            ASMBlock DefaultStaticFieldsBlock = new ASMBlock()
+            ASMBlock DefaultStaticFieldsBlock = new ASMBlock
             {
                 Priority = long.MinValue/2 - 9,
                 PageAlign = true,
@@ -95,7 +95,7 @@ namespace Drivers.Compiler.IL
             StaticFieldsBlocks.Add("default", DefaultStaticFieldsBlock);
 
             // Create / Add Types Table ASM Block
-            ASMBlock TypesTableBlock = new ASMBlock()
+            ASMBlock TypesTableBlock = new ASMBlock
             {
                 Priority = long.MinValue/2 - 8
             };
@@ -103,7 +103,7 @@ namespace Drivers.Compiler.IL
             TheLibrary.TheASMLibrary.ASMBlocks.Add(TypesTableBlock);
 
             // Create / Add Method Tables ASM Block
-            ASMBlock MethodTablesBlock = new ASMBlock()
+            ASMBlock MethodTablesBlock = new ASMBlock
             {
                 Priority = long.MinValue/2 + 0
             };
@@ -111,7 +111,7 @@ namespace Drivers.Compiler.IL
             TheLibrary.TheASMLibrary.ASMBlocks.Add(MethodTablesBlock);
 
             // Create / Add Field Tables ASM Block
-            ASMBlock FieldTablesBlock = new ASMBlock()
+            ASMBlock FieldTablesBlock = new ASMBlock
             {
                 Priority = long.MinValue/2 + 1
             };
@@ -156,7 +156,7 @@ namespace Drivers.Compiler.IL
 
             #region String Literals Block
 
-            ASMBlock StringLiteralsBlock = new ASMBlock()
+            ASMBlock StringLiteralsBlock = new ASMBlock
             {
                 Priority = long.MinValue/2 - 10
             };
@@ -232,7 +232,7 @@ namespace Drivers.Compiler.IL
             }
             string FieldTablePointer = TypeId + "_FieldTable";
             string TypeSignatureLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.UnderlyingType.FullName);
-                // Legacy
+            // Legacy
             string TypeIdLiteralLabel = TheLibrary.AddStringLiteral(TheTypeInfo.ID);
 
             TypeInfo typeTypeInfo = ILLibrary.SpecialClasses[typeof(TypeClassAttribute)].First();
@@ -277,7 +277,7 @@ namespace Drivers.Compiler.IL
                     ASMOp newStaticFieldOp = TargetArchitecture.CreateASMOp(OpCodes.StaticField, FieldID, Size);
                     if (!StaticFieldsBlocks.ContainsKey(aFieldInfo.Group))
                     {
-                        ASMBlock NewStaticFieldsBlock = new ASMBlock()
+                        ASMBlock NewStaticFieldsBlock = new ASMBlock
                         {
                             Priority = long.MinValue/2 - 9,
                             PageAlign = true,
@@ -457,7 +457,7 @@ namespace Drivers.Compiler.IL
         private static CompileResult ScanPluggedILBlock(ILLibrary TheLibrary, MethodInfo theMethodInfo,
             ILBlock theILBlock)
         {
-            TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASMBlock()
+            TheLibrary.TheASMLibrary.ASMBlocks.Add(new ASMBlock
             {
                 PlugPath = theILBlock.PlugPath,
                 OriginMethodInfo = theMethodInfo,
@@ -479,14 +479,14 @@ namespace Drivers.Compiler.IL
         {
             CompileResult result = CompileResult.OK;
 
-            ASMBlock TheASMBlock = new ASMBlock()
+            ASMBlock TheASMBlock = new ASMBlock
             {
                 OriginMethodInfo = theMethodInfo,
                 Priority = theMethodInfo.Priority
             };
             InitialiseTextBlock(TheASMBlock);
 
-            ILConversionState convState = new ILConversionState()
+            ILConversionState convState = new ILConversionState
             {
                 TheILLibrary = TheLibrary,
                 CurrentStackFrame = new StackFrame(),
@@ -498,7 +498,7 @@ namespace Drivers.Compiler.IL
                 try
                 {
                     string commentText = TheASMBlock.GenerateILOpLabel(convState.PositionOf(anOp), "") + "  --  " +
-                                         anOp.opCode.ToString() + " -- Offset: " + anOp.Offset.ToString("X2");
+                                         anOp.opCode + " -- Offset: " + anOp.Offset.ToString("X2");
 
                     ASMOp newCommentOp = TargetArchitecture.CreateASMOp(OpCodes.Comment, commentText);
                     TheASMBlock.ASMOps.Add(newCommentOp);

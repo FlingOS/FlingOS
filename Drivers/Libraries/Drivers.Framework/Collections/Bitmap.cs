@@ -33,7 +33,7 @@ namespace Drivers.Framework.Collections
     public class Bitmap : Object
     {
         private readonly byte[] bitmap;
-        private int setCount = 0;
+        private int setCount;
 
         [NoDebug]
         public Bitmap(int size)

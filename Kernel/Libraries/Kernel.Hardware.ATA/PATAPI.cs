@@ -39,8 +39,8 @@ namespace Kernel.Hardware.ATA
 {
     public class PATAPI : DiskDevice
     {
-        private static bool IRQ14Invoked = false;
-        private static bool IRQ15Invoked = false;
+        private static bool IRQ14Invoked;
+        private static bool IRQ15Invoked;
         protected PATABase BaseDevice;
 
         public PATAPI(PATABase baseDevice)
@@ -50,7 +50,7 @@ namespace Kernel.Hardware.ATA
 
             // Enable IRQs - required for PATAPI
             BaseDevice.SelectDrive(0, false);
-            BaseDevice.IO.Control.Write_Byte((byte) 0x00);
+            BaseDevice.IO.Control.Write_Byte(0x00);
 
             //Note: IRQHandler is called from DeviceManagerTask
         }

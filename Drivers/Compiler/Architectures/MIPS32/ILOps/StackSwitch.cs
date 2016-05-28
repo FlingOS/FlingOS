@@ -58,31 +58,31 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 if (i == 0)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
-                        Src = bytesShift.ToString() + "($sp)",
+                        Src = bytesShift + "($sp)",
                         Dest = "$t0",
                         MoveType = Mov.MoveTypes.SrcMemoryToDestReg
                     });
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
-                        Src = (bytesShift + 4).ToString() + "($sp)",
+                        Src = bytesShift + 4 + "($sp)",
                         Dest = "$t1",
                         MoveType = Mov.MoveTypes.SrcMemoryToDestReg
                     });
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "$t1",
-                        Dest = bytesShift.ToString() + "($sp)",
+                        Dest = bytesShift + "($sp)",
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory
                     });
                 }
                 else if (i == dwordsToRotate - 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "$t0",
@@ -92,18 +92,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 else
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
-                        Src = (bytesShift + 4).ToString() + "($sp)",
+                        Src = bytesShift + 4 + "($sp)",
                         Dest = "$t1",
                         MoveType = Mov.MoveTypes.SrcMemoryToDestReg
                     });
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "$t1",
-                        Dest = bytesShift.ToString() + "($sp)",
+                        Dest = bytesShift + "($sp)",
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory
                     });
                 }

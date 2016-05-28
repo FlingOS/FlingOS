@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -56,14 +56,14 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Load null (i.e. 0 as dword)
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
                 isGCManaged = false,
                 isValue = false // Null is a null reference
             });
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
         }
     }
 }

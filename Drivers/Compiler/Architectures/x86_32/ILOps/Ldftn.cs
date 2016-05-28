@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -112,9 +112,9 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             //Push the pointer to the function
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = methodID});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = methodID});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,

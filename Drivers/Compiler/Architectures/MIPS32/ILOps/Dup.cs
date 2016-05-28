@@ -41,14 +41,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
                 isGCManaged = itemA.isGCManaged,
                 isValue = itemA.isValue
             });
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
@@ -80,32 +80,32 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             if (itemA.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
             else if (itemA.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t3"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t3"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t3"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
             else
             {
                 throw new NotSupportedException("Stack item size not supported by duplicate op!");
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
                 isGCManaged = itemA.isGCManaged,
                 isValue = itemA.isValue
             });
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,

@@ -28,7 +28,7 @@
 
 namespace Kernel.Tasks
 {
-    public static unsafe class SampleTask
+    public static class SampleTask
     {
         public static void Main()
         {

@@ -129,7 +129,7 @@ namespace Drivers.Compiler.IL
             foreach (ConstructorInfo anInfo in staticConstructorsToCall)
             {
                 CallStaticConstructorsBlock.ILOps.Insert(CallStaticConstructorsBlock.ILOps.Count - 1,
-                    new ILOp()
+                    new ILOp
                     {
                         opCode = OpCodes.Call,
                         Offset = 0,
@@ -204,7 +204,7 @@ namespace Drivers.Compiler.IL
             int totalArgsSize = 0;
             if (!theMethodInfo.IsStatic)
             {
-                VariableInfo newVarInfo = new VariableInfo()
+                VariableInfo newVarInfo = new VariableInfo
                 {
                     UnderlyingType = theMethodInfo.UnderlyingInfo.DeclaringType,
                     Position = theMethodInfo.ArgumentInfos.Count,
@@ -218,7 +218,7 @@ namespace Drivers.Compiler.IL
             ParameterInfo[] args = theMethodInfo.UnderlyingInfo.GetParameters();
             foreach (ParameterInfo argItem in args)
             {
-                VariableInfo newVarInfo = new VariableInfo()
+                VariableInfo newVarInfo = new VariableInfo
                 {
                     UnderlyingType = argItem.ParameterType,
                     Position = theMethodInfo.ArgumentInfos.Count,
@@ -234,7 +234,7 @@ namespace Drivers.Compiler.IL
                 : ((System.Reflection.MethodInfo) theMethodInfo.UnderlyingInfo).ReturnParameter;
             if (returnArgItem != null)
             {
-                VariableInfo newVarInfo = new VariableInfo()
+                VariableInfo newVarInfo = new VariableInfo
                 {
                     UnderlyingType = returnArgItem.ParameterType,
                     Position = theMethodInfo.ArgumentInfos.Count,
@@ -332,12 +332,9 @@ namespace Drivers.Compiler.IL
             {
                 return InterfaceMethodIds[sig];
             }
-            else
-            {
-                int id = InterfaceMethodIdGenerator--;
-                InterfaceMethodIds.Add(sig, id);
-                return id;
-            }
+            int id = InterfaceMethodIdGenerator--;
+            InterfaceMethodIds.Add(sig, id);
+            return id;
         }
 
         /// <summary>
@@ -356,7 +353,7 @@ namespace Drivers.Compiler.IL
                 staticConstructorDependencyRoot = ILLibrary.TheStaticConstructorDependencyTree[aConstructor];
                 if (staticConstructorDependencyRoot == null)
                 {
-                    staticConstructorDependencyRoot = new StaticConstructorDependency()
+                    staticConstructorDependencyRoot = new StaticConstructorDependency
                     {
                         TheConstructor = aConstructor
                     };
@@ -364,7 +361,7 @@ namespace Drivers.Compiler.IL
                 }
             }
 
-            ILPreprocessState preprosState = new ILPreprocessState()
+            ILPreprocessState preprosState = new ILPreprocessState
             {
                 TheILLibrary = TheLibrary,
                 Input = theILBlock
@@ -381,7 +378,7 @@ namespace Drivers.Compiler.IL
                     i--;
                     continue;
                 }
-                else if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Nop)
+                if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Nop)
                 {
                     if (theMethodInfo.ApplyDebug)
                     {
@@ -422,7 +419,7 @@ namespace Drivers.Compiler.IL
                             if (!theOp.MethodToCall.IsStatic)
                             {
                                 i++;
-                                theILBlock.ILOps.Insert(i, new ILOp()
+                                theILBlock.ILOps.Insert(i, new ILOp
                                 {
                                     opCode = OpCodes.Pop,
                                     Offset = theOp.Offset
@@ -431,7 +428,7 @@ namespace Drivers.Compiler.IL
                             foreach (ParameterInfo anInfo in theOp.MethodToCall.GetParameters())
                             {
                                 i++;
-                                theILBlock.ILOps.Insert(i, new ILOp()
+                                theILBlock.ILOps.Insert(i, new ILOp
                                 {
                                     opCode = OpCodes.Pop,
                                     Offset = theOp.Offset
@@ -479,7 +476,6 @@ namespace Drivers.Compiler.IL
                                             if (staticConstructorDependencyRoot[TheConstructor] == null)
                                             {
                                                 staticConstructorDependencyRoot.Children.Add(new StaticConstructorDependency
-                                                    ()
                                                 {
                                                     TheConstructor = TheConstructor
                                                 });
@@ -505,7 +501,7 @@ namespace Drivers.Compiler.IL
                                     ConstructorInfo TheConstructor = staticConstructors[0];
                                     if (staticConstructorDependencyRoot[TheConstructor] == null)
                                     {
-                                        staticConstructorDependencyRoot.Children.Add(new StaticConstructorDependency()
+                                        staticConstructorDependencyRoot.Children.Add(new StaticConstructorDependency
                                         {
                                             TheConstructor = TheConstructor
                                         });
@@ -539,7 +535,7 @@ namespace Drivers.Compiler.IL
         private static void InjectGeneral1(MethodInfo theMethodInfo, ILBlock theILBlock)
         {
             // Inject MethodStart op
-            theILBlock.ILOps.Insert(0, new MethodStart()
+            theILBlock.ILOps.Insert(0, new MethodStart
             {
                 Offset = -1
             });
@@ -562,7 +558,7 @@ namespace Drivers.Compiler.IL
 
                 if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Ret)
                 {
-                    theILBlock.ILOps.Insert(i, new MethodEnd()
+                    theILBlock.ILOps.Insert(i, new MethodEnd
                     {
                         Offset = theOp.Offset,
                         BytesSize = theOp.BytesSize
@@ -592,13 +588,13 @@ namespace Drivers.Compiler.IL
                 {
                     if (argInfo.TheTypeInfo.IsGCManaged)
                     {
-                        theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp()
+                        theILBlock.ILOps.Insert(InjectIncArgsRefCountPos, new ILOp
                         {
                             opCode = OpCodes.Ldarg,
                             Offset = -1,
                             ValueBytes = BitConverter.GetBytes(argInfo.Position)
                         });
-                        theILBlock.ILOps.Insert(InjectIncArgsRefCountPos + 1, new ILOp()
+                        theILBlock.ILOps.Insert(InjectIncArgsRefCountPos + 1, new ILOp
                         {
                             opCode = OpCodes.Call,
                             Offset = -1,
@@ -619,7 +615,7 @@ namespace Drivers.Compiler.IL
                 // Add Cleanup Block and Inject finally-block ops for it
                 //      - Also remember the op for storing return value (if any)
 
-                ILPreprocessState preprocessState = new ILPreprocessState()
+                ILPreprocessState preprocessState = new ILPreprocessState
                 {
                     TheILLibrary = TheLibrary,
                     Input = theILBlock,
@@ -646,13 +642,13 @@ namespace Drivers.Compiler.IL
                             TypeInfo theFieldTypeInfo = TheLibrary.GetTypeInfo(theField.FieldType);
                             if (theFieldTypeInfo.IsGCManaged)
                             {
-                                theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx, new ILOp
                                 {
                                     opCode = OpCodes.Ldsfld,
                                     Offset = currOp.Offset,
                                     ValueBytes = currOp.ValueBytes
                                 });
-                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = currOp.Offset,
@@ -698,19 +694,19 @@ namespace Drivers.Compiler.IL
                                     localIndex = 3;
                                     break;
                                 case ILOp.OpCodes.Stloc_S:
-                                    localIndex = (ushort) currOp.ValueBytes[0];
+                                    localIndex = currOp.ValueBytes[0];
                                     break;
                             }
                             TypeInfo LocalTypeInfo = theMethodInfo.LocalInfos[localIndex].TheTypeInfo;
                             if (LocalTypeInfo.IsGCManaged)
                             {
-                                theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx, new ILOp
                                 {
                                     opCode = OpCodes.Ldloc,
                                     Offset = currOp.Offset,
                                     ValueBytes = BitConverter.GetBytes(localIndex)
                                 });
-                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = currOp.Offset,
@@ -756,24 +752,24 @@ namespace Drivers.Compiler.IL
 
                                 //USE A SWITCH STACK ITEMS OP!!
 
-                                theILBlock.ILOps.Insert(opIndx, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx, new StackSwitch
                                 {
                                     Offset = currOp.Offset,
                                     StackSwitch_Items = 2
                                 });
 
-                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp
                                 {
                                     Offset = currOp.Offset,
                                     opCode = OpCodes.Dup
                                 });
-                                theILBlock.ILOps.Insert(opIndx + 2, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + 2, new ILOp
                                 {
                                     opCode = OpCodes.Ldfld,
                                     Offset = currOp.Offset,
                                     ValueBytes = currOp.ValueBytes
                                 });
-                                theILBlock.ILOps.Insert(opIndx + 3, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + 3, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = currOp.Offset,
@@ -782,7 +778,7 @@ namespace Drivers.Compiler.IL
                                             .UnderlyingInfo
                                 });
 
-                                theILBlock.ILOps.Insert(opIndx + 4, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + 4, new StackSwitch
                                 {
                                     Offset = currOp.Offset,
                                     StackSwitch_Items = 2
@@ -857,7 +853,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 1.
 
-                                theILBlock.ILOps.Insert(opIndx, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(3),
                                     Offset = currOp.Offset,
@@ -869,7 +865,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 2.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp
                                 {
                                     Offset = currOp.Offset,
                                     opCode = OpCodes.Dup
@@ -880,7 +876,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 3.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(4),
                                     Offset = currOp.Offset,
@@ -888,7 +884,7 @@ namespace Drivers.Compiler.IL
                                 });
                                 incOpIndexBy++;
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(4),
                                     Offset = currOp.Offset,
@@ -900,7 +896,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 4.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp
                                 {
                                     Offset = currOp.Offset,
                                     opCode = OpCodes.Dup
@@ -911,28 +907,28 @@ namespace Drivers.Compiler.IL
 
                                 #region 5.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(5),
                                     Offset = currOp.Offset,
                                     StackSwitch_Items = 5
                                 });
                                 incOpIndexBy++;
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(5),
                                     Offset = currOp.Offset,
                                     StackSwitch_Items = 5
                                 });
                                 incOpIndexBy++;
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(5),
                                     Offset = currOp.Offset,
                                     StackSwitch_Items = 5
                                 });
                                 incOpIndexBy++;
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(5),
                                     Offset = currOp.Offset,
@@ -944,7 +940,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 6.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp
                                 {
                                     opCode = isRefOp ? OpCodes.Ldelem_Ref : OpCodes.Ldelem,
                                     Offset = currOp.Offset,
@@ -956,7 +952,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 7.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = currOp.Offset,
@@ -970,7 +966,7 @@ namespace Drivers.Compiler.IL
 
                                 #region 8.
 
-                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch()
+                                theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new StackSwitch
                                 {
                                     ValueBytes = BitConverter.GetBytes(3),
                                     Offset = currOp.Offset,
@@ -994,17 +990,17 @@ namespace Drivers.Compiler.IL
 
                         {
                             ushort index = (ILOp.OpCodes) currOp.opCode.Value == ILOp.OpCodes.Starg_S
-                                ? (ushort) currOp.ValueBytes[0]
+                                ? currOp.ValueBytes[0]
                                 : (ushort) Utilities.ReadInt16(currOp.ValueBytes, 0);
                             if (theMethodInfo.ArgumentInfos[index].TheTypeInfo.IsGCManaged)
                             {
-                                theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx, new ILOp
                                 {
                                     opCode = OpCodes.Ldarg,
                                     Offset = currOp.Offset,
                                     ValueBytes = BitConverter.GetBytes(index)
                                 });
-                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                theILBlock.ILOps.Insert(opIndx + 1, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = currOp.Offset,
@@ -1026,13 +1022,13 @@ namespace Drivers.Compiler.IL
                     if (IncRefCount &&
                         !preprocessState.CurrentStackFrame.GetStack(currOp).Peek().isNewGCObject)
                     {
-                        theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                        theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp
                         {
                             Offset = currOp.Offset,
                             opCode = OpCodes.Dup
                         });
                         incOpIndexBy++;
-                        theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp()
+                        theILBlock.ILOps.Insert(opIndx + incOpIndexBy, new ILOp
                         {
                             opCode = OpCodes.Call,
                             Offset = currOp.Offset,
@@ -1140,7 +1136,7 @@ namespace Drivers.Compiler.IL
                                     ? theMethodInfo.LocalInfos.Last().Offset
                                     : 0;
                                 TypeInfo returnTypeInfo = TheLibrary.GetTypeInfo(returnType);
-                                theMethodInfo.LocalInfos.Add(new VariableInfo()
+                                theMethodInfo.LocalInfos.Add(new VariableInfo
                                 {
                                     UnderlyingType = returnType,
                                     TheTypeInfo = returnTypeInfo,
@@ -1153,13 +1149,13 @@ namespace Drivers.Compiler.IL
                                 if (returnTypeInfo.IsGCManaged)
                                 {
                                     // Add ops for incrementing ref count of return value, updare op offsets
-                                    theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                    theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                     {
                                         Offset = lastOpOffset,
                                         opCode = OpCodes.Dup
                                     });
                                     lastOpIndex++;
-                                    theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                    theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                     {
                                         opCode = OpCodes.Call,
                                         Offset = lastOpOffset,
@@ -1171,7 +1167,7 @@ namespace Drivers.Compiler.IL
                                 }
 
                                 // Add op for storing return value, update op offsets
-                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                 {
                                     opCode = OpCodes.Stloc,
                                     Offset = lastOpOffset,
@@ -1186,7 +1182,7 @@ namespace Drivers.Compiler.IL
 
                         ILOp leaveOp;
                         // Add the Leave op of the try-block
-                        theILBlock.ILOps.Insert(lastOpIndex, leaveOp = new ILOp()
+                        theILBlock.ILOps.Insert(lastOpIndex, leaveOp = new ILOp
                         {
                             opCode = OpCodes.Leave,
                             Offset = lastOpOffset,
@@ -1195,7 +1191,7 @@ namespace Drivers.Compiler.IL
                         });
                         lastOpIndex++;
 
-                        FinallyBlock CleanupFinallyBlock = new FinallyBlock()
+                        FinallyBlock CleanupFinallyBlock = new FinallyBlock
                         {
                             Offset = lastOpOffset + lastOp.BytesSize,
                             Length = 0
@@ -1210,7 +1206,7 @@ namespace Drivers.Compiler.IL
                         {
                             if (aLocInfo.TheTypeInfo.IsGCManaged && !aLocInfo.SkipCleanup)
                             {
-                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                 {
                                     opCode = OpCodes.Ldloc,
                                     Offset = cleanupOpsOffset,
@@ -1220,7 +1216,7 @@ namespace Drivers.Compiler.IL
                                 cleanupOpsOffset++;
                                 lastOpIndex++;
 
-                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = cleanupOpsOffset,
@@ -1241,7 +1237,7 @@ namespace Drivers.Compiler.IL
                         {
                             if (anArgInfo.TheTypeInfo.IsGCManaged && !anArgInfo.SkipCleanup)
                             {
-                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                 {
                                     opCode = OpCodes.Ldarg,
                                     Offset = cleanupOpsOffset,
@@ -1251,7 +1247,7 @@ namespace Drivers.Compiler.IL
                                 cleanupOpsOffset++;
                                 lastOpIndex++;
 
-                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                                theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                                 {
                                     opCode = OpCodes.Call,
                                     Offset = cleanupOpsOffset,
@@ -1268,7 +1264,7 @@ namespace Drivers.Compiler.IL
                         }
 
                         // Add end finally op
-                        theILBlock.ILOps.Insert(lastOpIndex, leaveOp.LoadAtILOpAfterOp = new ILOp()
+                        theILBlock.ILOps.Insert(lastOpIndex, leaveOp.LoadAtILOpAfterOp = new ILOp
                         {
                             opCode = OpCodes.Endfinally,
                             Offset = cleanupOpsOffset,
@@ -1282,7 +1278,7 @@ namespace Drivers.Compiler.IL
                         // Add restore return value op
                         if (MethodHasReturnValue)
                         {
-                            theILBlock.ILOps.Insert(lastOpIndex, new ILOp()
+                            theILBlock.ILOps.Insert(lastOpIndex, new ILOp
                             {
                                 opCode = OpCodes.Ldloc,
                                 Offset = cleanupOpsOffset,
@@ -1306,7 +1302,7 @@ namespace Drivers.Compiler.IL
                             {
                                 break;
                             }
-                            else if (theILBlock.ILOps[opIndx].Offset >= CleanupExBlock.Offset)
+                            if (theILBlock.ILOps[opIndx].Offset >= CleanupExBlock.Offset)
                             {
                                 Inside = true;
                             }
@@ -1319,13 +1315,13 @@ namespace Drivers.Compiler.IL
 
                                 if (MethodHasReturnValue)
                                 {
-                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp
                                     {
                                         opCode = OpCodes.Stloc,
                                         Offset = ARetOp.Offset,
                                         ValueBytes = BitConverter.GetBytes(theMethodInfo.LocalInfos.Count - 1)
                                     });
-                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp()
+                                    theILBlock.ILOps.Insert(opIndx + 1, new ILOp
                                     {
                                         Offset = ARetOp.Offset,
                                         opCode = OpCodes.Leave,
@@ -1335,7 +1331,7 @@ namespace Drivers.Compiler.IL
                                 }
                                 else
                                 {
-                                    theILBlock.ILOps.Insert(opIndx, new ILOp()
+                                    theILBlock.ILOps.Insert(opIndx, new ILOp
                                     {
                                         Offset = ARetOp.Offset,
                                         opCode = OpCodes.Leave,
@@ -1368,7 +1364,7 @@ namespace Drivers.Compiler.IL
                     ILOp catchPopOp = theILBlock.At(aCatchBlock.Offset);
                     int pos = theILBlock.PositionOf(catchPopOp);
                     theILBlock.ILOps.RemoveAt(pos);
-                    theILBlock.ILOps.Insert(pos, new ILOp()
+                    theILBlock.ILOps.Insert(pos, new ILOp
                     {
                         opCode = OpCodes.Nop,
                         Offset = catchPopOp.Offset,
@@ -1400,17 +1396,17 @@ namespace Drivers.Compiler.IL
                     int ILOffset = 0;
                     if (theOp.LoadAtILOpAfterOp == null)
                     {
-                        if ((int) theOp.opCode.Value == (int) ILOp.OpCodes.Leave)
+                        if (theOp.opCode.Value == (int) ILOp.OpCodes.Leave)
                         {
                             ILOffset = BitConverter.ToInt32(theOp.ValueBytes, 0);
                         }
                         else
                         {
-                            ILOffset = (int) theOp.ValueBytes[0];
+                            ILOffset = theOp.ValueBytes[0];
                         }
                     }
 
-                    theILBlock.ILOps.Insert(i, new ILOp()
+                    theILBlock.ILOps.Insert(i, new ILOp
                     {
                         Offset = theOp.Offset,
                         BytesSize = theOp.BytesSize,
@@ -1419,7 +1415,7 @@ namespace Drivers.Compiler.IL
                         LoadAtILOpAfterOp = theOp.LoadAtILOpAfterOp,
                         MethodToCall = theILBlock.TheMethodInfo.UnderlyingInfo
                     });
-                    theILBlock.ILOps.Insert(i + 1, new ILOp()
+                    theILBlock.ILOps.Insert(i + 1, new ILOp
                     {
                         opCode = OpCodes.Call,
                         Offset = theOp.Offset,
@@ -1430,7 +1426,7 @@ namespace Drivers.Compiler.IL
 
                     i++;
                 }
-                else if ((int) theOp.opCode.Value == (int) ILOp.OpCodes.Endfinally)
+                else if (theOp.opCode.Value == (int) ILOp.OpCodes.Endfinally)
                 {
                     //Endfinally is for leaving a (critical) finally section
                     //We handle it by a higher-level implementation rather than 
@@ -1441,7 +1437,7 @@ namespace Drivers.Compiler.IL
                     theILBlock.ILOps.RemoveAt(i);
 
                     ILOp newOp;
-                    theILBlock.ILOps.Insert(i, newOp = new ILOp()
+                    theILBlock.ILOps.Insert(i, newOp = new ILOp
                     {
                         Offset = theOp.Offset,
                         BytesSize = theOp.BytesSize,
@@ -1499,20 +1495,20 @@ namespace Drivers.Compiler.IL
                 foreach (FinallyBlock finBlock in exBlock.FinallyBlocks)
                 {
                     // 1. Load the pointer to the handler code:
-                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp
                     {
                         opCode = OpCodes.Ldftn,
                         Offset = exBlock.Offset,
                         MethodToCall = theMethodInfo.UnderlyingInfo,
                         LoadAtILOffset = finBlock.Offset
                     });
-                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp
                     {
                         opCode = OpCodes.Ldc_I4,
                         Offset = exBlock.Offset,
                         ValueBytes = BitConverter.GetBytes(0x00000000)
                     });
-                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp
                     {
                         opCode = OpCodes.Call,
                         Offset = exBlock.Offset,
@@ -1523,20 +1519,20 @@ namespace Drivers.Compiler.IL
                 }
                 foreach (CatchBlock catchBlock in exBlock.CatchBlocks)
                 {
-                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp
                     {
                         opCode = OpCodes.Ldftn,
                         Offset = exBlock.Offset,
                         MethodToCall = theMethodInfo.UnderlyingInfo,
                         LoadAtILOffset = catchBlock.Offset
                     });
-                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp
                     {
                         opCode = OpCodes.Ldc_I4,
                         Offset = exBlock.Offset,
                         ValueBytes = BitConverter.GetBytes(0xFFFFFFFF)
                     });
-                    theILBlock.ILOps.Insert(insertPos++, new ILOp()
+                    theILBlock.ILOps.Insert(insertPos++, new ILOp
                     {
                         opCode = OpCodes.Call,
                         Offset = exBlock.Offset,

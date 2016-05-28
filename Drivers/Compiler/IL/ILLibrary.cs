@@ -78,7 +78,7 @@ namespace Drivers.Compiler.IL
         ///     Static constructors must be called in order such that constructors which depend/use
         ///     other classes which have static constructors are called after their dependencies.
         /// </remarks>
-        public static StaticConstructorDependency TheStaticConstructorDependencyTree = new StaticConstructorDependency()
+        public static StaticConstructorDependency TheStaticConstructorDependencyTree = new StaticConstructorDependency
         {
             TheConstructor = null
         };
@@ -213,10 +213,7 @@ namespace Drivers.Compiler.IL
                 }
                 return theTypeInfo;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
@@ -273,7 +270,7 @@ namespace Drivers.Compiler.IL
                 return GetFieldInfo(baseTypeInfo, FieldName);
             }
 
-            throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo.ToString() +
+            throw new NullReferenceException("Field \"" + FieldName + "\" not found in type \"" + aTypeInfo +
                                              "\".");
         }
 
@@ -314,7 +311,7 @@ namespace Drivers.Compiler.IL
         {
             //TODO: Don't add identical strings multiple times
 
-            string ID = Utilities.FilterIdentifierForInvalidChars("StringLiteral_" + Guid.NewGuid().ToString());
+            string ID = Utilities.FilterIdentifierForInvalidChars("StringLiteral_" + Guid.NewGuid());
             StringLiterals.Add(ID, value);
             return ID;
         }
@@ -337,7 +334,7 @@ namespace Drivers.Compiler.IL
         {
             if (obj is ILLibrary)
             {
-                return this.GetHashCode() == ((ILLibrary) obj).GetHashCode();
+                return GetHashCode() == ((ILLibrary) obj).GetHashCode();
             }
 
             return base.Equals(obj);

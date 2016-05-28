@@ -110,7 +110,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //      5.3. Push element onto our stack
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
@@ -271,24 +271,24 @@ namespace Drivers.Compiler.Architectures.x86
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
 
             //      1.1. Move array ref into EAX
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "EAX"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "EAX"});
             //      1.2. Compare EAX (array ref) to 0
-            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
+            conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "0"});
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpNotZero,
                 DestILPosition = currOpPosition,
                 Extension = "Continue1"
             });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
-            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
+            conversionState.Append(new ASMOps.Call {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue1"});
 
             // 2. Check array element type is correct
             //      2.1. Move element type ref into EAX
@@ -332,50 +332,50 @@ namespace Drivers.Compiler.Architectures.x86
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
 
             //      3.1. Move index into EAX
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
             //      3.2. Move array length into ECX
             //              - Calculate the offset of the field from the start of the array object
             int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
 
             //              - Move array ref into EBX
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "EBX"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "EBX"});
             //              - Move length value ([EBX+offset]) into EBX
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
-                Src = "[EBX+" + lengthOffset.ToString() + "]",
+                Src = "[EBX+" + lengthOffset + "]",
                 Dest = "EBX"
             });
             //      3.2. Compare EAX to 0
-            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
+            conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "0"});
             //      3.3. Jump if greater than to next test condition (3.5)
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpGreaterThanEqual,
                 DestILPosition = currOpPosition,
                 Extension = "Continue3_1"
             });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue3_1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue3_1"});
             //      3.5. Compare EAX to EBX
-            conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "EBX"});
+            conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "EBX"});
             //      3.6. Jump if less than to continue execution further down
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpLessThan,
                 DestILPosition = currOpPosition,
                 Extension = "Continue3_2"
             });
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue3_2"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue3_2"});
 
             // 4. Calculate address of element
             //      4.1. Pop index into EBX
@@ -392,28 +392,28 @@ namespace Drivers.Compiler.Architectures.x86
             //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
 
             //      4.1. Pop index into EBX
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
             //      4.2. Move array ref into EAX
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
             //      4.3. Move element type ref (from array ref) into EAX
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
-                Src = "[EAX+" + elemTypeOffset.ToString() + "]",
+                Src = "[EAX+" + elemTypeOffset + "]",
                 Dest = "EAX"
             });
             //      4.4. Move IsValueType (from element ref type) into ECX
             int isValueTypeOffset = conversionState.GetTypeFieldOffset("IsValueType");
-            conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "ECX"});
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "ECX"});
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Byte,
-                Src = "[EAX+" + isValueTypeOffset.ToString() + "]",
+                Src = "[EAX+" + isValueTypeOffset + "]",
                 Dest = "CL"
             });
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
-            conversionState.Append(new Cmp() {Arg1 = "ECX", Arg2 = "0"});
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Cmp {Arg1 = "ECX", Arg2 = "0"});
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.JumpZero,
                 DestILPosition = currOpPosition,
@@ -421,33 +421,33 @@ namespace Drivers.Compiler.Architectures.x86
             });
             //      4.6. Move Size (from element type ref) into EAX
             int sizeOffset = conversionState.GetTypeFieldOffset("Size");
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
-                Src = "[EAX+" + sizeOffset.ToString() + "]",
+                Src = "[EAX+" + sizeOffset + "]",
                 Dest = "EAX"
             });
             //      4.7. Skip over 4.8.
-            conversionState.Append(new Jmp()
+            conversionState.Append(new Jmp
             {
                 JumpType = JmpOp.Jump,
                 DestILPosition = currOpPosition,
                 Extension = "Continue4_2"
             });
             //      4.8. Move StackSize (from element type ref) into EAX
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue4_1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue4_1"});
             int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
                 Src = "[EAX+" + stackSizeOffset + "]",
                 Dest = "EAX"
             });
             //      4.9. Mulitply EAX by EBX (index by element size)
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue4_2"});
-            conversionState.Append(new ASMOps.Mul() {Arg = "EBX"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue4_2"});
+            conversionState.Append(new ASMOps.Mul {Arg = "EBX"});
             //      4.10. Pop array ref into EBX
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
             //      4.11. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
 
@@ -466,9 +466,9 @@ namespace Drivers.Compiler.Architectures.x86
 
             #endregion
 
-            conversionState.Append(new ASMOps.Add() {Src = allFieldsOffset.ToString(), Dest = "EBX"});
+            conversionState.Append(new ASMOps.Add {Src = allFieldsOffset.ToString(), Dest = "EBX"});
             //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
-            conversionState.Append(new ASMOps.Add() {Src = "EBX", Dest = "EAX"});
+            conversionState.Append(new ASMOps.Add {Src = "EBX", Dest = "EAX"});
 
             // 5. Push the element onto the stack
             //      5.1. Push value at [EAX] (except for LdElemA op in which case just push address)
@@ -477,22 +477,22 @@ namespace Drivers.Compiler.Architectures.x86
                 switch (sizeToLoad)
                 {
                     case 1:
-                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
-                        conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "[EAX]", Dest = "BL"});
+                        conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
+                        conversionState.Append(new Mov {Size = OperandSize.Byte, Src = "[EAX]", Dest = "BL"});
                         if (signExtend)
                         {
                             throw new NotSupportedException("Sign extend byte to 4 bytes in LdElem not supported!");
                         }
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EBX"});
                         break;
                     case 2:
-                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
-                        conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "[EAX]", Dest = "BX"});
+                        conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
+                        conversionState.Append(new Mov {Size = OperandSize.Word, Src = "[EAX]", Dest = "BX"});
                         if (signExtend)
                         {
                             conversionState.Append(new Cwde());
                         }
-                        conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
+                        conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EBX"});
                         break;
                     default:
                         int additionalSpace = sizeToPush - sizeToLoad;
@@ -504,42 +504,42 @@ namespace Drivers.Compiler.Architectures.x86
                             switch (overhangBytes)
                             {
                                 case 1:
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "0"});
-                                    conversionState.Append(new ASMOps.Xor() {Src = "EBX", Dest = "EBX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "0"});
+                                    conversionState.Append(new ASMOps.Xor {Src = "EBX", Dest = "EBX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Byte,
                                         Src = "[EAX+" + (sizeToLoad - 1) + "]",
                                         Dest = "BL"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "BX"});
                                     break;
                                 case 2:
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "0"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "0"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Word,
                                         Src = "[EAX+" + (sizeToLoad - 2) + "]",
                                         Dest = "BX"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "BX"});
                                     break;
                                 case 3:
-                                    conversionState.Append(new ASMOps.Xor() {Src = "EBX", Dest = "EBX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new ASMOps.Xor {Src = "EBX", Dest = "EBX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Byte,
                                         Src = "[EAX+" + (sizeToLoad - 1) + "]",
                                         Dest = "BL"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
-                                    conversionState.Append(new Mov()
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "BX"});
+                                    conversionState.Append(new Mov
                                     {
                                         Size = OperandSize.Word,
                                         Src = "[EAX+" + (sizeToLoad - 3) + "]",
                                         Dest = "BX"
                                     });
-                                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "BX"});
+                                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "BX"});
                                     break;
                             }
                         }
@@ -547,27 +547,27 @@ namespace Drivers.Compiler.Architectures.x86
 
                         for (int i = sizeToLoad - overhangBytes - 4; i >= 0; i -= 4)
                         {
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Dword,
                                 Src = "[EAX+" + i + "]",
                                 Dest = "EBX"
                             });
-                            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
+                            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EBX"});
                         }
                         break;
                 }
             }
             else
             {
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
 
             //      5.2. Pop index and array ref from our stack
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //      5.3. Push element onto our stack
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = sizeToPush,
                 isFloat = isFloat,

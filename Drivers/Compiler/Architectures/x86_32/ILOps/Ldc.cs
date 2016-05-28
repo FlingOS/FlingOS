@@ -93,7 +93,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,
@@ -170,7 +170,7 @@ namespace Drivers.Compiler.Architectures.x86
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I4_S:
-                    iValue = (int) (sbyte) theOp.ValueBytes[0];
+                    iValue = (sbyte) theOp.ValueBytes[0];
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I8:
@@ -196,11 +196,8 @@ namespace Drivers.Compiler.Architectures.x86
                 //SUPPORT - floats
                 throw new NotSupportedException("Float constants not supported yet!");
             }
-            else
-            {
-                //Get the bytes for the value
-                valueBytes = BitConverter.GetBytes(iValue);
-            }
+            //Get the bytes for the value
+            valueBytes = BitConverter.GetBytes(iValue);
 
             //If pushing Int64:
             if (numBytes == 8)
@@ -215,7 +212,7 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = valueToPush});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = valueToPush});
 
                 //Then push the low-bits as a dword
                 //See above
@@ -225,7 +222,7 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = valueToPush});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = valueToPush});
             }
             else
             {
@@ -236,11 +233,11 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     valueToPush += valueBytes[i].ToString("X2");
                 }
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = valueToPush});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = valueToPush});
             }
 
             //Push the constant onto our stack
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = numBytes,
                 isFloat = isFloat,

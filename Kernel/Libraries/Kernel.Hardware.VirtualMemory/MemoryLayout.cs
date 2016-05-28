@@ -676,18 +676,15 @@ namespace Kernel.VirtualMemory
             {
                 return CodePages[virtAddr] & 0xFFFFF000;
             }
-            else if (DataPages.ContainsKey(virtAddr))
+            if (DataPages.ContainsKey(virtAddr))
             {
                 return DataPages[virtAddr] & 0xFFFFF000;
             }
-            else if (KernelPages.ContainsKey(virtAddr))
+            if (KernelPages.ContainsKey(virtAddr))
             {
                 return KernelPages[virtAddr] & 0xFFFFF000;
             }
-            else
-            {
-                return 0xFFFFFFFF;
-            }
+            return 0xFFFFFFFF;
         }
 
         public uint[] GetPhysicalAddresses(uint startAddr, uint count)
@@ -708,30 +705,27 @@ namespace Kernel.VirtualMemory
             {
                 return CodePages.GetFirstKeyOfValue(physAddr);
             }
-            else if (DataPages.ContainsValue(physAddr))
+            if (DataPages.ContainsValue(physAddr))
             {
                 return DataPages.GetFirstKeyOfValue(physAddr);
             }
-            else if (KernelPages.ContainsValue(physAddr))
+            if (KernelPages.ContainsValue(physAddr))
             {
                 return KernelPages.GetFirstKeyOfValue(physAddr);
             }
-            else if (CodePages.ContainsValue(physAddr | 0x1))
+            if (CodePages.ContainsValue(physAddr | 0x1))
             {
                 return CodePages.GetFirstKeyOfValue(physAddr | 0x1);
             }
-            else if (DataPages.ContainsValue(physAddr | 0x1))
+            if (DataPages.ContainsValue(physAddr | 0x1))
             {
                 return DataPages.GetFirstKeyOfValue(physAddr | 0x1);
             }
-            else if (KernelPages.ContainsValue(physAddr | 0x1))
+            if (KernelPages.ContainsValue(physAddr | 0x1))
             {
                 return KernelPages.GetFirstKeyOfValue(physAddr | 0x1);
             }
-            else
-            {
-                return 0xFFFFFFFF;
-            }
+            return 0xFFFFFFFF;
         }
 
         public String ToString()

@@ -1064,15 +1064,12 @@ namespace Drivers.Compiler.IL
         /// <returns>The human-readable representation of the IL op.</returns>
         public override string ToString()
         {
-            if (this.GetType().Name != "ILOp")
+            if (GetType().Name != "ILOp")
             {
-                return this.GetType().Name + (MethodToCall == null ? "" : " - " + MethodToCall.ToString());
+                return GetType().Name + (MethodToCall == null ? "" : " - " + MethodToCall);
             }
-            else
-            {
-                return Enum.GetName(typeof(OpCodes), (OpCodes) opCode.Value) +
-                       (MethodToCall == null ? "" : " - " + MethodToCall.ToString());
-            }
+            return Enum.GetName(typeof(OpCodes), (OpCodes) opCode.Value) +
+                   (MethodToCall == null ? "" : " - " + MethodToCall);
         }
     }
 }

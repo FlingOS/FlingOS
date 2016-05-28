@@ -11,7 +11,6 @@ namespace Kernel.Shells
     public class DeviceShell : Shell
     {
         public DeviceShell()
-            : base()
         {
         }
 

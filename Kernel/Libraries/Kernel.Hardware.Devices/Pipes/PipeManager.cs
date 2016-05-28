@@ -108,7 +108,7 @@ namespace Kernel.Pipes
                 outpoint = null;
                 return false;
             }
-            else if (MaxConnections <= 0 && MaxConnections != PipeConstants.UnlimitedConnections)
+            if (MaxConnections <= 0 && MaxConnections != PipeConstants.UnlimitedConnections)
             {
                 outpoint = null;
                 return false;
@@ -253,11 +253,11 @@ namespace Kernel.Pipes
             {
                 return false;
             }
-            else if (ProcessManager.GetProcessById(OutProcessId) == null)
+            if (ProcessManager.GetProcessById(OutProcessId) == null)
             {
                 return false;
             }
-            else if (request == null)
+            if (request == null)
             {
                 return false;
             }

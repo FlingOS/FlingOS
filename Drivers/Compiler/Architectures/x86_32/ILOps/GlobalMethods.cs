@@ -42,7 +42,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             if (PageFaultDetectionEnabled)
             {
-                conversionState.Append(new ASMOps.Call() {Target = PageFaultDetectionMethod});
+                conversionState.Append(new ASMOps.Call {Target = PageFaultDetectionMethod});
             }
         }
     }

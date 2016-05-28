@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             //Ignore for now
             //TODO: Initialise the structure to 0
-            conversionState.Append(new ASMOps.Add() {Src = "4", Dest = "ESP"});
+            conversionState.Append(new ASMOps.Add {Src = "4", Dest = "ESP"});
         }
     }
 }

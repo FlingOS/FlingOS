@@ -68,10 +68,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      3.2.2.2   False: Jump back to (3)
 
             // 1. Pop object ref
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
 
             // 1.1. Test if object ref is null:
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t0",
                 Src2 = "0",
@@ -82,8 +82,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
 
             // 1.1.1 True: Push null and continue
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
-            conversionState.Append(new Branch()
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$zero"});
+            conversionState.Append(new Branch
             {
                 BranchType = BranchOp.Branch,
                 DestILPosition = currOpPosition,
@@ -91,7 +91,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
 
             // 1.1.2 False: Go to 2
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "False1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "False1"});
 
             // 2. Load object type
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = "0($t0)", Dest = "$t1", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
@@ -104,11 +104,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
             string TestTypeId = theTypeInfo.ID;
             conversionState.AddExternalLabel(TestTypeId);
 
-            conversionState.Append(new La() {Label = TestTypeId, Dest = "$t2"});
+            conversionState.Append(new La {Label = TestTypeId, Dest = "$t2"});
 
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Label3"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Label3"});
 
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t1",
                 Src2 = "$t2",
@@ -119,8 +119,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
 
             //      3.1 True: Push object ref and continue
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
-            conversionState.Append(new Branch()
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
+            conversionState.Append(new Branch
             {
                 BranchType = BranchOp.Branch,
                 DestILPosition = currOpPosition,
@@ -128,7 +128,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
 
             //      3.2 False: 
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "False2"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "False2"});
 
             //      3.2.1. Move to base type
             int baseTypeOffset = conversionState.GetTypeFieldOffset("TheBaseType");
@@ -138,7 +138,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //      3.2.2. Test if base type null:
             //      3.2.2.2   False: Jump back to (3)
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t1",
                 Src2 = "0",
@@ -149,9 +149,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
 
             //      3.2.2.1   True: Push null and continue
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$zero"});
 
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
         }
     }
 }

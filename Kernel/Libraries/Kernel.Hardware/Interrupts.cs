@@ -82,7 +82,7 @@ namespace Kernel.Hardware.Interrupts
 
         [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static bool wasPrintingMessages = false;
 
-        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static bool insideCriticalHandler = false;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static bool insideCriticalHandler;
 
         /// <summary>
         ///     Used to disable attempts to process switch while the OS is initialising.

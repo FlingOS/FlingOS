@@ -41,14 +41,14 @@ namespace Drivers.Compiler.Architectures.x86
         {
             StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
                 isGCManaged = itemA.isGCManaged,
                 isValue = itemA.isValue
             });
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
@@ -80,32 +80,32 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (itemA.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
             else if (itemA.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
             else
             {
                 throw new NotSupportedException("Stack item size not supported by duplicate op!");
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,
                 isGCManaged = itemA.isGCManaged,
                 isValue = itemA.isValue
             });
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,

@@ -142,12 +142,12 @@ namespace Kernel.FOS_System.IO.FAT
         /// <summary>
         ///     Root sector number - used by FAT12/16 only.
         /// </summary>
-        public readonly ulong RootSector = 0; // FAT12/16
+        public readonly ulong RootSector; // FAT12/16
 
         /// <summary>
         ///     Number of root sectors - used by FAT12/16 only. Always 0 for FAT32.
         /// </summary>
-        public readonly uint RootSectorCount = 0; // FAT12/16, (FAT32 this is always 0)
+        public readonly uint RootSectorCount; // FAT12/16, (FAT32 this is always 0)
 
         /// <summary>
         ///     Number of sectors per cluster
@@ -162,12 +162,12 @@ namespace Kernel.FOS_System.IO.FAT
         /// <summary>
         ///     The underlying root directory - used by FAT32 only.
         /// </summary>
-        private FATDirectory _rootDirectoryFAT32 = null;
+        private FATDirectory _rootDirectoryFAT32;
 
         /// <summary>
         ///     The cached root directory listings - used by FAT12/16 only.
         /// </summary>
-        private List _rootDirectoryListings = null;
+        private List _rootDirectoryListings;
 
         /// <summary>
         ///     Initializes a new FAT file system from the specified partition.
@@ -276,7 +276,7 @@ namespace Kernel.FOS_System.IO.FAT
         ///     Creates a new byte array of the size of one cluster.
         /// </summary>
         /// <returns>The new byte array.</returns>
-        public unsafe byte[] NewClusterArray()
+        public byte[] NewClusterArray()
         {
             //BasicConsole.WriteLine(((FOS_System.String)"Attempting to allocate ") + BytesPerCluster + " bytes");
             //BasicConsole.WriteLine(((FOS_System.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
@@ -465,20 +465,14 @@ namespace Kernel.FOS_System.IO.FAT
                     // Even
                     return xResult & 0x0FFF;
                 }
-                else
-                {
-                    // Odd
-                    return xResult >> 4;
-                }
+                // Odd
+                return xResult >> 4;
             }
-            else if (FATType == FATTypeEnum.FAT16)
+            if (FATType == FATTypeEnum.FAT16)
             {
                 return ByteConverter.ToUInt16(aFATTableSector, aOffset);
             }
-            else
-            {
-                return ByteConverter.ToUInt32(aFATTableSector, aOffset) & 0x0FFFFFFFu;
-            }
+            return ByteConverter.ToUInt32(aFATTableSector, aOffset) & 0x0FFFFFFFu;
         }
 
         /// <summary>
@@ -575,14 +569,11 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 return 0x0FF8;
             }
-            else if (aFATType == FATTypeEnum.FAT16)
+            if (aFATType == FATTypeEnum.FAT16)
             {
                 return 0xFFF8;
             }
-            else
-            {
-                return 0x0FFFFFF8;
-            }
+            return 0x0FFFFFF8;
         }
 
         /// <summary>
@@ -636,7 +627,7 @@ namespace Kernel.FOS_System.IO.FAT
             //Read the existing table sector data
             ReadFATSector(SectorNum, sectorData);
             //Set the table entry
-            WriteFATEntry(sectorData, (uint) SectorNum, SectorOffset, Value);
+            WriteFATEntry(sectorData, SectorNum, SectorOffset, Value);
             //Write the table sector data back to disk
             WriteFATSector(SectorNum, sectorData);
 
@@ -657,17 +648,14 @@ namespace Kernel.FOS_System.IO.FAT
                 }
                 return _rootDirectoryFAT32.GetListings();
             }
-            else
+            if (_rootDirectoryListings == null)
             {
-                if (_rootDirectoryListings == null)
-                {
-                    byte[] xData = thePartition.TheDiskDevice.NewBlockArray(RootSectorCount);
-                    thePartition.ReadBlock(RootSector, RootSectorCount, xData);
+                byte[] xData = thePartition.TheDiskDevice.NewBlockArray(RootSectorCount);
+                thePartition.ReadBlock(RootSector, RootSectorCount, xData);
 
-                    _rootDirectoryListings = ParseDirectoryTable(xData, xData.Length, null);
-                }
-                return _rootDirectoryListings;
+                _rootDirectoryListings = ParseDirectoryTable(xData, xData.Length, null);
             }
+            return _rootDirectoryListings;
         }
 
         /// <summary>
@@ -732,7 +720,7 @@ namespace Kernel.FOS_System.IO.FAT
                         // Empty slot, and no more entries after this
                         break;
                     }
-                    else if (xStatus == 0x05)
+                    if (xStatus == 0x05)
                     {
                         // Japanese characters - We dont handle these
                     }
@@ -816,10 +804,6 @@ namespace Kernel.FOS_System.IO.FAT
                             {
                                 uint xSize = ByteConverter.ToUInt32(xData, i + 28);
                                 xResult.Add(new FATFile(this, thisDir, xName, xSize, xFirstCluster));
-                            }
-                            else
-                            {
-                                //BasicConsole.WriteLine("Ignoring file: " + xName);
                             }
                         }
                         else if (xTest == ListingAttribs.VolumeID)
@@ -1131,7 +1115,7 @@ namespace Kernel.FOS_System.IO.FAT
                 // NOTE: The operation is an unsigned char rotate right
                 Sum = (byte) (((Sum & 1) == 0x1 ? 0x80 : 0) + (Sum >> 1) + shortNameBytes[charIdx]);
             }
-            return (byte) Sum;
+            return Sum;
         }
 
         /// <summary>
@@ -1145,12 +1129,9 @@ namespace Kernel.FOS_System.IO.FAT
             {
                 return RootDirectory_FAT32;
             }
-            else
-            {
-                List nameParts = aName.Split(FileSystemManager.PathDelimiter);
-                List listings = GetRootDirectoryListings();
-                return GetListingFromListings(nameParts, null, listings);
-            }
+            List nameParts = aName.Split(FileSystemManager.PathDelimiter);
+            List listings = GetRootDirectoryListings();
+            return GetListingFromListings(nameParts, null, listings);
         }
 
         /// <summary>
@@ -1203,10 +1184,7 @@ namespace Kernel.FOS_System.IO.FAT
                 //BasicConsole.WriteLine("Written listings.");
                 return newDir;
             }
-            else
-            {
-                ExceptionMethods.Throw(new IOException("Listing (directory/file) with specified name already exists!"));
-            }
+            ExceptionMethods.Throw(new IOException("Listing (directory/file) with specified name already exists!"));
             return null;
         }
 
@@ -1280,10 +1258,7 @@ namespace Kernel.FOS_System.IO.FAT
                 //BasicConsole.WriteLine("Written listings.");
                 return newFile;
             }
-            else
-            {
-                ExceptionMethods.Throw(new IOException("Listing (directory/file) with specified name already exists!"));
-            }
+            ExceptionMethods.Throw(new IOException("Listing (directory/file) with specified name already exists!"));
             return null;
         }
 
@@ -1396,7 +1371,7 @@ namespace Kernel.FOS_System.IO.FAT
 #endif
 
             uint bytesPer2FAT = (uint) Math.Divide(4*(ulong) dataClusters*bytesPerCluster, bytesPerCluster + 8);
-                //Calculation rounds down
+            //Calculation rounds down
 #if FATFS_TRACE
             BasicConsole.WriteLine(((FOS_System.String)"bytesPer2FAT: ") + bytesPer2FAT);
 #endif

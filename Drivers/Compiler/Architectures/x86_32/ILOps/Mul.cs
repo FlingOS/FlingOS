@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -57,7 +57,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     isNewGCObject = false,
@@ -94,46 +94,44 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-            else if (itemB.isFloat || itemA.isFloat)
+            if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Divide floats is unsupported!");
             }
-            else
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
-                {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop item A
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    //Sign extend A to EAX:EDX
-                    conversionState.Append(new Cdq());
-                    //Do the multiplication
-                    conversionState.Append(new ASMOps.Mul() {Arg = "EBX", Signed = true});
-                    //Result stored in eax
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop item A
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                //Sign extend A to EAX:EDX
+                conversionState.Append(new Cdq());
+                //Do the multiplication
+                conversionState.Append(new ASMOps.Mul {Arg = "EBX", Signed = true});
+                //Result stored in eax
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 4,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
-                else if ((itemA.sizeOnStackInBytes == 8 &&
-                          itemB.sizeOnStackInBytes == 4) ||
-                         (itemA.sizeOnStackInBytes == 4 &&
-                          itemB.sizeOnStackInBytes == 8))
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be 32-32 or 64-64.");
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 8)
-                {
-                    /*TODO: This long multiplication really doesn't work in practice for signed values... 
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
+            }
+            else if ((itemA.sizeOnStackInBytes == 8 &&
+                      itemB.sizeOnStackInBytes == 4) ||
+                     (itemA.sizeOnStackInBytes == 4 &&
+                      itemB.sizeOnStackInBytes == 8))
+            {
+                throw new InvalidOperationException("Invalid stack operand sizes! They should be 32-32 or 64-64.");
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                /*TODO: This long multiplication really doesn't work in practice for signed values... 
                      *          because we can't tell the computer to treat one value as signed and 
                      *          another as unsigned in a single multiply. We would need to store the
                      *          sign bit of the high parts (AH and BH) then make them unsigned.
@@ -142,108 +140,107 @@ namespace Drivers.Compiler.Architectures.x86
                      *          sub-parts.
                      */
 
-                    Logger.LogWarning(Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode, "", 0,
-                        string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode],
-                            "All 64-bit multiplication is treated as unsigned. Ensure you didn't intend signed 64-bit multiplication. Signed 64-bit multiplication is not supported yet."));
+                Logger.LogWarning(Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode, "", 0,
+                    string.Format(Errors.ErrorMessages[Errors.ILCompiler_ScanILOpCustomWarning_ErrorCode],
+                        "All 64-bit multiplication is treated as unsigned. Ensure you didn't intend signed 64-bit multiplication. Signed 64-bit multiplication is not supported yet."));
 
-                    //A = item A, B = item B
-                    //L = low bits, H = high bits
-                    // => A = AL + AH, B = BL + BH
+                //A = item A, B = item B
+                //L = low bits, H = high bits
+                // => A = AL + AH, B = BL + BH
 
-                    // A * B = (AL + AH) * (BL + BH)
-                    //       = (AL * BL) + (AL * BH) + (AH * BL) (Ignore: + (AH * BH))
+                // A * B = (AL + AH) * (BL + BH)
+                //       = (AL * BL) + (AL * BH) + (AH * BL) (Ignore: + (AH * BH))
 
-                    // AH = [ESP+12]
-                    // AL = [ESP+8]
-                    // BH = [ESP+4]
-                    // BL = [ESP+0]
+                // AH = [ESP+12]
+                // AL = [ESP+8]
+                // BH = [ESP+4]
+                // BL = [ESP+0]
 
-                    // mov eax, 0        - Zero out registers
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    // mov ebx, 0
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
-                    // mov ecx, 0
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "ECX"});
-                    // mov edx, 0
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
+                // mov eax, 0        - Zero out registers
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                // mov ebx, 0
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
+                // mov ecx, 0
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "ECX"});
+                // mov edx, 0
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
 
-                    // mov eax, [ESP+0] - Load BL
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+0]", Dest = "EAX"});
-                    // mov ebx, [ESP+8] - Load AL
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+8]", Dest = "EBX"});
-                    // mul ebx           - BL * AL, result in eax:edx
-                    conversionState.Append(new ASMOps.Mul() {Arg = "EBX"});
-                    // push edx          - Push result keeping high bits
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                    // push eax
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                // mov eax, [ESP+0] - Load BL
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+0]", Dest = "EAX"});
+                // mov ebx, [ESP+8] - Load AL
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+8]", Dest = "EBX"});
+                // mul ebx           - BL * AL, result in eax:edx
+                conversionState.Append(new ASMOps.Mul {Arg = "EBX"});
+                // push edx          - Push result keeping high bits
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                // push eax
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    //                   - Add 8 to offsets for result(s)
+                //                   - Add 8 to offsets for result(s)
 
-                    // mov eax, 0        - Zero out registers
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    // mov edx, 0
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
-                    // mov eax [ESP+4+8] - Load BH
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX"});
-                    // mul ebx           - BH * AL, result in eax:edx
-                    conversionState.Append(new ASMOps.Mul() {Arg = "EBX"});
-                    // push eax          - Push result truncating high bits
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                // mov eax, 0        - Zero out registers
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                // mov edx, 0
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
+                // mov eax [ESP+4+8] - Load BH
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX"});
+                // mul ebx           - BH * AL, result in eax:edx
+                conversionState.Append(new ASMOps.Mul {Arg = "EBX"});
+                // push eax          - Push result truncating high bits
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    //                   - Add 12 to offsets for result(s)
+                //                   - Add 12 to offsets for result(s)
 
-                    // mov eax, 0        - Zero out registers
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    // mov edx, 0
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
-                    // mov eax, [ESP+0+12] - Load BL
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX"});
-                    // mov ebx, [ESP+12+12] - Load AH
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+24]", Dest = "EBX"});
-                    // mul ebx             - BL * AH, result in eax:edx
-                    conversionState.Append(new ASMOps.Mul() {Arg = "EBX"});
-                    // push eax            - Push result truncating high bits
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                // mov eax, 0        - Zero out registers
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                // mov edx, 0
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
+                // mov eax, [ESP+0+12] - Load BL
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+12]", Dest = "EAX"});
+                // mov ebx, [ESP+12+12] - Load AH
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+24]", Dest = "EBX"});
+                // mul ebx             - BL * AH, result in eax:edx
+                conversionState.Append(new ASMOps.Mul {Arg = "EBX"});
+                // push eax            - Push result truncating high bits
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    //                     - Add 16 to offsets for result(s)
+                //                     - Add 16 to offsets for result(s)
 
-                    // AL * BL = [ESP+8] , 64 bits
-                    // AL * BH = [ESP+4] , 32 bits - high bits
-                    // AH * BL = [ESP+0] , 32 bits - high bits
+                // AL * BL = [ESP+8] , 64 bits
+                // AL * BH = [ESP+4] , 32 bits - high bits
+                // AH * BL = [ESP+0] , 32 bits - high bits
 
-                    // mov eax, [ESP+8]  - Load AL * BL
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+8]", Dest = "EAX"});
-                    // mov edx, [ESP+12]
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+12]", Dest = "EDX"});
-                    // mov ebx, 0
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
-                    // mov ecx, [ESP+4]   - Load AL * BH
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "ECX"});
-                    // add edx, ecx       - Add (AL * BL) + (AL * BH), result in eax:edx
-                    conversionState.Append(new ASMOps.Add() {Src = "ECX", Dest = "EDX"});
-                    // mov ecx, [ESP+0]   - Load AH * BL
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[ESP+0]", Dest = "ECX"});
-                    // add edx, ecx       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in eax:edx
-                    conversionState.Append(new ASMOps.Add() {Src = "ECX", Dest = "EDX"});
+                // mov eax, [ESP+8]  - Load AL * BL
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+8]", Dest = "EAX"});
+                // mov edx, [ESP+12]
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+12]", Dest = "EDX"});
+                // mov ebx, 0
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EBX"});
+                // mov ecx, [ESP+4]   - Load AL * BH
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+4]", Dest = "ECX"});
+                // add edx, ecx       - Add (AL * BL) + (AL * BH), result in eax:edx
+                conversionState.Append(new ASMOps.Add {Src = "ECX", Dest = "EDX"});
+                // mov ecx, [ESP+0]   - Load AH * BL
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP+0]", Dest = "ECX"});
+                // add edx, ecx       - Add ((AL * BL) + (AL * BH)) + (AH * BL), result in eax:edx
+                conversionState.Append(new ASMOps.Add {Src = "ECX", Dest = "EDX"});
 
-                    // add esp, 16+16     - Remove temp results and input values from stack
-                    conversionState.Append(new ASMOps.Add() {Src = "32", Dest = "ESP"});
+                // add esp, 16+16     - Remove temp results and input values from stack
+                conversionState.Append(new ASMOps.Add {Src = "32", Dest = "ESP"});
 
-                    // push edx           - Push final result
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                    // push eax
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                // push edx           - Push final result
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                // push eax
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        isNewGCObject = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
+                {
+                    isFloat = false,
+                    isNewGCObject = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
             }
         }
     }

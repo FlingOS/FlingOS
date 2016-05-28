@@ -45,7 +45,7 @@ namespace Drivers.Framework.Processes
     /// <summary>
     ///     Contains callers and handlers for system calls.
     /// </summary>
-    public static unsafe partial class SystemCalls
+    public static unsafe class SystemCalls
     {
         /// <summary>
         ///     The value used to indicate a thread should sleep indefinitely.
@@ -269,7 +269,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.StartThread, (uint) ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1,
                 ref Return2, ref Return3, ref Return4);
-            NewThreadId = (uint) Return2;
+            NewThreadId = Return2;
             return (SystemCallResults) Return1;
         }
 
@@ -710,7 +710,7 @@ namespace Drivers.Framework.Processes
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.GetTime, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            UTCTime = ((ulong) Return3 << 32) | (ulong) Return2;
+            UTCTime = ((ulong) Return3 << 32) | Return2;
             return (SystemCallResults) Return1;
         }
 
@@ -722,7 +722,7 @@ namespace Drivers.Framework.Processes
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.GetUpTime, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            UpTime = ((long) Return3 << 32) | (long) Return2;
+            UpTime = ((long) Return3 << 32) | Return2;
             return (SystemCallResults) Return1;
         }
 

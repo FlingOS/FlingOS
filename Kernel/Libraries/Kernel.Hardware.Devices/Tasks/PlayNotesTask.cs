@@ -34,9 +34,9 @@ using Kernel.Hardware.Timers;
 
 namespace Kernel.Hardware.Tasks
 {
-    public static unsafe class PlayNotesTask
+    public static class PlayNotesTask
     {
-        public static Thread OwnerThread = null;
+        public static Thread OwnerThread;
         public static bool Awake = true;
 
         public static bool Terminate = false;
@@ -44,7 +44,7 @@ namespace Kernel.Hardware.Tasks
         private static readonly CircularBuffer LiveNoteRequests;
         private static readonly CircularBuffer DeadNoteRequests;
 
-        private static bool Playing = false;
+        private static bool Playing;
 
         static PlayNotesTask()
         {
@@ -116,7 +116,7 @@ namespace Kernel.Hardware.Tasks
                         {
                             dur_ms = 0;
                         }
-                        NoteState state = new NoteState()
+                        NoteState state = new NoteState
                         {
                             dur_ms = dur_ms
                         };

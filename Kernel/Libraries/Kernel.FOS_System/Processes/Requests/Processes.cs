@@ -39,7 +39,7 @@ namespace Kernel.FOS_System.Processes.Requests.Processes
         public uint* DataPages;
     }
 
-    public unsafe struct ProcessDescriptor
+    public struct ProcessDescriptor
     {
         public uint Id;
         public int NumThreads;

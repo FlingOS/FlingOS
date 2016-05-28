@@ -36,20 +36,20 @@ namespace Kernel.Processes.ELF
 {
     public unsafe class ELFFile : Object
     {
+        private readonly File theFile;
+        private readonly FileStream theStream;
         private uint baseAddress;
 
         public ELFDynamicSection DynamicSection;
         public ELFDynamicSymbolTableSection DynamicSymbolsSection;
 
-        private bool FoundBaseAddress = false;
+        private bool FoundBaseAddress;
 
         private ELFHeader header;
         public ELFStringTableSection NamesTable;
 
         public List Sections = new List();
         public List Segments = new List();
-        private readonly File theFile;
-        private readonly FileStream theStream;
 
         public ELFFile(File file)
         {
@@ -411,14 +411,11 @@ namespace Kernel.Processes.ELF
                 BasicConsole.WriteLine("ELF signature check failed!");
                 return false;
             }
-            else
-            {
-                Console.Default.Colour(0x2F);
-                Console.Default.WriteLine("ELF signature check passed.");
-                Console.Default.DefaultColour();
+            Console.Default.Colour(0x2F);
+            Console.Default.WriteLine("ELF signature check passed.");
+            Console.Default.DefaultColour();
 
-                BasicConsole.WriteLine("ELF signature check passed.");
-            }
+            BasicConsole.WriteLine("ELF signature check passed.");
 
             #endregion
 
@@ -433,14 +430,11 @@ namespace Kernel.Processes.ELF
                 BasicConsole.WriteLine("ELF file class check failed!");
                 return false;
             }
-            else
-            {
-                Console.Default.Colour(0x2F);
-                Console.Default.WriteLine("ELF file class check passed.");
-                Console.Default.DefaultColour();
+            Console.Default.Colour(0x2F);
+            Console.Default.WriteLine("ELF file class check passed.");
+            Console.Default.DefaultColour();
 
-                BasicConsole.WriteLine("ELF file class check passed.");
-            }
+            BasicConsole.WriteLine("ELF file class check passed.");
 
             #endregion
 
@@ -455,14 +449,11 @@ namespace Kernel.Processes.ELF
                 BasicConsole.WriteLine("ELF data encoding check failed!");
                 return false;
             }
-            else
-            {
-                Console.Default.Colour(0x2F);
-                Console.Default.WriteLine("ELF data encoding check passed.");
-                Console.Default.DefaultColour();
+            Console.Default.Colour(0x2F);
+            Console.Default.WriteLine("ELF data encoding check passed.");
+            Console.Default.DefaultColour();
 
-                BasicConsole.WriteLine("ELF data encoding check passed.");
-            }
+            BasicConsole.WriteLine("ELF data encoding check passed.");
 
             #endregion
 
@@ -477,14 +468,11 @@ namespace Kernel.Processes.ELF
                 BasicConsole.WriteLine("ELF file type check failed!");
                 return false;
             }
-            else
-            {
-                Console.Default.Colour(0x2F);
-                Console.Default.WriteLine("ELF file type check passed.");
-                Console.Default.DefaultColour();
+            Console.Default.Colour(0x2F);
+            Console.Default.WriteLine("ELF file type check passed.");
+            Console.Default.DefaultColour();
 
-                BasicConsole.WriteLine("ELF file type check passed.");
-            }
+            BasicConsole.WriteLine("ELF file type check passed.");
 
             #endregion
 
@@ -499,14 +487,11 @@ namespace Kernel.Processes.ELF
                 BasicConsole.WriteLine("ELF machine check failed!");
                 return false;
             }
-            else
-            {
-                Console.Default.Colour(0x2F);
-                Console.Default.WriteLine("ELF machine check passed.");
-                Console.Default.DefaultColour();
+            Console.Default.Colour(0x2F);
+            Console.Default.WriteLine("ELF machine check passed.");
+            Console.Default.DefaultColour();
 
-                BasicConsole.WriteLine("ELF machine check passed.");
-            }
+            BasicConsole.WriteLine("ELF machine check passed.");
 
             #endregion
 
@@ -529,10 +514,7 @@ namespace Kernel.Processes.ELF
             {
                 return header.SignatureOK;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check signature!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check signature!"));
             return false;
         }
 
@@ -544,10 +526,7 @@ namespace Kernel.Processes.ELF
                 //TODO: Support 64-bit executables
                 return fileClass == ELFFileClass.None || fileClass == ELFFileClass.Class32;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             return false;
         }
 
@@ -557,10 +536,7 @@ namespace Kernel.Processes.ELF
             {
                 return header.DataEncoding == ELFDataEncoding.LSB;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check data encoding!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check data encoding!"));
             return false;
         }
 
@@ -574,10 +550,7 @@ namespace Kernel.Processes.ELF
                        fileType == ELFFileType.Relocatable ||
                        fileType == ELFFileType.Shared;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             return false;
         }
 
@@ -587,10 +560,7 @@ namespace Kernel.Processes.ELF
             {
                 return header.Machine == ELFMachines.Intel80386;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             return false;
         }
 
@@ -600,10 +570,7 @@ namespace Kernel.Processes.ELF
             {
                 return header.FileType == ELFFileType.Executable;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             return false;
         }
 
@@ -613,10 +580,7 @@ namespace Kernel.Processes.ELF
             {
                 return header.FileType == ELFFileType.Shared;
             }
-            else
-            {
-                ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
-            }
+            ExceptionMethods.Throw(new Exception("Failed to load ELF header so cannot check file class!"));
             return false;
         }
 

@@ -42,52 +42,52 @@ namespace Kernel.FOS_System.IO.Disk
         /// <summary>
         ///     Whether the GPT is valid or not.
         /// </summary>
-        public readonly bool IsValid = false;
+        public readonly bool IsValid;
 
         /// <summary>
         ///     The bytes of the disk GUID.
         /// </summary>
-        public byte[] DiskGUID = null;
+        public byte[] DiskGUID;
 
         /// <summary>
         ///     First LBA which can be used for partition data.
         /// </summary>
-        public ulong FirstUsableLBAForPartitions = 0;
+        public ulong FirstUsableLBAForPartitions;
 
         /// <summary>
         ///     The LBA of the backup GPT header. Should be last sector on the disk.
         /// </summary>
-        public ulong HeaderBackupLBA = 0;
+        public ulong HeaderBackupLBA;
 
         /// <summary>
         ///     The CRC32 cheksum of the GPT header.
         /// </summary>
-        public uint HeaderCRC32 = 0;
+        public uint HeaderCRC32;
 
         /// <summary>
         ///     The LBA of the GPT header. Should always be 1.
         /// </summary>
-        public ulong HeaderLBA = 0;
+        public ulong HeaderLBA;
 
         /// <summary>
         ///     The size of the GPT header.
         /// </summary>
-        public uint HeaderSize = 0;
+        public uint HeaderSize;
 
         /// <summary>
         ///     Last LBA which can be used for partition data.
         /// </summary>
-        public ulong LastUsableLBAForPartitions = 0;
+        public ulong LastUsableLBAForPartitions;
 
         /// <summary>
         ///     The number of entries in the partition array.
         /// </summary>
-        public uint NumPartitionEntries = 0;
+        public uint NumPartitionEntries;
 
         /// <summary>
         ///     CRC32 checksum of the partition array.
         /// </summary>
-        public uint PartitionArrayCRC32 = 0;
+        public uint PartitionArrayCRC32;
 
         /// <summary>
         ///     The list of non-empty partitions found in partition table.
@@ -97,17 +97,17 @@ namespace Kernel.FOS_System.IO.Disk
         /// <summary>
         ///     The revision number of the GPT.
         /// </summary>
-        public uint Revision = 0;
+        public uint Revision;
 
         /// <summary>
         ///     The size of a partition entry in the partition array.
         /// </summary>
-        public uint SizeOfPartitionEntry = 0;
+        public uint SizeOfPartitionEntry;
 
         /// <summary>
         ///     The LBA at which the partition array starts.
         /// </summary>
-        public ulong StartingLBAOfPartitionArray = 0;
+        public ulong StartingLBAOfPartitionArray;
 
         /// <summary>
         ///     Initialises a new, empty GPT and marks it as valid.
@@ -156,9 +156,9 @@ namespace Kernel.FOS_System.IO.Disk
 
                 return;
             }
-            //Or, if there is not one and only one partition in the MBR then the 
-            //  protective MBR isn't valid so this isn't a valid GPT
-            else if (TheMBR.NumPartitions != 1)
+                //Or, if there is not one and only one partition in the MBR then the 
+                //  protective MBR isn't valid so this isn't a valid GPT
+            if (TheMBR.NumPartitions != 1)
             {
 #if GPT_TRACE
                 BasicConsole.WriteLine("No partitions in MBR.");
@@ -166,9 +166,9 @@ namespace Kernel.FOS_System.IO.Disk
 #endif
                 return;
             }
-            //Or, the first (/only) partition entry has the wrong ID. 0xEE is the partition
-            //  ID for a GOT formatted MBR partition.
-            else if (TheMBR.Partitions[0].SystemID != 0xEE)
+                //Or, the first (/only) partition entry has the wrong ID. 0xEE is the partition
+                //  ID for a GOT formatted MBR partition.
+            if (TheMBR.Partitions[0].SystemID != 0xEE)
             {
 #if GPT_TRACE
                 BasicConsole.WriteLine(((FOS_System.String)"MBR partition 0 system ID not GPT. ") + TheMBR.Partitions[0].SystemID);
@@ -342,12 +342,12 @@ namespace Kernel.FOS_System.IO.Disk
             /// <summary>
             ///     The partition attributes.
             /// </summary>
-            public ulong Attributes = 0;
+            public ulong Attributes;
 
             /// <summary>
             ///     The first LBA of the partition.
             /// </summary>
-            public ulong FirstLBA = 0;
+            public ulong FirstLBA;
 
             /// <summary>
             ///     The partition GUID.
@@ -357,7 +357,7 @@ namespace Kernel.FOS_System.IO.Disk
             /// <summary>
             ///     The last LBA of the partition.
             /// </summary>
-            public ulong LastLBA = 0;
+            public ulong LastLBA;
 
             /// <summary>
             ///     The name of the partition.

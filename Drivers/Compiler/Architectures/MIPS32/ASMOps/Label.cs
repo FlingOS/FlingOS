@@ -34,7 +34,6 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
     public class Label : ASMLabel
     {
         public Label()
-            : base()
         {
         }
 
@@ -59,10 +58,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             {
                 return theBlock.GenerateMethodLabel() + ":\r\nnop";
             }
-            else
-            {
-                return theBlock.GenerateMethodLabel() + theBlock.GenerateILOpLabel(ILPosition, Extension) + ":\r\nnop";
-            }
+            return theBlock.GenerateMethodLabel() + theBlock.GenerateILOpLabel(ILPosition, Extension) + ":\r\nnop";
         }
     }
 }

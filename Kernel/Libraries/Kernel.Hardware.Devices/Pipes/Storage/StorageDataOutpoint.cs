@@ -62,7 +62,7 @@ namespace Kernel.Pipes.Storage
             {
                 DataPtr[i].Id = DiskIds[i];
             }
-            base.Write(PipeId, buffer, 0, buffer.Length, true);
+            Write(PipeId, buffer, 0, buffer.Length, true);
         }
     }
 }

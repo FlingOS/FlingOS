@@ -60,7 +60,7 @@ namespace Kernel.Debug
         ///     MSBuild complains that this variable is unused (because in the C# code it is only ever assigned to).
         ///     However, in reality it is used - in the assembly code for the Int1 and Int3 interrupt routines!
         /// </remarks>
-        [Group(Name = "IsolatedKernel")] private static bool Enabled = false;
+        [Group(Name = "IsolatedKernel")] private static bool Enabled;
 #pragma warning restore 0414
 
         /// <summary>
@@ -335,7 +335,7 @@ namespace Kernel.Debug
                             {
                                 Process AProcess = (Process) ProcessManager.Processes[i];
                                 MsgPort.Write(" - Process : ");
-                                MsgPort.Write((String) AProcess.Id);
+                                MsgPort.Write(AProcess.Id);
                                 MsgPort.Write(" : ");
                                 MsgPort.Write(AProcess.Name);
                                 MsgPort.Write(" : ");
@@ -360,7 +360,7 @@ namespace Kernel.Debug
                                     Thread AThread = (Thread) AProcess.Threads[j];
 
                                     MsgPort.Write("      - Thread : ");
-                                    MsgPort.Write((String) AThread.Id);
+                                    MsgPort.Write(AThread.Id);
                                     MsgPort.Write(" : ");
 
                                     switch (AThread.ActiveState)
@@ -867,7 +867,7 @@ namespace Kernel.Debug
 
                                 if (TheProcess != null)
                                 {
-                                    Thread TheThread = ProcessManager.GetThreadById((uint) ThreadId, TheProcess);
+                                    Thread TheThread = ProcessManager.GetThreadById(ThreadId, TheProcess);
 
                                     if (TheThread != null)
                                     {
@@ -984,7 +984,7 @@ namespace Kernel.Debug
                                                 ushort* AddrPtr = (ushort*) Address;
                                                 for (int i = 0; i < length; i++)
                                                 {
-                                                    MsgPort.Write((String) AddrPtr[i]);
+                                                    MsgPort.Write(AddrPtr[i]);
                                                     MsgPort.Write(" ");
                                                 }
                                             }
@@ -993,7 +993,7 @@ namespace Kernel.Debug
                                                 uint* AddrPtr = (uint*) Address;
                                                 for (int i = 0; i < length; i++)
                                                 {
-                                                    MsgPort.Write((String) AddrPtr[i]);
+                                                    MsgPort.Write(AddrPtr[i]);
                                                     MsgPort.Write(" ");
                                                 }
                                             }

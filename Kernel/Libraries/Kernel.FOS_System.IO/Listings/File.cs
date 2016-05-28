@@ -79,17 +79,11 @@ namespace Kernel.FOS_System.IO
             {
                 return null;
             }
-            else
+            if (baseListing is File)
             {
-                if (baseListing is File)
-                {
-                    return (File) baseListing;
-                }
-                else
-                {
-                    return null;
-                }
+                return (File) baseListing;
             }
+            return null;
         }
 
         /// <summary>

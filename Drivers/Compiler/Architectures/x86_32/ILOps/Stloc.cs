@@ -73,7 +73,7 @@ namespace Drivers.Compiler.Architectures.x86
                     localIndex = 3;
                     break;
                 case OpCodes.Stloc_S:
-                    localIndex = (ushort) theOp.ValueBytes[0];
+                    localIndex = theOp.ValueBytes[0];
                     break;
             }
 
@@ -95,10 +95,10 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 for (int i = 0; i < locSize; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop()
+                    conversionState.Append(new ASMOps.Pop
                     {
                         Size = OperandSize.Dword,
-                        Dest = "[EBP-" + Math.Abs(localInfo.Offset + i).ToString() + "]"
+                        Dest = "[EBP-" + Math.Abs(localInfo.Offset + i) + "]"
                     });
                 }
             }

@@ -68,17 +68,11 @@ namespace Kernel.FOS_System.IO
             {
                 return null;
             }
-            else
+            if (baseListing is Directory)
             {
-                if (baseListing is Directory)
-                {
-                    return (Directory) baseListing;
-                }
-                else
-                {
-                    return null;
-                }
+                return (Directory) baseListing;
             }
+            return null;
         }
 
         /// <summary>

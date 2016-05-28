@@ -192,7 +192,7 @@ namespace Kernel.FOS_System.IO
 
                                                 BasicConsole.WriteLine("Storage Manager > Got data output pipe id.");
 
-                                                StorageControllers.Add(new StorageControllerInfo()
+                                                StorageControllers.Add(new StorageControllerInfo
                                                 {
                                                     RemoteProcessId = Descriptor.ProcessId,
                                                     CmdPipeId = CmdPipeId,

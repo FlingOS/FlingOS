@@ -105,49 +105,49 @@ namespace Drivers.Compiler.Architectures.x86
             if (bytesToStore == 8)
             {
                 //Pop value low bits
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
                 //Pop value high bits
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
 
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EDX", Dest = "[EBX+4]"});
-                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "[EBX]"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EDX", Dest = "[EBX+4]"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EAX", Dest = "[EBX]"});
             }
             else if (bytesToStore == 4)
             {
                 //Pop value
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "[EBX]"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EAX", Dest = "[EBX]"});
             }
             else if (bytesToStore == 2)
             {
                 //Pop value
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "AX", Dest = "[EBX]"});
+                conversionState.Append(new Mov {Size = OperandSize.Word, Src = "AX", Dest = "[EBX]"});
             }
             else if (bytesToStore == 1)
             {
                 //Pop value
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
 
                 //Pop address
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
 
                 //Mov [address], value
-                conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "AL", Dest = "[EBX]"});
+                conversionState.Append(new Mov {Size = OperandSize.Byte, Src = "AL", Dest = "[EBX]"});
             }
         }
     }

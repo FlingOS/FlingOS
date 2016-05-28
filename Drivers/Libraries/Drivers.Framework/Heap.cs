@@ -94,7 +94,7 @@ namespace Drivers.Framework
         public static String name = "[UNINITIALISED]";
 
         public static SpinLock AccessLock;
-        public static bool AccessLockInitialised = false;
+        public static bool AccessLockInitialised;
 
         [NoDebug]
         [NoGC]
@@ -528,7 +528,6 @@ namespace Drivers.Framework
 
                                 /* x will be incremented by one ONCE more in our FOR loop */
                                 x += y - 1;
-                                continue;
                             }
                         }
                     }
@@ -619,7 +618,7 @@ namespace Drivers.Framework
                     /* found block */
                     ptroff = (uint) ptr - (uint) &b[1]; /* get offset to get block */
                     /* block offset in BM */
-                    bi = (uint) ptroff/b->bsize;
+                    bi = ptroff/b->bsize;
                     /* .. */
                     bm = (byte*) &b[1];
                     /* clear allocation */

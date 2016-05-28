@@ -115,7 +115,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public byte Read_Byte()
         {
-            return doRead_Byte(this.Port);
+            return doRead_Byte(Port);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public ushort Read_UInt16()
         {
-            return doRead_UInt16(this.Port);
+            return doRead_UInt16(Port);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public uint Read_UInt32()
         {
-            return doRead_UInt32(this.Port);
+            return doRead_UInt32(Port);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public ulong Read_UInt64()
         {
-            return doRead_UInt64(this.Port);
+            return doRead_UInt64(Port);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public ushort Read_Byte(ushort offset)
         {
-            return doRead_Byte((ushort) (this.Port + offset));
+            return doRead_Byte((ushort) (Port + offset));
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public ushort Read_UInt16(ushort offset)
         {
-            return doRead_UInt16((ushort) (this.Port + offset));
+            return doRead_UInt16((ushort) (Port + offset));
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public uint Read_UInt32(ushort offset)
         {
-            return doRead_UInt32((ushort) (this.Port + offset));
+            return doRead_UInt32((ushort) (Port + offset));
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public ulong Read_UInt64(ushort offset)
         {
-            return doRead_UInt64((ushort) (this.Port + offset));
+            return doRead_UInt64((ushort) (Port + offset));
         }
 
 
@@ -244,7 +244,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public virtual void Write_Byte(byte aVal)
         {
-            doWrite_Byte(this.Port, aVal);
+            doWrite_Byte(Port, aVal);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public void Write_UInt16(ushort aVal)
         {
-            doWrite_UInt16(this.Port, aVal);
+            doWrite_UInt16(Port, aVal);
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public void Write_UInt32(uint aVal)
         {
-            doWrite_UInt32(this.Port, aVal);
+            doWrite_UInt32(Port, aVal);
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public void Write_UInt64(ulong aVal)
         {
-            doWrite_UInt64(this.Port, aVal);
+            doWrite_UInt64(Port, aVal);
         }
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public virtual void Write_Byte(byte aVal, ushort offset)
         {
-            doWrite_Byte((ushort) (this.Port + offset), aVal);
+            doWrite_Byte((ushort) (Port + offset), aVal);
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public virtual void Write_UInt16(ushort aVal, ushort offset)
         {
-            doWrite_UInt16((ushort) (this.Port + offset), aVal);
+            doWrite_UInt16((ushort) (Port + offset), aVal);
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public virtual void Write_UInt32(uint aVal, ushort offset)
         {
-            doWrite_UInt32((ushort) (this.Port + offset), aVal);
+            doWrite_UInt32((ushort) (Port + offset), aVal);
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace Kernel.Hardware.IO
         [NoGC]
         public virtual void Write_UInt64(ulong aVal, ushort offset)
         {
-            doWrite_UInt64((ushort) (this.Port + offset), aVal);
+            doWrite_UInt64((ushort) (Port + offset), aVal);
         }
 
         /// <summary>

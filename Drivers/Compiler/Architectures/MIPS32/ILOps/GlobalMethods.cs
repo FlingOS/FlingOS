@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             if (size == 1)
             {
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Src = offset + "(" + addressReg + ")",
                     Dest = "$t6",
@@ -49,18 +49,18 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else
             {
-                conversionState.Append(new ASMOps.Xor() {Src1 = "$t6", Src2 = "$t6", Dest = "$t6"});
+                conversionState.Append(new ASMOps.Xor {Src1 = "$t6", Src2 = "$t6", Dest = "$t6"});
                 int shiftBits = 0;
                 if (offset%2 == 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Src = offset + "(" + addressReg + ")",
                         Dest = "$t7",
                         MoveType = Mov.MoveTypes.SrcMemoryToDestReg,
                         Size = OperandSize.Byte
                     });
-                    conversionState.Append(new ASMOps.Or() {Src1 = "$t7", Src2 = "$t6", Dest = "$t6"});
+                    conversionState.Append(new ASMOps.Or {Src1 = "$t7", Src2 = "$t6", Dest = "$t6"});
 
                     size -= 1;
                     offset += 1;
@@ -69,7 +69,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 while (size > 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Src = offset + "(" + addressReg + ")",
                         Dest = "$t7",
@@ -79,9 +79,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     });
                     if (shiftBits > 0)
                     {
-                        conversionState.Append(new Sll() {Src = "$t7", Dest = "$t7", Bits = shiftBits});
+                        conversionState.Append(new Sll {Src = "$t7", Dest = "$t7", Bits = shiftBits});
                     }
-                    conversionState.Append(new ASMOps.Or() {Src1 = "$t7", Src2 = "$t6", Dest = "$t6"});
+                    conversionState.Append(new ASMOps.Or {Src1 = "$t7", Src2 = "$t6", Dest = "$t6"});
 
                     size -= 2;
                     offset += 2;
@@ -90,7 +90,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 if (size == 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Src = offset + "(" + addressReg + ")",
                         Dest = "$t7",
@@ -100,9 +100,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     });
                     if (shiftBits > 0)
                     {
-                        conversionState.Append(new Sll() {Src = "$t7", Dest = "$t7", Bits = shiftBits});
+                        conversionState.Append(new Sll {Src = "$t7", Dest = "$t7", Bits = shiftBits});
                     }
-                    conversionState.Append(new ASMOps.Or() {Src1 = "$t7", Src2 = "$t6", Dest = "$t6"});
+                    conversionState.Append(new ASMOps.Or {Src1 = "$t7", Src2 = "$t6", Dest = "$t6"});
 
                     size -= 1;
                     offset += 1;
@@ -110,7 +110,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
             }
 
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Src = "$t6",
                 Dest = valueReg,
@@ -124,7 +124,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             if (size == 1)
             {
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Src = valueReg,
                     Dest = offset + "(" + addressReg + ")",
@@ -134,7 +134,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else
             {
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Dest = "$t6",
                     Src = valueReg,
@@ -144,14 +144,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 if (offset%2 == 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Dest = offset + "(" + addressReg + ")",
                         Src = "$t6",
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory,
                         Size = OperandSize.Byte
                     });
-                    conversionState.Append(new Srl() {Src = "$t6", Dest = "$t6", Bits = 8});
+                    conversionState.Append(new Srl {Src = "$t6", Dest = "$t6", Bits = 8});
 
                     size -= 1;
                     offset += 1;
@@ -159,14 +159,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 while (size > 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Dest = offset + "(" + addressReg + ")",
                         Src = "$t6",
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory,
                         Size = OperandSize.Halfword
                     });
-                    conversionState.Append(new Srl() {Src = "$t6", Dest = "$t6", Bits = 16});
+                    conversionState.Append(new Srl {Src = "$t6", Dest = "$t6", Bits = 16});
 
                     size -= 2;
                     offset += 2;
@@ -174,14 +174,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
                 if (size == 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Dest = offset + "(" + addressReg + ")",
                         Src = "$t6",
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory,
                         Size = OperandSize.Byte
                     });
-                    conversionState.Append(new Srl() {Src = "$t6", Dest = "$t6", Bits = 8});
+                    conversionState.Append(new Srl {Src = "$t6", Dest = "$t6", Bits = 8});
 
                     size -= 1;
                     offset += 1;

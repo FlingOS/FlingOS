@@ -44,10 +44,10 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
         /// <summary>
         ///     The position (as an offset from the start of the file) of the stream in the file.
         /// </summary>
-        protected ulong position = 0;
+        protected ulong position;
 
-        private byte[] ReadSectorBuffer = null;
-        private uint ReadSectorSize = 0;
+        private byte[] ReadSectorBuffer;
+        private uint ReadSectorSize;
 
         /// <summary>
         ///     Initializes a new ISO9660 file stream for the specified file.
@@ -206,7 +206,7 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
                     // TODO: Should we do an argument check here just in case?
                     Array.Copy(ReadSectorBuffer, (int) PosInSector, buffer, offset, (int) ReadSize);
                     offset += (int) ReadSize;
-                    ActualCount -= (ulong) ReadSize;
+                    ActualCount -= ReadSize;
                     read += (int) ReadSize;
                     position += ReadSize;
                 }
@@ -217,10 +217,7 @@ namespace Kernel.FOS_System.IO.Streams.ISO9660
 
                 return read;
             }
-            else
-            {
-                return 0;
-            }
+            return 0;
         }
 
         /// <summary>

@@ -49,7 +49,7 @@ namespace FlingOops
         ///     Whether the GC has been initialised yet or not.
         ///     Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        public static bool Enabled = false;
+        public static bool Enabled;
 
         public static bool UseCurrentState = false;
 
@@ -88,10 +88,7 @@ namespace FlingOops
                 {
                     return state;
                 }
-                else
-                {
-                    return kernel_state;
-                }
+                return kernel_state;
             }
             [NoDebug]
             set
@@ -122,10 +119,7 @@ namespace FlingOops
                 {
                     return State.OutputTrace;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             [NoGC]
             [NoDebug]
@@ -148,10 +142,7 @@ namespace FlingOops
                 {
                     return State.InsideGC;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             [NoGC]
             [NoDebug]
@@ -174,10 +165,7 @@ namespace FlingOops
                 {
                     return State.NumObjs;
                 }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
             [NoGC]
             [NoDebug]
@@ -199,10 +187,7 @@ namespace FlingOops
                 {
                     return State.NumStrings;
                 }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
             [NoGC]
             set
@@ -224,10 +209,7 @@ namespace FlingOops
                 {
                     return State.lastEnabler;
                 }
-                else
-                {
-                    return "";
-                }
+                return "";
             }
             [NoDebug]
             [NoGC]
@@ -269,10 +251,7 @@ namespace FlingOops
                 {
                     return State.lastLocker;
                 }
-                else
-                {
-                    return "";
-                }
+                return "";
             }
             [NoDebug]
             set
@@ -294,10 +273,7 @@ namespace FlingOops
                 {
                     return State.CleanupList;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
             [NoGC]
             [NoDebug]
@@ -851,7 +827,7 @@ namespace FlingOops
         /// <returns>True if the signature is found and is correct.</returns>
         [NoDebug]
         [NoGC]
-        public static unsafe bool CheckSignature(GCHeader* headerPtr)
+        public static bool CheckSignature(GCHeader* headerPtr)
         {
             bool OK = headerPtr->Sig1 == 0x5C0EADE2U;
             OK = OK && headerPtr->Sig2 == 0x5C0EADE2U;
@@ -1130,7 +1106,7 @@ namespace FlingOops
         ///     Whether the GC is currently executing. Used to prevent the GC calling itself (or ending up in loops with
         ///     called methods re-calling the GC!)
         /// </summary>
-        public bool InsideGC = false;
+        public bool InsideGC;
 
         public String lastDisabler = "";
 
@@ -1140,14 +1116,14 @@ namespace FlingOops
         /// <summary>
         ///     The total number of objects currently allocated by the GC.
         /// </summary>
-        public int NumObjs = 0;
+        public int NumObjs;
 
         /// <summary>
         ///     The number of strings currently allocated on the heap.
         /// </summary>
-        public int NumStrings = 0;
+        public int NumStrings;
 
-        public bool OutputTrace = false;
+        public bool OutputTrace;
     }
 
     /// <summary>

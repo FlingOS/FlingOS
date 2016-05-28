@@ -37,10 +37,9 @@ namespace Kernel.FOS_System.IO.ISO9660
 {
     public class ISO9660Directory : Directory
     {
+        private readonly ISO9660File _theFile;
         private List _cachedlistings;
         private ISO9660FileStream _fileStream;
-
-        private readonly ISO9660File _theFile;
         internal Disk.ISO9660.DirectoryRecord TheDirectoryRecord;
 
         public ISO9660Directory(ISO9660FileSystem fileSystem, ISO9660Directory parent,
@@ -69,7 +68,7 @@ namespace Kernel.FOS_System.IO.ISO9660
         {
             if (TheDirectoryRecord.IsRootDirectory)
             {
-                return this.TheFileSystem.TheMapping.Prefix;
+                return TheFileSystem.TheMapping.Prefix;
             }
             return base.GetFullPath();
         }
@@ -86,7 +85,7 @@ namespace Kernel.FOS_System.IO.ISO9660
                 Get_FileStream();
                 byte[] data = new byte[(uint) _theFile.Size];
                 _fileStream.Position = 0;
-                int actuallyRead = _fileStream.Read(data, 0, (int) data.Length);
+                int actuallyRead = _fileStream.Read(data, 0, data.Length);
                 _cachedlistings = new List(10);
 
                 uint position = 0;

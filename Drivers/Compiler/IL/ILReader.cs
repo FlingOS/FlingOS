@@ -86,10 +86,7 @@ namespace Drivers.Compiler.IL
             {
                 return ReadPlugged(aMethodInfo);
             }
-            else
-            {
-                return ReadNonPlugged(aMethodInfo);
-            }
+            return ReadNonPlugged(aMethodInfo);
         }
 
         /// <summary>
@@ -100,7 +97,7 @@ namespace Drivers.Compiler.IL
         public static ILBlock ReadPlugged(MethodInfo aMethodInfo)
         {
             string PlugPath = aMethodInfo.PlugAttribute.ASMFilePath;
-            return new ILBlock()
+            return new ILBlock
             {
                 PlugPath = string.IsNullOrWhiteSpace(PlugPath) ? " " : PlugPath,
                 TheMethodInfo = aMethodInfo
@@ -114,7 +111,7 @@ namespace Drivers.Compiler.IL
         /// <returns>The new IL block for the method.</returns>
         public static ILBlock ReadNonPlugged(MethodInfo aMethodInfo)
         {
-            ILBlock result = new ILBlock()
+            ILBlock result = new ILBlock
             {
                 TheMethodInfo = aMethodInfo
             };
@@ -126,7 +123,7 @@ namespace Drivers.Compiler.IL
             {
                 foreach (LocalVariableInfo aLocal in methodBody.LocalVariables)
                 {
-                    aMethodInfo.LocalInfos.Add(new VariableInfo()
+                    aMethodInfo.LocalInfos.Add(new VariableInfo
                     {
                         UnderlyingType = aLocal.LocalType,
                         Position = aLocal.LocalIndex
@@ -144,12 +141,12 @@ namespace Drivers.Compiler.IL
 
                     if (ILBytes[ILBytesPos] == 0xFE)
                     {
-                        currOpCodeID = (ushort) (0xFE00 + (short) ILBytes[ILBytesPos + 1]);
+                        currOpCodeID = (ushort) (0xFE00 + ILBytes[ILBytesPos + 1]);
                         currOpBytesSize += 2;
                     }
                     else
                     {
-                        currOpCodeID = (ushort) ILBytes[ILBytesPos];
+                        currOpCodeID = ILBytes[ILBytesPos];
                         currOpBytesSize++;
                     }
                     currOpCode = AllOpCodes[currOpCodeID];
@@ -237,7 +234,7 @@ namespace Drivers.Compiler.IL
                         }
                     }
 
-                    result.ILOps.Add(new ILOp()
+                    result.ILOps.Add(new ILOp
                     {
                         opCode = currOpCode,
                         Offset = ILBytesPos,
@@ -265,7 +262,7 @@ namespace Drivers.Compiler.IL
                         case ExceptionHandlingClauseOptions.Fault:
                         case ExceptionHandlingClauseOptions.Clause:
                         {
-                            CatchBlock catchBlock = new CatchBlock()
+                            CatchBlock catchBlock = new CatchBlock
                             {
                                 Offset = aClause.HandlerOffset,
                                 Length = aClause.HandlerLength,
@@ -277,7 +274,7 @@ namespace Drivers.Compiler.IL
                             break;
                         case ExceptionHandlingClauseOptions.Finally:
                         {
-                            FinallyBlock finallyBlock = new FinallyBlock()
+                            FinallyBlock finallyBlock = new FinallyBlock
                             {
                                 Offset = aClause.HandlerOffset,
                                 Length = aClause.HandlerLength
@@ -287,7 +284,7 @@ namespace Drivers.Compiler.IL
                             break;
                         default:
                             Logger.LogError("IL0010", "", 0,
-                                "Exception handling clause not supported! Type: " + aClause.Flags.ToString());
+                                "Exception handling clause not supported! Type: " + aClause.Flags);
                             break;
                     }
                 }

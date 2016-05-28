@@ -70,17 +70,17 @@ namespace Kernel.Pipes.File
                     DataPtr[i].Prefix[j] = j < FSPrefixes[i].length ? FSPrefixes[i][j] : '\0';
                 }
             }
-            base.Write(PipeId, buffer, 0, buffer.Length, true);
+            Write(PipeId, buffer, 0, buffer.Length, true);
         }
 
-        public unsafe void WriteString(int PipeId, String str)
+        public void WriteString(int PipeId, String str)
         {
             if (str == "")
             {
                 str = "\0";
             }
             byte[] strBytes = ByteConverter.GetASCIIBytes(str);
-            base.Write(PipeId, strBytes, 0, strBytes.Length, true);
+            Write(PipeId, strBytes, 0, strBytes.Length, true);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace Kernel.FOS_System.Collections
         ///     It is the index immediately after the last-set item in the array.
         ///     It thus also acts as an item count.
         /// </summary>
-        protected int nextIndex = 0;
+        protected int nextIndex;
 
         /// <summary>
         ///     Creates a new list with initial capacity of 5.

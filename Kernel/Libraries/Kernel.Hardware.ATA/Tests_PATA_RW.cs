@@ -59,16 +59,13 @@ namespace Kernel.Hardware.Testing
                 OutputWarning("ATATests : Test_LongRead", "No PATA device found. Aborting test.");
                 return;
             }
-            else
-            {
-                OutputMessage("ATATests : Test_LongRead", (String) "Device found. Controller ID: " +
-                                                          (TestDevice.ControllerID == ATA.ATA.ControllerID.Primary
-                                                              ? "Primary"
-                                                              : "Secondary") + " , Position: " +
-                                                          (TestDevice.BusPosition == ATA.ATA.BusPosition.Master
-                                                              ? "Master"
-                                                              : "Slave"));
-            }
+            OutputMessage("ATATests : Test_LongRead", (String) "Device found. Controller ID: " +
+                                                      (TestDevice.ControllerID == ATA.ATA.ControllerID.Primary
+                                                          ? "Primary"
+                                                          : "Secondary") + " , Position: " +
+                                                      (TestDevice.BusPosition == ATA.ATA.BusPosition.Master
+                                                          ? "Master"
+                                                          : "Slave"));
 
             // Create a buffer for storing up to 16 blocks of data
             OutputMessage("ATATests : Test_LongRead", "Creating data buffer...");

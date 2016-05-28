@@ -42,16 +42,16 @@ namespace Kernel.Hardware.Timers
         private const uint CURRENT_YEAR = 2016;
 
         private readonly IOPort AddressPort = new IOPort(0x70);
+        private readonly IOPort DataPort = new IOPort(0x71);
         // TODO: Set by ACPI table parsing code if the century register is available
         internal byte century_register = 0x00;
-        private readonly IOPort DataPort = new IOPort(0x71);
-        private byte day = 0;
-        private byte hour = 0;
-        private byte minute = 0;
-        private byte month = 0;
+        private byte day;
+        private byte hour;
+        private byte minute;
+        private byte month;
 
-        private byte second = 0;
-        private uint year = 0;
+        private byte second;
+        private uint year;
 
         public RTC()
             : base(DeviceGroup.System, DeviceClass.Timer, DeviceSubClass.Clock, "Real Time Clock", new uint[0], true)

@@ -84,21 +84,18 @@ namespace Drivers.Compiler.Architectures.x86
                     //SUPPORT - floats
                     throw new NotSupportedException("Floats return type not supported yet!");
                 }
-                //Otherwise, store the return value at [ebp+8]
-                //[ebp+8] because that is last "argument"
-                //      - read the calling convention spec
-                else
+                    //Otherwise, store the return value at [ebp+8]
+                    //[ebp+8] because that is last "argument"
+                    //      - read the calling convention spec
+                for (int i = 0; i < retSize; i += 4)
                 {
-                    for (int i = 0; i < retSize; i += 4)
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new Mov
                     {
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                        conversionState.Append(new Mov()
-                        {
-                            Size = OperandSize.Dword,
-                            Dest = "[EBP+" + (i + 8) + "]",
-                            Src = "EAX"
-                        });
-                    }
+                        Size = OperandSize.Dword,
+                        Dest = "[EBP+" + (i + 8) + "]",
+                        Src = "EAX"
+                    });
                 }
             }
 
@@ -114,11 +111,11 @@ namespace Drivers.Compiler.Architectures.x86
                     totalBytes += aLocal.TheTypeInfo.SizeOnStackInBytes;
                 }
                 //Move esp past the locals
-                conversionState.Append(new ASMOps.Add() {Src = totalBytes.ToString(), Dest = "ESP"});
+                conversionState.Append(new ASMOps.Add {Src = totalBytes.ToString(), Dest = "ESP"});
             }
 
             //Restore ebp to previous method's ebp
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBP"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBP"});
             //This pop also takes last value off the stack which
             //means top item is the return address
             //So ret command can now be correctly executed.

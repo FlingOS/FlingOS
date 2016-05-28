@@ -83,13 +83,13 @@ namespace Drivers
             }
         }
 
-        public static unsafe byte* StackPointer
+        public static byte* StackPointer
         {
             [PluggedMethod(ASMFilePath = @"ASM\Exceptions\StackPointer")] get { return null; }
             [PluggedMethod(ASMFilePath = null)] set { }
         }
 
-        public static unsafe byte* BasePointer
+        public static byte* BasePointer
         {
             [PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")] get { return null; }
             [PluggedMethod(ASMFilePath = null)] set { }
@@ -107,7 +107,7 @@ namespace Drivers
         [AddExceptionHandlerInfoMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void AddExceptionHandlerInfo(
+        public static void AddExceptionHandlerInfo(
             void* handlerPtr,
             void* filterPtr)
         {
@@ -181,7 +181,7 @@ namespace Drivers
         /// <param name="ex">The exception to throw.</param>
         [NoDebug]
         [NoGC]
-        public static unsafe void Throw(Exception ex)
+        public static void Throw(Exception ex)
         {
             GC.IncrementRefCount(ex);
 
@@ -233,7 +233,7 @@ namespace Drivers
         [HandleExceptionMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleException()
+        public static void HandleException()
         {
             //BasicConsole.WriteLine("Handle exception");
 
@@ -291,7 +291,7 @@ namespace Drivers
         [ExceptionsHandleLeaveMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleLeave(void* continuePtr)
+        public static void HandleLeave(void* continuePtr)
         {
             if (State == null ||
                 State->CurrentHandlerPtr == null)
@@ -474,7 +474,7 @@ namespace Drivers
         [ExceptionsHandleEndFinallyMethod]
         [NoDebug]
         [NoGC]
-        public static unsafe void HandleEndFinally()
+        public static void HandleEndFinally()
         {
             if (State == null ||
                 State->CurrentHandlerPtr == null)

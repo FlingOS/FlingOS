@@ -33,7 +33,7 @@ namespace Drivers.Compiler.ASM.ASMOps
     /// <summary>
     ///     Indicates to the compiler which ASM op an ASMOp implementation targets.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class ASMOpTargetAttribute : Attribute
     {
         /// <summary>

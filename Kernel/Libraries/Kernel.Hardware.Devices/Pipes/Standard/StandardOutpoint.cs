@@ -61,7 +61,7 @@ namespace Kernel.Pipes.Standard
         ///         Treats the character as a single ASCII byte. In future, may want to make this UTF16 (two bytes, Unicode).
         ///     </para>
         /// </remarks>
-        public unsafe void Write(int PipeId, char Character, bool Blocking)
+        public void Write(int PipeId, char Character, bool Blocking)
         {
             byte[] data = new byte[1] {(byte) Character};
             base.Write(PipeId, data, 0, data.Length, Blocking);
@@ -81,7 +81,7 @@ namespace Kernel.Pipes.Standard
         ///         Treats the message as ASCII. In future, may want to make this UTF16 (two bytes, Unicode).
         ///     </para>
         /// </remarks>
-        public unsafe void Write(int PipeId, String Message, bool Blocking)
+        public void Write(int PipeId, String Message, bool Blocking)
         {
             if (Message == "")
             {
@@ -105,7 +105,7 @@ namespace Kernel.Pipes.Standard
         ///         Treats the message as ASCII. In future, may want to make this UTF16 (two bytes, Unicode).
         ///     </para>
         /// </remarks>
-        public unsafe void WriteLine(int PipeId, String Message, bool Blocking)
+        public void WriteLine(int PipeId, String Message, bool Blocking)
         {
             if (Message == "")
             {

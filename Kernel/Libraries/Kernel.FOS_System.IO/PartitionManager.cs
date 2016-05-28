@@ -113,11 +113,8 @@ namespace Kernel.FOS_System.IO
             {
                 return false;
             }
-            else
-            {
-                ProcessGPT(TheGPT, TheDisk);
-                return true;
-            }
+            ProcessGPT(TheGPT, TheDisk);
+            return true;
         }
 
         /// <summary>
@@ -144,15 +141,12 @@ namespace Kernel.FOS_System.IO
 #endif
                 return false;
             }
-            else
-            {
 #if PM_TRACE
-                BasicConsole.WriteLine("Valid MBR found.");
+            BasicConsole.WriteLine("Valid MBR found.");
 #endif
-                ProcessMBR(TheMBR, TheDisk);
+            ProcessMBR(TheMBR, TheDisk);
 
-                return true;
-            }
+            return true;
         }
 
         private static void ProcessISO9660(Disk.ISO9660 aISO9660, DiskDevice TheDisk)

@@ -97,7 +97,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "EAX",
                     Value = EAXRegisterControl.Value
@@ -109,7 +109,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "EBX",
                     Value = EBXRegisterControl.Value
@@ -121,7 +121,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "ECX",
                     Value = ECXRegisterControl.Value
@@ -133,7 +133,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "EDX",
                     Value = EDXRegisterControl.Value
@@ -145,7 +145,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "ESP",
                     Value = ESPRegisterControl.Value
@@ -157,7 +157,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "EBP",
                     Value = EBPRegisterControl.Value
@@ -169,7 +169,7 @@ namespace Drivers.Debugger.App
         {
             if (RegisterChangedEvent != null)
             {
-                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs()
+                RegisterChangedEvent.Invoke(new RegisterChangedEventArgs
                 {
                     Register = "EIP",
                     Value = EIPRegisterControl.Value

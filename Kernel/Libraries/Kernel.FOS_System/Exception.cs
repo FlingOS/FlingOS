@@ -42,7 +42,6 @@ namespace Kernel.FOS_System
         ///     Creates a new, empty exception.
         /// </summary>
         public Exception()
-            : base()
         {
         }
 
@@ -51,7 +50,6 @@ namespace Kernel.FOS_System
         /// </summary>
         /// <param name="aMessage">The exception message.</param>
         public Exception(String aMessage)
-            : base()
         {
             Message = aMessage;
         }
@@ -68,10 +66,7 @@ namespace Kernel.FOS_System
                     return message + "\nInner exception:\n" + InnerException.Message + "\nInstruction address: " +
                            InstructionAddress;
                 }
-                else
-                {
-                    return message + "\nInstruction address: " + InstructionAddress;
-                }
+                return message + "\nInstruction address: " + InstructionAddress;
             }
             set { message = value; }
         }

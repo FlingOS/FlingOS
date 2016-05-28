@@ -54,14 +54,11 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             {
                 return "shrd " + Dest + ", " + Src + ", " + Count;
             }
-            else if (Signed)
+            if (Signed)
             {
                 return "sar " + Dest + ", " + Src;
             }
-            else
-            {
-                return "shr " + Dest + ", " + Src;
-            }
+            return "shr " + Dest + ", " + Src;
         }
     }
 }

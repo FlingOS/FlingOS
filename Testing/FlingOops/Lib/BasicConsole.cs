@@ -27,6 +27,7 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
+
 #if MIPS
 using FlingOops.MIPS.CI20;
 #elif x86
@@ -92,7 +93,7 @@ namespace FlingOops
         ///     Useful for when fixing low-level errors in compiler which result in incorrect execution order
         ///     and thus use of Basic Console before it is ready.
         /// </remarks>
-        public static bool Initialised = false;
+        public static bool Initialised;
 
         /// <summary>
         ///     Numbers of rows in the video memory.
@@ -238,7 +239,7 @@ namespace FlingOops
         /// </summary>
         [NoDebug]
         [NoGC]
-        public static unsafe void Clear()
+        public static void Clear()
         {
             if (!Initialised) return;
 
@@ -288,7 +289,7 @@ namespace FlingOops
         /// </remarks>
         [NoDebug]
         [NoGC]
-        public static unsafe void Write(String str)
+        public static void Write(String str)
         {
             if (!Initialised) return;
 
@@ -357,7 +358,7 @@ namespace FlingOops
         /// </remarks>
         [NoDebug]
         [NoGC]
-        public static unsafe void WriteLine(String str)
+        public static void WriteLine(String str)
         {
             if (!Initialised) return;
             if (str == null)
@@ -440,7 +441,7 @@ namespace FlingOops
         ///     Prints the test string (all the keyboard characters) to the start of the output - overwrites any existing text.
         /// </summary>
         [NoGC]
-        public static unsafe void PrintTestString()
+        public static void PrintTestString()
         {
             if (!Initialised) return;
             //This does not use the Write functions as it is a test function to 
@@ -638,7 +639,7 @@ namespace FlingOops
         ///     This would cause an issue if you changed the line length after already having printed text
         ///     because you'd want to leave the next print location at the start of a new line.
         /// </remarks>
-        private static int offset = 0;
+        private static int offset;
 
         /// <summary>
         ///     The offset from the start of the memory (in characters) to write the next character to.

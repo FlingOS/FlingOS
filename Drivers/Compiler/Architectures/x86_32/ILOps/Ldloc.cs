@@ -64,7 +64,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ldloc_S:
                 case OpCodes.Ldloca_S:
-                    localIndex = (ushort) theOp.ValueBytes[0];
+                    localIndex = theOp.ValueBytes[0];
                     break;
             }
 
@@ -72,7 +72,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (loadAddr)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -84,7 +84,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 int pushedLocalSizeVal = theLoc.TheTypeInfo.SizeOnStackInBytes;
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = pushedLocalSizeVal,
@@ -132,7 +132,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ldloc_S:
                 case OpCodes.Ldloca_S:
-                    localIndex = (ushort) theOp.ValueBytes[0];
+                    localIndex = theOp.ValueBytes[0];
                     break;
             }
 
@@ -145,11 +145,11 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (loadAddr)
             {
-                conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EBP", Dest = "EAX"});
-                conversionState.Append(new ASMOps.Sub() {Src = (-theLoc.Offset).ToString(), Dest = "EAX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EBP", Dest = "EAX"});
+                conversionState.Append(new ASMOps.Sub {Src = (-theLoc.Offset).ToString(), Dest = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -165,19 +165,16 @@ namespace Drivers.Compiler.Architectures.x86
                 {
                     throw new NotSupportedException("Invalid local bytes size!");
                 }
-                else
+                for (int i = theLoc.Offset + (localSizeOnStack - 4); i >= theLoc.Offset; i -= 4)
                 {
-                    for (int i = theLoc.Offset + (localSizeOnStack - 4); i >= theLoc.Offset; i -= 4)
+                    conversionState.Append(new Push
                     {
-                        conversionState.Append(new Push()
-                        {
-                            Size = OperandSize.Dword,
-                            Src = "[EBP-" + Math.Abs(i).ToString() + "]"
-                        });
-                    }
+                        Size = OperandSize.Dword,
+                        Src = "[EBP-" + Math.Abs(i) + "]"
+                    });
                 }
 
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = Utilities.IsFloat(theLoc.UnderlyingType),
                     sizeOnStackInBytes = localSizeOnStack,

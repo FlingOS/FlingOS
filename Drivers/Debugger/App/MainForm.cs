@@ -48,12 +48,12 @@ namespace Drivers.Debugger.App
 
     public partial class MainForm : Form
     {
+        private readonly List<KeyValuePair<string, List<string>>> Breakpoints =
+            new List<KeyValuePair<string, List<string>>>();
+
         private List<VariableData> ArgumentDatas = new List<VariableData>();
 
         private int ArgumentsDepthLoaded = 1;
-
-        private readonly List<KeyValuePair<string, List<string>>> Breakpoints =
-            new List<KeyValuePair<string, List<string>>>();
 
         private string CurrentMethodASM;
         private string CurrentMethodLabel;
@@ -68,7 +68,7 @@ namespace Drivers.Debugger.App
         private int LocalsDepthLoaded = 1;
         private Tuple<uint, string> NearestLabel;
 
-        private bool performingAction = false;
+        private bool performingAction;
 
         private Dictionary<uint, Process> Processes;
         private Dictionary<string, uint> Registers = new Dictionary<string, uint>();
@@ -535,7 +535,7 @@ namespace Drivers.Debugger.App
                             foreach (VariableInfo AnArgInfo in ArgInfos)
                             {
                                 TypeInfo ArgType = TheDebugger.GetTypeInfo(AnArgInfo.TypeID);
-                                VariableData NewVarData = new VariableData()
+                                VariableData NewVarData = new VariableData
                                 {
                                     Address = (uint) (EBP + AnArgInfo.Offset),
                                     OffsetFromParent = AnArgInfo.Offset,
@@ -551,7 +551,7 @@ namespace Drivers.Debugger.App
                         }
                         catch (Exception ex)
                         {
-                            ArgumentDatas.Add(new VariableData()
+                            ArgumentDatas.Add(new VariableData
                             {
                                 Name = "Error! " + ex.Message
                             });
@@ -590,7 +590,7 @@ namespace Drivers.Debugger.App
                                           (MaxOffset + (TheMethod.Locals.Count == 0 ? 0 : MaxLocType.SizeOnStackInBytes));
                                 for (int i = 0; i < max;)
                                 {
-                                    VariableData NewVarData = new VariableData()
+                                    VariableData NewVarData = new VariableData
                                     {
                                         Address = (uint) (ESP + i),
                                         Temporary = true,
@@ -625,7 +625,7 @@ namespace Drivers.Debugger.App
                                     TypeInfo LocType = TheDebugger.GetTypeInfo(ALocInfo.TypeID);
                                     int position = LocalValuesArr.Length -
                                                    (-ALocInfo.Offset + LocType.SizeOnStackInBytes);
-                                    VariableData NewVarData = new VariableData()
+                                    VariableData NewVarData = new VariableData
                                     {
                                         Address = (uint) (EBP + ALocInfo.Offset),
                                         OffsetFromParent = position,
@@ -642,7 +642,7 @@ namespace Drivers.Debugger.App
                         }
                         catch (Exception ex)
                         {
-                            LocalDatas.Add(new VariableData()
+                            LocalDatas.Add(new VariableData
                             {
                                 Name = "Error! " + ex.Message
                             });
@@ -668,7 +668,7 @@ namespace Drivers.Debugger.App
                             int offset = 0;
                             foreach (uint ALocalVal in LocalValuesArr)
                             {
-                                LocalDatas.Add(new VariableData()
+                                LocalDatas.Add(new VariableData
                                 {
                                     Address = ESP,
                                     Temporary = true,
@@ -681,7 +681,7 @@ namespace Drivers.Debugger.App
                         }
                         catch (Exception ex)
                         {
-                            LocalDatas.Add(new VariableData()
+                            LocalDatas.Add(new VariableData
                             {
                                 Name = "Error! " + ex.Message
                             });
@@ -727,51 +727,45 @@ namespace Drivers.Debugger.App
 
         private bool IsSelectionDebugging()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                return (bool) this.Invoke(new BoolDelegate(IsSelectionDebugging));
+                return (bool) Invoke(new BoolDelegate(IsSelectionDebugging));
             }
-            else
+            bool NodeSuspended = false;
+            if (ProcessesTreeView.SelectedNode != null)
             {
-                bool NodeSuspended = false;
-                if (ProcessesTreeView.SelectedNode != null)
-                {
-                    uint SelectedProcessId = GetSelectedProcessId();
-                    int SelectedThreadId = GetSelectedThreadId();
-                    NodeSuspended = SelectedThreadId != -1 &&
-                                    Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
-                                    Thread.States.Debugging;
-                }
-                return NodeSuspended;
+                uint SelectedProcessId = GetSelectedProcessId();
+                int SelectedThreadId = GetSelectedThreadId();
+                NodeSuspended = SelectedThreadId != -1 &&
+                                Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
+                                Thread.States.Debugging;
             }
+            return NodeSuspended;
         }
 
         private bool IsSelectionSuspended()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                return (bool) this.Invoke(new BoolDelegate(IsSelectionSuspended));
+                return (bool) Invoke(new BoolDelegate(IsSelectionSuspended));
             }
-            else
+            bool NodeSuspended = false;
+            if (ProcessesTreeView.SelectedNode != null)
             {
-                bool NodeSuspended = false;
-                if (ProcessesTreeView.SelectedNode != null)
-                {
-                    uint SelectedProcessId = GetSelectedProcessId();
-                    int SelectedThreadId = GetSelectedThreadId();
-                    NodeSuspended = SelectedThreadId != -1 &&
-                                    Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
-                                    Thread.States.Suspended;
-                }
-                return NodeSuspended;
+                uint SelectedProcessId = GetSelectedProcessId();
+                int SelectedThreadId = GetSelectedThreadId();
+                NodeSuspended = SelectedThreadId != -1 &&
+                                Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
+                                Thread.States.Suspended;
             }
+            return NodeSuspended;
         }
 
         private void UpdateEnableStates()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateEnableStates));
+                Invoke(new VoidDelegate(UpdateEnableStates));
             }
             else
             {
@@ -833,9 +827,9 @@ namespace Drivers.Debugger.App
 
         private void UpdateProcessTree()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateProcessTree));
+                Invoke(new VoidDelegate(UpdateProcessTree));
             }
             else
             {
@@ -855,7 +849,7 @@ namespace Drivers.Debugger.App
                     foreach (Process AProcess in Processes.Values)
                     {
                         TreeNode NewProcessNode = ProcessesTreeView.Nodes.Add(AProcess.Id.ToString(),
-                            AProcess.Id.ToString() + ": " + AProcess.Name + " (" + AProcess.Priority + ")");
+                            AProcess.Id + ": " + AProcess.Name + " (" + AProcess.Priority + ")");
                         if (AProcess.Id == SelectedProcessId && SelectedThreadId == -1)
                         {
                             NodeToSelect = NewProcessNode;
@@ -864,7 +858,7 @@ namespace Drivers.Debugger.App
                         foreach (Thread AThread in AProcess.Threads.Values)
                         {
                             TreeNode NewThreadNode = NewProcessNode.Nodes.Add(AThread.Id.ToString(),
-                                AThread.Id.ToString() + ": " + AThread.Name + " : " + AThread.State);
+                                AThread.Id + ": " + AThread.Name + " : " + AThread.State);
                             if (AProcess.Id == SelectedProcessId && AThread.Id == SelectedThreadId)
                             {
                                 NodeToSelect = NewThreadNode;
@@ -884,9 +878,9 @@ namespace Drivers.Debugger.App
 
         private void UpdateRegisters()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateRegisters));
+                Invoke(new VoidDelegate(UpdateRegisters));
             }
             else
             {
@@ -930,9 +924,9 @@ namespace Drivers.Debugger.App
 
         private void UpdateNearestLabel()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateNearestLabel));
+                Invoke(new VoidDelegate(UpdateNearestLabel));
             }
             else
             {
@@ -998,9 +992,9 @@ namespace Drivers.Debugger.App
 
         private void UpdateBreakpoints()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateBreakpoints));
+                Invoke(new VoidDelegate(UpdateBreakpoints));
             }
             else
             {
@@ -1049,9 +1043,9 @@ namespace Drivers.Debugger.App
 
         private void UpdateDebugPoints()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateDebugPoints));
+                Invoke(new VoidDelegate(UpdateDebugPoints));
             }
             else
             {
@@ -1100,9 +1094,9 @@ namespace Drivers.Debugger.App
 
         private void UpdateStackData()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new VoidDelegate(UpdateStackData));
+                Invoke(new VoidDelegate(UpdateStackData));
             }
             else
             {
@@ -1126,36 +1120,30 @@ namespace Drivers.Debugger.App
 
         private uint GetSelectedProcessId()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                return (uint) this.Invoke(new UIntDelegate(GetSelectedProcessId));
+                return (uint) Invoke(new UIntDelegate(GetSelectedProcessId));
             }
-            else
+            TreeNode ProcessNode = ProcessesTreeView.SelectedNode;
+            if (ProcessNode.Parent != null)
             {
-                TreeNode ProcessNode = ProcessesTreeView.SelectedNode;
-                if (ProcessNode.Parent != null)
-                {
-                    ProcessNode = ProcessNode.Parent;
-                }
-                return uint.Parse(ProcessNode.Text.Split(':')[0]);
+                ProcessNode = ProcessNode.Parent;
             }
+            return uint.Parse(ProcessNode.Text.Split(':')[0]);
         }
 
         private int GetSelectedThreadId()
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                return (int) this.Invoke(new IntDelegate(GetSelectedThreadId));
+                return (int) Invoke(new IntDelegate(GetSelectedThreadId));
             }
-            else
+            TreeNode ThreadNode = ProcessesTreeView.SelectedNode;
+            if (ThreadNode.Parent == null)
             {
-                TreeNode ThreadNode = ProcessesTreeView.SelectedNode;
-                if (ThreadNode.Parent == null)
-                {
-                    return -1;
-                }
-                return int.Parse(ThreadNode.Text.Split(':')[0]);
+                return -1;
             }
+            return int.Parse(ThreadNode.Text.Split(':')[0]);
         }
     }
 
@@ -1222,7 +1210,7 @@ namespace Drivers.Debugger.App
                                     .Select(x => byte.Parse(x.Substring(2), NumberStyles.HexNumber))
                                     .ToArray();
                             string StringVal = Encoding.Unicode.GetString(StringBytesArr);
-                            Fields.Add(new VariableData()
+                            Fields.Add(new VariableData
                             {
                                 Address = AddressFromValue + 8,
                                 Info = null,
@@ -1264,7 +1252,7 @@ namespace Drivers.Debugger.App
                             FieldValueStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                                 .Select(x => byte.Parse(x.Substring(2), NumberStyles.HexNumber))
                                 .ToArray();
-                        Fields.Add(new VariableData()
+                        Fields.Add(new VariableData
                         {
                             Address = FieldAddress,
                             Info = FieldTypeInfo,

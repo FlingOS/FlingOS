@@ -177,10 +177,7 @@ namespace Drivers.Compiler.ASM
             {
                 return GenerateLabel(OriginMethodInfo.ID);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>

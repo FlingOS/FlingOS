@@ -503,7 +503,7 @@ namespace Kernel.USB.HCIs
         protected uint USBINTR
         {
             get { return *(OpRegAddr + 2); }
-            set { *(OpRegAddr + 2) = (uint) value; }
+            set { *(OpRegAddr + 2) = value; }
         }
 
         /// <summary>
@@ -643,7 +643,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         protected uint* PORTSC
         {
-            get { return (uint*) (OpRegAddr + 17); }
+            get { return OpRegAddr + 17; }
             set { *(OpRegAddr + 17) = (uint) value; }
         }
 
@@ -651,7 +651,7 @@ namespace Kernel.USB.HCIs
 
         #endregion
 
-        private bool anyPortsChanged = false;
+        private bool anyPortsChanged;
 
         /// <summary>
         ///     Whether any ports have changed since the last port check.
@@ -673,13 +673,13 @@ namespace Kernel.USB.HCIs
         /// <summary>
         ///     Whether the ports have been enabled or not.
         /// </summary>
-        protected bool EnabledPorts = false;
+        protected bool EnabledPorts;
 
         /// <summary>
         ///     A countdown of the number of async transaction complete interrupts that have occurred since the last
         ///     reload. Used for detecting the end of an async transfer (queue head completetion).
         /// </summary>
-        protected int USBIntCount = 0;
+        protected int USBIntCount;
 
         /// <summary>
         ///     Pointer to the idle queue head. Required by the spec and this should always remain as the head of the
@@ -694,11 +694,11 @@ namespace Kernel.USB.HCIs
         /// </summary>
         protected EHCI_QueueHead_Struct* TailQueueHead = null;
 
-        protected int AsyncDoorbellIntCount = 0;
+        protected int AsyncDoorbellIntCount;
 
         private readonly int IRQHandlerID = 0;
 
-        private int hostSystemErrors = 0;
+        private int hostSystemErrors;
 
         /// <summary>
         ///     Whether the EHCI has hit a host system error or not.
@@ -1154,11 +1154,11 @@ namespace Kernel.USB.HCIs
                     eecp = pciDevice.ReadRegister8((byte) (eecp + 1));
                 }
                 byte BIOSownedSemaphore = (byte) (eecp + 2);
-                    // R/W - only Bit 16 (Bit 23:17 Reserved, must be set to zero)
+                // R/W - only Bit 16 (Bit 23:17 Reserved, must be set to zero)
                 byte OSownedSemaphore = (byte) (eecp + 3);
-                    // R/W - only Bit 24 (Bit 31:25 Reserved, must be set to zero)
+                // R/W - only Bit 24 (Bit 31:25 Reserved, must be set to zero)
                 byte USBLEGCTLSTS = (byte) (eecp + 4);
-                    // USB Legacy Support Control/Status (DWORD, cf. EHCI 1.0 spec, 2.1.8)
+                // USB Legacy Support Control/Status (DWORD, cf. EHCI 1.0 spec, 2.1.8)
 
                 // Legacy-Support-EC found? BIOS-Semaphore set?
                 if (eecp_id == 1 && (pciDevice.ReadRegister8(BIOSownedSemaphore) & 0x01) != 0)
@@ -1243,7 +1243,7 @@ namespace Kernel.USB.HCIs
             RootPorts.Empty();
             for (byte i = 0; i < RootPortCount; i++)
             {
-                RootPorts.Add(new HCPort()
+                RootPorts.Add(new HCPort
                 {
                     portNum = i
                 });
@@ -2274,7 +2274,7 @@ namespace Kernel.USB.HCIs
             head.MaximumPacketLength = maxPacketSize; // 64 byte for a control transfer to a high speed device
             head.ControlEndpointFlag = false; // only used if endpoint is a control endpoint and not high speed
             head.NakCountReload = 0;
-                // this value is used by EHCI to reload the Nak Counter field. 0=ignores NAK counter.
+            // this value is used by EHCI to reload the Nak Counter field. 0=ignores NAK counter.
             head.InterruptScheduleMask = 0; // not used for async schedule
             head.SplitCompletionMask = 0; // unused if (not low/full speed and in periodic schedule)
             head.HubAddr = 0; // unused if high speed (Split transfer)
@@ -2809,7 +2809,7 @@ namespace Kernel.USB.HCIs
         public ushort CurrentOffset
         {
             [NoGC] get { return (ushort) (qtd->u4 & 0x00000FFFu); }
-            [NoGC] set { qtd->u4 = (qtd->u4 & 0xFFFFF000u) | ((uint) value & 0x00000FFFu); }
+            [NoGC] set { qtd->u4 = (qtd->u4 & 0xFFFFF000u) | (value & 0x00000FFFu); }
         }
 
         /// <summary>
@@ -2928,7 +2928,7 @@ namespace Kernel.USB.HCIs
         public byte Type
         {
             [NoGC] get { return (byte) ((queueHead->u1 >> 1) & 0x00000003u); }
-            [NoGC] set { queueHead->u1 = (queueHead->u1 & 0xFFFFFFF9u) | (uint) ((value & 0x00000003u) << 1); }
+            [NoGC] set { queueHead->u1 = (queueHead->u1 & 0xFFFFFFF9u) | (value & 0x00000003u) << 1; }
         }
 
         /// <summary>

@@ -103,7 +103,7 @@ namespace Kernel.FOS_System.Collections
             //}
 
             X.Position = ImplicitHeap.Count + 1;
-            ImplicitHeap.Add((Object) X);
+            ImplicitHeap.Add(X);
             DecreaseKey(X, X.Key);
             return true;
         }
@@ -123,7 +123,7 @@ namespace Kernel.FOS_System.Collections
                     ImplicitHeap.RemoveAt(Y.Position - 1);
 
                     Y.Position = 1;
-                    ImplicitHeap[0] = (Object) Y;
+                    ImplicitHeap[0] = Y;
 
                     Rebalance(Y);
                 }
@@ -186,7 +186,7 @@ namespace Kernel.FOS_System.Collections
                     //BasicConsole.WriteLine("Setting Y position");
                     Y.Position = X.Position;
                     //BasicConsole.WriteLine("Setting Y in array");
-                    ImplicitHeap[Y.Position - 1] = (Object) Y;
+                    ImplicitHeap[Y.Position - 1] = Y;
 
                     //BasicConsole.WriteLine("Rebalancing");
                     Rebalance(Y);
@@ -268,8 +268,8 @@ namespace Kernel.FOS_System.Collections
             X.Position = Y.Position;
             Y.Position = tempPos;
 
-            ImplicitHeap[X.Position - 1] = (Object) X;
-            ImplicitHeap[Y.Position - 1] = (Object) Y;
+            ImplicitHeap[X.Position - 1] = X;
+            ImplicitHeap[Y.Position - 1] = Y;
         }
 
         private Comparable Parent(Comparable X)
@@ -279,10 +279,7 @@ namespace Kernel.FOS_System.Collections
             {
                 return (Comparable) ImplicitHeap[idx];
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private Comparable LeftChild(Comparable X)
@@ -292,10 +289,7 @@ namespace Kernel.FOS_System.Collections
             {
                 return (Comparable) ImplicitHeap[idx];
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private Comparable RightChild(Comparable X)
@@ -305,10 +299,7 @@ namespace Kernel.FOS_System.Collections
             {
                 return (Comparable) ImplicitHeap[idx];
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private int ParentIndex(Comparable X)

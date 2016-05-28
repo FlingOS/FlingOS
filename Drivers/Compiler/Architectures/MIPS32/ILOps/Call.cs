@@ -51,7 +51,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                 TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                StackItem returnItem = new StackItem()
+                StackItem returnItem = new StackItem
                 {
                     isFloat = Utilities.IsFloat(retType),
                     sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -125,7 +125,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //Allocate space on the stack for the return value as necessary
                 Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                 TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                StackItem returnItem = new StackItem()
+                StackItem returnItem = new StackItem
                 {
                     isFloat = Utilities.IsFloat(retType),
                     sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -142,14 +142,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //SUPPORT - floats
                         throw new NotSupportedException("Cannot handle float return values!");
                     }
-                    else if (returnItem.sizeOnStackInBytes == 4)
+                    if (returnItem.sizeOnStackInBytes == 4)
                     {
-                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+                        conversionState.Append(new Push {Size = OperandSize.Word, Src = "$zero"});
                     }
                     else if (returnItem.sizeOnStackInBytes == 8)
                     {
-                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
-                        conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+                        conversionState.Append(new Push {Size = OperandSize.Word, Src = "$zero"});
+                        conversionState.Append(new Push {Size = OperandSize.Word, Src = "$zero"});
                     }
                     else
                     {
@@ -158,7 +158,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
 
                 //Append the actual call
-                conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
+                conversionState.Append(new ASMOps.Call {Target = methodToCallInfo.ID});
 
                 //After a call, we need to remove the return value and parameters from the stack
                 //This is most easily done by just adding the total number of bytes for params and
@@ -201,16 +201,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //We will push it back on after params are skipped over.
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
+                            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t3"});
+                            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t3"});
                         }
                     }
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() {Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp"});
+                    conversionState.Append(new ASMOps.Add {Src1 = "$sp", Src2 = bytesToAdd.ToString(), Dest = "$sp"});
                     //If necessary, push the return value onto the stack.
                     if (returnItem.sizeOnStackInBytes != 0)
                     {
@@ -220,12 +220,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //So push it back onto the stack
                         if (returnItem.sizeOnStackInBytes == 4)
                         {
-                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
                         }
                         else if (returnItem.sizeOnStackInBytes == 8)
                         {
-                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t3"});
-                            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t3"});
+                            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
                         }
                     }
                 }
@@ -245,12 +245,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     //Static constructors do not have parameters or return values
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
+                    conversionState.Append(new ASMOps.Call {Target = methodToCallInfo.ID});
                 }
                 else
                 {
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() {Target = methodToCallInfo.ID});
+                    conversionState.Append(new ASMOps.Call {Target = methodToCallInfo.ID});
 
                     //After a call, we need to remove the parameters from the stack
                     //This is most easily done by just adding the total number of bytes for params
@@ -275,7 +275,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     if (bytesToAdd > 0)
                     {
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add()
+                        conversionState.Append(new ASMOps.Add
                         {
                             Src1 = "$sp",
                             Src2 = bytesToAdd.ToString(),

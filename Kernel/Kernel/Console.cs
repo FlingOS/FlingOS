@@ -60,17 +60,17 @@ namespace Kernel
         /// <summary>
         ///     The current character attribute.
         /// </summary>
-        protected ushort CurrentAttr = 0;
+        protected ushort CurrentAttr;
 
         /// <summary>
         ///     The current character in the current line where the cursor is.
         /// </summary>
-        protected int CurrentChar = 0;
+        protected int CurrentChar;
 
         /// <summary>
         ///     The current line where the cursor is in the buffer.
         /// </summary>
-        protected int CurrentLine = 0;
+        protected int CurrentLine;
 
         /// <summary>
         ///     The maximum length of a line.

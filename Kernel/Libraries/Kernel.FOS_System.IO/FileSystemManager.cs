@@ -95,7 +95,7 @@ namespace Kernel.FOS_System.IO
             //TODO: Don't use the count to generate the drive letter
             //  Because if we allowed detach/removal/eject in future, it could cause naming conflicts
             String mappingPrefix = String.New(3);
-            mappingPrefix[0] = (char) ((int) 'A' + FileSystemMappings.Count);
+            mappingPrefix[0] = (char) ('A' + FileSystemMappings.Count);
             mappingPrefix[1] = ':';
             mappingPrefix[2] = PathDelimiter;
             newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
@@ -179,7 +179,7 @@ namespace Kernel.FOS_System.IO
                 FileCmdInpoint CmdInPipe = new FileCmdInpoint(InProcessId);
                 FileDataInpoint DataInPipe = new FileDataInpoint(InProcessId, false);
 
-                FileSystemClient NewInfo = new FileSystemClient()
+                FileSystemClient NewInfo = new FileSystemClient
                 {
                     CmdInPipe = CmdInPipe,
                     DataInPipe = DataInPipe,
@@ -210,7 +210,7 @@ namespace Kernel.FOS_System.IO
             }
         }
 
-        private static unsafe void ManageClient()
+        private static void ManageClient()
         {
             FileSystemClient TheClient = null;
             if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)

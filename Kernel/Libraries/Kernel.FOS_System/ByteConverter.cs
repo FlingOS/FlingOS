@@ -46,7 +46,7 @@ namespace Kernel.FOS_System
         [NoGC]
         public static ushort ToUInt16(byte[] n, uint aPos)
         {
-            return (ushort) ((ushort) n[aPos + 1] << 8 | (ushort) n[aPos]);
+            return (ushort) (n[aPos + 1] << 8 | n[aPos]);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Kernel.FOS_System
         public static uint ToUInt32(byte[] n, uint aPos)
         {
             return (uint) n[aPos + 3] << 24 | (uint) n[aPos + 2] << 16 |
-                   (uint) n[aPos + 1] << 8 | (uint) n[aPos];
+                   (uint) n[aPos + 1] << 8 | n[aPos];
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Kernel.FOS_System
             return (ulong) n[aPos + 7] << 54 | (ulong) n[aPos + 6] << 48 |
                    (ulong) n[aPos + 5] << 40 | (ulong) n[aPos + 4] << 32 |
                    (ulong) n[aPos + 3] << 24 | (ulong) n[aPos + 2] << 16 |
-                   (ulong) n[aPos + 1] << 8 | (ulong) n[aPos];
+                   (ulong) n[aPos + 1] << 8 | n[aPos];
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Kernel.FOS_System
                 for (int i = 0; i < aCharCount && i + aStart < n.Length; i++)
                 {
                     uint pos = (uint) (aStart + i);
-                    ushort aChar = (ushort) n[pos];
+                    ushort aChar = n[pos];
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
@@ -220,7 +220,7 @@ namespace Kernel.FOS_System
                 for (int i = 0; i < aCharCount; i++)
                 {
                     uint pos = (uint) (aStart + i);
-                    ushort aChar = (ushort) n[pos];
+                    ushort aChar = n[pos];
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);

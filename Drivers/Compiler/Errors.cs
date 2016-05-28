@@ -131,7 +131,7 @@ namespace Drivers.Compiler
         /// <summary>
         ///     Error messages mapped from their respective error codes. Some require use with String.Format.
         /// </summary>
-        public static Dictionary<string, string> ErrorMessages = new Dictionary<string, string>()
+        public static Dictionary<string, string> ErrorMessages = new Dictionary<string, string>
         {
             {"PR0001", "Invalid options supplied. {0}"},
             {"PR0002", ""},

@@ -43,10 +43,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             {
                 return "subu " + Dest + ", " + Src1 + ", " + Src2;
             }
-            else
-            {
-                return "sub " + Dest + ", " + Src1 + ", " + Src2;
-            }
+            return "sub " + Dest + ", " + Src1 + ", " + Src2;
         }
     }
 }

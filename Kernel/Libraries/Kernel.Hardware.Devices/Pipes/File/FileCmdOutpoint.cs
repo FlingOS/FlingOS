@@ -55,24 +55,24 @@ namespace Kernel.Pipes.File
             CmdPtr->DiskId = DiskId;
             CmdPtr->BlockNo = BlockNo;
             CmdPtr->BlockCount = BlockCount;
-            base.Write(PipeId, buffer, 0, buffer.Length, true);
+            Write(PipeId, buffer, 0, buffer.Length, true);
         }
 
-        public unsafe void Send_StatFS(int PipeId)
+        public void Send_StatFS(int PipeId)
         {
             WriteCommand(PipeId, FileCommands.StatFS, 0, 0, 0, 0);
         }
 
-        public unsafe void Write_ListDir(int PipeId)
+        public void Write_ListDir(int PipeId)
         {
             WriteCommand(PipeId, FileCommands.ListDir, 0, 0, 0, 0);
         }
 
-        //}
-        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
-        //{
-
         //public unsafe void Send_Read(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
+        //{
+        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
+
+        //}
         //public unsafe void Send_Write(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
         //{
         //    WriteCommand(PipeId, FileCommands.Write, 0, FileHandle, BlockNo, BlockCount);

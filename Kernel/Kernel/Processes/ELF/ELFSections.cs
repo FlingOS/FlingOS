@@ -127,23 +127,23 @@ namespace Kernel.Processes.ELF
             {
                 return new ELFStringTableSection(header);
             }
-            else if (header.SectionType == ElfSectionTypes.SymTab)
+            if (header.SectionType == ElfSectionTypes.SymTab)
             {
                 return new ELFSymbolTableSection(header);
             }
-            else if (header.SectionType == ElfSectionTypes.DynSym)
+            if (header.SectionType == ElfSectionTypes.DynSym)
             {
                 return new ELFDynamicSymbolTableSection(header);
             }
-            else if (header.SectionType == ElfSectionTypes.Rel)
+            if (header.SectionType == ElfSectionTypes.Rel)
             {
                 return new ELFRelocationTableSection(header);
             }
-            else if (header.SectionType == ElfSectionTypes.RelA)
+            if (header.SectionType == ElfSectionTypes.RelA)
             {
                 return new ELFRelocationAddendTableSection(header);
             }
-            else if (header.SectionType == ElfSectionTypes.Dynamic)
+            if (header.SectionType == ElfSectionTypes.Dynamic)
             {
                 return new ELFDynamicSection(header);
             }
@@ -259,7 +259,7 @@ namespace Kernel.Processes.ELF
             return symbols.Count;
         }
 
-        public unsafe class Symbol : Object
+        public class Symbol : Object
         {
             public byte Info;
 
@@ -281,7 +281,7 @@ namespace Kernel.Processes.ELF
         }
     }
 
-    public unsafe class ELFDynamicSymbolTableSection : ELFSymbolTableSection
+    public class ELFDynamicSymbolTableSection : ELFSymbolTableSection
     {
         public ELFDynamicSymbolTableSection(ELFSectionHeader header)
             : base(header)
@@ -361,7 +361,7 @@ namespace Kernel.Processes.ELF
             return relocations.Count;
         }
 
-        public unsafe class Relocation : Object
+        public class Relocation : Object
         {
             /// <summary>
             ///     This member gives both the symbol table index with respect to which the
@@ -454,7 +454,7 @@ namespace Kernel.Processes.ELF
             return relocations.Count;
         }
 
-        public unsafe class RelocationAddend : Object
+        public class RelocationAddend : Object
         {
             /// <summary>
             ///     This member specifies a constant addend used to compute the value to be
@@ -504,9 +504,9 @@ namespace Kernel.Processes.ELF
         }
     }
 
-    public unsafe class ELFDynamicSection : ELFSection
+    public class ELFDynamicSection : ELFSection
     {
-        public enum DynamicTag : int
+        public enum DynamicTag
         {
             Null = 0,
             Needed = 1,
@@ -613,7 +613,7 @@ namespace Kernel.Processes.ELF
             return dynamics.Count;
         }
 
-        public unsafe class Dynamic : Object
+        public class Dynamic : Object
         {
             public DynamicTag Tag;
             public uint Val_Ptr;

@@ -63,13 +63,13 @@ namespace Kernel.Tasks
 
         [Group(Name = "IsolatedKernel")] private static Queue DeferredSyscallsInfo_Queued;
 
-        [Group(Name = "IsolatedKernel")] private static bool DeferredSyscalls_Ready = false;
+        [Group(Name = "IsolatedKernel")] private static bool DeferredSyscalls_Ready;
 
         [Group(Name = "IsolatedKernel")] private static Thread DeferredSyscallsThread;
 
         [Group(Name = "IsolatedKernel")] private static int DeferredSyscalls_QueuedSemaphoreId;
 
-        [Group(Name = "IsolatedKernel")] private static bool FilePipesReady = false;
+        [Group(Name = "IsolatedKernel")] private static bool FilePipesReady;
 
         [Group(Name = "IsolatedKernel")] private static Thread FilePipeInitialisationThread;
 
@@ -522,7 +522,7 @@ namespace Kernel.Tasks
             }
         }
 
-        public static unsafe SystemCallResults HandleDeferredSystemCall(
+        public static SystemCallResults HandleDeferredSystemCall(
             Process CallerProcess, Thread CallerThread,
             SystemCallNumbers syscallNumber, uint Param1, uint Param2, uint Param3,
             ref uint Return2, ref uint Return3, ref uint Return4)
@@ -965,7 +965,8 @@ namespace Kernel.Tasks
                                         ptr = (uint) VirtualMemoryManager.MapFreePages(
                                             CallerProcess.UserMode
                                                 ? VirtualMemoryImplementation.PageFlags.None
-                                                : VirtualMemoryImplementation.PageFlags.KernelOnly, count, Param2, Param1);
+                                                : VirtualMemoryImplementation.PageFlags.KernelOnly, count, Param2,
+                                            Param1);
                                     }
                                 }
                             }
@@ -2262,35 +2263,33 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("Registering ISR handler...");
 #endif
 
+            Process theProcess;
+
             if (ISRNum == -1)
             {
                 if (handlerAddr != 0xFFFFFFFF)
                 {
-                    Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+                    theProcess = ProcessManager.GetProcessById(callerProcessId);
 
                     theProcess.ISRHandler = (ISRHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if (ISRNum < 49)
+
+            if (ISRNum < 49)
             {
                 return false;
             }
-            else
+
+            theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
             {
-                Process theProcess = ProcessManager.GetProcessById(callerProcessId);
-
-                if (handlerAddr != 0xFFFFFFFF)
-                {
-                    theProcess.ISRHandler = (ISRHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
-                }
-
-                theProcess.ISRsToHandle.Set(ISRNum);
+                theProcess.ISRHandler = (ISRHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
             }
+
+            theProcess.ISRsToHandle.Set(ISRNum);
 
             return true;
         }
@@ -2321,37 +2320,35 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine("Registering IRQ handler...");
 #endif
 
+            Process theProcess;
+
             if (IRQNum == -1)
             {
                 if (handlerAddr != 0xFFFFFFFF)
                 {
-                    Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+                    theProcess = ProcessManager.GetProcessById(callerProcessId);
 
                     theProcess.IRQHandler = (IRQHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if (IRQNum > 15)
+
+            if (IRQNum > 15)
             {
                 return false;
             }
-            else
+
+            theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
             {
-                Process theProcess = ProcessManager.GetProcessById(callerProcessId);
-
-                if (handlerAddr != 0xFFFFFFFF)
-                {
-                    theProcess.IRQHandler = (IRQHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
-                }
-
-                theProcess.IRQsToHandle.Set(IRQNum);
-
-                Interrupts.EnableIRQ((byte) IRQNum);
+                theProcess.IRQHandler = (IRQHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
             }
+
+            theProcess.IRQsToHandle.Set(IRQNum);
+
+            Interrupts.EnableIRQ((byte) IRQNum);
 
             return true;
         }
@@ -2381,31 +2378,28 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
             BasicConsole.WriteLine("Registering syscall handler...");
 #endif
+            Process theProcess;
+
             if (syscallNum == -1)
             {
                 if (handlerAddr != 0xFFFFFFFF)
                 {
-                    Process theProcess = ProcessManager.GetProcessById(callerProcessId);
+                    theProcess = ProcessManager.GetProcessById(callerProcessId);
 
                     theProcess.SyscallHandler = (SyscallHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+
+            theProcess = ProcessManager.GetProcessById(callerProcessId);
+
+            if (handlerAddr != 0xFFFFFFFF)
             {
-                Process theProcess = ProcessManager.GetProcessById(callerProcessId);
-
-                if (handlerAddr != 0xFFFFFFFF)
-                {
-                    theProcess.SyscallHandler = (SyscallHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
-                }
-
-                theProcess.SyscallsToHandle.Set(syscallNum);
+                theProcess.SyscallHandler = (SyscallHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
             }
+
+            theProcess.SyscallsToHandle.Set(syscallNum);
 
             return true;
         }

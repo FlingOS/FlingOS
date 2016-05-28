@@ -1334,7 +1334,7 @@ namespace FlingOops
             a = false;
             b = true;
             a = a ^ b;
-            if (a == true)
+            if (a)
             {
                 Log.WriteSuccess("Test_Xor_Bool_False_True okay.");
             }
@@ -1347,7 +1347,7 @@ namespace FlingOops
             a = true;
             b = false;
             a = a ^ b;
-            if (a == true)
+            if (a)
             {
                 Log.WriteSuccess("Test_Xor_Bool_True_False okay.");
             }
@@ -5789,7 +5789,7 @@ namespace FlingOops
         ///     Result: Fields should be set correctly
         /// </summary>
         [NoGC]
-        public static unsafe void Test_Static_Struct()
+        public static void Test_Static_Struct()
         {
             staticStruct = new AStruct();
             staticStruct.a = 5;
@@ -6195,7 +6195,7 @@ namespace FlingOops
         ///     Tests: Testing throwing exceptions within catch section of Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_1()
+        public static void Test_TCF_1()
         {
             try
             {
@@ -6240,7 +6240,7 @@ namespace FlingOops
         ///     Tests: Testing Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_2()
+        public static void Test_TCF_2()
         {
             try
             {
@@ -6284,7 +6284,7 @@ namespace FlingOops
         ///     Tests: Testing Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_3()
+        public static void Test_TCF_3()
         {
             try
             {
@@ -6323,7 +6323,7 @@ namespace FlingOops
         ///     Tests: Testing Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_4()
+        public static void Test_TCF_4()
         {
             try
             {
@@ -6373,7 +6373,7 @@ namespace FlingOops
         ///     Tests: Testing Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_5()
+        public static void Test_TCF_5()
         {
             try
             {
@@ -6423,7 +6423,7 @@ namespace FlingOops
         ///     Tests: Testing Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_6()
+        public static void Test_TCF_6()
         {
             try
             {
@@ -6472,7 +6472,7 @@ namespace FlingOops
         ///     Tests: Testing Try-catch-finally blocks.
         /// </summary>
         [NoGC]
-        public static unsafe void Test_TCF_7()
+        public static void Test_TCF_7()
         {
             try
             {

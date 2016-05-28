@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -57,7 +57,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -68,7 +68,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -105,159 +105,156 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-            else if (itemB.isFloat || itemA.isFloat)
+            if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Shift left on floats is unsupported!");
             }
-            else
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
+                //Pop item A
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Shl {Src = "CL", Dest = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
+
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
-                    //Pop item A
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Shl() {Src = "CL", Dest = "EAX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
+            }
+            else if (itemA.sizeOnStackInBytes == 4 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                throw new InvalidOperationException("Invalid stack operand sizes! 4,8 not supported.");
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 4)
+            {
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
+                //Pop item A (8 bytes)
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 4,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
-                else if (itemA.sizeOnStackInBytes == 4 &&
-                         itemB.sizeOnStackInBytes == 8)
+                //Check shift size
+                conversionState.Append(new Cmp {Arg1 = "ECX", Arg2 = "32"});
+                conversionState.Append(new Jmp
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! 4,8 not supported.");
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 4)
+                    JumpType = JmpOp.JumpGreaterThanEqual,
+                    DestILPosition = currOpPosition,
+                    Extension = "ShiftMoreThan32",
+                    UnsignedTest = true
+                });
+
+                //Shld (< 32)
+                conversionState.Append(new ASMOps.Shl {Src = "EAX", Dest = "EDX", Count = "CL"});
+                conversionState.Append(new ASMOps.Shl {Src = "CL", Dest = "EAX"});
+                conversionState.Append(new Jmp
                 {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
-                    //Pop item A (8 bytes)
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
+                    JumpType = JmpOp.Jump,
+                    DestILPosition = currOpPosition,
+                    Extension = "End"
+                });
 
-                    //Check shift size
-                    conversionState.Append(new Cmp() {Arg1 = "ECX", Arg2 = "32"});
-                    conversionState.Append(new Jmp()
-                    {
-                        JumpType = JmpOp.JumpGreaterThanEqual,
-                        DestILPosition = currOpPosition,
-                        Extension = "ShiftMoreThan32",
-                        UnsignedTest = true
-                    });
+                //Shld (>= 32)
+                conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "ShiftMoreThan32"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EAX", Dest = "EDX"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                conversionState.Append(new ASMOps.Sub {Src = "32", Dest = "ECX"});
+                conversionState.Append(new ASMOps.Shl {Src = "CL", Dest = "EDX"});
 
-                    //Shld (< 32)
-                    conversionState.Append(new ASMOps.Shl() {Src = "EAX", Dest = "EDX", Count = "CL"});
-                    conversionState.Append(new ASMOps.Shl() {Src = "CL", Dest = "EAX"});
-                    conversionState.Append(new Jmp()
-                    {
-                        JumpType = JmpOp.Jump,
-                        DestILPosition = currOpPosition,
-                        Extension = "End"
-                    });
+                //Push result
+                conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    //Shld (>= 32)
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ShiftMoreThan32"});
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "EDX"});
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Sub() {Src = "32", Dest = "ECX"});
-                    conversionState.Append(new ASMOps.Shl() {Src = "CL", Dest = "EDX"});
-
-                    //Push result
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
-
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 8)
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    //Note: Shifting by more than 64 bits is pointless since the value will be annihilated entirely.
-                    //          "64" fits well within the low 32-bits
-                    //      So for this op, we do the same as the 8-4 byte version but discard the top four bytes
-                    //          of the second operand
-                    //      Except we must check the high bytes for non-zero value. If they are non-zero, we simply
-                    //          push a result of zero.
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                //Note: Shifting by more than 64 bits is pointless since the value will be annihilated entirely.
+                //          "64" fits well within the low 32-bits
+                //      So for this op, we do the same as the 8-4 byte version but discard the top four bytes
+                //          of the second operand
+                //      Except we must check the high bytes for non-zero value. If they are non-zero, we simply
+                //          push a result of zero.
 
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop item A (8 bytes)
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
-                    //Check high 4 bytes of second param
-                    conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "0"});
-                    conversionState.Append(new Jmp()
-                    {
-                        JumpType = JmpOp.JumpZero,
-                        DestILPosition = currOpPosition,
-                        Extension = "Zero"
-                    });
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-                    conversionState.Append(new Jmp()
-                    {
-                        JumpType = JmpOp.Jump,
-                        DestILPosition = currOpPosition,
-                        Extension = "End2"
-                    });
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Zero"});
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop item A (8 bytes)
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
+                //Check high 4 bytes of second param
+                conversionState.Append(new Cmp {Arg1 = "EBX", Arg2 = "0"});
+                conversionState.Append(new Jmp
+                {
+                    JumpType = JmpOp.JumpZero,
+                    DestILPosition = currOpPosition,
+                    Extension = "Zero"
+                });
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
+                conversionState.Append(new Jmp
+                {
+                    JumpType = JmpOp.Jump,
+                    DestILPosition = currOpPosition,
+                    Extension = "End2"
+                });
+                conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Zero"});
 
-                    conversionState.Append(new Cmp() {Arg1 = "ECX", Arg2 = "32"});
-                    conversionState.Append(new Jmp()
-                    {
-                        JumpType = JmpOp.JumpGreaterThanEqual,
-                        DestILPosition = currOpPosition,
-                        Extension = "ShiftMoreThan32",
-                        UnsignedTest = true
-                    });
+                conversionState.Append(new Cmp {Arg1 = "ECX", Arg2 = "32"});
+                conversionState.Append(new Jmp
+                {
+                    JumpType = JmpOp.JumpGreaterThanEqual,
+                    DestILPosition = currOpPosition,
+                    Extension = "ShiftMoreThan32",
+                    UnsignedTest = true
+                });
 
-                    //Shld (< 32)
-                    conversionState.Append(new ASMOps.Shl() {Src = "EAX", Dest = "EDX", Count = "CL"});
-                    conversionState.Append(new ASMOps.Shl() {Src = "CL", Dest = "EAX"});
-                    conversionState.Append(new Jmp()
-                    {
-                        JumpType = JmpOp.Jump,
-                        DestILPosition = currOpPosition,
-                        Extension = "End1"
-                    });
+                //Shld (< 32)
+                conversionState.Append(new ASMOps.Shl {Src = "EAX", Dest = "EDX", Count = "CL"});
+                conversionState.Append(new ASMOps.Shl {Src = "CL", Dest = "EAX"});
+                conversionState.Append(new Jmp
+                {
+                    JumpType = JmpOp.Jump,
+                    DestILPosition = currOpPosition,
+                    Extension = "End1"
+                });
 
-                    //Shl (>= 32)
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ShiftMoreThan32"});
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EAX", Dest = "EDX"});
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Sub() {Src = "32", Dest = "ECX"});
-                    conversionState.Append(new ASMOps.Shl() {Src = "CL", Dest = "EDX"});
+                //Shl (>= 32)
+                conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "ShiftMoreThan32"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EAX", Dest = "EDX"});
+                conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                conversionState.Append(new ASMOps.Sub {Src = "32", Dest = "ECX"});
+                conversionState.Append(new ASMOps.Shl {Src = "CL", Dest = "EDX"});
 
-                    //Push result
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End1"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "End2"});
+                //Push result
+                conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End1"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "End2"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
             }
         }
     }

@@ -63,18 +63,18 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (theItem.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new ASMOps.Not() {Dest = "EAX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Not {Dest = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
             else if (theItem.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                conversionState.Append(new ASMOps.Not() {Dest = "EAX"});
-                conversionState.Append(new ASMOps.Not() {Dest = "EBX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EBX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                conversionState.Append(new ASMOps.Not {Dest = "EAX"});
+                conversionState.Append(new ASMOps.Not {Dest = "EBX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EBX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
             else
             {

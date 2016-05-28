@@ -33,7 +33,7 @@ namespace Drivers.Compiler.IL.ILOps
     /// <summary>
     ///     Indicates to the compiler which IL op an ILOp implementation targets.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class ILOpTargetAttribute : Attribute
     {
         /// <summary>

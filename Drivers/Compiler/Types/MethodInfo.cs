@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         ///     The ID of the method (can also be used as a label).
         /// </summary>
-        private string id = null;
+        private string id;
 
         /// <summary>
         ///     The unique identifier of the method (within a type).
@@ -79,7 +79,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         ///     The priority value of the method (if any).
         /// </summary>
-        private long? priority = null;
+        private long? priority;
 
         /// <summary>
         ///     Information about the return value of the method.
@@ -89,7 +89,7 @@ namespace Drivers.Compiler.Types
         /// <summary>
         ///     The signature of the method (used to construct to ID).
         /// </summary>
-        public string signature = null;
+        public string signature;
 
         /// <summary>
         ///     The underlying System.Reflection.MethodInfo obtained from the library's Assembly.

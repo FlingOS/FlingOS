@@ -73,7 +73,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     localIndex = 3;
                     break;
                 case OpCodes.Stloc_S:
-                    localIndex = (ushort) theOp.ValueBytes[0];
+                    localIndex = theOp.ValueBytes[0];
                     break;
             }
 
@@ -98,53 +98,53 @@ namespace Drivers.Compiler.Architectures.MIPS32
             }
             else if (locSize == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
-                    Dest = "-" + bytesOffset.ToString() + "($fp)",
+                    Dest = "-" + bytesOffset + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
-                    Dest = "-" + (bytesOffset - 4).ToString() + "($fp)",
+                    Dest = "-" + (bytesOffset - 4) + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
             }
             else if (locSize == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Word,
                     Src = "$t0",
-                    Dest = "-" + bytesOffset.ToString() + "($fp)",
+                    Dest = "-" + bytesOffset + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
             }
             else if (locSize == 2)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Halfword, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Halfword, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Halfword,
                     Src = "$t0",
-                    Dest = "-" + bytesOffset.ToString() + "($fp)",
+                    Dest = "-" + bytesOffset + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
             }
             else if (locSize == 1)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                conversionState.Append(new Mov()
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Byte,
                     Src = "$t0",
-                    Dest = "-" + bytesOffset.ToString() + "($fp)",
+                    Dest = "-" + bytesOffset + "($fp)",
                     MoveType = Mov.MoveTypes.SrcRegToDestMemory
                 });
             }
@@ -152,12 +152,12 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 for (int i = 0; i < locSize; i += 4)
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t0"});
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "$t0",
-                        Dest = "-" + (bytesOffset - i).ToString() + "($fp)",
+                        Dest = "-" + (bytesOffset - i) + "($fp)",
                         MoveType = Mov.MoveTypes.SrcRegToDestMemory
                     });
                 }

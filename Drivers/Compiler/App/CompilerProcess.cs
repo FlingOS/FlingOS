@@ -40,7 +40,7 @@ namespace Drivers.Compiler.App
         /// <summary>
         ///     Summary error codes that can be returned by the Main method upon completion.
         /// </summary>
-        public enum ErrorCode : int
+        public enum ErrorCode
         {
             /// <summary>
             ///     Indicates no errors occurred during execution.
@@ -188,8 +188,8 @@ namespace Drivers.Compiler.App
                 "Build mode               = " + Enum.GetName(typeof(Options.BuildModes), Options.BuildMode));
             Logger.LogMessage("", 0,
                 "Link mode                = " + Enum.GetName(typeof(Options.LinkModes), Options.LinkMode));
-            Logger.LogMessage("", 0, "Base address             = " + Options.BaseAddress.ToString());
-            Logger.LogMessage("", 0, "Load offset              = " + Options.LoadOffset.ToString());
+            Logger.LogMessage("", 0, "Base address             = " + Options.BaseAddress);
+            Logger.LogMessage("", 0, "Load offset              = " + Options.LoadOffset);
 
             // IL Library       - In a list of libraries returned to the higher-level control app (this app)
             //                    from Library Loader
@@ -319,7 +319,7 @@ namespace Drivers.Compiler.App
 
             DateTime endTime = DateTime.Now;
             Logger.LogMessage("", 0, "Driver compiler finished @ " + endTime.ToLongTimeString());
-            Logger.LogMessage("", 0, "            Compile time : " + (endTime - startTime).ToString());
+            Logger.LogMessage("", 0, "            Compile time : " + (endTime - startTime));
             Logger.LogMessage("", 0, "              Error code : " + Enum.GetName(typeof(ErrorCode), result));
 
             return result;

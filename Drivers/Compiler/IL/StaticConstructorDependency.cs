@@ -67,28 +67,22 @@ namespace Drivers.Compiler.IL
                 {
                     return this;
                 }
-                else
+                List<StaticConstructorDependency> posDeps = (from deps in Children
+                    where deps.TheConstructor.Equals(inf)
+                    select deps).ToList();
+                if (posDeps.Count > 0)
                 {
-                    List<StaticConstructorDependency> posDeps = (from deps in Children
-                        where deps.TheConstructor.Equals(inf)
-                        select deps).ToList();
-                    if (posDeps.Count > 0)
+                    return posDeps.First();
+                }
+                foreach (StaticConstructorDependency child in Children)
+                {
+                    StaticConstructorDependency posDep = child[inf];
+                    if (posDep != null)
                     {
-                        return posDeps.First();
-                    }
-                    else
-                    {
-                        foreach (StaticConstructorDependency child in Children)
-                        {
-                            StaticConstructorDependency posDep = child[inf];
-                            if (posDep != null)
-                            {
-                                return posDep;
-                            }
-                        }
-                        return null;
+                        return posDep;
                     }
                 }
+                return null;
             }
         }
 

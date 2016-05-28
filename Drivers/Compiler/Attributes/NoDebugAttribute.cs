@@ -34,7 +34,7 @@ namespace Drivers.Compiler.Attributes
     ///     Indicates to the compiler that a method should not have debug ops
     ///     emitted for it.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor, Inherited = false)]
     public class NoDebugAttribute : Attribute
     {
     }

@@ -1,6 +1,6 @@
 ﻿namespace Kernel.Pipes.Storage
 {
-    public enum StorageCommands : int
+    public enum StorageCommands
     {
         Invalid = -1,
         None = 0,

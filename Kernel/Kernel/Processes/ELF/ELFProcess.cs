@@ -38,13 +38,13 @@ namespace Kernel.Processes.ELF
 {
     public unsafe class ELFProcess : Object
     {
-        public uint BaseAddress = 0;
+        public uint BaseAddress;
         public List SharedObjectDependencies = new List();
 
         public List SharedObjectDependencyFilePaths = new List();
 
-        protected ELFFile theFile = null;
-        protected Process theProcess = null;
+        protected ELFFile theFile;
+        protected Process theProcess;
 
         public ELFProcess(ELFFile anELFFile)
         {
@@ -75,7 +75,7 @@ namespace Kernel.Processes.ELF
 
                 uint threadStackVirtAddr = (uint) ((Thread) theProcess.Threads[0]).State->ThreadStackTop -
                                            Thread.ThreadStackTopOffset;
-                uint threadStackPhysAddr = (uint) VirtualMemoryManager.GetPhysicalAddress(threadStackVirtAddr);
+                uint threadStackPhysAddr = VirtualMemoryManager.GetPhysicalAddress(threadStackVirtAddr);
                 ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
 
                 // Load the ELF segments (i.e. the program code and data)
@@ -187,7 +187,7 @@ namespace Kernel.Processes.ELF
                                     uint* resolvedRelLocation =
                                         (uint*) (SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
                                     ELFSymbolTableSection.Symbol symbol =
-                                        (ELFSymbolTableSection.Symbol) symbolTable[relocation.Symbol];
+                                        symbolTable[relocation.Symbol];
                                     String symbolName = symbolNamesTable[symbol.NameIdx];
 
                                     //BasicConsole.WriteLine("Relocation:");
@@ -255,7 +255,7 @@ namespace Kernel.Processes.ELF
                                     }
 
                                     ELFSymbolTableSection.Symbol symbol =
-                                        (ELFSymbolTableSection.Symbol) symbolTable[relocation.Symbol];
+                                        symbolTable[relocation.Symbol];
                                     String symbolName = symbolNamesTable[symbol.NameIdx];
                                     uint* resolvedRelLocation =
                                         (uint*) (SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
@@ -329,7 +329,7 @@ namespace Kernel.Processes.ELF
                                 uint* resolvedRelLocation =
                                     (uint*) (BaseAddress + (relocation.Offset - theFile.BaseAddress));
                                 ELFSymbolTableSection.Symbol symbol =
-                                    (ELFSymbolTableSection.Symbol) symbolTable[relocation.Symbol];
+                                    symbolTable[relocation.Symbol];
                                 String symbolName = symbolNamesTable[symbol.NameIdx];
 
                                 //BasicConsole.WriteLine("Relocation:");
@@ -425,7 +425,7 @@ namespace Kernel.Processes.ELF
                                 uint* resolvedRelLocation =
                                     (uint*) (BaseAddress + (relocation.Offset - theFile.BaseAddress));
                                 ELFSymbolTableSection.Symbol symbol =
-                                    (ELFSymbolTableSection.Symbol) symbolTable[relocation.Symbol];
+                                    symbolTable[relocation.Symbol];
                                 String symbolName = symbolNamesTable[symbol.NameIdx];
 
                                 //BasicConsole.WriteLine("Relocation:");

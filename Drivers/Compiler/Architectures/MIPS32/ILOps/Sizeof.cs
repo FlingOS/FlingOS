@@ -40,7 +40,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -60,16 +60,16 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
             TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Src =
                     (theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes).ToString(),
                 Dest = "$t4",
                 MoveType = Mov.MoveTypes.ImmediateToReg
             });
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t4"});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t4"});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,

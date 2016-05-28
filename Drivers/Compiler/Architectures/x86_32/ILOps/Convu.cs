@@ -62,7 +62,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             bool pushEDX = numBytesToConvertTo == 8;
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = pushEDX ? 8 : 4,
                 isFloat = false,
@@ -108,20 +108,20 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 case 1:
                     //Convert to UInt8 (byte)
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "AX"});
-                    conversionState.Append(new ASMOps.And() {Src = "0x000000FF", Dest = "EAX"});
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "AX"});
+                    conversionState.Append(new ASMOps.And {Src = "0x000000FF", Dest = "EAX"});
                     bytesPopped = 2;
                     break;
                 case 2:
                     //Convert to UInt16 (word)
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "AX"});
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "AX"});
                     bytesPopped = 2;
                     break;
                 case 4:
                     //Convert to UInt32 (dword)
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
                     bytesPopped = 4;
                     break;
                 case 8:
@@ -129,15 +129,15 @@ namespace Drivers.Compiler.Architectures.x86
                     if (itemToConvert.sizeOnStackInBytes == 8)
                     {
                         //Result stored in EAX:EDX
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
                         bytesPopped = 8;
                     }
                     else
                     {
                         //Result stored in EAX:EDX
-                        conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
+                        conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                        conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
                         bytesPopped = 4;
                     }
                     pushEDX = true;
@@ -147,16 +147,16 @@ namespace Drivers.Compiler.Architectures.x86
             int bytesDiff = itemToConvert.sizeOnStackInBytes - bytesPopped;
             if (bytesDiff > 0)
             {
-                conversionState.Append(new ASMOps.Add() {Src = bytesDiff.ToString(), Dest = "ESP"});
+                conversionState.Append(new ASMOps.Add {Src = bytesDiff.ToString(), Dest = "ESP"});
             }
 
             if (pushEDX)
             {
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
             }
-            conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = pushEDX ? 8 : 4,
                 isFloat = false,

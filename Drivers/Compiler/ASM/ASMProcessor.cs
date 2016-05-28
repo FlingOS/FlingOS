@@ -52,7 +52,7 @@ namespace Drivers.Compiler.ASM
         ///     Prevents the compiler cleaning the output folder half-way through the compile process
         ///     i.e. between processing libraries.
         /// </remarks>
-        private static bool CleanedASMOutputFolder = false;
+        private static bool CleanedASMOutputFolder;
 
         /// <summary>
         ///     Whether the output Objects folder has been cleaned or not.
@@ -61,7 +61,7 @@ namespace Drivers.Compiler.ASM
         ///     Prevents the compiler cleaning the output folder half-way through the compile process
         ///     i.e. between processing libraries.
         /// </remarks>
-        private static bool CleanedObjectsOutputFolder = false;
+        private static bool CleanedObjectsOutputFolder;
 
         /// <summary>
         ///     Processes the given ASM library.
@@ -152,10 +152,7 @@ namespace Drivers.Compiler.ASM
                             "Plug file not found! File name: " + ASMPlugPath + "." + Options.TargetArchitecture + ".asm",
                             ASMPlugPath + "." + Options.TargetArchitecture + ".asm");
                     }
-                    else
-                    {
-                        ASMPlugPath += ".x86_32.asm";
-                    }
+                    ASMPlugPath += ".x86_32.asm";
                 }
                 else
                 {
@@ -207,7 +204,7 @@ namespace Drivers.Compiler.ASM
             if (!string.IsNullOrWhiteSpace(ASMText))
             {
                 string FileName =
-                    Utilities.CleanFileName(Guid.NewGuid().ToString() + "." + Options.TargetArchitecture) + ".s";
+                    Utilities.CleanFileName(Guid.NewGuid() + "." + Options.TargetArchitecture) + ".s";
                 string OutputPath = GetASMOutputPath();
                 FileName = Path.Combine(OutputPath, FileName);
                 TheBlock.ASMOutputFilePath = FileName;

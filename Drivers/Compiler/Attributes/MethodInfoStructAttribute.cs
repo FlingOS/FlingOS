@@ -34,7 +34,7 @@ namespace Drivers.Compiler.Attributes
     ///     Indicates the struct is the kernel's MethodInfo struct.
     ///     Note: There should only ever be one of these used!
     /// </summary>
-    [AttributeUsage(AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Struct)]
     public class MethodInfoStructAttribute : Attribute
     {
     }

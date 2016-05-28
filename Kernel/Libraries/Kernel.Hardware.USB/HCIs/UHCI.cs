@@ -117,7 +117,7 @@ namespace Kernel.USB.HCIs
 
     public unsafe class UHCI : HCI
     {
-        protected bool EnabledPorts = false;
+        protected bool EnabledPorts;
 
         protected uint* FrameList;
         protected IOPort FRBASEADD;
@@ -128,10 +128,10 @@ namespace Kernel.USB.HCIs
         protected IOPort PORTSC2;
 
         protected UHCI_QueueHead_Struct* qhPointer;
-        protected bool run = false;
+        protected bool run;
         protected IOPort SOFMOD;
 
-        protected uint TransactionsCompleted = 0;
+        protected uint TransactionsCompleted;
         protected byte* usbBaseAddress;
 
         protected IOPort USBCMD;
@@ -219,7 +219,7 @@ namespace Kernel.USB.HCIs
             {
                 bool isUSBPageAlreadyMapped = false;
                 SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped(
-                    (uint) portAddr & 0xFFFFF000, out isUSBPageAlreadyMapped);
+                    portAddr & 0xFFFFF000, out isUSBPageAlreadyMapped);
                 if (checkUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot check USB Port Address.");
@@ -229,7 +229,7 @@ namespace Kernel.USB.HCIs
                 if (!isUSBPageAlreadyMapped)
                 {
                     uint actualAddress = 0xFFFFFFFF;
-                    SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages((uint) portAddr & 0xFFFFF000,
+                    SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(portAddr & 0xFFFFF000,
                         1, out actualAddress);
                     if (mapUSBPageResult != SystemCallResults.OK)
                     {
@@ -241,7 +241,7 @@ namespace Kernel.USB.HCIs
                 else
                 {
                     uint actualAddress = 0xFFFFFFFF;
-                    SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint) portAddr & 0xFFFFF000,
+                    SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress(portAddr & 0xFFFFF000,
                         out actualAddress);
                     if (getUSBPageResult != SystemCallResults.OK)
                     {
@@ -300,7 +300,7 @@ namespace Kernel.USB.HCIs
 
             ushort legacySupport = pciDevice.ReadRegister16(UHCI_Consts.PCI_LEGACY_SUPPORT);
             pciDevice.WriteRegister16(UHCI_Consts.PCI_LEGACY_SUPPORT, UHCI_Consts.PCI_LEGACY_SUPPORT_STATUS);
-                // resets support status bits in Legacy support register
+            // resets support status bits in Legacy support register
 
             USBCMD.Write_UInt16(UHCI_Consts.CMD_GRESET);
             SystemCalls.SleepThread(50);
@@ -335,7 +335,7 @@ namespace Kernel.USB.HCIs
             RootPorts.Empty();
             for (byte i = 0; i < RootPortCount; i++)
             {
-                RootPorts.Add(new HCPort()
+                RootPorts.Add(new HCPort
                 {
                     portNum = i
                 });
@@ -434,7 +434,7 @@ namespace Kernel.USB.HCIs
 
             // define each millisecond one frame, provide physical address of frame list, and start at frame 0
             SOFMOD.Write_Byte(0x40);
-                // SOF cycle time: 12000. For a 12 MHz SOF counter clock input, this produces a 1 ms Frame period.
+            // SOF cycle time: 12000. For a 12 MHz SOF counter clock input, this produces a 1 ms Frame period.
 
 #if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Setting frame base addr and frame num...");
@@ -565,7 +565,7 @@ namespace Kernel.USB.HCIs
             PORTSC1.Write_UInt16(UHCI_Consts.PORT_RESET, portOffset);
             SystemCalls.SleepThread(60); // do not delete this wait
             PORTSC1.Write_UInt16((ushort) (PORTSC1.Read_UInt16(portOffset) & ~UHCI_Consts.PORT_RESET), portOffset);
-                // clear reset bit
+            // clear reset bit
             SystemCalls.SleepThread(20);
 
             for (int i = 0; i < 10; i++)
@@ -840,7 +840,7 @@ namespace Kernel.USB.HCIs
                     (UHCITransaction)
                         ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
                 uLastTransaction.qTD->next = ((uint) GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
-                    // build TD queue
+                // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
         }
@@ -868,7 +868,7 @@ namespace Kernel.USB.HCIs
                     (UHCITransaction)
                         ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
                 uLastTransaction.qTD->next = ((uint) GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
-                    // build TD queue
+                // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
         }
@@ -901,7 +901,7 @@ namespace Kernel.USB.HCIs
                     (UHCITransaction)
                         ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
                 uLastTransaction.qTD->next = ((uint) GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
-                    // build TD queue
+                // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
         }
@@ -1204,7 +1204,7 @@ namespace Kernel.USB.HCIs
 #endif
 
             head->next = (UHCI_QueueHead_Struct*) UHCI_Consts.BIT_T;
-                // (paging_getPhysAddr((void*)horizPtr) & 0xFFFFFFF0) | BIT_QH;
+            // (paging_getPhysAddr((void*)horizPtr) & 0xFFFFFFF0) | BIT_QH;
 
             if (firstTD == null)
             {

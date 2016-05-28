@@ -85,7 +85,7 @@ namespace Kernel.USB.HCIs
 
             for (byte i = 0; i < RootPortCount; i++)
             {
-                RootPorts.Add(new HCPort()
+                RootPorts.Add(new HCPort
                 {
                     portNum = i
                 });
@@ -346,18 +346,15 @@ namespace Kernel.USB.HCIs
             {
                 return (HCPort) OtherPorts[num];
             }
-            else
+            for (int i = OtherPorts.Count; i <= num; i++)
             {
-                for (int i = OtherPorts.Count; i <= num; i++)
+                OtherPorts.Add(new HCPort
                 {
-                    OtherPorts.Add(new HCPort()
-                    {
-                        connected = false,
-                        deviceInfo = null,
-                        portNum = (byte) (i + RootPortCount),
-                        speed = USBPortSpeed.UNSET
-                    });
-                }
+                    connected = false,
+                    deviceInfo = null,
+                    portNum = (byte) (i + RootPortCount),
+                    speed = USBPortSpeed.UNSET
+                });
             }
 
             return (HCPort) OtherPorts[num];
@@ -403,7 +400,7 @@ namespace Kernel.USB.HCIs
         /// <summary>
         ///     Whether a device is attached to the port or not.
         /// </summary>
-        public bool connected = false;
+        public bool connected;
 
         /// <summary>
         ///     The USB device attached to the port, if any.
@@ -413,12 +410,12 @@ namespace Kernel.USB.HCIs
         /// <summary>
         ///     The device information about the device attached to the port, if any.
         /// </summary>
-        public USBDeviceInfo deviceInfo = null;
+        public USBDeviceInfo deviceInfo;
 
         /// <summary>
         ///     The port number (index).
         /// </summary>
-        public byte portNum = 0;
+        public byte portNum;
 
         /// <summary>
         ///     The speed of the port. Default: UNSET.

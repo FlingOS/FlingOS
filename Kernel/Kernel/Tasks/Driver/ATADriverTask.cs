@@ -73,9 +73,9 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine("Type: PATA");
 
                     PATA theATA = (PATA) aDevice;
-                    console.WriteLine((String) "Serial No: " + theATA.SerialNo);
-                    console.WriteLine((String) "Firmware Rev: " + theATA.FirmwareRev);
-                    console.WriteLine((String) "Model No: " + theATA.ModelNo);
+                    console.WriteLine("Serial No: " + theATA.SerialNo);
+                    console.WriteLine("Firmware Rev: " + theATA.FirmwareRev);
+                    console.WriteLine("Model No: " + theATA.ModelNo);
                     console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
                     console.WriteLine((String) "Block Count: " + theATA.BlockCount);
                     console.WriteLine((String) "Size: " + ((theATA.BlockCount*theATA.BlockSize) >> 20) + " MB");
@@ -93,9 +93,9 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine("Warning: Read-only support.");
 
                     PATAPI theATA = (PATAPI) aDevice;
-                    console.WriteLine((String) "Serial No: " + theATA.SerialNo);
-                    console.WriteLine((String) "Firmware Rev: " + theATA.FirmwareRev);
-                    console.WriteLine((String) "Model No: " + theATA.ModelNo);
+                    console.WriteLine("Serial No: " + theATA.SerialNo);
+                    console.WriteLine("Firmware Rev: " + theATA.FirmwareRev);
+                    console.WriteLine("Model No: " + theATA.ModelNo);
                     console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
                     console.WriteLine((String) "Block Count: " + theATA.BlockCount);
                     console.WriteLine((String) "Size: " + ((theATA.BlockCount*theATA.BlockSize) >> 20) + " MB");

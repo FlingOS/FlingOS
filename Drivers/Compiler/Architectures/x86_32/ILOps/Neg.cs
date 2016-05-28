@@ -68,38 +68,38 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (itemA.sizeOnStackInBytes == 4)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new ASMOps.Neg() {Arg = "EAX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Neg {Arg = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
             else if (itemA.sizeOnStackInBytes == 8)
             {
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
                 // Not the value
-                conversionState.Append(new ASMOps.Not() {Dest = "EAX"});
-                conversionState.Append(new ASMOps.Not() {Dest = "EDX"});
+                conversionState.Append(new ASMOps.Not {Dest = "EAX"});
+                conversionState.Append(new ASMOps.Not {Dest = "EDX"});
 
                 // Then add 1
-                conversionState.Append(new Mov() {Src = "1", Dest = "EBX", Size = OperandSize.Dword});
-                conversionState.Append(new Mov() {Src = "0", Dest = "ECX", Size = OperandSize.Dword});
+                conversionState.Append(new Mov {Src = "1", Dest = "EBX", Size = OperandSize.Dword});
+                conversionState.Append(new Mov {Src = "0", Dest = "ECX", Size = OperandSize.Dword});
 
                 //Add ecx:ebx to edx:eax
                 //Add low bits
-                conversionState.Append(new ASMOps.Add() {Src = "EBX", Dest = "EAX"});
+                conversionState.Append(new ASMOps.Add {Src = "EBX", Dest = "EAX"});
                 //Add high bits including any carry from 
                 //when low bits were added
-                conversionState.Append(new ASMOps.Add() {Src = "ECX", Dest = "EDX", WithCarry = true});
+                conversionState.Append(new ASMOps.Add {Src = "ECX", Dest = "EDX", WithCarry = true});
 
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
             else
             {
                 throw new NotSupportedException("Stack item size not supported by neg op!");
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = itemA.isFloat,
                 sizeOnStackInBytes = itemA.sizeOnStackInBytes,

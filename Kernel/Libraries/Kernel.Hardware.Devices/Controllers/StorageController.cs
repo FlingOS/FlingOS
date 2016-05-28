@@ -12,7 +12,7 @@ namespace Kernel.Hardware.Controllers
     {
         private static List DiskList;
         private static int DiskListSemaphoreId;
-        private static bool Initialised = false;
+        private static bool Initialised;
 
         private static bool Terminating;
 
@@ -62,7 +62,7 @@ namespace Kernel.Hardware.Controllers
 
                 if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
                 {
-                    ClientInfo NewInfo = new ClientInfo()
+                    ClientInfo NewInfo = new ClientInfo
                     {
                         InProcessId = InProcessId,
                         DataOutPipeId = PipeId
@@ -167,7 +167,7 @@ namespace Kernel.Hardware.Controllers
 
                                                 if (TheDiskInfo != null)
                                                 {
-                                                    DiskCommand NewCommand = new DiskCommand()
+                                                    DiskCommand NewCommand = new DiskCommand
                                                     {
                                                         Command = DiskCommands.Read,
                                                         BlockCount = CommandPtr->BlockCount,
@@ -224,7 +224,7 @@ namespace Kernel.Hardware.Controllers
 
                                                 if (TheDiskInfo != null)
                                                 {
-                                                    DiskCommand NewCommand = new DiskCommand()
+                                                    DiskCommand NewCommand = new DiskCommand
                                                     {
                                                         Command = DiskCommands.Write,
                                                         BlockCount = CommandPtr->BlockCount,
@@ -316,7 +316,7 @@ namespace Kernel.Hardware.Controllers
 
                                                 if (TheDiskInfo != null)
                                                 {
-                                                    DiskCommand NewCommand = new DiskCommand()
+                                                    DiskCommand NewCommand = new DiskCommand
                                                     {
                                                         Command = DiskCommands.CleanCaches
                                                     };
@@ -360,7 +360,7 @@ namespace Kernel.Hardware.Controllers
                                                 if (SystemCalls.WaitSemaphore(TheInfo.CommandQueueAccessSemaphoreId) ==
                                                     SystemCallResults.OK)
                                                 {
-                                                    TheInfo.CommandQueue.Push(new DiskCommand()
+                                                    TheInfo.CommandQueue.Push(new DiskCommand
                                                     {
                                                         Command = DiskCommands.Invalid
                                                     });
@@ -405,7 +405,7 @@ namespace Kernel.Hardware.Controllers
         {
             if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
             {
-                DiskInfo NewInfo = new DiskInfo()
+                DiskInfo NewInfo = new DiskInfo
                 {
                     TheDevice = TheDisk,
                     CommandQueue = new Queue(5, true)
@@ -508,7 +508,7 @@ namespace Kernel.Hardware.Controllers
                                     {
                                         BasicConsole.WriteLine("Storage controller > Writing " +
                                                                (String) ACommand.BlockCount + " blocks from " +
-                                                               (String) ACommand.BlockNo + " blocks offset.");
+                                                               ACommand.BlockNo + " blocks offset.");
                                         byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
                                         int BytesRead = ACommand.DataInPipe.Read(data, 0, data.Length, true);
                                         int DesiredBytesRead =

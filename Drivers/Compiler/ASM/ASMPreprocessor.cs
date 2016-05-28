@@ -79,7 +79,6 @@ namespace Drivers.Compiler.ASM
                     {
                         TheLibrary.ASMBlocks.RemoveAt(i);
                         i--;
-                        continue;
                     }
                 }
                 else

@@ -47,10 +47,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             {
                 return "shld " + Dest + ", " + Src + ", " + Count;
             }
-            else
-            {
-                return "shl " + Dest + ", " + Src;
-            }
+            return "shl " + Dest + ", " + Src;
         }
     }
 }

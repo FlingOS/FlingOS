@@ -110,7 +110,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //      5.3. Push element onto our stack
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,
@@ -243,7 +243,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
 
             //      1.1. Move array ref into $t0
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "4($sp)",
@@ -252,7 +252,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
             //      1.2. Compare $t0 (array ref) to 0
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t0",
                 BranchType = BranchOp.BranchNotZero,
@@ -261,13 +261,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 UnsignedTest = true
             });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
-            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
+            conversionState.Append(new ASMOps.Call {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue1"});
 
             // 2. Check array element type is correct
             //      2.1. Move element type ref into $t0
@@ -291,7 +291,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
 
             //      3.1. Move index into $t0
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "0($sp)",
@@ -303,7 +303,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int lengthOffset = conversionState.TheILLibrary.GetFieldInfo(arrayTypeInfo, "length").OffsetInBytes;
 
             //              - Move array ref into $t1
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "4($sp)",
@@ -315,7 +315,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             GlobalMethods.LoadData(conversionState, theOp, "$t1", "$t1", lengthOffset, 4);
             //      3.2. Compare $t0 to 0
             //      3.3. Jump if greater than to next test condition (3.5)
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t0",
                 Src2 = "$zero",
@@ -325,14 +325,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 UnsignedTest = false
             });
             //      3.4. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue3_1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue3_1"});
             //      3.5. Compare $t0 to $t1
             //      3.6. Jump if less than to continue execution further down
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t0",
                 Src2 = "$t1",
@@ -342,11 +342,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 UnsignedTest = false
             });
             //      3.7. Otherwise, call Exceptions.ThrowIndexOutOfRangeException
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue3_2"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue3_2"});
             // 4. Calculate address of element
             //      4.1. Pop index into $t1
             //      4.2. Pop array ref into $t0
@@ -362,9 +362,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      4.12. Add $t0 and $t1 (array ref + fields + (index * element size))
 
             //      4.1. Pop index into $t1
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
             //      4.2. Move array ref into $t0
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "0($sp)",
@@ -376,7 +376,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", elemTypeOffset, 4);
             //      4.4. Move IsValueType (from element ref type) into $t2
             int isValueTypeOffset = conversionState.GetTypeFieldOffset("IsValueType");
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "0",
@@ -386,7 +386,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = isValueTypeOffset.ToString() + "($t0)", Dest = "$t2", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t2", isValueTypeOffset, 1);
             //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t2",
                 BranchType = BranchOp.BranchZero,
@@ -399,23 +399,23 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = sizeOffset.ToString() + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", sizeOffset, 4);
             //      4.7. Skip over 4.8.
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 BranchType = BranchOp.Branch,
                 DestILPosition = currOpPosition,
                 Extension = "Continue4_2"
             });
             //      4.8. Move StackSize (from element type ref) into $t0
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue4_1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue4_1"});
             int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = stackSizeOffset + "($t0)", Dest = "$t0", MoveType = ASMOps.Mov.MoveTypes.SrcMemoryToDestReg });
             GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t0", stackSizeOffset, 4);
             //      4.9. Mulitply $t0 by $t1 (index by element size)
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Continue4_2"});
-            conversionState.Append(new ASMOps.Mul() {Src1 = "$t1", Src2 = "$t0", Signed = true});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue4_2"});
+            conversionState.Append(new ASMOps.Mul {Src1 = "$t1", Src2 = "$t0", Signed = true});
             //      4.10. Pop array ref into $t1
-            conversionState.Append(new Mflo() {Dest = "$t0"});
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t1"});
+            conversionState.Append(new Mflo {Dest = "$t0"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
             //      4.11. Add enough to go past Kernel.FOS_System.Array fields
             int allFieldsOffset = 0;
 
@@ -434,9 +434,9 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             #endregion
 
-            conversionState.Append(new ASMOps.Add() {Src1 = "$t1", Src2 = allFieldsOffset.ToString(), Dest = "$t1"});
+            conversionState.Append(new ASMOps.Add {Src1 = "$t1", Src2 = allFieldsOffset.ToString(), Dest = "$t1"});
             //      4.12. Add $t0 and $t1 (array ref + fields + (index * element size))
-            conversionState.Append(new ASMOps.Add() {Src1 = "$t1", Src2 = "$t0", Dest = "$t0"});
+            conversionState.Append(new ASMOps.Add {Src1 = "$t1", Src2 = "$t0", Dest = "$t0"});
 
             // 5. Push the element onto the stack
             //      5.1. Push value at ($t0) (except for LdElemA op in which case just push address)
@@ -445,7 +445,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 switch (sizeToPush)
                 {
                     case 1:
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Word,
                             Src = "0",
@@ -456,7 +456,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         GlobalMethods.LoadData(conversionState, theOp, "$t0", "$t1", 0, 1, signExtend);
                         break;
                     case 2:
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Word,
                             Src = "0",
@@ -480,13 +480,13 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 }
                 if (sizeToPush == 8)
                 {
-                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t2"});
+                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t2"});
                 }
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t1"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t1"});
             }
             else
             {
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
 
             TypeInfo elemTypeInfo = elementType == null ? null : conversionState.TheILLibrary.GetTypeInfo(elementType);
@@ -495,7 +495,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             //      5.3. Push element onto our stack
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = sizeToPush > 4 ? 8 : 4,
                 isFloat = isFloat,

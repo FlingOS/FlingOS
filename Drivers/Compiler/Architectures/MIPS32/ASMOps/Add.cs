@@ -43,10 +43,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             {
                 return "addu " + Dest + ", " + Src1 + ", " + Src2;
             }
-            else
-            {
-                return "add " + Dest + ", " + Src1 + ", " + Src2;
-            }
+            return "add " + Dest + ", " + Src1 + ", " + Src2;
         }
     }
 }

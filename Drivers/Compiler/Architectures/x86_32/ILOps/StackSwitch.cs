@@ -58,47 +58,47 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 if (i == 0)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
-                        Src = "[ESP+" + bytesShift.ToString() + "]",
+                        Src = "[ESP+" + bytesShift + "]",
                         Dest = "EAX"
                     });
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
-                        Src = "[ESP+" + (bytesShift + 4).ToString() + "]",
+                        Src = "[ESP+" + (bytesShift + 4) + "]",
                         Dest = "EBX"
                     });
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
                         Src = "EBX",
-                        Dest = "[ESP+" + bytesShift.ToString() + "]"
+                        Dest = "[ESP+" + bytesShift + "]"
                     });
                 }
                 else if (i == dwordsToRotate - 1)
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
                         Src = "EAX",
-                        Dest = "[ESP+" + bytesShift.ToString() + "]"
+                        Dest = "[ESP+" + bytesShift + "]"
                     });
                 }
                 else
                 {
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
-                        Src = "[ESP+" + (bytesShift + 4).ToString() + "]",
+                        Src = "[ESP+" + (bytesShift + 4) + "]",
                         Dest = "EBX"
                     });
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
                         Src = "EBX",
-                        Dest = "[ESP+" + bytesShift.ToString() + "]"
+                        Dest = "[ESP+" + bytesShift + "]"
                     });
                 }
                 bytesShift += 4;

@@ -34,7 +34,7 @@ namespace Drivers.Framework
     ///     Represents the underlying type of any array within the Drivers.
     /// </summary>
     [ArrayClass]
-    public unsafe class Array : Object
+    public class Array : Object
     {
         /* If changing the fields in this class, remember to update the 
          * Drivers.GC.NewArr method implementation. And also the constant below.*/

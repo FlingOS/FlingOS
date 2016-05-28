@@ -31,7 +31,7 @@ namespace Kernel.FOS_System.Processes
     /// <summary>
     ///     The complete list of system calls.
     /// </summary>
-    public enum SystemCallNumbers : int
+    public enum SystemCallNumbers
     {
         None = -1,
 
@@ -291,6 +291,6 @@ namespace Kernel.FOS_System.Processes
         /// <summary>
         ///     The system call was handled successfully but the thread should not be woken.
         /// </summary>
-        OK_NoWake = 0xC8DEC8DE,
+        OK_NoWake = 0xC8DEC8DE
     }
 }

@@ -64,7 +64,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
@@ -112,38 +112,38 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             //Pop address
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
 
             if ((OpCodes) theOp.opCode.Value == OpCodes.Ldind_Ref)
             {
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX]"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "[EBX]"});
             }
             else
             {
                 if (bytesToLoad == 1)
                 {
-                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                    conversionState.Append(new Mov() {Size = OperandSize.Byte, Src = "[EBX]", Dest = "AL"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                    conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                    conversionState.Append(new Mov {Size = OperandSize.Byte, Src = "[EBX]", Dest = "AL"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                 }
                 else if (bytesToLoad == 2)
                 {
-                    conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
-                    conversionState.Append(new Mov() {Size = OperandSize.Word, Src = "[EBX]", Dest = "AX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                    conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
+                    conversionState.Append(new Mov {Size = OperandSize.Word, Src = "[EBX]", Dest = "AX"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
                 }
                 else if (bytesToLoad == 4)
                 {
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX]"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "[EBX]"});
                 }
                 else if (bytesToLoad == 8)
                 {
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX+4]"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "[EBX]"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "[EBX+4]"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "[EBX]"});
                 }
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,

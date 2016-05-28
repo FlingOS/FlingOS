@@ -81,7 +81,7 @@ namespace Kernel.FOS_System
         public static bool PreventAllocation = false;
         public static String PreventReason = "[NONE]";
 
-        public static bool OutputTrace = false;
+        public static bool OutputTrace;
 
         /// <summary>
         ///     A pointer to the most-recently added heap block.
@@ -91,7 +91,7 @@ namespace Kernel.FOS_System
         public static String name = "[UNINITIALISED]";
 
         public static SpinLock AccessLock;
-        public static bool AccessLockInitialised = false;
+        public static bool AccessLockInitialised;
 
         [NoDebug]
         [NoGC]
@@ -520,7 +520,6 @@ namespace Kernel.FOS_System
 
                                 /* x will be incremented by one ONCE more in our FOR loop */
                                 x += y - 1;
-                                continue;
                             }
                         }
                     }
@@ -594,7 +593,7 @@ namespace Kernel.FOS_System
                     /* found block */
                     ptroff = (uint) ptr - (uint) &b[1]; /* get offset to get block */
                     /* block offset in BM */
-                    bi = (uint) ptroff/b->bsize;
+                    bi = ptroff/b->bsize;
                     /* .. */
                     bm = (byte*) &b[1];
                     /* clear allocation */
@@ -708,31 +707,28 @@ namespace Kernel.FOS_System
                 //    }
                 //}
             }
-            else
+            if (!fblock->expanding)
             {
-                if (!fblock->expanding)
+                HeapBlock* oldFBlock = fblock;
+                oldFBlock->expanding = true;
+                // Expand by 1MiB
+                if (!DoExpandHeap(0x100000))
                 {
-                    HeapBlock* oldFBlock = fblock;
-                    oldFBlock->expanding = true;
-                    // Expand by 1MiB
-                    if (!DoExpandHeap(0x100000))
-                    {
-                        BasicConsole.WriteLine("Couldn't expand heap!");
-                        return false;
-                    }
-                    //else
-                    //{
-                    //    BasicConsole.WriteLine("Heap expanded successfully.");
-                    //    if (print)
-                    //    {
-                    //        BasicConsole.Write("New heap size: ");
-                    //        BasicConsole.Write(GetTotalMem() / 1024);
-                    //        BasicConsole.WriteLine("KiB");
-                    //    }
-                    //}
-                    oldFBlock->expanding = false;
-                    return true;
+                    BasicConsole.WriteLine("Couldn't expand heap!");
+                    return false;
                 }
+                //else
+                //{
+                //    BasicConsole.WriteLine("Heap expanded successfully.");
+                //    if (print)
+                //    {
+                //        BasicConsole.Write("New heap size: ");
+                //        BasicConsole.Write(GetTotalMem() / 1024);
+                //        BasicConsole.WriteLine("KiB");
+                //    }
+                //}
+                oldFBlock->expanding = false;
+                return true;
             }
             return false;
         }

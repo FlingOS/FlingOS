@@ -59,10 +59,7 @@ namespace Kernel.Pipes.Storage
             {
                 return (StoragePipeCommand*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

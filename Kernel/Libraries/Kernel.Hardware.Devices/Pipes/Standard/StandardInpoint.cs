@@ -59,17 +59,14 @@ namespace Kernel.Pipes.Standard
         /// </summary>
         /// <param name="blocking">Whether the read call should be blocking or not.</param>
         /// <returns>The string or empty string if the number of bytes read was zero.</returns>
-        public unsafe String Read(bool blocking)
+        public String Read(bool blocking)
         {
             int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, blocking);
             if (bytesRead > 0)
             {
                 return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint) bytesRead);
             }
-            else
-            {
-                return "";
-            }
+            return "";
         }
     }
 }

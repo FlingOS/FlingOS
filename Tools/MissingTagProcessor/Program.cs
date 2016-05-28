@@ -42,7 +42,7 @@ namespace MissingTagProcessor
                 Console.ReadLine();
                 return;
             }
-            else if (args.Length < 2)
+            if (args.Length < 2)
             {
                 Console.WriteLine("Missing argument: Path to save processed errors file.");
                 Console.ReadLine();

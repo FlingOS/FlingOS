@@ -41,7 +41,7 @@ namespace Kernel.Hardware.Timers
     /// </summary>
     public class PIT : Timer
     {
-        public enum MusicalNote : int
+        public enum MusicalNote
         {
             Silent = 0,
             C0 = 16,
@@ -227,6 +227,11 @@ namespace Kernel.Hardware.Timers
         [Group(Name = "IsolatedKernel_Hardware_Devices")] public static PIT ThePIT;
 
         /// <summary>
+        ///     Currently active handlers for when the timer interrupt occurs.
+        /// </summary>
+        private readonly List ActiveHandlers = new List();
+
+        /// <summary>
         ///     The reload value for timer 0. Sets the frequency of timer 0.
         /// </summary>
         //private ushort _T0Reload = 32; // Produces ~0.0268ms delay between interrupts
@@ -237,11 +242,6 @@ namespace Kernel.Hardware.Timers
         ///     the frequency of the PC speaker beep.
         /// </summary>
         private ushort _T2Reload = 1024;
-
-        /// <summary>
-        ///     Currently active handlers for when the timer interrupt occurs.
-        /// </summary>
-        private readonly List ActiveHandlers = new List();
 
         /// <summary>
         ///     The PIT command port.
@@ -282,17 +282,17 @@ namespace Kernel.Hardware.Timers
         ///     have timer 0 reload from the reload value after the count hits 0.
         ///     Essentially, set to true to make timer 0 repeat endlessly.
         /// </summary>
-        public bool T0RateGen = false;
+        public bool T0RateGen;
 
         /// <summary>
         ///     Incremented endlessly to create a unique timer id.
         /// </summary>
-        private int TimerIdGenerator = 0;
+        private int TimerIdGenerator;
 
         /// <summary>
         ///     Set to true when the current wait timer elapses.
         /// </summary>
-        private bool WaitSignaled = false;
+        private bool WaitSignaled;
 
         public PIT()
             : base(DeviceGroup.System, DeviceSubClass.Timer, "Programmable Interval Timer", new uint[0], true)
@@ -320,7 +320,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public uint T0Frequency
         {
-            [NoGC] get { return PITFrequency/(uint) _T0Reload; }
+            [NoGC] get { return PITFrequency/_T0Reload; }
             set
             {
                 if (value < 19 || value > 1193180)
@@ -372,7 +372,7 @@ namespace Kernel.Hardware.Timers
         /// </summary>
         public uint T2Frequency
         {
-            [NoGC] get { return PITFrequency/(uint) _T2Reload; }
+            [NoGC] get { return PITFrequency/_T2Reload; }
             set
             {
                 if (value < 19 || value > 1193180)
@@ -706,11 +706,11 @@ namespace Kernel.Hardware.Timers
         /// <param name="Recurring">Whether the handler should repeat or not.</param>
         public PITHandler(TimerHandler HandleOnTrigger, IObject aState, long NanosecondsTimeout, bool Recurring)
         {
-            this.HandleTrigger = HandleOnTrigger;
+            HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
-            this.NSRemaining = this.NanosecondsTimeout;
+            NSRemaining = this.NanosecondsTimeout;
             this.Recurring = Recurring;
-            this.state = aState;
+            state = aState;
         }
 
         /// <summary>
@@ -722,11 +722,11 @@ namespace Kernel.Hardware.Timers
         /// <param name="NanosecondsLeft">The intial timeout value, in nanoseconds.</param>
         public PITHandler(TimerHandler HandleOnTrigger, IObject aState, long NanosecondsTimeout, uint NanosecondsLeft)
         {
-            this.HandleTrigger = HandleOnTrigger;
+            HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
-            this.NSRemaining = NanosecondsLeft;
-            this.Recurring = true;
-            this.state = aState;
+            NSRemaining = NanosecondsLeft;
+            Recurring = true;
+            state = aState;
         }
 
         /// <summary>

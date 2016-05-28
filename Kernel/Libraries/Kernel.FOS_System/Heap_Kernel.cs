@@ -35,7 +35,7 @@ namespace Kernel.FOS_System
         /// <summary>
         ///     Whether the kernel's fixed heap has been initialised or not.
         /// </summary>
-        private static bool FixedHeapInitialised = false;
+        private static bool FixedHeapInitialised;
 
         static Heap_Kernel()
         {

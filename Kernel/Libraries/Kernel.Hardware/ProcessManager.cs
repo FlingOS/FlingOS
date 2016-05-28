@@ -47,9 +47,9 @@ namespace Kernel.Hardware.Processes
 
         [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static List Processes = new List();
 
-        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Process CurrentProcess = null;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Process CurrentProcess;
 
-        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Thread CurrentThread = null;
+        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static Thread CurrentThread;
 
         [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static ThreadState* CurrentThread_State = null;
 
@@ -398,13 +398,10 @@ namespace Kernel.Hardware.Processes
 #endif
                     return;
                 }
-                else
-                {
 #if PROCESSMANAGER_SWITCH_TRACE
                     BasicConsole.WriteLine("No switch. (2)");
 #endif
-                    dontSwitchOutIn = true;
-                }
+                dontSwitchOutIn = true;
             }
 
             if (!dontSwitchOutIn)

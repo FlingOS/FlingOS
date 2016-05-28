@@ -42,10 +42,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             {
                 return "adc " + Dest + ", " + Src;
             }
-            else
-            {
-                return "add " + Dest + ", " + Src;
-            }
+            return "add " + Dest + ", " + Src;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Kernel.FOS_System.Exceptions
     /// </summary>
     public class DoubleFaultException : Exception
     {
-        public uint ErrorCode = 0;
+        public uint ErrorCode;
 
         /// <summary>
         ///     Sets the message to "Double fault exception."

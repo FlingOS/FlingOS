@@ -34,15 +34,14 @@ namespace Kernel.Hardware.Processes.Synchronisation
 {
     public class Semaphore : Object
     {
-        protected int count = 0;
-
         private readonly SpinLock ExclLock = new SpinLock();
+        private readonly UInt64List WaitingThreads = new UInt64List();
+        protected int count;
         protected int id;
 
-        protected int limit = 0;
+        protected int limit;
 
         public UInt32List OwnerProcesses = new UInt32List(2);
-        private readonly UInt64List WaitingThreads = new UInt64List();
 
         public Semaphore(int anId, int aLimit)
         {

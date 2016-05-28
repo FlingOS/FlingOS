@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             int size = theTypeInfo.SizeOnStackInBytes;
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,
@@ -77,22 +77,22 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int size = theTypeInfo.SizeOnStackInBytes;
 
             //Load the object onto the stack
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t2"});
             for (int i = size - 4; i >= 0; i -= 4)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = i.ToString() + "($t2)", Dest = "$t0" });
                 GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", i, 4);
-                conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
             }
             int extra = size%4;
             for (int i = extra - 1; i >= 0; i--)
             {
                 //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Byte, Src = i.ToString() + "($t2)", Dest = "$t0" });
                 GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", i, 1);
-                conversionState.Append(new Push() {Size = OperandSize.Byte, Src = "$t0"});
+                conversionState.Append(new Push {Size = OperandSize.Byte, Src = "$t0"});
             }
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,

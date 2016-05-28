@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -79,59 +79,56 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-            else if (itemB.isFloat || itemA.isFloat)
+            if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Divide floats is unsupported!");
             }
-            else
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop item A
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                if ((OpCodes) theOp.opCode.Value == OpCodes.Rem_Un)
                 {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop item A
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    if ((OpCodes) theOp.opCode.Value == OpCodes.Rem_Un)
-                    {
-                        //Unsigned extend A to EAX:EDX
-                        conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
-                        //Do the division
-                        conversionState.Append(new ASMOps.Div() {Arg = "EBX"});
-                    }
-                    else
-                    {
-                        //Sign extend A to EAX:EDX
-                        conversionState.Append(new Cdq());
-                        //Do the division
-                        conversionState.Append(new ASMOps.Div() {Arg = "EBX", Signed = true});
-                    }
-                    //Result stored in edx
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
+                    //Unsigned extend A to EAX:EDX
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});
+                    //Do the division
+                    conversionState.Append(new ASMOps.Div {Arg = "EBX"});
+                }
+                else
+                {
+                    //Sign extend A to EAX:EDX
+                    conversionState.Append(new Cdq());
+                    //Do the division
+                    conversionState.Append(new ASMOps.Div {Arg = "EBX", Signed = true});
+                }
+                //Result stored in edx
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 4,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
-                else if ((itemA.sizeOnStackInBytes == 8 &&
-                          itemB.sizeOnStackInBytes == 4) ||
-                         (itemA.sizeOnStackInBytes == 4 &&
-                          itemB.sizeOnStackInBytes == 8))
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    throw new InvalidOperationException(
-                        "Invalid stack operand sizes! They should be the 32-32 or 64-64.");
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 8)
-                {
-                    //SUPPORT - 64-bit division
-                    throw new NotSupportedException("64-bit by 64-bit modulo not supported yet!");
-                }
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
+            }
+            else if ((itemA.sizeOnStackInBytes == 8 &&
+                      itemB.sizeOnStackInBytes == 4) ||
+                     (itemA.sizeOnStackInBytes == 4 &&
+                      itemB.sizeOnStackInBytes == 8))
+            {
+                throw new InvalidOperationException(
+                    "Invalid stack operand sizes! They should be the 32-32 or 64-64.");
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                //SUPPORT - 64-bit division
+                throw new NotSupportedException("64-bit by 64-bit modulo not supported yet!");
             }
         }
     }

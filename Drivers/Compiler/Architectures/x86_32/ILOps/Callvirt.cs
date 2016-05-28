@@ -58,7 +58,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                    StackItem returnItem = new StackItem()
+                    StackItem returnItem = new StackItem
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -88,7 +88,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                    StackItem returnItem = new StackItem()
+                    StackItem returnItem = new StackItem
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -174,7 +174,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     int bytesForParams =
                         allParams.Select(x => conversionState.TheILLibrary.GetTypeInfo(x).SizeOnStackInBytes).Sum();
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
                         Src = "[ESP+" + bytesForParams + "]",
@@ -185,7 +185,7 @@ namespace Drivers.Compiler.Architectures.x86
                     //Allocate space on the stack for the return value as necessary
                     Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                    StackItem returnItem = new StackItem()
+                    StackItem returnItem = new StackItem
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -202,18 +202,15 @@ namespace Drivers.Compiler.Architectures.x86
                             //SUPPORT - floats
                             throw new NotSupportedException("Cannot handle float return values!");
                         }
-                        else
+                        for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
                         {
-                            for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
-                            {
-                                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-                            }
+                            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
                         }
                     }
 
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() {Target = "EAX"});
+                    conversionState.Append(new ASMOps.Call {Target = "EAX"});
 
 
                     //After a call, we need to remove the return value and parameters from the stack
@@ -251,13 +248,13 @@ namespace Drivers.Compiler.Architectures.x86
                             int srcOffset = returnItem.sizeOnStackInBytes - i - 4;
                             int destOffset = bytesToAdd + srcOffset;
 
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Dword,
                                 Dest = "EAX",
                                 Src = "[ESP+" + srcOffset + "]"
                             });
-                            conversionState.Append(new Mov()
+                            conversionState.Append(new Mov
                             {
                                 Size = OperandSize.Dword,
                                 Dest = "[ESP+" + destOffset + "]",
@@ -266,7 +263,7 @@ namespace Drivers.Compiler.Architectures.x86
                         }
                     }
                     //Skip over the params
-                    conversionState.Append(new ASMOps.Add() {Src = bytesToAdd.ToString(), Dest = "ESP"});
+                    conversionState.Append(new ASMOps.Add {Src = bytesToAdd.ToString(), Dest = "ESP"});
                 }
                 else
                 {
@@ -292,7 +289,7 @@ namespace Drivers.Compiler.Architectures.x86
                         ((System.Reflection.MethodInfo) methodToCall).GetParameters()
                             .Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes)
                             .Sum();
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
                         Src = "[ESP+" + bytesForAllParams + "]",
@@ -300,110 +297,110 @@ namespace Drivers.Compiler.Architectures.x86
                     });
 
                     //Check object ref
-                    conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = "0"});
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "0"});
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.JumpNotZero,
                         DestILPosition = currOpPosition,
                         Extension = "NotNull"
                     });
-                    conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
+                    conversionState.Append(new ASMOps.Call {Target = "GetEIP"});
                     conversionState.AddExternalLabel("GetEIP");
-                    conversionState.Append(new ASMOps.Call()
+                    conversionState.Append(new ASMOps.Call
                     {
                         Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
                     });
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotNull"});
+                    conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "NotNull"});
 
                     //Get type ref
                     //int typeOffset = conversionState.TheILLibrary.GetFieldInfo(declaringTypeInfo, "_Type").OffsetInBytes;
                     //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Dword, Src = "[EAX+" + typeOffset.ToString() + "]", Dest = "EAX" });
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-                    conversionState.Append(new ASMOps.Call() {Target = conversionState.GetObjectTypeMethodInfo().ID});
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    conversionState.Append(new ASMOps.Add() {Src = "4", Dest = "ESP"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
+                    conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
+                    conversionState.Append(new ASMOps.Call {Target = conversionState.GetObjectTypeMethodInfo().ID});
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                    conversionState.Append(new ASMOps.Add {Src = "4", Dest = "ESP"});
 
                     //Get method table ref
                     int methodTablePtrOffset = conversionState.GetTypeFieldOffset("MethodTablePtr");
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Dword,
-                        Src = "[EAX+" + methodTablePtrOffset.ToString() + "]",
+                        Src = "[EAX+" + methodTablePtrOffset + "]",
                         Dest = "EAX"
                     });
 
                     //Loop through entries
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "LoopMethodTable"});
+                    conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "LoopMethodTable"});
                     //Load ID Val for current entry
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[EAX]", Dest = "EBX"});
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[EAX]", Dest = "EBX"});
                     //Compare to wanted ID value
-                    conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = methodIDValueWanted});
+                    conversionState.Append(new Cmp {Arg1 = "EBX", Arg2 = methodIDValueWanted});
                     //If equal, load method address into EAX
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.JumpNotEqual,
                         DestILPosition = currOpPosition,
                         Extension = "NotEqual"
                     });
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[EAX+4]", Dest = "EAX"});
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[EAX+4]", Dest = "EAX"});
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.Jump,
                         DestILPosition = currOpPosition,
                         Extension = "Call"
                     });
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotEqual"});
+                    conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "NotEqual"});
                     //Else, compare to 0 to check for end of table
-                    conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "0"});
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new Cmp {Arg1 = "EBX", Arg2 = "0"});
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.JumpZero,
                         DestILPosition = currOpPosition,
                         Extension = "EndOfTable"
                     });
                     //Not 0? Move to next entry then loop again
-                    conversionState.Append(new ASMOps.Add() {Src = "8", Dest = "EAX"});
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new ASMOps.Add {Src = "8", Dest = "EAX"});
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.Jump,
                         DestILPosition = currOpPosition,
                         Extension = "LoopMethodTable"
                     });
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "EndOfTable"});
+                    conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "EndOfTable"});
                     //Compare address value to 0
                     //If not zero, there is a parent method table to check
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "[EAX+4]", Dest = "EBX"});
-                    conversionState.Append(new Cmp() {Arg1 = "EBX", Arg2 = "0"});
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[EAX+4]", Dest = "EBX"});
+                    conversionState.Append(new Cmp {Arg1 = "EBX", Arg2 = "0"});
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.JumpZero,
                         DestILPosition = currOpPosition,
                         Extension = "NotFound"
                     });
                     //Load parent method table and loop 
-                    conversionState.Append(new Mov() {Size = OperandSize.Dword, Src = "EBX", Dest = "EAX"});
-                    conversionState.Append(new Jmp()
+                    conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "EBX", Dest = "EAX"});
+                    conversionState.Append(new Jmp
                     {
                         JumpType = JmpOp.Jump,
                         DestILPosition = currOpPosition,
                         Extension = "LoopMethodTable"
                     });
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "NotFound"});
+                    conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "NotFound"});
                     //Throw exception!
-                    conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
+                    conversionState.Append(new ASMOps.Call {Target = "GetEIP"});
                     conversionState.AddExternalLabel("GetEIP");
-                    conversionState.Append(new ASMOps.Call()
+                    conversionState.Append(new ASMOps.Call
                     {
                         Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
                     });
 
-                    conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "Call"});
+                    conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Call"});
 
                     //Allocate space on the stack for the return value as necessary
                     Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
-                    StackItem returnItem = new StackItem()
+                    StackItem returnItem = new StackItem
                     {
                         isFloat = Utilities.IsFloat(retType),
                         sizeOnStackInBytes = retTypeInfo.SizeOnStackInBytes,
@@ -420,18 +417,15 @@ namespace Drivers.Compiler.Architectures.x86
                             //SUPPORT - floats
                             throw new NotSupportedException("Cannot handle float return values!");
                         }
-                        else
+                        for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
                         {
-                            for (int i = 0; i < returnItem.sizeOnStackInBytes; i += 4)
-                            {
-                                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "0"});
-                            }
+                            conversionState.Append(new Push {Size = OperandSize.Dword, Src = "0"});
                         }
                     }
 
 
                     //Append the actual call
-                    conversionState.Append(new ASMOps.Call() {Target = "EAX"});
+                    conversionState.Append(new ASMOps.Call {Target = "EAX"});
 
 
                     //After a call, we need to remove the return value and parameters from the stack
@@ -479,13 +473,13 @@ namespace Drivers.Compiler.Architectures.x86
                                 int srcOffset = returnItem.sizeOnStackInBytes - i - 4;
                                 int destOffset = bytesToAdd + srcOffset;
 
-                                conversionState.Append(new Mov()
+                                conversionState.Append(new Mov
                                 {
                                     Size = OperandSize.Dword,
                                     Dest = "EAX",
                                     Src = "[ESP+" + srcOffset + "]"
                                 });
-                                conversionState.Append(new Mov()
+                                conversionState.Append(new Mov
                                 {
                                     Size = OperandSize.Dword,
                                     Dest = "[ESP+" + destOffset + "]",
@@ -494,7 +488,7 @@ namespace Drivers.Compiler.Architectures.x86
                             }
                         }
                         //Skip over the params
-                        conversionState.Append(new ASMOps.Add() {Src = bytesToAdd.ToString(), Dest = "ESP"});
+                        conversionState.Append(new ASMOps.Add {Src = bytesToAdd.ToString(), Dest = "ESP"});
                     }
                     //No params to skip over but we might still need to store return value
                     else if (returnItem.sizeOnStackInBytes != 0)

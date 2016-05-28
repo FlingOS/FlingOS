@@ -42,11 +42,11 @@ namespace Drivers.Debugger
         private DebugDataReader DebugData;
         private Serial MsgSerial;
 
-        private bool NotificationReceived = false;
+        private bool NotificationReceived;
         private Serial NotifSerial;
 
         private bool terminating;
-        private bool WaitingForNotification = false;
+        private bool WaitingForNotification;
 
         public Debugger()
         {
@@ -125,7 +125,7 @@ namespace Drivers.Debugger
                         NotificationReceived = true;
                         if (!WaitingForNotification)
                         {
-                            NotificationEvent.Invoke(new NotificationEventArgs()
+                            NotificationEvent.Invoke(new NotificationEventArgs
                             {
                                 NotificationByte = NotifByte
                             }, this);
@@ -169,10 +169,7 @@ namespace Drivers.Debugger
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             catch
             {
@@ -195,7 +192,7 @@ namespace Drivers.Debugger
                     if (LineParts[0] == "- Process")
                     {
                         uint Id = uint.Parse(LineParts[1].Substring(2), NumberStyles.HexNumber);
-                        CurrentProcess = new Process()
+                        CurrentProcess = new Process
                         {
                             Id = Id,
                             Name = LineParts[2],
@@ -206,7 +203,7 @@ namespace Drivers.Debugger
                     else if (LineParts[0] == "- Thread")
                     {
                         uint Id = uint.Parse(LineParts[1].Substring(2), NumberStyles.HexNumber);
-                        CurrentProcess.Threads.Add(Id, new Thread()
+                        CurrentProcess.Threads.Add(Id, new Thread
                         {
                             Id = Id,
                             Name = Line.Substring(Line.IndexOf(LineParts[3])),
@@ -229,7 +226,7 @@ namespace Drivers.Debugger
 
             try
             {
-                string[] Lines = ExecuteCommand("regs " + ProcessId.ToString() + " " + ThreadId.ToString());
+                string[] Lines = ExecuteCommand("regs " + ProcessId + " " + ThreadId);
 
                 for (int i = 1; i < Lines.Length; i++)
                 {
@@ -255,7 +252,7 @@ namespace Drivers.Debugger
         {
             try
             {
-                string[] Lines = ExecuteCommand("suspend " + ProcessId.ToString() + " " + ThreadId.ToString());
+                string[] Lines = ExecuteCommand("suspend " + ProcessId + " " + ThreadId);
                 return true;
             }
             catch
@@ -268,7 +265,7 @@ namespace Drivers.Debugger
         {
             try
             {
-                string[] Lines = ExecuteCommand("resume " + ProcessId.ToString() + " " + ThreadId.ToString());
+                string[] Lines = ExecuteCommand("resume " + ProcessId + " " + ThreadId);
                 return true;
             }
             catch
@@ -282,7 +279,7 @@ namespace Drivers.Debugger
             try
             {
                 //BeginWaitForNotification();
-                string[] Lines = ExecuteCommand("step " + ProcessId.ToString() + " " + ThreadId.ToString());
+                string[] Lines = ExecuteCommand("step " + ProcessId + " " + ThreadId);
                 //EndWaitForNotification();
                 return true;
             }
@@ -297,7 +294,7 @@ namespace Drivers.Debugger
             try
             {
                 //BeginWaitForNotification();
-                string[] Lines = ExecuteCommand("ss " + ProcessId.ToString() + " " + ThreadId.ToString());
+                string[] Lines = ExecuteCommand("ss " + ProcessId + " " + ThreadId);
                 //EndWaitForNotification();
                 return true;
             }
@@ -313,7 +310,7 @@ namespace Drivers.Debugger
             {
                 //BeginWaitForNotification();
                 string[] Lines =
-                    ExecuteCommand("sta " + ProcessId.ToString() + " " + ThreadId.ToString() + " " +
+                    ExecuteCommand("sta " + ProcessId + " " + ThreadId + " " +
                                    Address.ToString("X8"));
                 //EndWaitForNotification();
                 return true;
@@ -360,8 +357,8 @@ namespace Drivers.Debugger
             try
             {
                 string[] Lines =
-                    ExecuteCommand("mem " + ProcessId.ToString() + " " + Address.ToString("X8") + " " +
-                                   Length.ToString() + " " + UnitSize.ToString());
+                    ExecuteCommand("mem " + ProcessId + " " + Address.ToString("X8") + " " +
+                                   Length + " " + UnitSize);
                 return Lines[1];
             }
             catch
@@ -382,10 +379,7 @@ namespace Drivers.Debugger
                 return new Tuple<uint, string>(Address,
                     DebugData.AddressMappings[Address].OrderBy(x => x.Length).First());
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public string GetMethodLabel(string FullLabel)

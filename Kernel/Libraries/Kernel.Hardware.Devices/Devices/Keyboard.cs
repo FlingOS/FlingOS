@@ -429,13 +429,10 @@ namespace Kernel.Hardware.Devices
                 //Return that we dequeued a character
                 return true;
             }
-            else
-            {
-                c = '\0';
+            c = '\0';
 
-                //Otherwise just return that we didn't dequeue a character
-                return false;
-            }
+            //Otherwise just return that we didn't dequeue a character
+            return false;
         }
 
         /// <summary>
@@ -452,12 +449,9 @@ namespace Kernel.Hardware.Devices
                 GetKeyValue(Dequeue(), out c);
                 return true;
             }
-            else
-            {
-                c = KeyboardKey.NoName;
+            c = KeyboardKey.NoName;
 
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -474,12 +468,9 @@ namespace Kernel.Hardware.Devices
                 GetKeyMapping(Dequeue(), out c);
                 return true;
             }
-            else
-            {
-                c = null;
+            c = null;
 
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -496,11 +487,8 @@ namespace Kernel.Hardware.Devices
                 c = Dequeue();
                 return true;
             }
-            else
-            {
-                c = 0;
-                return false;
-            }
+            c = 0;
+            return false;
         }
     }
 

@@ -52,7 +52,7 @@ namespace Drivers.Compiler.Attributes
     ///         extension ".x86_32.asm" is also recognised along with the new ".x86.asm" extension.
     ///     </para>
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class PluggedMethodAttribute : Attribute
     {
         /// <summary>

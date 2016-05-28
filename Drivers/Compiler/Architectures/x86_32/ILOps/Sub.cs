@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -56,7 +56,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -96,9 +96,9 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-            //If either item is floating point, we must use floating point conversions
-            //and floating point arithmetic
-            else if (itemB.isFloat || itemA.isFloat)
+                //If either item is floating point, we must use floating point conversions
+                //and floating point arithmetic
+            if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
                 //  - We need to convert items to float if necessary
@@ -108,74 +108,71 @@ namespace Drivers.Compiler.Architectures.x86
                 //       XMM registers and their specific ops.
                 throw new NotSupportedException("Sub floats is unsupported!");
             }
-            else
+            //If both items are Int32s (or UInt32s - it is irrelevant)
+            //Note: IL handles type conversions using other ops
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                //If both items are Int32s (or UInt32s - it is irrelevant)
-                //Note: IL handles type conversions using other ops
-                if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
-                {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop item A
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    //Subtract the two
-                    conversionState.Append(new ASMOps.Sub() {Src = "EBX", Dest = "EAX"});
-                    //Push the result onto the stack
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop item A
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                //Subtract the two
+                conversionState.Append(new ASMOps.Sub {Src = "EBX", Dest = "EAX"});
+                //Push the result onto the stack
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    //Push the result onto our stack
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 4,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
-                //Invalid if the operands are of different sizes.
-                //Note: This usually occurs when a previous IL op failed to process properly.
-                else if ((itemA.sizeOnStackInBytes == 8 &&
-                          itemB.sizeOnStackInBytes == 4) ||
-                         (itemA.sizeOnStackInBytes == 4 &&
-                          itemB.sizeOnStackInBytes == 8))
+                //Push the result onto our stack
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 8)
-                {
-                    //Pop item B to ecx:ebx
-                    //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
-                    //Pop item A to edx:eax
-                    //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
-                    //Sub ecx:ebx from edx:eax
-                    //Sub low bits
-                    conversionState.Append(new ASMOps.Sub() {Src = "EBX", Dest = "EAX"});
-                    //Sub high bits including any borrow from
-                    //when low bits were subtracted
-                    conversionState.Append(new ASMOps.Sub() {Src = "ECX", Dest = "EDX", WithBorrow = true});
-                    //Push the result
-                    //Push high bits
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                    //Push low bits
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
+            }
+            //Invalid if the operands are of different sizes.
+            //Note: This usually occurs when a previous IL op failed to process properly.
+            else if ((itemA.sizeOnStackInBytes == 8 &&
+                      itemB.sizeOnStackInBytes == 4) ||
+                     (itemA.sizeOnStackInBytes == 4 &&
+                      itemB.sizeOnStackInBytes == 8))
+            {
+                throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                //Pop item B to ecx:ebx
+                //Pop low bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop high bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
+                //Pop item A to edx:eax
+                //Pop low bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                //Pop high bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
+                //Sub ecx:ebx from edx:eax
+                //Sub low bits
+                conversionState.Append(new ASMOps.Sub {Src = "EBX", Dest = "EAX"});
+                //Sub high bits including any borrow from
+                //when low bits were subtracted
+                conversionState.Append(new ASMOps.Sub {Src = "ECX", Dest = "EDX", WithBorrow = true});
+                //Push the result
+                //Push high bits
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                //Push low bits
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    //Push the result onto our stack
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false,
-                        isValue = itemA.isValue && itemB.isValue
-                    });
-                }
+                //Push the result onto our stack
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false,
+                    isValue = itemA.isValue && itemB.isValue
+                });
             }
         }
     }

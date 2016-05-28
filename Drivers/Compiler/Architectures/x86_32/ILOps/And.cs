@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 4,
@@ -55,7 +55,7 @@ namespace Drivers.Compiler.Architectures.x86
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 8)
             {
-                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
                     isFloat = false,
                     sizeOnStackInBytes = 8,
@@ -87,66 +87,63 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-            else if (itemB.isFloat || itemA.isFloat)
+            if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
                 throw new NotSupportedException("Add floats is unsupported!");
             }
-            else
+            if (itemA.sizeOnStackInBytes == 4 &&
+                itemB.sizeOnStackInBytes == 4)
             {
-                if (itemA.sizeOnStackInBytes == 4 &&
-                    itemB.sizeOnStackInBytes == 4)
-                {
-                    //Pop item B
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop item A
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    //And the two
-                    conversionState.Append(new ASMOps.And() {Src = "EBX", Dest = "EAX"});
-                    //Push the result onto the stack
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                //Pop item B
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop item A
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                //And the two
+                conversionState.Append(new ASMOps.And {Src = "EBX", Dest = "EAX"});
+                //Push the result onto the stack
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 4,
-                        isGCManaged = false
-                    });
-                }
-                else if ((itemA.sizeOnStackInBytes == 8 &&
-                          itemB.sizeOnStackInBytes == 4) ||
-                         (itemA.sizeOnStackInBytes == 4 &&
-                          itemB.sizeOnStackInBytes == 8))
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
-                    throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
-                }
-                else if (itemA.sizeOnStackInBytes == 8 &&
-                         itemB.sizeOnStackInBytes == 8)
-                {
-                    //Pop item B to ecx:ebx
-                    //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EBX"});
-                    //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
-                    //Pop item A to edx:eax
-                    //Pop low bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
-                    //Pop high bits
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EDX"});
-                    //And ecx:ebx with edx:eax
-                    conversionState.Append(new ASMOps.And() {Src = "EBX", Dest = "EAX"});
-                    conversionState.Append(new ASMOps.And() {Src = "ECX", Dest = "EDX"});
-                    //Push the result onto the stack
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EDX"});
-                    conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                    isFloat = false,
+                    sizeOnStackInBytes = 4,
+                    isGCManaged = false
+                });
+            }
+            else if ((itemA.sizeOnStackInBytes == 8 &&
+                      itemB.sizeOnStackInBytes == 4) ||
+                     (itemA.sizeOnStackInBytes == 4 &&
+                      itemB.sizeOnStackInBytes == 8))
+            {
+                throw new InvalidOperationException("Invalid stack operand sizes! They should be the same size.");
+            }
+            else if (itemA.sizeOnStackInBytes == 8 &&
+                     itemB.sizeOnStackInBytes == 8)
+            {
+                //Pop item B to ecx:ebx
+                //Pop low bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
+                //Pop high bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
+                //Pop item A to edx:eax
+                //Pop low bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
+                //Pop high bits
+                conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EDX"});
+                //And ecx:ebx with edx:eax
+                conversionState.Append(new ASMOps.And {Src = "EBX", Dest = "EAX"});
+                conversionState.Append(new ASMOps.And {Src = "ECX", Dest = "EDX"});
+                //Push the result onto the stack
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EDX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
 
-                    conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
-                    {
-                        isFloat = false,
-                        sizeOnStackInBytes = 8,
-                        isGCManaged = false
-                    });
-                }
+                conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
+                {
+                    isFloat = false,
+                    sizeOnStackInBytes = 8,
+                    isGCManaged = false
+                });
             }
         }
     }

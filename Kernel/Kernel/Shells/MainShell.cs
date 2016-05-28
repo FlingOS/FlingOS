@@ -66,7 +66,6 @@ namespace Kernel.Shells
         protected String CurrentDir = "";
 
         public MainShell()
-            : base()
         {
         }
 
@@ -1411,10 +1410,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Atempted to copy a file to itself! (" + srcFullPath + ")");
                 return;
             }
-            else
-            {
-                console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
-            }
+            console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
 
             //Get the streams to read from / write to
             FileStream srcStr = srcFile.GetStream();
@@ -1518,10 +1514,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Atempted to copy a directory to itself! (" + srcFullPath + ")");
                 return;
             }
-            else
-            {
-                console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
-            }
+            console.WriteLine("Copying " + srcFullPath + " to " + dstFullPath);
 
             //Copy listings
             //  This causes CopyDirectory to be a recursive, self-calling method
@@ -1696,7 +1689,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Disk not formatted correctly! No partitions found on disk.");
                 return;
             }
-            else if (!FileSystemManager.HasMapping(part))
+            if (!FileSystemManager.HasMapping(part))
             {
                 console.WriteLine(
                     "Disk not formatted correctly! File system mapping not found. (Did you remember to initialise file systems?)");
@@ -1779,12 +1772,12 @@ which should have been provided with the executable.");
 
                         if (xItem.IsDirectory)
                         {
-                            console.WriteLine((String) "<DIR> '" + ((Directory) Listings[j]).Name + "'");
+                            console.WriteLine("<DIR> '" + ((Directory) Listings[j]).Name + "'");
                         }
                         else
                         {
                             File file = (File) Listings[j];
-                            console.WriteLine((String) "<FILE> '" + file.Name + "' (" + file.Size + ")");
+                            console.WriteLine("<FILE> '" + file.Name + "' (" + file.Size + ")");
                         }
                     }
                 }
@@ -1831,7 +1824,7 @@ which should have been provided with the executable.");
                 {
                     FATFileSystem fs = (FATFileSystem) fsMapping.TheFileSystem;
 
-                    console.WriteLine((String) "FAT file system detected. Volume ID: " + fs.ThePartition.VolumeID);
+                    console.WriteLine("FAT file system detected. Volume ID: " + fs.ThePartition.VolumeID);
                 }
                 else if (fsMapping.TheFileSystem is ISO9660FileSystem)
                 {
@@ -1923,18 +1916,15 @@ which should have been provided with the executable.");
                     {
                         break;
                     }
-                    else
+                    for (int i = 0; i < allocSize; i++)
                     {
-                        for (int i = 0; i < allocSize; i++)
-                        {
-                            val[i] = 0xFF;
-                        }
+                        val[i] = 0xFF;
+                    }
 
-                        allocSize *= 2;
-                        if (allocSize > 4096)
-                        {
-                            allocSize = 16;
-                        }
+                    allocSize *= 2;
+                    if (allocSize > 4096)
+                    {
+                        allocSize = 16;
                     }
                 }
                 console.WriteLine("Complete without error.");
@@ -3093,7 +3083,7 @@ which should have been provided with the executable.");
 
                 {
                     ulong x = 0x8FFFFFFFFFFFF8FF;
-                    String casted = (String) x;
+                    String casted = x;
                     String expected = "0x8FFFFFFF 0xFFFFF8FF";
                     if (casted == expected)
                     {
@@ -3519,7 +3509,7 @@ which should have been provided with the executable.");
 
                 {
                     long x = -8070450532247930625;
-                    String casted = (String) x;
+                    String casted = x;
                     String expected = "0x8FFFFFFF 0xFFFFF8FF";
                     if (casted == expected)
                     {

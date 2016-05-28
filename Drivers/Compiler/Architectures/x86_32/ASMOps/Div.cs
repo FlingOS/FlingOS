@@ -41,10 +41,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             {
                 return "idiv " + Arg;
             }
-            else
-            {
-                return "div " + Arg;
-            }
+            return "div " + Arg;
         }
     }
 }

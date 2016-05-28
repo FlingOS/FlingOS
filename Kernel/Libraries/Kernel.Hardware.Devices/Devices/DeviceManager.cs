@@ -254,11 +254,11 @@ namespace Kernel.Hardware.Devices
             {
                 return SystemCallResults.Fail;
             }
-            else if (!TheDevice.Claimed)
+            if (!TheDevice.Claimed)
             {
                 return SystemCallResults.Fail;
             }
-            else if (TheDevice.OwnerProcessId != CallerProcess.Id)
+            if (TheDevice.OwnerProcessId != CallerProcess.Id)
             {
                 return SystemCallResults.Fail;
             }
@@ -304,11 +304,11 @@ namespace Kernel.Hardware.Devices
             {
                 return SystemCallResults.Fail;
             }
-            else if (!TheDevice.Claimed)
+            if (!TheDevice.Claimed)
             {
                 return SystemCallResults.Fail;
             }
-            else if (TheDevice.OwnerProcessId != CallerProcess.Id)
+            if (TheDevice.OwnerProcessId != CallerProcess.Id)
             {
                 return SystemCallResults.Fail;
             }
@@ -328,7 +328,7 @@ namespace Kernel.Hardware.Devices
             {
                 return SystemCallResults.Fail;
             }
-            else if (TheDevice.Claimed)
+            if (TheDevice.Claimed)
             {
                 return SystemCallResults.Fail;
             }
@@ -347,11 +347,11 @@ namespace Kernel.Hardware.Devices
             {
                 return SystemCallResults.Fail;
             }
-            else if (!TheDevice.Claimed)
+            if (!TheDevice.Claimed)
             {
                 return SystemCallResults.Fail;
             }
-            else if (TheDevice.OwnerProcessId != CallerProcess.Id)
+            if (TheDevice.OwnerProcessId != CallerProcess.Id)
             {
                 return SystemCallResults.Fail;
             }
@@ -375,18 +375,18 @@ namespace Kernel.Hardware.Devices
             return null;
         }
 
-        //}
-        //    return null;
-        //    }
-        //        }
-        //            return device;
-        //        {
-        //        if (device._Type == DeviceType)
-        //        Device device = (Device)Devices[i];
-        //    {
-        //    for (int i = 0; i < Devices.Count; i++)
-        //{
-
         //public static Device FindDevice(FOS_System.Type DeviceType)
+        //{
+        //    for (int i = 0; i < Devices.Count; i++)
+        //    {
+        //        Device device = (Device)Devices[i];
+        //        if (device._Type == DeviceType)
+        //        {
+        //            return device;
+        //        }
+        //    }
+        //    return null;
+
+        //}
     }
 }

@@ -73,21 +73,21 @@ namespace Drivers.Compiler.Architectures.x86
                 //TODO: Support floats
                 throw new NotSupportedException("Switch for floats no supported!");
             }
-            else if (testItem.sizeOnStackInBytes != 4)
+            if (testItem.sizeOnStackInBytes != 4)
             {
                 //TODO: Support other sizes
                 throw new NotSupportedException("Switch for non-int32s not supported!");
             }
 
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "EAX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
             for (int i = 0; i < theOp.ValueBytes.Length/4; i++)
             {
                 int branchOffset = theOp.NextOffset + Utilities.ReadInt32(theOp.ValueBytes, i*4);
                 ILOp opToGoTo = conversionState.Input.At(branchOffset);
                 int branchPos = conversionState.PositionOf(opToGoTo);
 
-                conversionState.Append(new Cmp() {Arg1 = "EAX", Arg2 = i.ToString()});
-                conversionState.Append(new Jmp() {JumpType = JmpOp.JumpEqual, DestILPosition = branchPos});
+                conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = i.ToString()});
+                conversionState.Append(new Jmp {JumpType = JmpOp.JumpEqual, DestILPosition = branchPos});
             }
         }
     }

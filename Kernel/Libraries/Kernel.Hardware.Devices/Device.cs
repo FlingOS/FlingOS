@@ -40,9 +40,9 @@ namespace Kernel.Hardware
         public DeviceClass Class;
         public DeviceGroup Group;
         public ulong Id;
-        public uint[] Info = null;
+        public uint[] Info;
 
-        public String Name = null;
+        public String Name;
         public uint OwnerProcessId;
         public DeviceSubClass SubClass;
 

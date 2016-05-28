@@ -84,11 +84,11 @@ namespace CI20Booter
 
             if (KNOWN_CPUS.Contains(CPUInfo))
             {
-                Console.WriteLine(string.Format("Found CPU: {0}", CPUInfo));
+                Console.WriteLine("Found CPU: {0}", CPUInfo);
             }
             else
             {
-                Console.WriteLine(string.Format("Unknown CPU: {0}", CPUInfo));
+                Console.WriteLine("Unknown CPU: {0}", CPUInfo);
             }
         }
 
@@ -103,14 +103,13 @@ namespace CI20Booter
                     data = PadData(data, JZ4780_TCSM_BANK_SIZE);
                 }
 
-                Console.WriteLine(string.Format("Writing from {0:X8} to {1:X8}", segment.Address,
-                    segment.Address + data.Length));
+                Console.WriteLine("Writing from {0:X8} to {1:X8}", segment.Address, segment.Address + data.Length);
                 SetDataAddress(segment.Address);
                 SendData(data);
             }
 
             FlushCaches();
-            Console.WriteLine(string.Format("Executing at {0:X8}", elfFile.EntryPoint));
+            Console.WriteLine("Executing at {0:X8}", elfFile.EntryPoint);
             Start2(elfFile.EntryPoint);
         }
 

@@ -40,48 +40,14 @@ namespace Kernel.Pipes
     public unsafe class Pipe : Object
     {
         /// <summary>
-        ///     The Id of the pipe.
-        /// </summary>
-        public readonly int Id;
-
-        /// <summary>
         ///     The internal buffer of the pipe.
         /// </summary>
         private readonly byte[] Buffer;
 
         /// <summary>
-        ///     The amount of data available in the pipe.
+        ///     The Id of the pipe.
         /// </summary>
-        /// <remarks>
-        ///     Must be greater than zero for new reads to be allowed. Auto-reduced when data is read.
-        /// </remarks>
-        private int DataAvailable = 0;
-
-        /// <summary>
-        ///     The offset to read data from in the next read request.
-        /// </summary>
-        /// <remarks>
-        ///     Must be zero for new writes to be allowed. Auto-reset back to zero when DataAvailable hits 0.
-        /// </remarks>
-        private int DataReadOffset = 0;
-
-        /// <summary>
-        ///     The offset to write data to in the next request.
-        /// </summary>
-        /// <remarks>
-        ///     Auto-reset back to zero when DataAvailable hits 0.
-        /// </remarks>
-        private int DataWriteOffset = 0;
-
-        /// <summary>
-        ///     The inpoint of the pipe.
-        /// </summary>
-        public PipeInpoint Inpoint;
-
-        /// <summary>
-        ///     The outpoint of the pipe.
-        /// </summary>
-        public PipeOutpoint Outpoint;
+        public readonly int Id;
 
         /// <summary>
         ///     Queue of sizes of data from threads waiting to write to the pipe.
@@ -97,6 +63,40 @@ namespace Kernel.Pipes
         ///     Queue of threads waiting to write to the pipe.
         /// </summary>
         private readonly UInt32Queue ThreadsWaitingToWrite;
+
+        /// <summary>
+        ///     The amount of data available in the pipe.
+        /// </summary>
+        /// <remarks>
+        ///     Must be greater than zero for new reads to be allowed. Auto-reduced when data is read.
+        /// </remarks>
+        private int DataAvailable;
+
+        /// <summary>
+        ///     The offset to read data from in the next read request.
+        /// </summary>
+        /// <remarks>
+        ///     Must be zero for new writes to be allowed. Auto-reset back to zero when DataAvailable hits 0.
+        /// </remarks>
+        private int DataReadOffset;
+
+        /// <summary>
+        ///     The offset to write data to in the next request.
+        /// </summary>
+        /// <remarks>
+        ///     Auto-reset back to zero when DataAvailable hits 0.
+        /// </remarks>
+        private int DataWriteOffset;
+
+        /// <summary>
+        ///     The inpoint of the pipe.
+        /// </summary>
+        public PipeInpoint Inpoint;
+
+        /// <summary>
+        ///     The outpoint of the pipe.
+        /// </summary>
+        public PipeOutpoint Outpoint;
 
         /// <summary>
         ///     Creates a new pipe.
@@ -143,10 +143,7 @@ namespace Kernel.Pipes
             {
                 return CanWrite((int) SizesWaitingToWrite.Peek());
             }
-            else
-            {
-                return CanWrite(0);
-            }
+            return CanWrite(0);
         }
 
         /// <summary>
@@ -253,11 +250,8 @@ namespace Kernel.Pipes
                 ThreadId = ThreadsWaitingToRead.Pop();
                 return true;
             }
-            else
-            {
-                ThreadId = 0;
-                return false;
-            }
+            ThreadId = 0;
+            return false;
         }
 
         /// <summary>
@@ -276,11 +270,8 @@ namespace Kernel.Pipes
                 SizesWaitingToWrite.Pop();
                 return true;
             }
-            else
-            {
-                ThreadId = 0;
-                return false;
-            }
+            ThreadId = 0;
+            return false;
         }
 
         /// <summary>
@@ -295,11 +286,8 @@ namespace Kernel.Pipes
                 ThreadId = ThreadsWaitingToRead.RemoveLast();
                 return true;
             }
-            else
-            {
-                ThreadId = 0;
-                return false;
-            }
+            ThreadId = 0;
+            return false;
         }
 
         /// <summary>
@@ -318,11 +306,8 @@ namespace Kernel.Pipes
                 SizesWaitingToWrite.RemoveLast();
                 return true;
             }
-            else
-            {
-                ThreadId = 0;
-                return false;
-            }
+            ThreadId = 0;
+            return false;
         }
 
         /// <summary>

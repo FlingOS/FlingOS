@@ -38,7 +38,6 @@ namespace Kernel.FOS_System.IO.Disk
         /// </summary>
         /// <param name="aEBR">The EBR data.</param>
         public EBR(byte[] aEBR)
-            : base()
         {
             //EBR contains (potentially) two partitions of same format 
             //  as MBR partition entries. So attempt to parse those

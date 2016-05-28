@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,
@@ -80,7 +80,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
 
             //      1.1. Move array ref into eax
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "0($sp)",
@@ -89,7 +89,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             });
             //      1.2. Compare eax (array ref) to 0
             //      1.3. If not zero, jump to continue execution further down
-            conversionState.Append(new Branch()
+            conversionState.Append(new Branch
             {
                 Src1 = "$t0",
                 Src2 = "0",
@@ -99,24 +99,24 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 UnsignedTest = false
             });
             //      1.4. Otherwise, call Exceptions.ThrowNullReferenceException
-            conversionState.Append(new ASMOps.Call() {Target = "GetEIP"});
+            conversionState.Append(new ASMOps.Call {Target = "GetEIP"});
             conversionState.AddExternalLabel("GetEIP");
-            conversionState.Append(new ASMOps.Call()
+            conversionState.Append(new ASMOps.Call
             {
                 Target = conversionState.GetThrowNullReferenceExceptionMethodInfo().ID
             });
-            conversionState.Append(new Label() {ILPosition = currOpPosition, Extension = "ContinueExecution1"});
+            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "ContinueExecution1"});
 
             //2. Load array length
             //  - Pop array ref
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "$t2"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t2"});
             //  - Load length from array ref
             //conversionState.Append(new ASMOps.Mov() { Size = ASMOps.OperandSize.Word, Src = lengthOffset.ToString() + "($t2)", Dest = "$t0" }); 
             GlobalMethods.LoadData(conversionState, theOp, "$t2", "$t0", lengthOffset, 4);
             //  - Push array length
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$t0"});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t0"});
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = 4,

@@ -40,6 +40,11 @@ namespace Kernel.FOS_System.IO.FAT
     public sealed class FATDirectory : Directory
     {
         /// <summary>
+        ///     The underlying FAT file used to access the directory listings file.
+        /// </summary>
+        private readonly FATFile _theFile;
+
+        /// <summary>
         ///     The cached listings in the directory.
         /// </summary>
         private List _cachedlistings;
@@ -48,11 +53,6 @@ namespace Kernel.FOS_System.IO.FAT
         ///     The underlying FAT file stream used to read data from the FAT file.
         /// </summary>
         private FATFileStream _fileStream;
-
-        /// <summary>
-        ///     The underlying FAT file used to access the directory listings file.
-        /// </summary>
-        private readonly FATFile _theFile;
 
         /// <summary>
         ///     Initializes a new FAT directory.
@@ -104,7 +104,7 @@ namespace Kernel.FOS_System.IO.FAT
 #if FATDIR_TRACE
                 BasicConsole.WriteLine("Reading data...");
 #endif
-                int actuallyRead = _fileStream.Read(xData, 0, (int) xData.Length);
+                int actuallyRead = _fileStream.Read(xData, 0, xData.Length);
 #if FATDIR_TRACE
                 BasicConsole.WriteLine("Read data. Parsing table...");
 #endif
@@ -144,7 +144,7 @@ namespace Kernel.FOS_System.IO.FAT
             BasicConsole.WriteLine("Got file stream. Writing listings to disk...");
 #endif
             _fileStream.Position = 0;
-            _fileStream.Write(listingsBytes, 0, (int) listingsBytes.Length);
+            _fileStream.Write(listingsBytes, 0, listingsBytes.Length);
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Written to disk.");
 #endif
@@ -208,7 +208,7 @@ namespace Kernel.FOS_System.IO.FAT
         {
             if (this == ((FATFileSystem) TheFileSystem).RootDirectory_FAT32)
             {
-                return this.TheFileSystem.TheMapping.Prefix;
+                return TheFileSystem.TheMapping.Prefix;
             }
             return base.GetFullPath();
         }

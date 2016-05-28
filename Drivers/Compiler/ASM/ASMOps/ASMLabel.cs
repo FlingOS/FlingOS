@@ -51,7 +51,7 @@ namespace Drivers.Compiler.ASM.ASMOps
         ///     Whether the label is a method label or not. If it is not a method label, the IL position and
         ///     extension are added to the label.
         /// </summary>
-        public bool MethodLabel = false;
+        public bool MethodLabel;
 
         public ASMLabel()
         {

@@ -83,7 +83,7 @@ namespace Drivers.Compiler.Attributes
     ///         </item>
     ///     </list>
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class SequencePriorityAttribute : Attribute
     {
         /// <summary>
@@ -93,7 +93,6 @@ namespace Drivers.Compiler.Attributes
         ///     0 is the default (/standard) priority.
         /// </remarks>
         public SequencePriorityAttribute()
-            : base()
         {
             Priority = 0;
         }

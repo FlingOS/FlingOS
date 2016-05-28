@@ -262,6 +262,6 @@ namespace Drivers.Framework.Processes
         /// <summary>
         ///     The system call was handled successfully but the thread should not be woken.
         /// </summary>
-        OK_NoWake = 0xC7DEC7DE,
+        OK_NoWake = 0xC7DEC7DE
     }
 }

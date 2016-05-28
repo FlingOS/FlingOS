@@ -2,17 +2,17 @@
 {
     public class Queue : Object
     {
+        private readonly bool CanExpand;
+
         /// <summary>
         ///     Next index to pop item from
         /// </summary>
-        private int BackIdx = 0;
-
-        private readonly bool CanExpand;
+        private int BackIdx;
 
         /// <summary>
         ///     Next index to push item to
         /// </summary>
-        private int FrontIdx = 0;
+        private int FrontIdx;
 
         private Object[] InternalArray;
 
@@ -30,10 +30,7 @@
                 {
                     return InternalArray.Length - (BackIdx - FrontIdx);
                 }
-                else
-                {
-                    return FrontIdx - BackIdx;
-                }
+                return FrontIdx - BackIdx;
             }
         }
 
@@ -119,17 +116,17 @@
 
     public class UInt32Queue : Object
     {
+        private readonly bool CanExpand;
+
         /// <summary>
         ///     Next index to pop item from
         /// </summary>
-        private int BackIdx = 0;
-
-        private readonly bool CanExpand;
+        private int BackIdx;
 
         /// <summary>
         ///     Next index to push item to
         /// </summary>
-        private int FrontIdx = 0;
+        private int FrontIdx;
 
         private uint[] InternalArray;
 
@@ -147,10 +144,7 @@
                 {
                     return InternalArray.Length - (BackIdx - FrontIdx);
                 }
-                else
-                {
-                    return FrontIdx - BackIdx;
-                }
+                return FrontIdx - BackIdx;
             }
         }
 

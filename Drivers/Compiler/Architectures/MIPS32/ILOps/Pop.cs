@@ -60,10 +60,10 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 string methodID = anInfo.ID;
                 conversionState.AddExternalLabel(anInfo.ID);
                 //Append the actual call
-                conversionState.Append(new ASMOps.Call() {Target = methodID});
+                conversionState.Append(new ASMOps.Call {Target = methodID});
             }
 
-            conversionState.Append(new ASMOps.Add()
+            conversionState.Append(new ASMOps.Add
             {
                 Src1 = "$sp",
                 Src2 = theItem.sizeOnStackInBytes.ToString(),

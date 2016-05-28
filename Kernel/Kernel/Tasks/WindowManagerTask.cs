@@ -59,15 +59,15 @@ namespace Kernel.Tasks
         private static int NewPipeConnected_SemaphoreId;
         private static int NewClientReady_SemaphoreId;
 
-        [Group(Name = "IsolatedKernel")] private static int ready_count = 0;
+        [Group(Name = "IsolatedKernel")] private static int ready_count;
 
-        private static bool CurrentPipeIndex_Changed = false;
+        private static bool CurrentPipeIndex_Changed;
 
-        private static uint AcceptedPages_StartAddress = 0;
-        private static uint AcceptedPages_Count = 0;
-        private static uint AcceptedPages_FromProcessId = 0;
+        private static uint AcceptedPages_StartAddress;
+        private static uint AcceptedPages_Count;
+        private static uint AcceptedPages_FromProcessId;
 
-        private static int ConsoleAccessSemaphoreId = 0;
+        private static int ConsoleAccessSemaphoreId;
 
         public static bool Ready
         {
@@ -284,7 +284,7 @@ namespace Kernel.Tasks
 
                                     PipeInfo NewPipeInfo = new PipeInfo();
                                     NewPipeInfo.StdOut = new StandardInpoint(Descriptor.ProcessId, true);
-                                        // 2000 ASCII characters = 2000 bytes
+                                    // 2000 ASCII characters = 2000 bytes
 
                                     //BasicConsole.WriteLine("WM > IP : (7)");
 
@@ -469,8 +469,8 @@ namespace Kernel.Tasks
 
         private class PipeInfo : Object
         {
-            public StandardInpoint StdOut;
             public readonly Console TheConsole = new AdvancedConsole();
+            public StandardInpoint StdOut;
         }
     }
 }

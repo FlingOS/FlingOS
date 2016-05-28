@@ -294,7 +294,7 @@ namespace Kernel.FOS_System.IO.Disk
                 ///     If set, this is not the final directory record for this file (for files spanning several extents, for example files
                 ///     over 4GiB long.
                 /// </summary>
-                RemainingRecords = 0x80,
+                RemainingRecords = 0x80
             }
 
             public uint DataLength;

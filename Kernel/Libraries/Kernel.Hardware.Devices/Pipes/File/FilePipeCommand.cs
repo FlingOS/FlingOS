@@ -1,6 +1,6 @@
 ﻿namespace Kernel.Pipes.File
 {
-    public enum FileCommands : int
+    public enum FileCommands
     {
         Invalid = -1,
         None = 0,

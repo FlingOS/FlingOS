@@ -42,11 +42,11 @@ namespace Drivers.Compiler.Architectures.MIPS32
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             //Save return address
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$ra"});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$ra"});
             //Push the previous method's fp
-            conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$fp"});
+            conversionState.Append(new Push {Size = OperandSize.Word, Src = "$fp"});
             //Set fp for this method
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Word,
                 Src = "$sp",
@@ -69,7 +69,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //This prevents errors in the GC.
                 for (int i = 0; i < totalBytes/4; i++)
                 {
-                    conversionState.Append(new Push() {Size = OperandSize.Word, Src = "$zero"});
+                    conversionState.Append(new Push {Size = OperandSize.Word, Src = "$zero"});
                 }
                 //result.AppendLine(string.Format("sub esp, {0}", totalBytes));
             }

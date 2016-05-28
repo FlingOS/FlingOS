@@ -45,7 +45,7 @@ namespace Drivers.Compiler.Architectures.x86
             TypeInfo theTypeInfo = conversionState.TheILLibrary.GetTypeInfo(theType);
             int size = theTypeInfo.SizeOnStackInBytes;
 
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = size,
@@ -75,64 +75,64 @@ namespace Drivers.Compiler.Architectures.x86
             int memSize = theTypeInfo.IsValueType ? theTypeInfo.SizeOnHeapInBytes : theTypeInfo.SizeOnStackInBytes;
 
             //Load the object onto the stack
-            conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Dword, Dest = "ECX"});
+            conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
 
             int irregularSize = memSize%4;
             if (irregularSize > 0)
             {
-                conversionState.Append(new ASMOps.Xor() {Src = "EAX", Dest = "EAX"});
+                conversionState.Append(new ASMOps.Xor {Src = "EAX", Dest = "EAX"});
                 switch (irregularSize)
                 {
                     case 1:
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Byte,
-                            Src = "[ECX+" + (memSize - 1).ToString() + "]",
+                            Src = "[ECX+" + (memSize - 1) + "]",
                             Dest = "AL"
                         });
                         break;
                     case 2:
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Word,
-                            Src = "[ECX+" + (memSize - 2).ToString() + "]",
+                            Src = "[ECX+" + (memSize - 2) + "]",
                             Dest = "AX"
                         });
                         break;
                     case 3:
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Byte,
-                            Src = "[ECX+" + (memSize - 1).ToString() + "]",
+                            Src = "[ECX+" + (memSize - 1) + "]",
                             Dest = "AL"
                         });
-                        conversionState.Append(new ASMOps.Shl() {Dest = "EAX", Src = "16"});
-                        conversionState.Append(new Mov()
+                        conversionState.Append(new ASMOps.Shl {Dest = "EAX", Src = "16"});
+                        conversionState.Append(new Mov
                         {
                             Size = OperandSize.Word,
-                            Src = "[ECX+" + (memSize - 3).ToString() + "]",
+                            Src = "[ECX+" + (memSize - 3) + "]",
                             Dest = "AX"
                         });
                         break;
                 }
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
 
             for (int i = memSize - irregularSize - 4; i >= 0; i -= 4)
             {
-                conversionState.Append(new Mov()
+                conversionState.Append(new Mov
                 {
                     Size = OperandSize.Dword,
-                    Src = "[ECX+" + i.ToString() + "]",
+                    Src = "[ECX+" + i + "]",
                     Dest = "EAX"
                 });
-                conversionState.Append(new Push() {Size = OperandSize.Dword, Src = "EAX"});
+                conversionState.Append(new Push {Size = OperandSize.Dword, Src = "EAX"});
             }
 
             // Pop address
             conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             // Push value
-            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem()
+            conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
             {
                 isFloat = false,
                 sizeOnStackInBytes = memSize,

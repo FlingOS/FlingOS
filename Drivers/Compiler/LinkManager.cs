@@ -42,7 +42,7 @@ namespace Drivers.Compiler
     public static class LinkManager
     {
         private static readonly Dictionary<string, string> DependencyNameMapping = new Dictionary<string, string>();
-        private static int NameGenerator = 0;
+        private static int NameGenerator;
 
         /// <summary>
         ///     Performs the link.
@@ -130,7 +130,7 @@ namespace Drivers.Compiler
                 DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
                 DebugDataWriter.SaveLibraryInfo(Options.OutputPath, TheLibrary);
 
-                LinkInformation LinkInfo = new LinkInformation()
+                LinkInformation LinkInfo = new LinkInformation
                 {
                     ToolsPath = Options.ToolsPath,
                     LinkScriptCmdPath =
@@ -183,7 +183,7 @@ namespace Drivers.Compiler
                 DebugDataWriter.SaveDataFiles(Options.OutputPath, AssemblyName);
                 DebugDataWriter.SaveLibraryInfo(Options.OutputPath, TheLibrary);
 
-                LinkInformation LinkInfo = new LinkInformation()
+                LinkInformation LinkInfo = new LinkInformation
                 {
                     ToolsPath = Options.ToolsPath,
                     ISOGenPath = Path.Combine(Options.ToolsPath, @"ISO9660Generator.exe"),

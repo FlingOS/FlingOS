@@ -79,10 +79,10 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             //Get object pointer
-            conversionState.Append(new Mov()
+            conversionState.Append(new Mov
             {
                 Size = OperandSize.Dword,
-                Src = "[ESP+" + stackSize.ToString() + "]",
+                Src = "[ESP+" + stackSize + "]",
                 Dest = "ECX"
             });
             //Pop and mov value
@@ -91,27 +91,27 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 if (memSize - i == 1)
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "AX"});
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "AX"});
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Byte,
                         Src = "AL",
-                        Dest = "[ECX+" + (offset + i).ToString() + "]"
+                        Dest = "[ECX+" + (offset + i) + "]"
                     });
                 }
                 else
                 {
-                    conversionState.Append(new ASMOps.Pop() {Size = OperandSize.Word, Dest = "AX"});
-                    conversionState.Append(new Mov()
+                    conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "AX"});
+                    conversionState.Append(new Mov
                     {
                         Size = OperandSize.Word,
                         Src = "AX",
-                        Dest = "[ECX+" + (offset + i).ToString() + "]"
+                        Dest = "[ECX+" + (offset + i) + "]"
                     });
                 }
             }
             //                                                       + 4 to pop object pointer
-            conversionState.Append(new ASMOps.Add() {Src = (i%4 + 4).ToString(), Dest = "ESP"});
+            conversionState.Append(new ASMOps.Add {Src = (i%4 + 4).ToString(), Dest = "ESP"});
         }
     }
 }

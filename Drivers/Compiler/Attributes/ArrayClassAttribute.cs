@@ -34,7 +34,7 @@ namespace Drivers.Compiler.Attributes
     ///     Indicates the class is the kernel's Array class.
     ///     Note: There should only ever be one of these used!
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class ArrayClassAttribute : Attribute
     {
     }

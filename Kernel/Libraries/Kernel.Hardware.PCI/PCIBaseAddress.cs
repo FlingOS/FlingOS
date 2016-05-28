@@ -44,22 +44,22 @@ namespace Kernel.Hardware.PCI
         /// <summary>
         ///     Whether the base address is an IO address.
         /// </summary>
-        private readonly bool isIO = false;
-
-        /// <summary>
-        ///     Whether the data is prefetchable or not.
-        /// </summary>
-        private ushort prefetchable = 0;
+        private readonly bool isIO;
 
         /// <summary>
         ///     The PCI device's required memory size.
         /// </summary>
-        private readonly uint size = 0;
+        private readonly uint size;
 
         /// <summary>
         ///     The base address type.
         /// </summary>
-        private readonly byte type = 0;
+        private readonly byte type;
+
+        /// <summary>
+        ///     Whether the data is prefetchable or not.
+        /// </summary>
+        private ushort prefetchable;
 
         /// <summary>
         ///     Initialises a new PCI base address.

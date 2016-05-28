@@ -42,10 +42,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             {
                 return "div " + Arg1 + ", " + Arg2;
             }
-            else
-            {
-                return "divu " + Arg1 + ", " + Arg2;
-            }
+            return "divu " + Arg1 + ", " + Arg2;
         }
     }
 }

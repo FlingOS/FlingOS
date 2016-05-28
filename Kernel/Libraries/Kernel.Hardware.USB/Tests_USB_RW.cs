@@ -32,7 +32,7 @@ using Kernel.USB.Devices;
 
 namespace Kernel.Hardware.Testing
 {
-    public partial class USBTests : Test
+    public class USBTests : Test
     {
         public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning,
             OutputErrorDel OutputError)
@@ -60,10 +60,7 @@ namespace Kernel.Hardware.Testing
                 OutputWarning("USBTests : Test_LongRead", "No USB device found. Aborting test.");
                 return;
             }
-            else
-            {
-                OutputMessage("USBTests : Test_LongRead", "Device found.");
-            }
+            OutputMessage("USBTests : Test_LongRead", "Device found.");
 
             // Create a buffer for storing up to 16 blocks of data
             OutputMessage("USBTests : Test_LongRead", "Creating data buffer...");

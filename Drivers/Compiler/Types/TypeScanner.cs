@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Types
             {
                 return;
             }
-            else if (TheLibrary.TypeInfos.Count != 0)
+            if (TheLibrary.TypeInfos.Count != 0)
             {
                 //Already scanned
                 return;
@@ -135,7 +135,7 @@ namespace Drivers.Compiler.Types
             }
 
             string typeName = aType.Name;
-            TypeInfo newTypeInfo = new TypeInfo()
+            TypeInfo newTypeInfo = new TypeInfo
             {
                 UnderlyingType = aType
             };
@@ -169,7 +169,7 @@ namespace Drivers.Compiler.Types
                 {
                     if (aFieldInfo.DeclaringType.Equals(newTypeInfo.UnderlyingType))
                     {
-                        newTypeInfo.FieldInfos.Add(new FieldInfo()
+                        newTypeInfo.FieldInfos.Add(new FieldInfo
                         {
                             UnderlyingInfo = aFieldInfo
                         });
@@ -185,7 +185,7 @@ namespace Drivers.Compiler.Types
                 {
                     if (aMethodInfo.DeclaringType.Equals(aType))
                     {
-                        MethodInfo newMethodInfo = new MethodInfo()
+                        MethodInfo newMethodInfo = new MethodInfo
                         {
                             UnderlyingInfo = aMethodInfo,
                             PlugAttribute =
@@ -217,7 +217,7 @@ namespace Drivers.Compiler.Types
                 {
                     if (aConstructorInfo.DeclaringType.Equals(aType))
                     {
-                        MethodInfo newMethodInfo = new MethodInfo()
+                        MethodInfo newMethodInfo = new MethodInfo
                         {
                             UnderlyingInfo = aConstructorInfo,
                             PlugAttribute =

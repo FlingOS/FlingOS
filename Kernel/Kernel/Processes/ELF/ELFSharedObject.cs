@@ -33,7 +33,7 @@ namespace Kernel.Processes.ELF
     public class ELFSharedObject : Object
     {
         public uint BaseAddress = 0;
-        protected ELFFile theFile = null;
+        protected ELFFile theFile;
 
         protected ELFProcess theProcess;
 

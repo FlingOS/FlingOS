@@ -139,7 +139,7 @@ namespace Kernel.FOS_System
         /// <param name="str2">The second part of the new string.</param>
         /// <returns>The new string.</returns>
         [NoDebug]
-        public static unsafe String Concat(String str1, String str2)
+        public static String Concat(String str1, String str2)
         {
             String newStr = New(str1.length + str2.length);
             for (int i = 0; i < str1.length; i++)
@@ -176,7 +176,7 @@ namespace Kernel.FOS_System
         {
             String result = New(totalLength);
 
-            if (this.length >= totalLength)
+            if (length >= totalLength)
             {
                 for (int i = 0; i < result.length; i++)
                 {
@@ -185,8 +185,8 @@ namespace Kernel.FOS_System
                 return result;
             }
 
-            int offset = totalLength - this.length;
-            for (int i = 0; i < this.length; i++)
+            int offset = totalLength - length;
+            for (int i = 0; i < length; i++)
             {
                 result[i + offset] = this[i];
             }
@@ -208,11 +208,11 @@ namespace Kernel.FOS_System
         public String PadRight(int totalLength, char padChar)
         {
             String result = New(totalLength);
-            for (int i = 0; i < this.length && i < totalLength; i++)
+            for (int i = 0; i < length && i < totalLength; i++)
             {
                 result[i] = this[i];
             }
-            for (int i = this.length; i < totalLength; i++)
+            for (int i = length; i < totalLength; i++)
             {
                 result[i] = padChar;
             }
@@ -232,7 +232,7 @@ namespace Kernel.FOS_System
 
             int removeStart = 0;
             int removeEnd = 0;
-            for (int i = 0; i < this.length; removeStart++, i++)
+            for (int i = 0; i < length; removeStart++, i++)
             {
                 bool ShouldBreak = true;
                 for (int j = 0; j < TrimChars.length; j++)
@@ -247,7 +247,7 @@ namespace Kernel.FOS_System
                     break;
                 }
             }
-            for (int i = this.length - 1; i > removeStart; removeEnd++, i--)
+            for (int i = length - 1; i > removeStart; removeEnd++, i--)
             {
                 bool ShouldBreak = true;
                 for (int j = 0; j < TrimChars.length; j++)
@@ -263,8 +263,8 @@ namespace Kernel.FOS_System
                 }
             }
 
-            String result = New(this.length - removeStart - removeEnd);
-            for (int i = removeStart; i < this.length - removeEnd; i++)
+            String result = New(length - removeStart - removeEnd);
+            for (int i = removeStart; i < length - removeEnd; i++)
             {
                 result[i - removeStart] = this[i];
             }
@@ -283,7 +283,7 @@ namespace Kernel.FOS_System
                 "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000";
 
             int removeEnd = 0;
-            for (int i = this.length - 1; i > -1; removeEnd++, i--)
+            for (int i = length - 1; i > -1; removeEnd++, i--)
             {
                 bool ShouldBreak = true;
                 for (int j = 0; j < TrimChars.length; j++)
@@ -299,8 +299,8 @@ namespace Kernel.FOS_System
                 }
             }
 
-            String result = New(this.length - removeEnd);
-            for (int i = 0; i < this.length - removeEnd; i++)
+            String result = New(length - removeEnd);
+            for (int i = 0; i < length - removeEnd; i++)
             {
                 result[i] = this[i];
             }
@@ -316,13 +316,13 @@ namespace Kernel.FOS_System
         [NoDebug]
         public String Substring(int startIndex, int aLength)
         {
-            if (startIndex >= this.length)
+            if (startIndex >= length)
             {
                 if (aLength == 0)
                 {
                     return New(0);
                 }
-                ExceptionMethods.Throw(new IndexOutOfRangeException(startIndex, this.length));
+                ExceptionMethods.Throw(new IndexOutOfRangeException(startIndex, length));
             }
             else if (aLength > length - startIndex)
             {
@@ -345,21 +345,18 @@ namespace Kernel.FOS_System
         [NoDebug]
         public bool StartsWith(String prefix)
         {
-            if (this.length < prefix.length)
+            if (length < prefix.length)
             {
                 return false;
             }
-            else
+            for (int i = 0; i < prefix.length; i++)
             {
-                for (int i = 0; i < prefix.length; i++)
+                if (this[i] != prefix[i])
                 {
-                    if (this[i] != prefix[i])
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                return true;
             }
+            return true;
         }
 
         /// <summary>
@@ -370,22 +367,19 @@ namespace Kernel.FOS_System
         [NoDebug]
         public bool EndsWith(String postfix)
         {
-            if (this.length < postfix.length)
+            if (length < postfix.length)
             {
                 return false;
             }
-            else
+            int offset = length - postfix.length;
+            for (int i = length - 1; i >= offset; i--)
             {
-                int offset = this.length - postfix.length;
-                for (int i = this.length - 1; i >= offset; i--)
+                if (this[i] != postfix[i - offset])
                 {
-                    if (this[i] != postfix[i - offset])
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                return true;
             }
+            return true;
         }
 
         /// <summary>
@@ -400,17 +394,17 @@ namespace Kernel.FOS_System
             List result = new List(1);
 
             int lastSplitIndex = 0;
-            for (int i = 0; i < this.length; i++)
+            for (int i = 0; i < length; i++)
             {
                 if (this[i] == splitChar)
                 {
-                    result.Add(this.Substring(lastSplitIndex, i - lastSplitIndex));
+                    result.Add(Substring(lastSplitIndex, i - lastSplitIndex));
                     lastSplitIndex = i + 1;
                 }
             }
-            if (this.length - lastSplitIndex > 0)
+            if (length - lastSplitIndex > 0)
             {
-                result.Add(this.Substring(lastSplitIndex, this.length - lastSplitIndex));
+                result.Add(Substring(lastSplitIndex, length - lastSplitIndex));
             }
 
             return result;
@@ -423,10 +417,10 @@ namespace Kernel.FOS_System
         [NoDebug]
         public String ToUpper()
         {
-            if (this.length == 0)
+            if (length == 0)
                 return "";
 
-            String result = New(this.length);
+            String result = New(length);
 
             for (int i = 0; i < result.length; i++)
             {
@@ -448,7 +442,7 @@ namespace Kernel.FOS_System
         [NoDebug]
         public String ToLower()
         {
-            String result = New(this.length);
+            String result = New(length);
 
             for (int i = 0; i < result.length; i++)
             {
@@ -520,12 +514,9 @@ namespace Kernel.FOS_System
                 {
                     return null;
                 }
-                else
-                {
-                    return y;
-                }
+                return y;
             }
-            else if (y == null)
+            if (y == null)
             {
                 return x;
             }

@@ -41,7 +41,7 @@ namespace Kernel.FOS_System.IO
         public int CmdPipeId;
         public int DataOutPipeId;
         public FileDataInpoint DataInPipe;
-        public String[] MappingPrefixes = null;
+        public String[] MappingPrefixes;
 
         public FileSystemAccessor(uint ARemoteProcessId)
         {
@@ -243,7 +243,7 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int PipeId = CmdOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("FileSystemAccessor > Storage command output connected.");
-                CmdOutPipes.Add(((ulong) InProcessId << 32) | (ulong) (uint) PipeId);
+                CmdOutPipes.Add(((ulong) InProcessId << 32) | (uint) PipeId);
                 SystemCalls.SignalSemaphore(CmdOutPipesSemaphoreId);
             }
         }
@@ -255,7 +255,7 @@ namespace Kernel.FOS_System.IO
                 uint InProcessId;
                 int PipeId = DataOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("FileSystemAccessor > Storage data output connected.");
-                DataOutPipes.Add(((ulong) InProcessId << 32) | (ulong) (uint) PipeId);
+                DataOutPipes.Add(((ulong) InProcessId << 32) | (uint) PipeId);
                 SystemCalls.SignalSemaphore(DataOutPipesSemaphoreId);
             }
         }

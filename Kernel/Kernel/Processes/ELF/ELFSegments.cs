@@ -82,7 +82,7 @@ namespace Kernel.Processes.ELF
         }
     }
 
-    public unsafe class ELFSegment : Object
+    public class ELFSegment : Object
     {
         protected byte[] data;
         protected ELFSegmentHeader header;

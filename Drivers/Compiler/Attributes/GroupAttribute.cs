@@ -33,7 +33,7 @@ namespace Drivers.Compiler.Attributes
     /// <summary>
     ///     Allows methods or fields to be grouped into separate page aligned blocks.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Field)]
     public class GroupAttribute : Attribute
     {
         public string Name { get; set; }

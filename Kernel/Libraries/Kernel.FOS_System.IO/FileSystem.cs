@@ -134,7 +134,7 @@ namespace Kernel.FOS_System.IO
                     {
                         return aListing;
                     }
-                    else if (aListing.IsDirectory)
+                    if (aListing.IsDirectory)
                     {
                         return ((Directory) aListing).GetListing(nameParts);
                     }
