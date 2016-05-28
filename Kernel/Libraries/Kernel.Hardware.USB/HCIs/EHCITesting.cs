@@ -29,7 +29,7 @@
 
 using System;
 
-namespace Kernel.Hardware.USB.HCIs
+namespace Kernel.USB.HCIs
 {
 #if DEBUG && EHCI_TESTS
     public static unsafe class EHCITesting

@@ -4,7 +4,7 @@ using Kernel.Hardware;
 using Kernel.Hardware.ATA;
 using Kernel.Hardware.Devices;
 using Kernel.Hardware.PCI;
-using Kernel.Hardware.USB;
+using Kernel.USB;
 using Kernel.Hardware.IO.Serial;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;

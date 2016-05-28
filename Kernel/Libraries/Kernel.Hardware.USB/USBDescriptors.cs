@@ -26,7 +26,7 @@
     
 using System;
 
-namespace Kernel.Hardware.USB
+namespace Kernel.USB
 {
     public class Configuration : FOS_System.Object
     {

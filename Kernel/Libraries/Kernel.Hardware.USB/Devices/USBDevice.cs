@@ -27,8 +27,9 @@
 using Kernel.FOS_System;    
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware;
 
-namespace Kernel.Hardware.USB.Devices
+namespace Kernel.USB.Devices
 {
     /// <summary>
     /// Represents a USB device.

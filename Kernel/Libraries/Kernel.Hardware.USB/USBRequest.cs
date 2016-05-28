@@ -26,7 +26,7 @@
     
 using System;
 
-namespace Kernel.Hardware.USB
+namespace Kernel.USB
 {
     /// <summary>
     /// The USB Request structure used for sending USB requests under the USB protocol.

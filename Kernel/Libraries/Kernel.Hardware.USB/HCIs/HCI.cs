@@ -29,8 +29,10 @@
 using System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Collections;
+using Kernel.Hardware;
+using Kernel.Hardware.PCI;
 
-namespace Kernel.Hardware.USB.HCIs
+namespace Kernel.USB.HCIs
 {
     /// <summary>
     /// Represents a generic USB Host Controller Interface.
@@ -66,8 +68,8 @@ namespace Kernel.Hardware.USB.HCIs
         /// <summary>
         /// The underlying PCI device for the host controller.
         /// </summary>
-        protected PCI.PCIDeviceNormal pciDevice;
-        public PCI.PCIDeviceNormal ThePCIDevice
+        protected PCIDeviceNormal pciDevice;
+        public PCIDeviceNormal ThePCIDevice
         {
             get
             {
@@ -79,7 +81,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Initializes a new generic host controller interface using the specified PCI device.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
-        public HCI(PCI.PCIDeviceNormal aPCIDevice, String AName)
+        public HCI(PCIDeviceNormal aPCIDevice, String AName)
             : base(DeviceGroup.USB, DeviceClass.Controller, DeviceSubClass.USB, AName, new uint[3], true)
         {
             Status = HCIStatus.Unset;

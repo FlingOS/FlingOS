@@ -29,12 +29,14 @@
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Hardware;
 using Kernel.Hardware.Devices;
 using Kernel.Hardware.PCI;
-using Kernel.Hardware.USB.HCIs;
-using Kernel.Hardware.USB.Devices;
+using Kernel.Hardware.Processes;
+using Kernel.USB.HCIs;
+using Kernel.USB.Devices;
 
-namespace Kernel.Hardware.USB
+namespace Kernel.USB
 {
     //TODO: Read Benjamin Lunt's book "USB: The Universal Serial Bus (FYSOS: Operating System Design Book 8)"
     //  It contains a lot of practical points about USB implementation which this driver fails to account for.
@@ -266,7 +268,7 @@ namespace Kernel.Hardware.USB
         public static void NotifyDevicesNeedUpdate()
         {
             UpdateRequired = true;
-            if (!Processes.ProcessManager.Semaphore_Signal(UpdateSemaphoreId, Processes.ProcessManager.CurrentProcess))
+            if (!ProcessManager.Semaphore_Signal(UpdateSemaphoreId, ProcessManager.CurrentProcess))
             {
                 BasicConsole.WriteLine("USB Manager couldn't signal update semaphore!");
                 //ExceptionMethods.Throw(new FOS_System.Exception("USB Manager couldn't signal update semaphore!"));

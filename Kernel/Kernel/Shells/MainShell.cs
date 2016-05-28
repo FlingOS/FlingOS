@@ -353,7 +353,7 @@ namespace Kernel.Shells
                                 {
                                     if (opt1 == "update")
                                     {
-                                        Hardware.USB.USBManager.Update();
+                                        USB.USBManager.Update();
                                     }
                                     else if (opt1 == "eject")
                                     {
@@ -1249,7 +1249,7 @@ which should have been provided with the executable.");
         /// Ejects the specified mass storage device.
         /// </summary>
         /// <param name="deviceNum">The index of the MSD in the Hardware.DeviceManager.Devices list.</param>
-        /// <seealso cref="Kernel.Hardware.USB.Devices.MassStorageDevice.Eject"/>
+        /// <seealso cref="Kernel.USB.Devices.MassStorageDevice.Eject"/>
         private void EjectMSD(int deviceNum)
         {
             //Output info to the user...

@@ -1,7 +1,7 @@
 ﻿using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.Hardware;
-using Kernel.Hardware.USB;
+using Kernel.USB;
 
 namespace Kernel.Tasks.Driver
 {
@@ -96,21 +96,21 @@ namespace Kernel.Tasks.Driver
         /// </summary>
         private static void OutputUSB()
         {
-            console.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + Hardware.USB.USBManager.HCIDevices.Count);
-            console.WriteLine(((FOS_System.String)"                              UHCIs : ") + Hardware.USB.USBManager.NumUHCIDevices);
-            console.WriteLine(((FOS_System.String)"                              OHCIs : ") + Hardware.USB.USBManager.NumOHCIDevices);
-            console.WriteLine(((FOS_System.String)"                              EHCIs : ") + Hardware.USB.USBManager.NumEHCIDevices);
-            console.WriteLine(((FOS_System.String)"                              xHCIs : ") + Hardware.USB.USBManager.NumxHCIDevices);
-            console.WriteLine(((FOS_System.String)"                        USB devices : ") + Hardware.USB.USBManager.Devices.Count);
+            console.WriteLine(((FOS_System.String)"USB system initialised.        HCIs : ") + USBManager.HCIDevices.Count);
+            console.WriteLine(((FOS_System.String)"                              UHCIs : ") + USBManager.NumUHCIDevices);
+            console.WriteLine(((FOS_System.String)"                              OHCIs : ") + USBManager.NumOHCIDevices);
+            console.WriteLine(((FOS_System.String)"                              EHCIs : ") + USBManager.NumEHCIDevices);
+            console.WriteLine(((FOS_System.String)"                              xHCIs : ") + USBManager.NumxHCIDevices);
+            console.WriteLine(((FOS_System.String)"                        USB devices : ") + USBManager.Devices.Count);
 
             int numDrives = 0;
             for (int i = 0; i < USBManager.Devices.Count; i++)
             {
                 Device aDevice = (Device)USBManager.Devices[i];
 
-                if (aDevice is Hardware.USB.HCIs.HCI)
+                if (aDevice is USB.HCIs.HCI)
                 {
-                    Hardware.USB.HCIs.HCI hciDevice = (Hardware.USB.HCIs.HCI)aDevice;
+                    USB.HCIs.HCI hciDevice = (USB.HCIs.HCI)aDevice;
                     console.WriteLine();
 
                     console.Write("--------------------- HCI ");
@@ -120,13 +120,13 @@ namespace Kernel.Tasks.Driver
                     FOS_System.String statusText = "";
                     switch (hciDevice.Status)
                     {
-                        case Hardware.USB.HCIs.HCI.HCIStatus.Dead:
+                        case USB.HCIs.HCI.HCIStatus.Dead:
                             statusText = "Dead";
                             break;
-                        case Hardware.USB.HCIs.HCI.HCIStatus.Unset:
+                        case USB.HCIs.HCI.HCIStatus.Unset:
                             statusText = "Unset";
                             break;
-                        case Hardware.USB.HCIs.HCI.HCIStatus.Active:
+                        case USB.HCIs.HCI.HCIStatus.Active:
                             statusText = "Active";
                             break;
                         default:
@@ -135,21 +135,21 @@ namespace Kernel.Tasks.Driver
                     }
                     console.WriteLine("Status: " + statusText);
                 }
-                else if (aDevice is Hardware.USB.Devices.USBDevice)
+                else if (aDevice is USB.Devices.USBDevice)
                 {
-                    Hardware.USB.Devices.USBDevice usbDevice = (Hardware.USB.Devices.USBDevice)aDevice;
-                    Hardware.USB.Devices.USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
+                    USB.Devices.USBDevice usbDevice = (USB.Devices.USBDevice)aDevice;
+                    USB.Devices.USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
                     console.WriteLine();
 
                     console.Write("--------------------- Device ");
                     console.Write_AsDecimal(i);
                     console.WriteLine(" ---------------------");
 
-                    if (aDevice is Hardware.USB.Devices.MassStorageDevice)
+                    if (aDevice is USB.Devices.MassStorageDevice)
                     {
                         console.WriteLine("USB Mass Storage Device found.");
-                        Hardware.USB.Devices.MassStorageDevice theMSD = (Hardware.USB.Devices.MassStorageDevice)usbDevice;
-                        Hardware.USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
+                        USB.Devices.MassStorageDevice theMSD = (USB.Devices.MassStorageDevice)usbDevice;
+                        USB.Devices.MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
 
                         console.Write("Disk device num: ");
                         console.WriteLine_AsDecimal(USBManager.Devices.IndexOf(theMSDDisk));

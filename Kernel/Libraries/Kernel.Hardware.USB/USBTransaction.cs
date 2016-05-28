@@ -26,7 +26,7 @@
     
 using System;
 
-namespace Kernel.Hardware.USB
+namespace Kernel.USB
 {
     /// <summary>
     /// The types of USB transaction.

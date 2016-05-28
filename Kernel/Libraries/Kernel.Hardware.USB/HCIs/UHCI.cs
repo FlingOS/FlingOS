@@ -28,12 +28,14 @@
 
 using System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.USB.Devices;
+using Kernel.USB.Devices;
 using Utils = Kernel.Utilities.ConstantsUtils;
 using Kernel.Utilities;
 using Kernel.FOS_System.Processes;
+using Kernel.Hardware.IO;
+using Kernel.Hardware.PCI;
 
-namespace Kernel.Hardware.USB.HCIs
+namespace Kernel.USB.HCIs
 {
     public class UHCI_Consts
     {
@@ -118,14 +120,14 @@ namespace Kernel.Hardware.USB.HCIs
         protected bool EnabledPorts = false;
         protected bool run = false;
 
-        protected IO.IOPort USBCMD;
-        protected IO.IOPort USBINTR;
-        protected IO.IOPort USBSTS;
-        protected IO.IOPort SOFMOD;
-        protected IO.IOPort FRBASEADD;
-        protected IO.IOPort FRNUM;
-        protected IO.IOPort PORTSC1;
-        protected IO.IOPort PORTSC2;
+        protected IOPort USBCMD;
+        protected IOPort USBINTR;
+        protected IOPort USBSTS;
+        protected IOPort SOFMOD;
+        protected IOPort FRBASEADD;
+        protected IOPort FRNUM;
+        protected IOPort PORTSC1;
+        protected IOPort PORTSC2;
 
         protected uint* FrameList;
 
@@ -135,7 +137,7 @@ namespace Kernel.Hardware.USB.HCIs
 
         protected int IRQHandlerID = 0;
 
-        public UHCI(PCI.PCIDeviceNormal aPCIDevice)
+        public UHCI(PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice, "UHCI USB Controller")
         {
 #if UHCI_TRACE
@@ -183,14 +185,14 @@ namespace Kernel.Hardware.USB.HCIs
             RootPortCount = UHCI_Consts.PORTMAX;
             EnabledPorts = false;
 
-            USBCMD = new IO.IOPort(MapPort(UHCI_Consts.USBCMD));
-            USBINTR = new IO.IOPort(MapPort(UHCI_Consts.USBINTR));
-            USBSTS = new IO.IOPort(MapPort(UHCI_Consts.USBSTS));
-            SOFMOD = new IO.IOPort(MapPort(UHCI_Consts.SOFMOD));
-            FRBASEADD = new IO.IOPort(MapPort(UHCI_Consts.FRBASEADD));
-            FRNUM = new IO.IOPort(MapPort(UHCI_Consts.FRNUM));
-            PORTSC1 = new IO.IOPort(MapPort(UHCI_Consts.PORTSC1));
-            PORTSC2 = new IO.IOPort(MapPort(UHCI_Consts.PORTSC2));
+            USBCMD = new IOPort(MapPort(UHCI_Consts.USBCMD));
+            USBINTR = new IOPort(MapPort(UHCI_Consts.USBINTR));
+            USBSTS = new IOPort(MapPort(UHCI_Consts.USBSTS));
+            SOFMOD = new IOPort(MapPort(UHCI_Consts.SOFMOD));
+            FRBASEADD = new IOPort(MapPort(UHCI_Consts.FRBASEADD));
+            FRNUM = new IOPort(MapPort(UHCI_Consts.FRNUM));
+            PORTSC1 = new IOPort(MapPort(UHCI_Consts.PORTSC1));
+            PORTSC2 = new IOPort(MapPort(UHCI_Consts.PORTSC2));
 
             {
                 uint actualAddress = 0xFFFFFFFF;
@@ -270,7 +272,7 @@ namespace Kernel.Hardware.USB.HCIs
             // prepare PCI command register
             // bit 9: Fast Back-to-Back Enable // not necessary
             // bit 2: Bus Master               // cf. http://forum.osdev.org/viewtopic.php?f=1&t=20255&start=0
-            pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.IO | PCI.PCIDevice.PCICommand.Master;
+            pciDevice.Command = pciDevice.Command | PCIDevice.PCICommand.IO | PCIDevice.PCICommand.Master;
 
             // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
             SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);

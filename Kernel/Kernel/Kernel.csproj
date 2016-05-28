@@ -161,9 +161,9 @@
       <Project>{02d891e8-4aaa-48fa-8608-5135fb4dc493}</Project>
       <Name>Kernel.Hardware.PCI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\Kernel.Hardware.USB\Kernel.Hardware.USB.csproj">
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.USB\Kernel.USB.csproj">
       <Project>{63c61b22-f7fb-4de2-8d25-73bc0d1dc04f}</Project>
-      <Name>Kernel.Hardware.USB</Name>
+      <Name>Kernel.USB</Name>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj">
       <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>

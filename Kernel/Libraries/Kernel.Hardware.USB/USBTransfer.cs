@@ -27,7 +27,7 @@
 using System;
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Hardware.USB
+namespace Kernel.USB
 {
     /// <summary>
     /// The USB transfer types.
@@ -79,7 +79,7 @@ namespace Kernel.Hardware.USB
         /// <summary>
         /// The list of "USBTransaction"s to send.
         /// </summary>
-        /// <seealso cref="Kernel.Hardware.USB.USBTransaction"/>
+        /// <seealso cref="Kernel.USB.USBTransaction"/>
         public List transactions;
         /// <summary>
         /// Whether the transfer completed successfully (in-full) or not.

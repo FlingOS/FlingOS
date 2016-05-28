@@ -32,12 +32,13 @@
 
 using System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.USB.Devices;
+using Kernel.USB.Devices;
 using Utils = Kernel.Utilities.ConstantsUtils;
 using Kernel.Utilities;
 using Kernel.FOS_System.Processes;
+using Kernel.Hardware.PCI;
 
-namespace Kernel.Hardware.USB.HCIs
+namespace Kernel.USB.HCIs
 {
     #region Constants
     /// <summary>
@@ -747,7 +748,7 @@ namespace Kernel.Hardware.USB.HCIs
         /// Initialises a new EHCI device using the specified PCI device. Includes starting the host controller.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the physical EHCI device.</param>
-        public EHCI(PCI.PCIDeviceNormal aPCIDevice)
+        public EHCI(PCIDeviceNormal aPCIDevice)
             : base(aPCIDevice, "EHCI USB Controller")
         {
 #if EHCI_TESTS
@@ -956,7 +957,7 @@ namespace Kernel.Hardware.USB.HCIs
             // Set the PCI command signal that the HC should:
             //  1) Enable the memory-mapped IO registers (Capabilities and Operational registers)
             //  2) Set the HC as the master HC for all ports.
-            pciDevice.Command = pciDevice.Command | PCI.PCIDevice.PCICommand.Memory | PCI.PCIDevice.PCICommand.Master;
+            pciDevice.Command = pciDevice.Command | PCIDevice.PCICommand.Memory | PCIDevice.PCICommand.Master;
 
 #if EHCI_TRACE
             DBGMSG("Hooking IRQ...");

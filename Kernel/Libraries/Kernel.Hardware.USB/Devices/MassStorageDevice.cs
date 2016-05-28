@@ -23,19 +23,17 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
+
 //#define MSD_TRACE
 //#define DEVICE_INFO
 
-using System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.Devices;
-using Kernel.Utilities;
-using Utils = Kernel.Utilities.MemoryUtils;
 using Kernel.FOS_System.Processes;
+using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Hardware.Controllers;
+using Kernel.Hardware.Devices;
+using Utils = Kernel.Utilities.MemoryUtils;
 
-namespace Kernel.Hardware.USB.Devices
+namespace Kernel.USB.Devices
 {
     /// <summary>
     /// Constant values used by the Mass Storage Device driver.
@@ -200,8 +198,8 @@ namespace Kernel.Hardware.USB.Devices
             Idle(true);
 
             // Initialise a thread to control the interface to the disk
-            Controllers.StorageController.Init();
-            Controllers.StorageController.AddDisk(diskDevice);
+            StorageController.Init();
+            StorageController.AddDisk(diskDevice);
         }
 
         /// <summary>
