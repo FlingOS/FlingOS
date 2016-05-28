@@ -25,8 +25,7 @@
 #endregion
     
 using System;
-using Drivers.Framework;
-using KernelABI;
+
 //using Kernel.Shared;
 
 namespace TestDriver
