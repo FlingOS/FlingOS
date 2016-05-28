@@ -31,12 +31,12 @@
 using System;
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Hardware.VirtualMemory
+namespace Kernel.VirtualMemory.Implementations
 {
     /// <summary>
     /// Provides methods for setting up paged virtual memory.
     /// </summary>
-    public unsafe class x86 : VirtMemImpl
+    public unsafe class x86VirtualMemoryImplementation : VirtualMemoryImplementation
     {
         /// <summary>
         /// x86-specific Page Table Entry (bit) flags
@@ -108,7 +108,7 @@ namespace Kernel.Hardware.VirtualMemory
         /// Initialises the new x86 object.
         /// </summary>
         [Drivers.Compiler.Attributes.NoDebug]
-        public x86()
+        public x86VirtualMemoryImplementation()
         {
         }
 
@@ -675,7 +675,7 @@ namespace Kernel.Hardware.VirtualMemory
         /// Invalidates the cache of the specified page table entry.
         /// </summary>
         /// <param name="entry">The entry to invalidate.</param>
-        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\VirtMem\x86")]
+        [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = @"ASM\VirtualMemory\x86VirtualMemoryImplementation")]
         [Drivers.Compiler.Attributes.SequencePriority(Priority = long.MinValue + 100)]
         private void InvalidatePTE(uint entry)
         {
@@ -758,7 +758,7 @@ namespace Kernel.Hardware.VirtualMemory
             return null;
         }
         [Drivers.Compiler.Attributes.PluggedMethod(ASMFilePath = null)]
-        private static uint* GetIsolatedKernel_Hardware_VirtualMemoryPtr()
+        private static uint* GetIsolatedKernel_VirtualMemoryPtr()
         {
             return null;
         }
@@ -804,14 +804,14 @@ namespace Kernel.Hardware.VirtualMemory
             uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
             uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
             uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
-            uint isolatedKH_VMPtr = (uint)GetIsolatedKernel_Hardware_VirtualMemoryPtr();
+            uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
             uint isolatedKFSPtr = (uint)GetIsolatedKernel_FOS_SystemPtr();
 
             uint cPhysPtr = GetPhysicalAddress(cPtr);
 
             for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
             {
-                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKH_VMPtr && cPtr != isolatedKFSPtr)
+                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
                 {
                     TheLayout.AddDataPage(cPhysPtr, cPtr);
                 }
@@ -827,7 +827,7 @@ namespace Kernel.Hardware.VirtualMemory
                 uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
                 uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
                 uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
-                uint isolatedKH_VMPtr = (uint)GetIsolatedKernel_Hardware_VirtualMemoryPtr();
+                uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
                 uint isolatedKFSPtr = (uint)GetIsolatedKernel_FOS_SystemPtr();
 
                 uint startPhysPtr = GetPhysicalAddress(startPtr);
@@ -838,7 +838,7 @@ namespace Kernel.Hardware.VirtualMemory
                 uint cPhysPtr = startPhysPtr;
                 for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
                 {
-                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKH_VMPtr && cPtr != isolatedKFSPtr)
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
                     {
                         count++;
                     }
@@ -850,7 +850,7 @@ namespace Kernel.Hardware.VirtualMemory
                 cPhysPtr = startPhysPtr;
                 for (int i = 0; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
                 {
-                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKH_VMPtr && cPtr != isolatedKFSPtr)
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr && cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
                     {
                         BuiltInProcessVAddrs[i++] = cPtr;
                     }

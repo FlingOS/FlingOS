@@ -29,7 +29,7 @@
 
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Hardware.VirtualMemory
+namespace Kernel.VirtualMemory
 {
     /// <remarks>
     /// Bit 1 of physical addresses is used to indicate whether the mapping came from a merge or not.
@@ -170,7 +170,7 @@ namespace Kernel.Hardware.VirtualMemory
         public void ReplaceKernelPage(uint vAddr, uint newPAddr)
         {
             KernelPages[vAddr] = newPAddr;
-            VirtMemManager.Map(newPAddr, vAddr, 0x1000, VirtMemImpl.PageFlags.KernelOnly, UpdateUsedPagesFlags.None);
+            VirtualMemoryManager.Map(newPAddr, vAddr, 0x1000, VirtualMemoryImplementation.PageFlags.KernelOnly, UpdateUsedPagesFlags.None);
         }
 
         public void SwitchFrom(bool ProcessIsUM, MemoryLayout old)
@@ -196,7 +196,7 @@ namespace Kernel.Hardware.VirtualMemory
                     if (!CodePages.ContainsKey(vAddr))
                     {
                         unloaded++;
-                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
+                        VirtualMemoryManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
                     }
                 }
                 iterator.RestoreState();
@@ -239,7 +239,7 @@ namespace Kernel.Hardware.VirtualMemory
                         //}
 
                         unloaded++;
-                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
+                        VirtualMemoryManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
                         
                         //if (Processes.Scheduler.OutputMessages)
                         //{
@@ -272,7 +272,7 @@ namespace Kernel.Hardware.VirtualMemory
             //}
 
             {
-                VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+                VirtualMemoryImplementation.PageFlags flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
 
                 UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
                 while (iterator.HasNext())
@@ -285,7 +285,7 @@ namespace Kernel.Hardware.VirtualMemory
                 BasicConsole.WriteLine("Loading code page...");
 #endif
                     loaded++;
-                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                    VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                 }
                 iterator.RestoreState();
 
@@ -294,7 +294,7 @@ namespace Kernel.Hardware.VirtualMemory
                 //    BasicConsole.WriteLine("Debug Point 9.1.4");
                 //}
 
-                flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+                flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
                 iterator = DataPages.GetIterator();
                 while (iterator.HasNext())
                 {
@@ -332,7 +332,7 @@ namespace Kernel.Hardware.VirtualMemory
                     //    BasicConsole.WriteLine("Debug Point 9.1.4.5");
                     //}
 
-                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                    VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                     
                     //if (Processes.Scheduler.OutputMessages)
                     //{
@@ -342,7 +342,7 @@ namespace Kernel.Hardware.VirtualMemory
                 }
                 iterator.RestoreState();
 
-                flags = VirtMemImpl.PageFlags.KernelOnly;
+                flags = VirtualMemoryImplementation.PageFlags.KernelOnly;
                 iterator = KernelPages.GetIterator();
                 while (iterator.HasNext())
                 {
@@ -354,7 +354,7 @@ namespace Kernel.Hardware.VirtualMemory
 #endif
 
                     loaded++;
-                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                    VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                 }
                 iterator.RestoreState();
             }
@@ -381,7 +381,7 @@ namespace Kernel.Hardware.VirtualMemory
         {
             int loaded = 0;
 
-            VirtMemImpl.PageFlags flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+            VirtualMemoryImplementation.PageFlags flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
 
             UInt32Dictionary.Iterator iterator = y.CodePages.GetIterator();
             while (iterator.HasNext())
@@ -400,7 +400,7 @@ namespace Kernel.Hardware.VirtualMemory
                     CodePages.Add(vAddr, pAddr | 0x1);
 
                     loaded++;
-                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                    VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                 }
 #if MEMLAYOUT_MERGE_TRACE
                 else
@@ -416,7 +416,7 @@ namespace Kernel.Hardware.VirtualMemory
 #endif
             }
 
-            flags = ProcessIsUM ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly;
+            flags = ProcessIsUM ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly;
             iterator = y.DataPages.GetIterator();
             while (iterator.HasNext())
             {
@@ -436,7 +436,7 @@ namespace Kernel.Hardware.VirtualMemory
                         KernelPages.Add(vAddr, pAddr | 0x1);
 
                         loaded++;
-                        VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                        VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                     }
 #if MEMLAYOUT_MERGE_TRACE
                     else
@@ -459,7 +459,7 @@ namespace Kernel.Hardware.VirtualMemory
                         DataPages.Add(vAddr, pAddr | 0x1);
 
                         loaded++;
-                        VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                        VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                     }
 #if MEMLAYOUT_MERGE_TRACE
                     else
@@ -476,7 +476,7 @@ namespace Kernel.Hardware.VirtualMemory
                 }
             }
 
-            flags = VirtMemImpl.PageFlags.KernelOnly;
+            flags = VirtualMemoryImplementation.PageFlags.KernelOnly;
             iterator = y.KernelPages.GetIterator();
             while (iterator.HasNext())
             {
@@ -494,7 +494,7 @@ namespace Kernel.Hardware.VirtualMemory
                     KernelPages.Add(vAddr, pAddr | 0x1);
 
                     loaded++;
-                    VirtMemManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
+                    VirtualMemoryManager.Map(pAddr, vAddr, 4096, flags, UpdateUsedPagesFlags.Virtual);
                 }
 #if MEMLAYOUT_MERGE_TRACE
                 else
@@ -531,7 +531,7 @@ namespace Kernel.Hardware.VirtualMemory
                     {
                         CodePages.Remove(vAddr);
                         unloaded++;
-                        VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
+                        VirtualMemoryManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
                     }
                 }
             }
@@ -562,7 +562,7 @@ namespace Kernel.Hardware.VirtualMemory
                         {
                             DataPages.Remove(vAddr);
                             unloaded++;
-                            VirtMemManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
+                            VirtualMemoryManager.Unmap(vAddr, UpdateUsedPagesFlags.Virtual);
                         }
                     }
                 }

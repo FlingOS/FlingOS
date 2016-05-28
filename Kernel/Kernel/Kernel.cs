@@ -23,13 +23,10 @@
 //
 // ------------------------------------------------------------------------------ //
 #endregion
-    
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.IO;
-using System;
+
 using Kernel.Hardware.Processes;
-using Kernel.Hardware.VirtualMemory;
+using Kernel.VirtualMemory;
+using Kernel.VirtualMemory.Implementations;
 
 namespace Kernel
 {
@@ -44,7 +41,7 @@ namespace Kernel
         [Drivers.Compiler.Attributes.NoDebug]
         static Kernel()
         {
-            VirtMemManager.Init(new x86());
+            VirtualMemoryManager.Init(new x86VirtualMemoryImplementation());
         }
 
         /// <summary>
@@ -88,9 +85,9 @@ namespace Kernel
                 Thread KernelThread = ((Thread)KernelProcess.Threads[0]);
 
                 BasicConsole.WriteLine("Initialising kernel thread stack...");
-                VirtMemManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+                VirtualMemoryManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
                 KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
-                VirtMemManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
+                VirtualMemoryManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
                 KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
                 KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
                 KernelThread.State->ExState = (ExceptionState*)(KernelThread.State->ThreadStackTop + 4);

@@ -28,7 +28,7 @@ using System;
 using Kernel.FOS_System.IO;
 using Kernel.FOS_System.Processes;
 using Kernel.Processes.ELF;
-using Kernel.Hardware.VirtualMemory;
+using Kernel.VirtualMemory;
 
 namespace Kernel.Processes
 {
@@ -51,9 +51,9 @@ namespace Kernel.Processes
             
             BasicConsole.WriteLine("Mapping free page for process...");
             void* unusedPAddr;
-            byte* destMemPtr = (byte*)VirtMemManager.MapFreePage(
-                UserMode ? VirtMemImpl.PageFlags.None : VirtMemImpl.PageFlags.KernelOnly, out unusedPAddr);
-            BasicConsole.WriteLine(((FOS_System.String)"Physical address = ") + (uint)VirtMemManager.GetPhysicalAddress(destMemPtr));
+            byte* destMemPtr = (byte*)VirtualMemoryManager.MapFreePage(
+                UserMode ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly, out unusedPAddr);
+            BasicConsole.WriteLine(((FOS_System.String)"Physical address = ") + (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr));
             BasicConsole.WriteLine(((FOS_System.String)"Virtual address = ") + (uint)destMemPtr);
 
             // Add the page to the current processes memory layout
@@ -63,7 +63,7 @@ namespace Kernel.Processes
             //  Note: The page fault will only be hit on starting a second process because
             //      the scheduler doesn't change the context when only one process is running.
             Hardware.Processes.ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-                (uint)VirtMemManager.GetPhysicalAddress(destMemPtr),
+                (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
                 (uint)destMemPtr);
             // We could have been "scheduler interrupted" just after the map but just before the 
             //  add data page...
@@ -88,7 +88,7 @@ namespace Kernel.Processes
                 mainMethod, name, UserMode);
             //BasicConsole.WriteLine("Adding process' code page...");
             // Add code page to new processes memory layout
-            process.TheMemoryLayout.AddCodePage((uint)VirtMemManager.GetPhysicalAddress(destMemPtr),
+            process.TheMemoryLayout.AddCodePage((uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
                 (uint)destMemPtr);
 
             //BasicConsole.WriteLine("Removing process' code page from current process...");

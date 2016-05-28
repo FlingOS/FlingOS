@@ -112,9 +112,9 @@
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
       <Name>Kernel.Hardware.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.VirtualMemory\Kernel.Hardware.VirtualMemory.csproj">
+    <ProjectReference Include="..\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj">
       <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
-      <Name>Kernel.Hardware.VirtualMemory</Name>
+      <Name>Kernel.VirtualMemory</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

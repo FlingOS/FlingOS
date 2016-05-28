@@ -31,7 +31,7 @@ using System;
 using Kernel.FOS_System.Collections;
 using Kernel.Hardware.IO.Serial;
 using Kernel.Hardware.Processes;
-using Kernel.Hardware.VirtualMemory;
+using Kernel.VirtualMemory;
 using Kernel.Processes;
 
 using NoDebug = Drivers.Compiler.Attributes.NoDebugAttribute;

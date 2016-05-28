@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kernel.Hardware.VirtualMemory
+namespace Kernel.VirtualMemory
 {
     [Flags]
     public enum UpdateUsedPagesFlags : byte
@@ -44,7 +44,7 @@ namespace Kernel.Hardware.VirtualMemory
     /// <summary>
     /// Represents a specific implementation of a virtual memory system.
     /// </summary>
-    public abstract class VirtMemImpl : FOS_System.Object
+    public abstract class VirtualMemoryImplementation : FOS_System.Object
     {
         [Flags]
         public enum PageFlags : uint

@@ -65,7 +65,7 @@ namespace Kernel.Hardware.Processes
             
             Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
             
-            uint[] vAddrs = VirtualMemory.VirtMemManager.GetBuiltInProcessVAddrs();
+            uint[] vAddrs = VirtualMemory.VirtualMemoryManager.GetBuiltInProcessVAddrs();
             uint startVAddr = 0xDEADBEEF;
             uint vAddrCount = 0;
             for (int i = 0; i < vAddrs.Length; i++)
@@ -227,7 +227,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtualMemory.VirtMemManager.MapFreePagesForKernel(VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtualMemory.VirtualMemoryManager.MapFreePagesForKernel(VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -263,7 +263,7 @@ namespace Kernel.Hardware.Processes
 #endif
 
             void* newPAddr;
-            void* newVAddr = VirtualMemory.VirtMemManager.MapFreePagesForKernel(VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
+            void* newVAddr = VirtualMemory.VirtualMemoryManager.MapFreePagesForKernel(VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, (int)vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -670,7 +670,7 @@ namespace Kernel.Hardware.Processes
         {
             if (ShadowPageVAddr == (void*)0xFFFFFFFF)
             {
-                ShadowPageVAddr = VirtualMemory.VirtMemManager.MapFreePageForKernel(VirtualMemory.VirtMemImpl.PageFlags.KernelOnly, out ShadowPagePAddr);
+                ShadowPageVAddr = VirtualMemory.VirtualMemoryManager.MapFreePageForKernel(VirtualMemory.VirtualMemoryImplementation.PageFlags.KernelOnly, out ShadowPagePAddr);
                 KernelProcess.TheMemoryLayout.AddKernelPage((uint)ShadowPagePAddr, (uint)ShadowPageVAddr);
             }
             

@@ -3,7 +3,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;
-using Kernel.Hardware.VirtualMemory;
+using Kernel.VirtualMemory;
 
 namespace Kernel.Tasks
 {
@@ -36,7 +36,7 @@ namespace Kernel.Tasks
                 StartRequest->Name = NewProcName.GetCharPointer();
                 StartRequest->NameLength = NewProcName.length;
                 StartRequest->CodePagesCount = 0;
-                uint[] DataPages = VirtMemManager.GetBuiltInProcessVAddrs();
+                uint[] DataPages = VirtualMemoryManager.GetBuiltInProcessVAddrs();
                 StartRequest->DataPages = (uint*)((byte*)Utilities.ObjectUtilities.GetHandle(DataPages) + FOS_System.Array.FieldsBytesSize);
                 StartRequest->DataPagesCount = (uint)DataPages.Length;
                 StartRequest->MainMethod = (void*)Utilities.ObjectUtilities.GetHandle(MainMethod);
