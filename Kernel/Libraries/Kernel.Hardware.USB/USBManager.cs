@@ -34,7 +34,7 @@ using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Hardware;
 using Kernel.Hardware.Devices;
-using Kernel.Hardware.PCI;
+using Kernel.PCI;
 using Kernel.Hardware.Processes;
 using Kernel.USB.Devices;
 using Kernel.USB.HCIs;

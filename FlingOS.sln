@@ -97,7 +97,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.Devices", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.VirtualMemory", "Kernel\Libraries\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj", "{2F9D1B2A-6CC2-45E2-BD36-BDF7AB8626B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.PCI", "Kernel\Libraries\Kernel.Hardware.PCI\Kernel.Hardware.PCI.csproj", "{02D891E8-4AAA-48FA-8608-5135FB4DC493}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.PCI", "Kernel\Libraries\Kernel.Hardware.PCI\Kernel.PCI.csproj", "{02D891E8-4AAA-48FA-8608-5135FB4DC493}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.IO", "Kernel\Libraries\Kernel.Hardware.IO\Kernel.Hardware.IO.csproj", "{9FEB0B47-9730-44FA-A5CB-0E47194176F0}"
 EndProject

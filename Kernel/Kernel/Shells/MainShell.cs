@@ -43,7 +43,7 @@ using Kernel.Hardware.Devices;
 using Kernel.Hardware.Exceptions;
 using Kernel.Hardware.Interrupts;
 using Kernel.Hardware.Keyboards;
-using Kernel.Hardware.PCI;
+using Kernel.PCI;
 using Kernel.Hardware.Processes;
 using Kernel.Hardware.Testing;
 using Kernel.Hardware.Timers;

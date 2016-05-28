@@ -1,5 +1,5 @@
 ﻿using Kernel.Consoles;
-using Kernel.Hardware.PCI;
+using Kernel.PCI;
 
 namespace Kernel.Tasks.Driver
 {

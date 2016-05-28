@@ -29,7 +29,7 @@
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 
-namespace Kernel.Hardware.PCI
+namespace Kernel.PCI
 {
     /// <summary>
     ///     Represents a PCI base address.

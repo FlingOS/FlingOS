@@ -34,7 +34,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.Hardware.Devices;
 using Kernel.Hardware.IO;
 
-namespace Kernel.Hardware.PCI
+namespace Kernel.PCI
 {
     /// <summary>
     ///     Provides methods for managing PCI access.

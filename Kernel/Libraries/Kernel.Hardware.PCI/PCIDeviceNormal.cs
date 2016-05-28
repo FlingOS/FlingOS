@@ -28,7 +28,7 @@
 
 using Drivers.Compiler.Attributes;
 
-namespace Kernel.Hardware.PCI
+namespace Kernel.PCI
 {
     /// <summary>
     ///     Represents a normal PCI device.

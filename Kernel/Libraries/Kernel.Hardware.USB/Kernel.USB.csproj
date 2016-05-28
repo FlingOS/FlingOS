@@ -114,9 +114,9 @@
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
       <Name>Kernel.Hardware.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.PCI\Kernel.Hardware.PCI.csproj">
+    <ProjectReference Include="..\Kernel.Hardware.PCI\Kernel.PCI.csproj">
       <Project>{02d891e8-4aaa-48fa-8608-5135fb4dc493}</Project>
-      <Name>Kernel.Hardware.PCI</Name>
+      <Name>Kernel.PCI</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kernel.Hardware\Kernel.Hardware.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>

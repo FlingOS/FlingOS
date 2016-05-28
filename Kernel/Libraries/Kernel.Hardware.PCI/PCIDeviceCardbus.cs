@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.Hardware.PCI
+namespace Kernel.PCI
 {
     /// <summary>
     ///     Represents a cardbus PCI device.

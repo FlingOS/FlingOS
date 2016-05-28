@@ -2,7 +2,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.Hardware;
-using Kernel.Hardware.PCI;
+using Kernel.PCI;
 using Kernel.USB;
 using Kernel.USB.Devices;
 using Kernel.USB.HCIs;
