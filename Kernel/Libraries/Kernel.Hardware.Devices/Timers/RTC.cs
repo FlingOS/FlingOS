@@ -30,7 +30,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.IO;
 
-namespace Kernel.Hardware.Timers
+namespace Kernel.Devices.Timers
 {
     //TODO: RTC should inherit from Devices.Timer and implement the necessary functions
 

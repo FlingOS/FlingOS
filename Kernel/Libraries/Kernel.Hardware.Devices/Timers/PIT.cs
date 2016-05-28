@@ -31,10 +31,10 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 using Kernel.IO;
 
-namespace Kernel.Hardware.Timers
+namespace Kernel.Devices.Timers
 {
     /// <summary>
     ///     Represents the programmable interval timer.

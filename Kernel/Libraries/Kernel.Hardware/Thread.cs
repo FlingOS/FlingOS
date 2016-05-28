@@ -36,7 +36,7 @@ using Kernel.FOS_System.Processes;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
 
-namespace Kernel.Hardware.Processes
+namespace Kernel.Multiprocessing
 {
     public unsafe class Thread : Comparable
     {
@@ -385,7 +385,7 @@ namespace Kernel.Hardware.Processes
         /// <remarks>
         ///     Call this instead of Thread.Sleep when inside an interrupt handler.
         ///     If inside an interrupt handler, you probably want to call
-        ///     Kernel.Hardware.Processes.Scheduler.UpdateCurrentState()
+        ///     Kernel.Multiprocessing.Scheduler.UpdateCurrentState()
         ///     after calling this to immediately update the thread to return to.
         /// </remarks>
         [NoGC]

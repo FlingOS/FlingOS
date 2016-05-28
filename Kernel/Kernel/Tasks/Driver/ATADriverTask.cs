@@ -1,7 +1,7 @@
 ﻿using Kernel.Consoles;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware;
+using Kernel.Devices;
 using Kernel.ATA;
 
 namespace Kernel.Tasks.Driver

@@ -1,8 +1,8 @@
 ﻿using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
+using Kernel.Devices;
 using Kernel.Tasks;
 using Kernel.Tasks.Driver;
 

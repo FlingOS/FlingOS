@@ -30,9 +30,9 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
 
-namespace Kernel.Hardware.Devices
+namespace Kernel.Devices
 {
     /// <summary>
     ///     The global device manager for the kernel.

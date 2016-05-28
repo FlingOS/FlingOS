@@ -30,7 +30,7 @@
 
 using Kernel.FOS_System.Processes;
 
-namespace Kernel.Hardware.Processes
+namespace Kernel.Multiprocessing
 {
     /// <summary>
     ///     Contains callers and handlers for system calls.

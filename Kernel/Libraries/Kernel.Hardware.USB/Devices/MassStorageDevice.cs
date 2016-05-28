@@ -32,8 +32,8 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.Controllers;
-using Kernel.Hardware.Devices;
+using Kernel.Devices.Controllers;
+using Kernel.Devices;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.MemoryUtils;
 

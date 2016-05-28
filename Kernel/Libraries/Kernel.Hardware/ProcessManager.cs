@@ -35,11 +35,11 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Processes;
-using Kernel.Hardware.Processes.Synchronisation;
+using Kernel.Multiprocessing.Synchronisation;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
 
-namespace Kernel.Hardware.Processes
+namespace Kernel.Multiprocessing
 {
     public static unsafe class ProcessManager
     {

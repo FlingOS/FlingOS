@@ -32,10 +32,10 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
+using Kernel.Devices;
 using Kernel.PCI;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
 using Kernel.USB.Devices;
 using Kernel.USB.HCIs;
 

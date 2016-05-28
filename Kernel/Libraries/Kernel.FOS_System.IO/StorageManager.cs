@@ -30,7 +30,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 using Kernel.Pipes;
 using Kernel.Pipes.Storage;
 

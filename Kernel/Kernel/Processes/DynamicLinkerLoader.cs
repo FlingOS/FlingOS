@@ -29,7 +29,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.IO;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
 using Kernel.Processes.ELF;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;

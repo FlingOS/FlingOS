@@ -536,14 +536,14 @@ Boot_FlushCsGDT:
 
 EXTERN method_System_Void_RETEND_Kernel_Debug_Debugger_DECLEND_Int1_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_Debug_Debugger_DECLEND_Int3_NAMEEND___
-EXTERN method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
+EXTERN method_System_Void_RETEND_Kernel_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_PageFaultException_NAMEEND__System_UInt32_System_UInt32_System_UInt32_
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_StackException_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DoubleFaultException_NAMEEND__System_UInt32_System_UInt32_
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_OverflowException_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_InvalidOpCodeException_NAMEEND___
 EXTERN method_System_Void_RETEND_Kernel_ExceptionMethods_DECLEND_Throw_DivideByZeroException_NAMEEND__System_UInt32_
-EXTERN staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State
+EXTERN staticfield_Kernel_Multiprocessing_ThreadState__Kernel_Multiprocessing_ProcessManager_CurrentThread_State
 
 %define KERNEL_MODE_DPL 0
 %define USER_MODE_DPL 3
@@ -581,7 +581,7 @@ mov es, ax
 mov ds, ax
 
 ; Load pointer to current thread state
-mov dword eax, [staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State]
+mov dword eax, [staticfield_Kernel_Multiprocessing_ThreadState__Kernel_Multiprocessing_ProcessManager_CurrentThread_State]
 ; Test for null
 cmp eax, 0
 ; If null, skip
@@ -681,7 +681,7 @@ INTERRUPTS_STORE_STATE_SKIP_%1:
 
 %macro INTERRUPTS_RESTORE_STATE 1
 ; Load pointer to current thread state
-mov dword eax, [staticfield_Kernel_Hardware_Processes_ThreadState__Kernel_Hardware_Processes_ProcessManager_CurrentThread_State]
+mov dword eax, [staticfield_Kernel_Multiprocessing_ThreadState__Kernel_Multiprocessing_ProcessManager_CurrentThread_State]
 ; Test for null
 cmp eax, 0
 ; If null, skip
@@ -1083,7 +1083,7 @@ CommonInterruptHandler%1:
 	%assign STORE_STATE_SKIP_NUM STORE_STATE_SKIP_NUM+1
 
 	push dword %1
-    call method_System_Void_RETEND_Kernel_Hardware_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
+    call method_System_Void_RETEND_Kernel_Interrupts_Interrupts_DECLEND_CommonISR_NAMEEND__System_UInt32_
     add esp, 4
 
 	INTERRUPTS_RESTORE_STATE RESTORE_STATE_SKIP_NUM
@@ -1102,7 +1102,7 @@ CommonInterruptHandler%1:
 ; START - Debug interrupt handlers
 
 EXTERN staticfield_System_Boolean_Kernel_Debug_Debugger_Enabled
-EXTERN staticfield_System_Boolean_Kernel_Hardware_Interrupts_Interrupts_insideCriticalHandler
+EXTERN staticfield_System_Boolean_Kernel_Interrupts_Interrupts_insideCriticalHandler
 
 Debug_Int1Handler:
 	
@@ -1112,7 +1112,7 @@ Debug_Int1Handler:
 	mov dword eax, [staticfield_System_Boolean_Kernel_Debug_Debugger_Enabled]
 	cmp eax, 0
 	je Debug_Int1Handler_Skip
-	mov dword eax, [staticfield_System_Boolean_Kernel_Hardware_Interrupts_Interrupts_insideCriticalHandler]
+	mov dword eax, [staticfield_System_Boolean_Kernel_Interrupts_Interrupts_insideCriticalHandler]
 	cmp eax, 1
 	je Debug_Int1Handler_Skip
 	pop eax
@@ -1138,7 +1138,7 @@ Debug_Int3Handler:
 	mov dword eax, [staticfield_System_Boolean_Kernel_Debug_Debugger_Enabled]
 	cmp eax, 0
 	je Debug_Int3Handler_Skip
-	mov dword eax, [staticfield_System_Boolean_Kernel_Hardware_Interrupts_Interrupts_insideCriticalHandler]
+	mov dword eax, [staticfield_System_Boolean_Kernel_Interrupts_Interrupts_insideCriticalHandler]
 	cmp eax, 1
 	je Debug_Int3Handler_Skip
 	pop eax

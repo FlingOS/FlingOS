@@ -32,9 +32,9 @@
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Interrupts;
 using Kernel.IO.Serial;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
+using x86Interrupts = Kernel.Interrupts.Interrupts;
 using NoDebug = Drivers.Compiler.Attributes.NoDebugAttribute;
 using NoGC = Drivers.Compiler.Attributes.NoGCAttribute;
 
@@ -137,7 +137,7 @@ namespace Kernel.Debug
         private static void PauseCurrentThread()
         {
             // Note: This must be OUTSIDE any exception block.
-            Interrupts.InsideCriticalHandler = true;
+            x86Interrupts.InsideCriticalHandler = true;
 
             try
             {
@@ -240,7 +240,7 @@ namespace Kernel.Debug
             }
 
             // Note: This must be OUTSIDE any exception block.
-            Interrupts.InsideCriticalHandler = false;
+            x86Interrupts.InsideCriticalHandler = false;
 
             BasicConsole.WriteLine("Debugger > PauseCurrentThread end.");
         }

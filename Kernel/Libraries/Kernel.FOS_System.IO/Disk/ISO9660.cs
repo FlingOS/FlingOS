@@ -27,7 +27,7 @@
 #endregion
 
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 
 namespace Kernel.FOS_System.IO.Disk
 {

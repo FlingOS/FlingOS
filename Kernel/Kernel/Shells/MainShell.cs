@@ -39,19 +39,18 @@ using Kernel.FOS_System.IO.FAT;
 using Kernel.FOS_System.IO.ISO9660;
 using Kernel.FOS_System.IO.Streams;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware;
-using Kernel.Hardware.Devices;
-using Kernel.Hardware.Exceptions;
-using Kernel.Hardware.Interrupts;
-using Kernel.Hardware.Keyboards;
+using Kernel.Devices;
+using Kernel.Devices.Exceptions;
+using Kernel.Devices.Keyboards;
 using Kernel.PCI;
-using Kernel.Hardware.Processes;
-using Kernel.Hardware.Timers;
+using Kernel.Multiprocessing;
+using Kernel.Devices.Timers;
 using Kernel.Processes;
 using Kernel.Tasks;
 using Kernel.USB;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
+using x86Interrupts = Kernel.Interrupts.Interrupts;
 
 namespace Kernel.Shells
 {
@@ -1994,7 +1993,7 @@ which should have been provided with the executable.");
             for (uint i = 17; i < 256; i++)
             {
                 console.WriteLine((String) "Attempting to invoke interrupt: " + i);
-                Interrupts.InvokeInterrupt(i);
+                x86Interrupts.InvokeInterrupt(i);
             }
         }
 

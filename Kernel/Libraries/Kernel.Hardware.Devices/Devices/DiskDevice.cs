@@ -29,7 +29,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
-namespace Kernel.Hardware.Devices
+namespace Kernel.Devices
 {
     /// <summary>
     ///     Represents a disk device.

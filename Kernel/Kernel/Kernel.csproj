@@ -149,9 +149,9 @@
       <Project>{2d18c11e-3c86-4131-8de9-c4385c9131b4}</Project>
       <Name>Kernel.ATA</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj">
+    <ProjectReference Include="..\Libraries\Kernel.Hardware.Devices\Kernel.Devices.csproj">
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
-      <Name>Kernel.Hardware.Devices</Name>
+      <Name>Kernel.Devices</Name>
     </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.Hardware.IO\Kernel.IO.csproj">
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
@@ -169,9 +169,9 @@
       <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
       <Name>Kernel.VirtualMemory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Libraries\Kernel.Hardware\Kernel.Hardware.Multiprocessing.csproj">
+    <ProjectReference Include="..\Libraries\Kernel.Hardware\Kernel.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
-      <Name>Kernel.Hardware.Multiprocessing</Name>
+      <Name>Kernel.Multiprocessing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

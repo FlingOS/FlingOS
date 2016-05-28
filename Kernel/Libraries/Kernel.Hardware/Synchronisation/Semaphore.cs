@@ -30,7 +30,7 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Synchronisation;
 
-namespace Kernel.Hardware.Processes.Synchronisation
+namespace Kernel.Multiprocessing.Synchronisation
 {
     public class Semaphore : Object
     {

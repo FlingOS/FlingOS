@@ -31,7 +31,7 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 using Kernel.IO;
 
 namespace Kernel.PCI

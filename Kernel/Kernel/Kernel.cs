@@ -29,11 +29,11 @@
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Exceptions;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 using Kernel.IO.Serial;
-using Kernel.Hardware.Processes;
-using Kernel.Hardware.Processes.Scheduling;
-using Kernel.Hardware.Timers;
+using Kernel.Multiprocessing;
+using Kernel.Multiprocessing.Scheduling;
+using Kernel.Devices.Timers;
 using Kernel.Tasks;
 using Kernel.VirtualMemory;
 using Kernel.VirtualMemory.Implementations;

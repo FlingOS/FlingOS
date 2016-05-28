@@ -29,7 +29,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
-namespace Kernel.Hardware
+namespace Kernel.Devices
 {
     /// <summary>
     ///     Represents any device connected to the system.

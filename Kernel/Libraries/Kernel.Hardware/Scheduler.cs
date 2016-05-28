@@ -34,9 +34,9 @@
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
-using Kernel.Hardware.Processes.Scheduling;
+using Kernel.Multiprocessing.Scheduling;
 
-namespace Kernel.Hardware.Processes
+namespace Kernel.Multiprocessing
 {
     public static class Scheduler
     {

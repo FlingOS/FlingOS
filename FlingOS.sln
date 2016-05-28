@@ -28,7 +28,7 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Fling OS Documentation Proj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{1A5BFB25-60C1-4E6B-8B97-0E142634929D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.Multiprocessing", "Kernel\Libraries\Kernel.Hardware\Kernel.Hardware.Multiprocessing.csproj", "{F59B042C-435D-48ED-AD7B-23666931A952}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Multiprocessing", "Kernel\Libraries\Kernel.Hardware\Kernel.Multiprocessing.csproj", "{F59B042C-435D-48ED-AD7B-23666931A952}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{9CC7D8B1-30B5-4099-ADAD-F32067871179}"
 EndProject
@@ -93,7 +93,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.USB", "Kernel\Librar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.ATA", "Kernel\Libraries\Kernel.Hardware.ATA\Kernel.ATA.csproj", "{2D18C11E-3C86-4131-8DE9-C4385C9131B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Hardware.Devices", "Kernel\Libraries\Kernel.Hardware.Devices\Kernel.Hardware.Devices.csproj", "{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Devices", "Kernel\Libraries\Kernel.Hardware.Devices\Kernel.Devices.csproj", "{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.VirtualMemory", "Kernel\Libraries\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj", "{2F9D1B2A-6CC2-45E2-BD36-BDF7AB8626B2}"
 EndProject

@@ -30,7 +30,7 @@ using System;
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Processes;
 using String = Kernel.FOS_System.String;
-using Kernel.Hardware;
+using Kernel.Devices;
 
 namespace Kernel.IO.Serial
 {

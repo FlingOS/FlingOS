@@ -26,10 +26,10 @@
 
 #endregion
 
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 using Kernel.IO;
 
-namespace Kernel.Hardware.Keyboards
+namespace Kernel.Devices.Keyboards
 {
     /// <summary>
     ///     Represents a PS2 keyboard device.

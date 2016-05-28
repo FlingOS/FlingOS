@@ -33,7 +33,7 @@ using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.IO.Disk;
 using Kernel.FOS_System.IO.FAT;
 using Kernel.FOS_System.IO.ISO9660;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 
 namespace Kernel.FOS_System.IO
 {

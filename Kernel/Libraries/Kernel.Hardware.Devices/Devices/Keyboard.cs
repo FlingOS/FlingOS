@@ -29,9 +29,9 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
 
-namespace Kernel.Hardware.Devices
+namespace Kernel.Devices
 {
     /// <summary>
     ///     Represents a keyboard device.

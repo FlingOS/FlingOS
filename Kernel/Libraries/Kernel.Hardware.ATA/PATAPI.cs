@@ -32,8 +32,8 @@ using Kernel.FOS_System;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.Devices;
-using Kernel.Hardware.Exceptions;
+using Kernel.Devices;
+using Kernel.Devices.Exceptions;
 
 namespace Kernel.ATA
 {

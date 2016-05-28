@@ -37,7 +37,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.Utilities;
 using Kernel.VirtualMemory.Implementations;
 
-namespace Kernel.Hardware.Processes.Scheduling
+namespace Kernel.Multiprocessing.Scheduling
 {
     public unsafe class PriorityQueueScheduler : Object, IScheduler
     {

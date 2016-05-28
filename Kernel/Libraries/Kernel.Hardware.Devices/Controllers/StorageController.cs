@@ -3,10 +3,10 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Exceptions;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 using Kernel.Pipes.Storage;
 
-namespace Kernel.Hardware.Controllers
+namespace Kernel.Devices.Controllers
 {
     public static class StorageController
     {

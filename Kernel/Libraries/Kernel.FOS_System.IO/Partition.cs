@@ -27,7 +27,7 @@
 #endregion
 
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 
 namespace Kernel.FOS_System.IO
 {

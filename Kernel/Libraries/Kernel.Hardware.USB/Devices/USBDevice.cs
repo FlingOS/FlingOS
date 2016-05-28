@@ -29,7 +29,7 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.Hardware;
+using Kernel.Devices;
 using Kernel.USB.HCIs;
 
 namespace Kernel.USB.Devices

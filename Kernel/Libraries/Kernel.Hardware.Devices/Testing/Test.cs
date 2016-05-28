@@ -28,7 +28,7 @@
 
 using Kernel.FOS_System;
 
-namespace Kernel.Hardware.Testing
+namespace Kernel.Devices.Testing
 {
     public delegate void OutputMessageDel(String TestName, String Message);
 

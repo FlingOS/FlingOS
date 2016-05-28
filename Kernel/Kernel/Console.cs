@@ -30,7 +30,7 @@ using Kernel.Consoles;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Stubs;
-using Kernel.Hardware.Timers;
+using Kernel.Devices.Timers;
 
 namespace Kernel
 {

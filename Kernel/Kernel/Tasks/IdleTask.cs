@@ -28,8 +28,8 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
-using Kernel.Hardware.CPUs;
-using Kernel.Hardware.Devices;
+using Kernel.Devices.CPUs;
+using Kernel.Devices;
 
 namespace Kernel.Tasks
 {

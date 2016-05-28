@@ -33,7 +33,7 @@ using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.VirtualMemory;
 
-namespace Kernel.Hardware.Processes
+namespace Kernel.Multiprocessing
 {
     public unsafe class Process : Object
     {

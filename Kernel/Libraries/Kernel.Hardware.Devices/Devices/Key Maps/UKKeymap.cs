@@ -28,7 +28,7 @@
 
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Hardware.Devices
+namespace Kernel.Devices
 {
     public abstract partial class Keyboard : Device
     {

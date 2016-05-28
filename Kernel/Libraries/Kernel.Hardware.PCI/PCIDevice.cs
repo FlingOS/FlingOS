@@ -32,7 +32,7 @@ using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.IO;
 using PCI_IO = Kernel.PCI.PCIManager;
 using String = Kernel.FOS_System.String;
-using Kernel.Hardware;
+using Kernel.Devices;
 
 namespace Kernel.PCI
 {

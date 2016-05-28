@@ -33,7 +33,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
 
 namespace Kernel.Pipes
 {

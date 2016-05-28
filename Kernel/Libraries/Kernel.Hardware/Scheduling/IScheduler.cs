@@ -28,7 +28,7 @@
 
 using Kernel.FOS_System;
 
-namespace Kernel.Hardware.Processes.Scheduling
+namespace Kernel.Multiprocessing.Scheduling
 {
     public delegate void PreemptionHandler(Object state);
 

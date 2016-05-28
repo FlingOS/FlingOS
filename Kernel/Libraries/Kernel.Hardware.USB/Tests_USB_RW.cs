@@ -27,8 +27,8 @@
 #endregion
 
 using Kernel.FOS_System;
-using Kernel.Hardware;
-using Kernel.Hardware.Testing;
+using Kernel.Devices;
+using Kernel.Devices.Testing;
 using Kernel.USB.Devices;
 
 namespace Kernel.USB

@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F59B042C-435D-48ED-AD7B-23666931A952}</ProjectGuid>
+    <ProjectGuid>{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.Hardware.Multiprocessing</RootNamespace>
-    <AssemblyName>Kernel.Hardware.Multiprocessing</AssemblyName>
+    <RootNamespace>Kernel.Devices</RootNamespace>
+    <AssemblyName>Kernel.Devices</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,15 +20,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Devices.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;x86</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -37,9 +37,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Docs|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;x86;UKKEYBOARD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Devices.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,15 +53,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Devices.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|MIPS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;MIPS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -70,9 +70,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|MIPS'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Hardware.Multiprocessing.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Devices.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -83,16 +83,49 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interrupts.cs" />
-    <Compile Include="Process.cs" />
-    <Compile Include="ProcessManager.cs" />
-    <Compile Include="Scheduler.cs" />
-    <Compile Include="Scheduling\IScheduler.cs" />
-    <Compile Include="Scheduling\PriorityQueueScheduler.cs" />
-    <Compile Include="Synchronisation\Semaphore.cs" />
-    <Compile Include="SystemCalls_Handlers.cs" />
-    <Compile Include="Thread.cs" />
+    <Compile Include="BlockDevice.cs" />
+    <Compile Include="Controllers\StorageController.cs" />
+    <Compile Include="CPUs\CPUx86_32.cs" />
+    <Compile Include="Device.cs" />
+    <Compile Include="Devices\CPU.cs" />
+    <Compile Include="Devices\DeviceManager.cs" />
+    <Compile Include="Devices\DiskDevice.cs" />
+    <Compile Include="Devices\Key Maps\SPKeymap.cs" />
+    <Compile Include="Devices\Key Maps\UKKeymap.cs" />
+    <Compile Include="Devices\Key Maps\USKeymap.cs" />
+    <Compile Include="Devices\Keyboard.cs" />
+    <Compile Include="Devices\StorageControllerDisk.cs" />
+    <Compile Include="Devices\Timer.cs" />
+    <Compile Include="Serial\Serial.cs" />
+    <Compile Include="Keyboards\PS2.cs" />
+    <Compile Include="Keyboards\VirtualKeyboard.cs" />
+    <Compile Include="Pipes\BasicInpoint.cs" />
+    <Compile Include="Pipes\BasicOutpoint.cs" />
+    <Compile Include="Pipes\Exceptions\RWFailedException.cs" />
+    <Compile Include="Pipes\Exceptions\RWUnhandledException.cs" />
+    <Compile Include="Pipes\File\FileCmdInpoint.cs" />
+    <Compile Include="Pipes\File\FileCmdOutpoint.cs" />
+    <Compile Include="Pipes\File\FileDataInpoint.cs" />
+    <Compile Include="Pipes\File\FileDataOutpoint.cs" />
+    <Compile Include="Pipes\File\FilePipeCommand.cs" />
+    <Compile Include="Pipes\File\FilePipeDataHeader.cs" />
+    <Compile Include="Pipes\Pipe.cs" />
+    <Compile Include="Pipes\PipeInpoint.cs" />
+    <Compile Include="Pipes\PipeManager.cs" />
+    <Compile Include="Pipes\PipeOutpoint.cs" />
+    <Compile Include="Pipes\Standard\StandardInpoint.cs" />
+    <Compile Include="Pipes\Standard\StandardOutpoint.cs" />
+    <Compile Include="Pipes\Storage\StorageCmdInpoint.cs" />
+    <Compile Include="Pipes\Storage\StorageCmdOutpoint.cs" />
+    <Compile Include="Pipes\Storage\StorageDataInpoint.cs" />
+    <Compile Include="Pipes\Storage\StorageDataOutpoint.cs" />
+    <Compile Include="Pipes\Storage\StoragePipeCommand.cs" />
+    <Compile Include="Pipes\Storage\StoragePipeDataHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\PlayNotesTask.cs" />
+    <Compile Include="Testing\Test.cs" />
+    <Compile Include="Timers\PIT.cs" />
+    <Compile Include="Timers\RTC.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
@@ -107,25 +140,16 @@
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
       <Name>Kernel.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj">
-      <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
-      <Name>Kernel.VirtualMemory</Name>
+    <ProjectReference Include="..\Kernel.Hardware\Kernel.Multiprocessing.csproj">
+      <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
+      <Name>Kernel.Multiprocessing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ASM\Interrupts\Interrupts.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ASM\Processes\Scheduler.x86_32.asm">
+    <Content Include="ASM\CPUs\CPUx86_32\Halt.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Kernel\Kernel.licenseheader">
-      <Link>Kernel.licenseheader</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

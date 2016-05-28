@@ -1,6 +1,6 @@
 ﻿using Kernel.FOS_System;
 
-namespace Kernel.Hardware.Exceptions
+namespace Kernel.Devices.Exceptions
 {
     public class NoDiskException : Exception
     {

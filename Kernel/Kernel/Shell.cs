@@ -29,7 +29,7 @@
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Exceptions;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 
 namespace Kernel
 {

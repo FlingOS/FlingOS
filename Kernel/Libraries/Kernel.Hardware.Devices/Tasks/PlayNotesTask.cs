@@ -29,10 +29,10 @@
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware.Processes;
-using Kernel.Hardware.Timers;
+using Kernel.Multiprocessing;
+using Kernel.Devices.Timers;
 
-namespace Kernel.Hardware.Tasks
+namespace Kernel.Devices.Tasks
 {
     public static class PlayNotesTask
     {

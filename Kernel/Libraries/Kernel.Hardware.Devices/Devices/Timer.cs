@@ -30,14 +30,14 @@ using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
-namespace Kernel.Hardware.Devices
+namespace Kernel.Devices
 {
     public delegate void TimerHandler(IObject state);
 
     /// <summary>
     ///     Represents a timer device. Also contains static methods for handling the default timer.
     /// </summary>
-    /// <seealso cref="Kernel.Hardware.Timers.PIT" />
+    /// <seealso cref="Kernel.Devices.Timers.PIT" />
     public abstract class Timer : Device
     {
         /// <summary>

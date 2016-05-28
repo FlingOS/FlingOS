@@ -41,17 +41,17 @@ using Kernel.FOS_System.Processes;
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.FOS_System.Processes.Requests.Pipes;
 using Kernel.FOS_System.Processes.Requests.Processes;
-using Kernel.Hardware.Devices;
-using Kernel.Hardware.Interrupts;
-using Kernel.Hardware.Keyboards;
-using Kernel.Hardware.Processes;
-using Kernel.Hardware.Timers;
+using Kernel.Devices;
+using Kernel.Devices.Keyboards;
+using Kernel.Multiprocessing;
+using Kernel.Devices.Timers;
 using Kernel.Pipes;
 using Kernel.Shells;
 using Kernel.Tasks.App;
 using Kernel.Tasks.Driver;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
+using x86Interrupts = Kernel.Interrupts.Interrupts;
 
 namespace Kernel.Tasks
 {
@@ -2348,7 +2348,7 @@ namespace Kernel.Tasks
 
             theProcess.IRQsToHandle.Set(IRQNum);
 
-            Interrupts.EnableIRQ((byte) IRQNum);
+            x86Interrupts.EnableIRQ((byte) IRQNum);
 
             return true;
         }

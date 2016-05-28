@@ -27,9 +27,9 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 
-namespace Kernel.Hardware.CPUs
+namespace Kernel.Devices.CPUs
 {
     /// <summary>
     ///     Represents an x86 32-bit CPU.

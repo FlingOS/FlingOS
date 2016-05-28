@@ -30,9 +30,9 @@ using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.IO;
-using Kernel.Hardware.Processes;
+using Kernel.Multiprocessing;
 
-namespace Kernel.Hardware.Interrupts
+namespace Kernel.Interrupts
 {
     /// <summary>
     ///     Strcture for an interrupt descriptor in the Interrupts Descriptor Table (IDT).

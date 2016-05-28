@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.Hardware.Devices;
+using Kernel.Devices;
 
-namespace Kernel.Hardware.Keyboards
+namespace Kernel.Devices.Keyboards
 {
     public class VirtualKeyboard : Keyboard
     {

@@ -28,8 +28,8 @@
 
 using Kernel.FOS_System;
 using Kernel.FOS_System.Collections;
-using Kernel.Hardware.Controllers;
-using Kernel.Hardware.Devices;
+using Kernel.Devices.Controllers;
+using Kernel.Devices;
 
 namespace Kernel.ATA
 {

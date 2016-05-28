@@ -29,9 +29,9 @@
 using Kernel.Consoles;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes;
-using Kernel.Hardware.Devices;
-using Kernel.Hardware.Keyboards;
-using Kernel.Hardware.Timers;
+using Kernel.Devices;
+using Kernel.Devices.Keyboards;
+using Kernel.Devices.Timers;
 using Kernel.Shells;
 
 namespace Kernel.Tasks
