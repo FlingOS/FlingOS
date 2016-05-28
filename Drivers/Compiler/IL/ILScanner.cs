@@ -352,6 +352,8 @@ namespace Drivers.Compiler.IL
             if (TheTypeInfo.UnderlyingType.BaseType == null || (TheTypeInfo.UnderlyingType.BaseType.FullName != "System.Array" &&
                                                                 TheTypeInfo.UnderlyingType.BaseType.FullName != "System.MulticastDelegate"))
             {
+                Types.TypeInfo ObjectTypeInfo = TheLibrary.GetTypeInfo((ILLibrary.SpecialMethods[typeof(Attributes.GetObjectTypeMethodAttribute)].First()).UnderlyingInfo.DeclaringType);
+
                 foreach (Types.FieldInfo anOwnField in TheTypeInfo.FieldInfos)
                 {
                     if (!anOwnField.IsStatic)
@@ -360,7 +362,7 @@ namespace Drivers.Compiler.IL
 
                         string fieldOffsetVal = anOwnField.OffsetInBytes.ToString();
                         string fieldSizeVal = (FieldTypeInfo.IsValueType ? FieldTypeInfo.SizeOnHeapInBytes : FieldTypeInfo.SizeOnStackInBytes).ToString();
-                        string fieldTypeIdVal = FieldTypeInfo.ID;
+                        string fieldTypeIdVal = FieldTypeInfo.UnderlyingType.IsInterface ? ObjectTypeInfo.ID : FieldTypeInfo.ID;
 
                         FieldTablesBlock.AddExternalLabel(fieldTypeIdVal);
                         AllFieldInfo.Add(new Tuple<string, string, string>(fieldOffsetVal, fieldSizeVal, fieldTypeIdVal));
