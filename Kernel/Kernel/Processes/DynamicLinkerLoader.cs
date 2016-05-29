@@ -56,7 +56,7 @@ namespace Kernel.Processes
             BasicConsole.WriteLine("Mapping free page for process...");
             void* unusedPAddr;
             byte* destMemPtr = (byte*) VirtualMemoryManager.MapFreePage(
-                UserMode ? VirtualMemoryImplementation.PageFlags.None : VirtualMemoryImplementation.PageFlags.KernelOnly,
+                UserMode ? PageFlags.None : PageFlags.KernelOnly,
                 out unusedPAddr);
             BasicConsole.WriteLine((String) "Physical address = " +
                                    (uint) VirtualMemoryManager.GetPhysicalAddress(destMemPtr));

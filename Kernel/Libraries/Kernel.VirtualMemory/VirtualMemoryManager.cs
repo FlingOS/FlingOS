@@ -26,11 +26,31 @@
 
 #endregion
 
+using System;
 using Drivers.Compiler.Attributes;
 using Kernel.Framework.Processes.Synchronisation;
+using Kernel.VirtualMemory.Implementations;
 
 namespace Kernel.VirtualMemory
 {
+    [Flags]
+    public enum UpdateUsedPagesFlags : byte
+    {
+        None = 0,
+        Physical = 1,
+        Virtual = 2,
+        Both = 3
+    }
+
+    [Flags]
+    public enum PageFlags : uint
+    {
+        None = 0,
+        Present = 1,
+        Writeable = 2,
+        KernelOnly = 4
+    }
+
     /// <summary>
     ///     The virtual memory manager for the kernel. Wraps the specific implementation to allow targetting different
     ///     architectures without
@@ -41,7 +61,7 @@ namespace Kernel.VirtualMemory
         /// <summary>
         ///     The specific virtual memory implementation to use.
         /// </summary>
-        [Group(Name = "IsolatedKernel_VirtualMemory")] private static VirtualMemoryImplementation impl;
+        [Group(Name = "IsolatedKernel_VirtualMemory")] private static IVirtualMemoryImplementation impl;
 
         [Group(Name = "IsolatedKernel_VirtualMemory")] private static readonly SpinLock MapFreePagesLock =
             new SpinLock(-1);
@@ -49,7 +69,7 @@ namespace Kernel.VirtualMemory
         /// <summary>
         ///     Initialises the virtual memory manager.
         /// </summary>
-        public static void Init(VirtualMemoryImplementation anImpl)
+        public static void Init(IVirtualMemoryImplementation anImpl)
         {
             impl = anImpl;
 
@@ -61,20 +81,20 @@ namespace Kernel.VirtualMemory
             impl.MapKernel();
         }
 
-        public static void* MapFreePage(VirtualMemoryImplementation.PageFlags flags, out void* physAddr)
+        public static void* MapFreePage(PageFlags flags, out void* physAddr)
         {
             return MapFreePages(flags, 1, out physAddr);
         }
 
-        public static void* MapFreePages(VirtualMemoryImplementation.PageFlags flags, int numPages,
+        public static void* MapFreePages(PageFlags flags, int numPages,
             out void* physAddrsStart)
         {
             uint virtAddrsStart = 0xDEADBEEF;
-            physAddrsStart = (void*) 0xDEADBEEF;
+            physAddrsStart = (void*)0xDEADBEEF;
 
             MapFreePagesLock.Enter();
 
-            void* result = (void*) 0xDEADBEEF;
+            void* result = (void*)0xDEADBEEF;
 
             try
             {
@@ -87,9 +107,9 @@ namespace Kernel.VirtualMemory
                     BasicConsole.WriteLine("!-!-!-!-!-!-!");
                 }
 
-                physAddrsStart = (void*) impl.FindFreePhysPageAddrs(numPages);
+                physAddrsStart = (void*)impl.FindFreePhysPageAddrs(numPages);
 
-                if ((uint) physAddrsStart == 0xDEADBEEF)
+                if ((uint)physAddrsStart == 0xDEADBEEF)
                 {
                     BasicConsole.WriteLine("!!! PANIC !!!");
                     BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
@@ -98,10 +118,10 @@ namespace Kernel.VirtualMemory
 
                 for (uint i = 0; i < numPages; i++)
                 {
-                    Map((uint) physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
+                    Map((uint)physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
                 }
 
-                result = (void*) virtAddrsStart;
+                result = (void*)virtAddrsStart;
             }
             finally
             {
@@ -111,19 +131,19 @@ namespace Kernel.VirtualMemory
             return result;
         }
 
-        public static void* MapFreePages(VirtualMemoryImplementation.PageFlags flags, int numPages, uint virtAddrsStart,
+        public static void* MapFreePages(PageFlags flags, int numPages, uint virtAddrsStart,
             out void* physAddrsStart)
         {
-            physAddrsStart = (void*) 0xDEADBEEF;
-            void* result = (void*) 0xDEADBEEF;
+            physAddrsStart = (void*)0xDEADBEEF;
+            void* result = (void*)0xDEADBEEF;
 
             MapFreePagesLock.Enter();
 
             try
             {
-                physAddrsStart = (void*) impl.FindFreePhysPageAddrs(numPages);
+                physAddrsStart = (void*)impl.FindFreePhysPageAddrs(numPages);
 
-                if ((uint) physAddrsStart == 0xDEADBEEF)
+                if ((uint)physAddrsStart == 0xDEADBEEF)
                 {
                     BasicConsole.WriteLine("!!! PANIC !!!");
                     BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
@@ -132,10 +152,10 @@ namespace Kernel.VirtualMemory
 
                 for (uint i = 0; i < numPages; i++)
                 {
-                    Map((uint) physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
+                    Map((uint)physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
                 }
 
-                result = (void*) virtAddrsStart;
+                result = (void*)virtAddrsStart;
             }
             finally
             {
@@ -145,12 +165,12 @@ namespace Kernel.VirtualMemory
             return result;
         }
 
-        public static void* MapFreePages(VirtualMemoryImplementation.PageFlags flags, int numPages, uint virtAddrsStart,
+        public static void* MapFreePages(PageFlags flags, int numPages, uint virtAddrsStart,
             uint physAddrsStart)
         {
             MapFreePagesLock.Enter();
 
-            void* result = (void*) 0xDEADBEEF;
+            void* result = (void*)0xDEADBEEF;
 
             try
             {
@@ -159,7 +179,7 @@ namespace Kernel.VirtualMemory
                     Map(physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
                 }
 
-                result = (void*) virtAddrsStart;
+                result = (void*)virtAddrsStart;
             }
             finally
             {
@@ -169,14 +189,14 @@ namespace Kernel.VirtualMemory
             return result;
         }
 
-        public static void* MapFreePhysicalPages(VirtualMemoryImplementation.PageFlags flags, int numPages,
+        public static void* MapFreePhysicalPages(PageFlags flags, int numPages,
             uint physAddrsStart)
         {
             uint virtAddrsStart = 0xDEADBEEF;
 
             MapFreePagesLock.Enter();
 
-            void* result = (void*) 0xDEADBEEF;
+            void* result = (void*)0xDEADBEEF;
 
             try
             {
@@ -194,7 +214,7 @@ namespace Kernel.VirtualMemory
                     Map(physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
                 }
 
-                result = (void*) virtAddrsStart;
+                result = (void*)virtAddrsStart;
             }
             finally
             {
@@ -204,20 +224,20 @@ namespace Kernel.VirtualMemory
             return result;
         }
 
-        public static void* MapFreePageForKernel(VirtualMemoryImplementation.PageFlags flags, out void* physAddr)
+        public static void* MapFreePageForKernel(PageFlags flags, out void* physAddr)
         {
             return MapFreePagesForKernel(flags, 1, out physAddr);
         }
 
-        public static void* MapFreePagesForKernel(VirtualMemoryImplementation.PageFlags flags, int numPages,
+        public static void* MapFreePagesForKernel(PageFlags flags, int numPages,
             out void* physAddrsStart)
         {
             uint virtAddrsStart = 0xDEADBEEF;
-            physAddrsStart = (void*) 0xDEADBEEF;
+            physAddrsStart = (void*)0xDEADBEEF;
 
             MapFreePagesLock.Enter();
 
-            void* result = (void*) 0xDEADBEEF;
+            void* result = (void*)0xDEADBEEF;
 
             try
             {
@@ -231,9 +251,9 @@ namespace Kernel.VirtualMemory
                     BasicConsole.WriteLine("!-!-!-!-!-!-!");
                 }
 
-                physAddrsStart = (void*) impl.FindFreePhysPageAddrs(numPages);
+                physAddrsStart = (void*)impl.FindFreePhysPageAddrs(numPages);
 
-                if ((uint) physAddrsStart == 0xDEADBEEF)
+                if ((uint)physAddrsStart == 0xDEADBEEF)
                 {
                     BasicConsole.WriteLine("!!! PANIC !!!");
                     BasicConsole.WriteLine("VirtMemManager.MapFreePages using 0xDEADBEEF for physical addresses!");
@@ -242,10 +262,10 @@ namespace Kernel.VirtualMemory
 
                 for (uint i = 0; i < numPages; i++)
                 {
-                    Map((uint) physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
+                    Map((uint)physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
                 }
 
-                result = (void*) virtAddrsStart;
+                result = (void*)virtAddrsStart;
             }
             finally
             {
@@ -255,14 +275,14 @@ namespace Kernel.VirtualMemory
             return result;
         }
 
-        public static void* MapFreePhysicalPagesForKernel(VirtualMemoryImplementation.PageFlags flags, int numPages,
+        public static void* MapFreePhysicalPagesForKernel(PageFlags flags, int numPages,
             uint physAddrsStart)
         {
             uint virtAddrsStart = 0xDEADBEEF;
 
             MapFreePagesLock.Enter();
 
-            void* result = (void*) 0xDEADBEEF;
+            void* result = (void*)0xDEADBEEF;
 
             try
             {
@@ -281,7 +301,7 @@ namespace Kernel.VirtualMemory
                     Map(physAddrsStart + i*4096, virtAddrsStart + i*4096, 4096, flags);
                 }
 
-                result = (void*) virtAddrsStart;
+                result = (void*)virtAddrsStart;
             }
             finally
             {
@@ -299,10 +319,10 @@ namespace Kernel.VirtualMemory
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public static void Map(void* pAddr, void* vAddr, uint size, VirtualMemoryImplementation.PageFlags flags,
+        public static void Map(void* pAddr, void* vAddr, uint size, PageFlags flags,
             UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
-            Map((uint) pAddr, (uint) vAddr, size, flags, UpdateUsedPages);
+            Map((uint)pAddr, (uint)vAddr, size, flags, UpdateUsedPages);
         }
 
         /// <summary>
@@ -313,10 +333,10 @@ namespace Kernel.VirtualMemory
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public static void Map(uint pAddr, void* vAddr, uint size, VirtualMemoryImplementation.PageFlags flags,
+        public static void Map(uint pAddr, void* vAddr, uint size, PageFlags flags,
             UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
-            Map(pAddr, (uint) vAddr, size, flags, UpdateUsedPages);
+            Map(pAddr, (uint)vAddr, size, flags, UpdateUsedPages);
         }
 
         /// <summary>
@@ -327,10 +347,10 @@ namespace Kernel.VirtualMemory
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public static void Map(void* pAddr, uint vAddr, uint size, VirtualMemoryImplementation.PageFlags flags,
+        public static void Map(void* pAddr, uint vAddr, uint size, PageFlags flags,
             UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
-            Map((uint) pAddr, vAddr, size, flags, UpdateUsedPages);
+            Map((uint)pAddr, vAddr, size, flags, UpdateUsedPages);
         }
 
         /// <summary>
@@ -341,7 +361,7 @@ namespace Kernel.VirtualMemory
         /// <param name="size">The amount of memory (in bytes) to map (must be a multiple of 4KiB)</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public static void Map(uint pAddr, uint vAddr, uint size, VirtualMemoryImplementation.PageFlags flags,
+        public static void Map(uint pAddr, uint vAddr, uint size, PageFlags flags,
             UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             //if (Processes.Scheduler.OutputMessages)
@@ -349,7 +369,7 @@ namespace Kernel.VirtualMemory
             //    BasicConsole.WriteLine("Debug Point 9.1.4.5.1");
             //}
 
-            flags |= VirtualMemoryImplementation.PageFlags.Present | VirtualMemoryImplementation.PageFlags.Writeable;
+            flags |= PageFlags.Present | PageFlags.Writeable;
             while (size > 0)
             {
                 //if (Processes.Scheduler.OutputMessages)
@@ -387,7 +407,7 @@ namespace Kernel.VirtualMemory
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         public static void Unmap(void* vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
-            Unmap((uint) vAddr, UpdateUsedPages);
+            Unmap((uint)vAddr, UpdateUsedPages);
         }
 
         /// <summary>
@@ -422,7 +442,7 @@ namespace Kernel.VirtualMemory
 
         public static bool IsVirtualMapped(void* vAddr)
         {
-            return IsVirtualMapped((uint) vAddr);
+            return IsVirtualMapped((uint)vAddr);
         }
 
         public static bool IsVirtualMapped(uint vAddr)
@@ -473,7 +493,7 @@ namespace Kernel.VirtualMemory
         /// </remarks>
         public static void* GetPhysicalAddress(void* vAddr)
         {
-            return (void*) GetPhysicalAddress((uint) vAddr);
+            return (void*)GetPhysicalAddress((uint)vAddr);
         }
 
         /// <summary>
@@ -501,7 +521,7 @@ namespace Kernel.VirtualMemory
                 impl.Test();
 
                 void* unusedPAddr;
-                byte* ptr = (byte*) MapFreePage(VirtualMemoryImplementation.PageFlags.KernelOnly, out unusedPAddr);
+                byte* ptr = (byte*)MapFreePage(PageFlags.KernelOnly, out unusedPAddr);
                 for (int i = 0; i < 4096; i++, ptr++)
                 {
                     *ptr = 5;

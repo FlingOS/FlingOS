@@ -187,8 +187,7 @@ namespace Kernel.VirtualMemory
         public void ReplaceKernelPage(uint vAddr, uint newPAddr)
         {
             KernelPages[vAddr] = newPAddr;
-            VirtualMemoryManager.Map(newPAddr, vAddr, 0x1000, VirtualMemoryImplementation.PageFlags.KernelOnly,
-                UpdateUsedPagesFlags.None);
+            VirtualMemoryManager.Map(newPAddr, vAddr, 0x1000, PageFlags.KernelOnly, UpdateUsedPagesFlags.None);
         }
 
         public void SwitchFrom(bool ProcessIsUM, MemoryLayout old)
@@ -291,9 +290,9 @@ namespace Kernel.VirtualMemory
             //}
 
             {
-                VirtualMemoryImplementation.PageFlags flags = ProcessIsUM
-                    ? VirtualMemoryImplementation.PageFlags.None
-                    : VirtualMemoryImplementation.PageFlags.KernelOnly;
+                PageFlags flags = ProcessIsUM
+                    ? PageFlags.None
+                    : PageFlags.KernelOnly;
 
                 UInt32Dictionary.Iterator iterator = CodePages.GetIterator();
                 while (iterator.HasNext())
@@ -316,8 +315,8 @@ namespace Kernel.VirtualMemory
                 //}
 
                 flags = ProcessIsUM
-                    ? VirtualMemoryImplementation.PageFlags.None
-                    : VirtualMemoryImplementation.PageFlags.KernelOnly;
+                    ? PageFlags.None
+                    : PageFlags.KernelOnly;
                 iterator = DataPages.GetIterator();
                 while (iterator.HasNext())
                 {
@@ -364,7 +363,7 @@ namespace Kernel.VirtualMemory
                 }
                 iterator.RestoreState();
 
-                flags = VirtualMemoryImplementation.PageFlags.KernelOnly;
+                flags = PageFlags.KernelOnly;
                 iterator = KernelPages.GetIterator();
                 while (iterator.HasNext())
                 {
@@ -403,9 +402,9 @@ namespace Kernel.VirtualMemory
         {
             int loaded = 0;
 
-            VirtualMemoryImplementation.PageFlags flags = ProcessIsUM
-                ? VirtualMemoryImplementation.PageFlags.None
-                : VirtualMemoryImplementation.PageFlags.KernelOnly;
+            PageFlags flags = ProcessIsUM
+                ? PageFlags.None
+                : PageFlags.KernelOnly;
 
             UInt32Dictionary.Iterator iterator = y.CodePages.GetIterator();
             while (iterator.HasNext())
@@ -441,8 +440,8 @@ namespace Kernel.VirtualMemory
             }
 
             flags = ProcessIsUM
-                ? VirtualMemoryImplementation.PageFlags.None
-                : VirtualMemoryImplementation.PageFlags.KernelOnly;
+                ? PageFlags.None
+                : PageFlags.KernelOnly;
             iterator = y.DataPages.GetIterator();
             while (iterator.HasNext())
             {
@@ -502,7 +501,7 @@ namespace Kernel.VirtualMemory
                 }
             }
 
-            flags = VirtualMemoryImplementation.PageFlags.KernelOnly;
+            flags = PageFlags.KernelOnly;
             iterator = y.KernelPages.GetIterator();
             while (iterator.HasNext())
             {
@@ -618,9 +617,9 @@ namespace Kernel.VirtualMemory
 
         public bool ContainsAnyVirtualAddresses(uint startAddr, int count)
         {
-            return CodePages.ContainsAnyKeyInRange(startAddr, startAddr + (uint) count) ||
-                   DataPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint) count) ||
-                   KernelPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint) count);
+            return CodePages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count) ||
+                   DataPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count) ||
+                   KernelPages.ContainsAnyKeyInRange(startAddr, startAddr + (uint)count);
         }
 
         public bool ContainsAllVirtualAddresses(uint startAddr, uint count, uint step)
@@ -644,9 +643,9 @@ namespace Kernel.VirtualMemory
 
         public bool ContainsAnyPhysicalAddresses(uint startAddr, int count)
         {
-            return CodePages.ContainsAnyValueInRange(startAddr, startAddr + (uint) count) ||
-                   DataPages.ContainsAnyValueInRange(startAddr, startAddr + (uint) count) ||
-                   KernelPages.ContainsAnyValueInRange(startAddr, startAddr + (uint) count);
+            return CodePages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count) ||
+                   DataPages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count) ||
+                   KernelPages.ContainsAnyValueInRange(startAddr, startAddr + (uint)count);
         }
 
         public bool ContainsAllPhysicalAddresses(uint startAddr, uint count, uint step)

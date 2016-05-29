@@ -878,15 +878,15 @@ namespace Kernel.Tasks
                                 {
                                     ptr = (uint) VirtualMemoryManager.MapFreePagesForKernel(
                                         CallerProcess.UserMode
-                                            ? VirtualMemoryImplementation.PageFlags.None
-                                            : VirtualMemoryImplementation.PageFlags.KernelOnly, count, out unusedPAddr);
+                                            ? PageFlags.None
+                                            : PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
                                 else
                                 {
                                     ptr = (uint) VirtualMemoryManager.MapFreePages(
                                         CallerProcess.UserMode
-                                            ? VirtualMemoryImplementation.PageFlags.None
-                                            : VirtualMemoryImplementation.PageFlags.KernelOnly, count, out unusedPAddr);
+                                            ? PageFlags.None
+                                            : PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
                             }
                             else
@@ -906,8 +906,8 @@ namespace Kernel.Tasks
                                     void* unusedPAddr;
                                     ptr = (uint) VirtualMemoryManager.MapFreePages(
                                         CallerProcess.UserMode
-                                            ? VirtualMemoryImplementation.PageFlags.None
-                                            : VirtualMemoryImplementation.PageFlags.KernelOnly, count, Param2,
+                                            ? PageFlags.None
+                                            : PageFlags.KernelOnly, count, Param2,
                                         out unusedPAddr);
                                 }
 #if DSC_TRACE
@@ -936,15 +936,15 @@ namespace Kernel.Tasks
                                     {
                                         ptr = (uint) VirtualMemoryManager.MapFreePhysicalPagesForKernel(
                                             CallerProcess.UserMode
-                                                ? VirtualMemoryImplementation.PageFlags.None
-                                                : VirtualMemoryImplementation.PageFlags.KernelOnly, count, Param1);
+                                                ? PageFlags.None
+                                                : PageFlags.KernelOnly, count, Param1);
                                     }
                                     else
                                     {
                                         ptr = (uint) VirtualMemoryManager.MapFreePhysicalPages(
                                             CallerProcess.UserMode
-                                                ? VirtualMemoryImplementation.PageFlags.None
-                                                : VirtualMemoryImplementation.PageFlags.KernelOnly, count, Param1);
+                                                ? PageFlags.None
+                                                : PageFlags.KernelOnly, count, Param1);
                                     }
                                 }
                             }
@@ -964,8 +964,8 @@ namespace Kernel.Tasks
 #endif
                                         ptr = (uint) VirtualMemoryManager.MapFreePages(
                                             CallerProcess.UserMode
-                                                ? VirtualMemoryImplementation.PageFlags.None
-                                                : VirtualMemoryImplementation.PageFlags.KernelOnly, count, Param2,
+                                                ? PageFlags.None
+                                                : PageFlags.KernelOnly, count, Param2,
                                             Param1);
                                     }
                                 }

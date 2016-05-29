@@ -105,8 +105,8 @@ namespace Kernel.Multiprocessing
 #endif
             State->KernelStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
                 UserMode
-                    ? VirtualMemoryImplementation.PageFlags.None
-                    : VirtualMemoryImplementation.PageFlags.KernelOnly, out KernelStackBottomPAddr) +
+                    ? PageFlags.None
+                    : PageFlags.KernelOnly, out KernelStackBottomPAddr) +
                                     KernelStackTopOffset;
             //4KiB, page-aligned
 
@@ -120,16 +120,16 @@ namespace Kernel.Multiprocessing
             {
                 State->ThreadStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
                     UserMode
-                        ? VirtualMemoryImplementation.PageFlags.None
-                        : VirtualMemoryImplementation.PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
+                        ? PageFlags.None
+                        : PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
                                         ThreadStackTopOffset; //4KiB, page-aligned
             }
             else
             {
                 State->ThreadStackTop = (byte*) VirtualMemoryManager.MapFreePage(
                     UserMode
-                        ? VirtualMemoryImplementation.PageFlags.None
-                        : VirtualMemoryImplementation.PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
+                        ? PageFlags.None
+                        : PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
                                         ThreadStackTopOffset; //4KiB, page-aligned
             }
 

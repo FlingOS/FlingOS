@@ -33,6 +33,7 @@
 using System;
 using Drivers.Compiler.Attributes;
 using Kernel.Framework.Collections;
+using Object = Kernel.Framework.Object;
 using OutOfMemoryException = Kernel.Framework.Exceptions.OutOfMemoryException;
 using String = Kernel.Framework.String;
 
@@ -41,13 +42,13 @@ namespace Kernel.VirtualMemory.Implementations
     /// <summary>
     ///     Provides methods for setting up paged virtual memory.
     /// </summary>
-    public unsafe class x86VirtualMemoryImplementation : VirtualMemoryImplementation
+    public unsafe class X86VirtualMemoryImplementation : Object, IVirtualMemoryImplementation
     {
         /// <summary>
         ///     x86-specific Page Table Entry (bit) flags
         /// </summary>
         [Flags]
-        public enum PTEFlags : uint
+        private enum PTEFlags : uint
         {
             /// <summary>
             ///     No flags.
@@ -125,14 +126,14 @@ namespace Kernel.VirtualMemory.Implementations
         ///     Initialises the new x86 object.
         /// </summary>
         [NoDebug]
-        public x86VirtualMemoryImplementation()
+        public X86VirtualMemoryImplementation()
         {
         }
 
         /// <summary>
         ///     Tests the virtual memory system.
         /// </summary>
-        public override void Test()
+        public void Test()
         {
             BasicConsole.WriteLine("Testing paging...");
 
@@ -141,15 +142,15 @@ namespace Kernel.VirtualMemory.Implementations
                 uint pAddr = 0x40000000;
                 uint vAddr1 = 0x40000000;
                 uint vAddr2 = 0x60000000;
-                uint* vPtr1 = (uint*) vAddr1;
-                uint* vPtr2 = (uint*) vAddr2;
+                uint* vPtr1 = (uint*)vAddr1;
+                uint* vPtr2 = (uint*)vAddr2;
 
                 BasicConsole.WriteLine("Set up addresses.");
-                BasicConsole.WriteLine((String) "pAddr=" + pAddr);
-                BasicConsole.WriteLine((String) "vAddr1=" + vAddr1);
-                BasicConsole.WriteLine((String) "vAddr2=" + vAddr2);
-                BasicConsole.WriteLine((String) "vPtr1=" + (uint) vPtr1);
-                BasicConsole.WriteLine((String) "vPtr2=" + (uint) vPtr2);
+                BasicConsole.WriteLine((String)"pAddr=" + pAddr);
+                BasicConsole.WriteLine((String)"vAddr1=" + vAddr1);
+                BasicConsole.WriteLine((String)"vAddr2=" + vAddr2);
+                BasicConsole.WriteLine((String)"vPtr1=" + (uint)vPtr1);
+                BasicConsole.WriteLine((String)"vPtr2=" + (uint)vPtr2);
 
                 Map(pAddr, vAddr1);
                 BasicConsole.WriteLine("Mapped virtual address 1.");
@@ -188,10 +189,10 @@ namespace Kernel.VirtualMemory.Implementations
         /// <summary>
         ///     Prints out information about the free physical and virtual pages.
         /// </summary>
-        public override void PrintUsedPages()
+        public void PrintUsedPages()
         {
-            BasicConsole.WriteLine("Used physical pages: " + (String) UsedPhysPages.Count);
-            BasicConsole.WriteLine("Used virtual pages : " + (String) UsedVirtPages.Count);
+            BasicConsole.WriteLine("Used physical pages: " + (String)UsedPhysPages.Count);
+            BasicConsole.WriteLine("Used virtual pages : " + (String)UsedVirtPages.Count);
             BasicConsole.DelayOutput(5);
         }
 
@@ -208,7 +209,7 @@ namespace Kernel.VirtualMemory.Implementations
         /// <param name="num">The number of physical pages to find.</param>
         /// <returns>The address of the first page.</returns>
         [NoDebug]
-        public override uint FindFreePhysPageAddrs(int num)
+        public uint FindFreePhysPageAddrs(int num)
         {
             int result = UsedPhysPages.FindContiguousClearEntries(num);
             if (result == -1)
@@ -219,7 +220,7 @@ namespace Kernel.VirtualMemory.Implementations
                 ExceptionMethods.Throw(new OutOfMemoryException("Could not find any more free physical pages."));
             }
 
-            return (uint) (result*4096);
+            return (uint)(result*4096);
         }
 
         /// <summary>
@@ -235,7 +236,7 @@ namespace Kernel.VirtualMemory.Implementations
         /// <param name="num">The number of virtual pages to find.</param>
         /// <returns>The address of the first page.</returns>
         [NoDebug]
-        public override uint FindFreeVirtPageAddrs(int num)
+        public uint FindFreeVirtPageAddrs(int num)
         {
             int result = UsedVirtPages.FindContiguousClearEntries(num);
             if (result == -1)
@@ -246,7 +247,7 @@ namespace Kernel.VirtualMemory.Implementations
                 ExceptionMethods.Throw(new OutOfMemoryException("Could not find any more free virtual pages."));
             }
 
-            return (uint) (result*4096);
+            return (uint)(result*4096);
         }
 
         /// <summary>
@@ -255,7 +256,7 @@ namespace Kernel.VirtualMemory.Implementations
         /// <param name="num">The number of virtual pages to find.</param>
         /// <returns>The address of the first page.</returns>
         [NoDebug]
-        public override uint FindFreeVirtPageAddrsForKernel(int num)
+        public uint FindFreeVirtPageAddrsForKernel(int num)
         {
             int result = AllUsedVirtPages.FindContiguousClearEntries(num);
             if (result == -1)
@@ -267,10 +268,25 @@ namespace Kernel.VirtualMemory.Implementations
                     new OutOfMemoryException("Could not find any more free virtual pages for the kernel."));
             }
 
-            return (uint) (result*4096);
+            return (uint)(result*4096);
         }
 
         //public static bool Unmap_Print = false;
+
+        /// <summary>
+        ///     Maps the specified virtual address to the specified physical address.
+        /// </summary>
+        /// <remarks>
+        ///     Uses the flags Present, KernelOnly and Writeable as defaults.
+        /// </remarks>
+        /// <param name="pAddr">The physical address to map to.</param>
+        /// <param name="vAddr">The virtual address to map.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
+        [NoDebug]
+        public void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
+        {
+            Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable, UpdateUsedPages);
+        }
 
         /// <summary>
         ///     Maps the specified virtual address to the specified physical address.
@@ -280,7 +296,7 @@ namespace Kernel.VirtualMemory.Implementations
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         [NoDebug]
-        public override void Map(uint pAddr, uint vAddr, PageFlags flags,
+        public void Map(uint pAddr, uint vAddr, PageFlags flags,
             UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             PTEFlags pteFlags = PTEFlags.None;
@@ -300,109 +316,6 @@ namespace Kernel.VirtualMemory.Implementations
         }
 
         /// <summary>
-        ///     Maps the specified virtual address to the specified physical address.
-        /// </summary>
-        /// <param name="pAddr">The physical address to map to.</param>
-        /// <param name="vAddr">The virtual address to map.</param>
-        /// <param name="flags">The flags to apply to the allocated pages.</param>
-        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        [NoDebug]
-        private void Map(uint pAddr, uint vAddr, PTEFlags flags,
-            UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
-        {
-#if PAGING_TRACE
-            BasicConsole.WriteLine("Mapping addresses...");
-#endif
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.1");
-            //}
-
-            //Calculate page directory and page table indices
-            uint virtPDIdx = vAddr >> 22;
-            uint virtPTIdx = (vAddr >> 12) & 0x03FF;
-
-            uint physPDIdx = pAddr >> 22;
-            uint physPTIdx = (pAddr >> 12) & 0x03FF;
-
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.2");
-            //}
-
-#if PAGING_TRACE
-            BasicConsole.WriteLine(((Framework.String)"pAddr=") + pAddr);
-            BasicConsole.WriteLine(((Framework.String)"vAddr=") + vAddr);
-            BasicConsole.WriteLine(((Framework.String)"physPDIdx=") + physPDIdx);
-            BasicConsole.WriteLine(((Framework.String)"physPTIdx=") + physPTIdx);
-            BasicConsole.WriteLine(((Framework.String)"virtPDIdx=") + virtPDIdx);
-            BasicConsole.WriteLine(((Framework.String)"virtPTIdx=") + virtPTIdx);
-#endif
-            if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
-            {
-                UsedPhysPages.Set((int) (physPDIdx*1024 + physPTIdx));
-            }
-            int virtIndex = (int) (virtPDIdx*1024 + virtPTIdx);
-            AllUsedVirtPages.Set(virtIndex);
-            if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
-            {
-                UsedVirtPages.Set(virtIndex);
-            }
-
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.3");
-            //}
-
-            //Get a pointer to the pre-allocated page table
-            uint* virtPTPtr = GetFixedPage(virtPDIdx);
-#if PAGING_TRACE
-            BasicConsole.WriteLine(((Framework.String)"ptPtr=") + (uint)virtPTPtr);
-
-            if (Processes.Scheduler.OutputMessages)
-            {
-                if (vAddr == 0x00106000)
-                {
-                    BasicConsole.Write("Remapping 0x00106000 from ");
-                    Framework.String valStr = "0x        ";
-                    ExceptionMethods.FillString(GetPhysicalAddress(vAddr), 9, valStr);
-                    BasicConsole.Write(valStr);
-                    BasicConsole.Write(" to ");
-                    ExceptionMethods.FillString(pAddr, 9, valStr);
-                    BasicConsole.WriteLine(valStr);
-                    BasicConsole.Write("ESP: ");
-                    ExceptionMethods.FillString((uint)ExceptionMethods.StackPointer, 9, valStr);
-                    BasicConsole.WriteLine(valStr);
-                }
-            }
-#endif
-
-            //Set the page table entry
-            SetPageEntry(virtPTPtr, virtPTIdx, pAddr, flags);
-
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.5");
-            //}
-
-            //Set directory table entry
-            SetDirectoryEntry(virtPDIdx, (uint*) GetPhysicalAddress((uint) virtPTPtr));
-
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.6");
-            //}
-
-            //Invalidate the page table entry so that mapping isn't CPU cached.
-            InvalidatePTE(vAddr);
-
-            //if (Processes.Scheduler.OutputMessages)
-            //{
-            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.7");
-            //}
-        }
-
-        /// <summary>
         ///     Unmaps the specified page of virtual memory.
         /// </summary>
         /// <remarks>
@@ -418,7 +331,7 @@ namespace Kernel.VirtualMemory.Implementations
         /// <param name="vAddr">The virtual address of the page to unmap.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
         [NoDebug]
-        public override void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
+        public void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
         {
             //if (Unmap_Print)
             //{
@@ -467,11 +380,11 @@ namespace Kernel.VirtualMemory.Implementations
             //}
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
-                UsedPhysPages.Clear((int) (physPDIdx*1024 + physPTIdx));
+                UsedPhysPages.Clear((int)(physPDIdx*1024 + physPTIdx));
             }
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
             {
-                UsedVirtPages.Clear((int) (virtPDIdx*1024 + virtPTIdx));
+                UsedVirtPages.Clear((int)(virtPDIdx*1024 + virtPTIdx));
             }
 
 
@@ -530,7 +443,7 @@ namespace Kernel.VirtualMemory.Implementations
         ///     This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
         [NoDebug]
-        public override uint GetPhysicalAddress(uint vAddr)
+        public uint GetPhysicalAddress(uint vAddr)
         {
             //Calculate page directory and page table indices
             uint pdIdx = vAddr >> 22;
@@ -545,15 +458,15 @@ namespace Kernel.VirtualMemory.Implementations
             return (ptPtr[ptIdx] & 0xFFFFF000) + (vAddr & 0xFFF);
         }
 
-        public override bool IsVirtualMapped(uint vAddr)
+        public bool IsVirtualMapped(uint vAddr)
         {
             uint virtPDIdx = vAddr >> 22;
             uint virtPTIdx = (vAddr >> 12) & 0x03FF;
 
-            return UsedVirtPages.IsSet((int) (virtPDIdx*1024 + virtPTIdx));
+            return UsedVirtPages.IsSet((int)(virtPDIdx*1024 + virtPTIdx));
         }
 
-        public override bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd)
+        public bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd)
         {
             uint physPDIdx = pAddrStart >> 22;
             uint physPTIdx = (pAddrStart >> 12) & 0x03FF;
@@ -561,8 +474,8 @@ namespace Kernel.VirtualMemory.Implementations
             uint physEndPDIdx = pAddrEnd >> 22;
             uint physEndPTIdx = (pAddrEnd >> 12) & 0x03FF;
 
-            int entry = (int) (physPDIdx*1024 + physPTIdx);
-            int endEntry = (int) (physEndPDIdx*1024 + physEndPTIdx);
+            int entry = (int)(physPDIdx*1024 + physPTIdx);
+            int endEntry = (int)(physEndPDIdx*1024 + physEndPTIdx);
 
             for (; entry < endEntry; entry++)
             {
@@ -578,7 +491,7 @@ namespace Kernel.VirtualMemory.Implementations
         ///     Maps in the main kernel memory.
         /// </summary>
         [NoDebug]
-        public override void MapKernel()
+        public void MapKernel()
         {
 #if PAGING_TRACE
             BasicConsole.Write("Mapping 1st 1MiB...");
@@ -605,8 +518,8 @@ namespace Kernel.VirtualMemory.Implementations
             //Map in the main kernel memory
 
             //Map all the required pages in between these two pointers.
-            uint KernelMemStartPtr = (uint) GetKernelMemStartPtr();
-            uint KernelMemEndPtr = (uint) GetKernelMemEndPtr();
+            uint KernelMemStartPtr = (uint)GetKernelMemStartPtr();
+            uint KernelMemEndPtr = (uint)GetKernelMemEndPtr();
 
 #if PAGING_TRACE
             BasicConsole.WriteLine("Start pointer : " + (Framework.String)KernelMemStartPtr);
@@ -620,8 +533,8 @@ namespace Kernel.VirtualMemory.Implementations
             KernelMemEndPtr = (KernelMemEndPtr/4096 + 1)*4096;
 
 //#if PAGING_TRACE
-            BasicConsole.WriteLine("VM: Start pointer : " + (String) KernelMemStartPtr);
-            BasicConsole.WriteLine("VM: End pointer : " + (String) KernelMemEndPtr);
+            BasicConsole.WriteLine("VM: Start pointer : " + (String)KernelMemStartPtr);
+            BasicConsole.WriteLine("VM: End pointer : " + (String)KernelMemEndPtr);
 //#endif
 
             physAddr = KernelMemStartPtr - VirtToPhysOffset;
@@ -640,6 +553,187 @@ namespace Kernel.VirtualMemory.Implementations
             BasicConsole.WriteLine("Done.");
             BasicConsole.DelayOutput(5);
 #endif
+        }
+
+        public void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout)
+        {
+            uint cPtr = (uint)GetBSS_StartPtr();
+            uint endPtr = (uint)GetBSS_EndPtr();
+            uint cPhysPtr = GetPhysicalAddress(cPtr);
+
+            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+            {
+                TheLayout.AddDataPage(cPhysPtr, cPtr);
+            }
+        }
+
+        public void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
+        {
+            uint cPtr = (uint)GetStaticFields_StartPtr();
+            uint endPtr = (uint)GetStaticFields_EndPtr();
+            uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
+            uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
+            uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
+            uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
+            uint isolatedKFSPtr = (uint)GetIsolatedKernel_FrameworkPtr();
+
+            uint cPhysPtr = GetPhysicalAddress(cPtr);
+
+            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+            {
+                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
+                    cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                {
+                    TheLayout.AddDataPage(cPhysPtr, cPtr);
+                }
+            }
+        }
+
+        public uint[] GetBuiltInProcessVAddrs()
+        {
+            if (BuiltInProcessVAddrs == null)
+            {
+                uint startPtr = (uint)GetStaticFields_StartPtr();
+                uint endPtr = (uint)GetStaticFields_EndPtr();
+                uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
+                uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
+                uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
+                uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
+                uint isolatedKFSPtr = (uint)GetIsolatedKernel_FrameworkPtr();
+
+                uint startPhysPtr = GetPhysicalAddress(startPtr);
+
+                int count = 0;
+
+                uint cPtr = startPtr;
+                uint cPhysPtr = startPhysPtr;
+                for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+                {
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
+                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                    {
+                        count++;
+                    }
+                }
+
+                BuiltInProcessVAddrs = new uint[count];
+
+                cPtr = startPtr;
+                cPhysPtr = startPhysPtr;
+                for (int i = 0; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
+                {
+                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
+                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                    {
+                        BuiltInProcessVAddrs[i++] = cPtr;
+                    }
+                }
+            }
+
+            return BuiltInProcessVAddrs;
+        }
+
+        /// <summary>
+        ///     Maps the specified virtual address to the specified physical address.
+        /// </summary>
+        /// <param name="pAddr">The physical address to map to.</param>
+        /// <param name="vAddr">The virtual address to map.</param>
+        /// <param name="flags">The flags to apply to the allocated pages.</param>
+        /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
+        [NoDebug]
+        private void Map(uint pAddr, uint vAddr, PTEFlags flags,
+            UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
+        {
+#if PAGING_TRACE
+            BasicConsole.WriteLine("Mapping addresses...");
+#endif
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.1");
+            //}
+
+            //Calculate page directory and page table indices
+            uint virtPDIdx = vAddr >> 22;
+            uint virtPTIdx = (vAddr >> 12) & 0x03FF;
+
+            uint physPDIdx = pAddr >> 22;
+            uint physPTIdx = (pAddr >> 12) & 0x03FF;
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.2");
+            //}
+
+#if PAGING_TRACE
+            BasicConsole.WriteLine(((Framework.String)"pAddr=") + pAddr);
+            BasicConsole.WriteLine(((Framework.String)"vAddr=") + vAddr);
+            BasicConsole.WriteLine(((Framework.String)"physPDIdx=") + physPDIdx);
+            BasicConsole.WriteLine(((Framework.String)"physPTIdx=") + physPTIdx);
+            BasicConsole.WriteLine(((Framework.String)"virtPDIdx=") + virtPDIdx);
+            BasicConsole.WriteLine(((Framework.String)"virtPTIdx=") + virtPTIdx);
+#endif
+            if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
+            {
+                UsedPhysPages.Set((int)(physPDIdx*1024 + physPTIdx));
+            }
+            int virtIndex = (int)(virtPDIdx*1024 + virtPTIdx);
+            AllUsedVirtPages.Set(virtIndex);
+            if ((UpdateUsedPages & UpdateUsedPagesFlags.Virtual) != 0)
+            {
+                UsedVirtPages.Set(virtIndex);
+            }
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.3");
+            //}
+
+            //Get a pointer to the pre-allocated page table
+            uint* virtPTPtr = GetFixedPage(virtPDIdx);
+#if PAGING_TRACE
+            BasicConsole.WriteLine(((Framework.String)"ptPtr=") + (uint)virtPTPtr);
+
+            if (Processes.Scheduler.OutputMessages)
+            {
+                if (vAddr == 0x00106000)
+                {
+                    BasicConsole.Write("Remapping 0x00106000 from ");
+                    Framework.String valStr = "0x        ";
+                    ExceptionMethods.FillString(GetPhysicalAddress(vAddr), 9, valStr);
+                    BasicConsole.Write(valStr);
+                    BasicConsole.Write(" to ");
+                    ExceptionMethods.FillString(pAddr, 9, valStr);
+                    BasicConsole.WriteLine(valStr);
+                    BasicConsole.Write("ESP: ");
+                    ExceptionMethods.FillString((uint)ExceptionMethods.StackPointer, 9, valStr);
+                    BasicConsole.WriteLine(valStr);
+                }
+            }
+#endif
+
+            //Set the page table entry
+            SetPageEntry(virtPTPtr, virtPTIdx, pAddr, flags);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.5");
+            //}
+
+            //Set directory table entry
+            SetDirectoryEntry(virtPDIdx, (uint*)GetPhysicalAddress((uint)virtPTPtr));
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.6");
+            //}
+
+            //Invalidate the page table entry so that mapping isn't CPU cached.
+            InvalidatePTE(vAddr);
+
+            //if (Processes.Scheduler.OutputMessages)
+            //{
+            //    BasicConsole.WriteLine("Debug Point 9.1.4.5.2.7");
+            //}
         }
 
         /// <summary>
@@ -670,7 +764,7 @@ namespace Kernel.VirtualMemory.Implementations
             BasicConsole.WriteLine(((Framework.String)"addr=") + addr);
 #endif
 
-            pageTablePtr[entry] = addr | (uint) flags;
+            pageTablePtr[entry] = addr | (uint)flags;
 
 #if PAGING_TRACE
             if(pageTablePtr[entry] != (addr | 3))
@@ -696,7 +790,7 @@ namespace Kernel.VirtualMemory.Implementations
             BasicConsole.WriteLine(((Framework.String)"pageNum=") + pageNum);
 #endif
 
-            dirPtr[pageNum] = (uint) pageTablePhysPtr | 7;
+            dirPtr[pageNum] = (uint)pageTablePhysPtr | 7;
 #if PAGING_TRACE
             if (dirPtr[pageNum] != ((uint)pageTablePhysPtr | 3))
             {
@@ -828,84 +922,6 @@ namespace Kernel.VirtualMemory.Implementations
         public static uint GetCR3()
         {
             return 0;
-        }
-
-        public override void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout)
-        {
-            uint cPtr = (uint) GetBSS_StartPtr();
-            uint endPtr = (uint) GetBSS_EndPtr();
-            uint cPhysPtr = GetPhysicalAddress(cPtr);
-
-            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
-            {
-                TheLayout.AddDataPage(cPhysPtr, cPtr);
-            }
-        }
-
-        public override void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
-        {
-            uint cPtr = (uint) GetStaticFields_StartPtr();
-            uint endPtr = (uint) GetStaticFields_EndPtr();
-            uint isolatedKPtr = (uint) GetIsolatedKernelPtr();
-            uint isolatedKH_MPPtr = (uint) GetIsolatedKernel_Hardware_MultiprocessingPtr();
-            uint isolatedKH_DPtr = (uint) GetIsolatedKernel_Hardware_DevicesPtr();
-            uint isolatedKVMPtr = (uint) GetIsolatedKernel_VirtualMemoryPtr();
-            uint isolatedKFSPtr = (uint) GetIsolatedKernel_FrameworkPtr();
-
-            uint cPhysPtr = GetPhysicalAddress(cPtr);
-
-            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
-            {
-                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                    cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
-                {
-                    TheLayout.AddDataPage(cPhysPtr, cPtr);
-                }
-            }
-        }
-
-        public override uint[] GetBuiltInProcessVAddrs()
-        {
-            if (BuiltInProcessVAddrs == null)
-            {
-                uint startPtr = (uint) GetStaticFields_StartPtr();
-                uint endPtr = (uint) GetStaticFields_EndPtr();
-                uint isolatedKPtr = (uint) GetIsolatedKernelPtr();
-                uint isolatedKH_MPPtr = (uint) GetIsolatedKernel_Hardware_MultiprocessingPtr();
-                uint isolatedKH_DPtr = (uint) GetIsolatedKernel_Hardware_DevicesPtr();
-                uint isolatedKVMPtr = (uint) GetIsolatedKernel_VirtualMemoryPtr();
-                uint isolatedKFSPtr = (uint) GetIsolatedKernel_FrameworkPtr();
-
-                uint startPhysPtr = GetPhysicalAddress(startPtr);
-
-                int count = 0;
-
-                uint cPtr = startPtr;
-                uint cPhysPtr = startPhysPtr;
-                for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
-                {
-                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
-                    {
-                        count++;
-                    }
-                }
-
-                BuiltInProcessVAddrs = new uint[count];
-
-                cPtr = startPtr;
-                cPhysPtr = startPhysPtr;
-                for (int i = 0; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
-                {
-                    if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
-                    {
-                        BuiltInProcessVAddrs[i++] = cPtr;
-                    }
-                }
-            }
-
-            return BuiltInProcessVAddrs;
         }
     }
 }

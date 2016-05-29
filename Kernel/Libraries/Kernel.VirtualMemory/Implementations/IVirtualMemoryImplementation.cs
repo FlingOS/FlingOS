@@ -26,48 +26,28 @@
 
 #endregion
 
-using System;
-using Drivers.Compiler.Attributes;
-using Object = Kernel.Framework.Object;
+using Kernel.Framework;
 
-namespace Kernel.VirtualMemory
+namespace Kernel.VirtualMemory.Implementations
 {
-    [Flags]
-    public enum UpdateUsedPagesFlags : byte
-    {
-        None = 0,
-        Physical = 1,
-        Virtual = 2,
-        Both = 3
-    }
-
     /// <summary>
     ///     Represents a specific implementation of a virtual memory system.
     /// </summary>
-    public abstract class VirtualMemoryImplementation : Object
+    public interface IVirtualMemoryImplementation : IObject
     {
-        [Flags]
-        public enum PageFlags : uint
-        {
-            None = 0,
-            Present = 1,
-            Writeable = 2,
-            KernelOnly = 4
-        }
-
         /// <summary>
         ///     Tests the virtual memory system.
         /// </summary>
-        public abstract void Test();
+        void Test();
 
         /// <summary>
         ///     Prints out information about the free physical and virtual pages.
         /// </summary>
-        public abstract void PrintUsedPages();
+        void PrintUsedPages();
 
-        public abstract uint FindFreePhysPageAddrs(int num);
-        public abstract uint FindFreeVirtPageAddrs(int num);
-        public abstract uint FindFreeVirtPageAddrsForKernel(int num);
+        uint FindFreePhysPageAddrs(int num);
+        uint FindFreeVirtPageAddrs(int num);
+        uint FindFreeVirtPageAddrsForKernel(int num);
 
         /// <summary>
         ///     Maps the specified virtual address to the specified physical address.
@@ -78,11 +58,7 @@ namespace Kernel.VirtualMemory
         /// <param name="pAddr">The physical address to map to.</param>
         /// <param name="vAddr">The virtual address to map.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        [NoDebug]
-        public virtual void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both)
-        {
-            Map(pAddr, vAddr, PageFlags.Present | PageFlags.KernelOnly | PageFlags.Writeable, UpdateUsedPages);
-        }
+        void Map(uint pAddr, uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
 
         /// <summary>
         ///     Maps the specified virtual address to the specified physical address.
@@ -91,7 +67,7 @@ namespace Kernel.VirtualMemory
         /// <param name="vAddr">The virtual address to map.</param>
         /// <param name="flags">The flags to apply to the allocated pages.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public abstract void Map(uint pAddr, uint vAddr, PageFlags flags,
+        void Map(uint pAddr, uint vAddr, PageFlags flags,
             UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
 
         /// <summary>
@@ -109,7 +85,7 @@ namespace Kernel.VirtualMemory
         /// </remarks>
         /// <param name="vAddr">The virtual address of the page to unmap.</param>
         /// <param name="UpdateUsedPages">Which, if any, of the physical and virtual used pages lists to update.</param>
-        public abstract void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
+        void Unmap(uint vAddr, UpdateUsedPagesFlags UpdateUsedPages = UpdateUsedPagesFlags.Both);
 
         /// <summary>
         ///     Gets the physical address for the specified virtual address.
@@ -119,19 +95,19 @@ namespace Kernel.VirtualMemory
         /// <remarks>
         ///     This has an undefined return value and behaviour if the virtual address is not mapped.
         /// </remarks>
-        public abstract uint GetPhysicalAddress(uint vAddr);
+        uint GetPhysicalAddress(uint vAddr);
 
-        public abstract bool IsVirtualMapped(uint vAddr);
-        public abstract bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd);
+        bool IsVirtualMapped(uint vAddr);
+        bool AreAnyPhysicalMapped(uint pAddrStart, uint pAddrEnd);
 
         /// <summary>
         ///     Maps in the main kernel memory.
         /// </summary>
-        public abstract void MapKernel();
+        void MapKernel();
 
 
-        public abstract void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout);
-        public abstract void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout);
-        public abstract uint[] GetBuiltInProcessVAddrs();
+        void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout);
+        void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout);
+        uint[] GetBuiltInProcessVAddrs();
     }
 }

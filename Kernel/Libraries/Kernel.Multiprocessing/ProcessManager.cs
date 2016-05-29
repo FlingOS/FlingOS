@@ -238,7 +238,7 @@ namespace Kernel.Multiprocessing
 
             void* newPAddr;
             void* newVAddr = VirtualMemoryManager.MapFreePagesForKernel(
-                VirtualMemoryImplementation.PageFlags.KernelOnly, (int) vAddrCount, out newPAddr);
+                PageFlags.KernelOnly, (int) vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -276,7 +276,7 @@ namespace Kernel.Multiprocessing
 
             void* newPAddr;
             void* newVAddr = VirtualMemoryManager.MapFreePagesForKernel(
-                VirtualMemoryImplementation.PageFlags.KernelOnly, (int) vAddrCount, out newPAddr);
+                PageFlags.KernelOnly, (int) vAddrCount, out newPAddr);
 
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Mapped.");
@@ -692,7 +692,7 @@ namespace Kernel.Multiprocessing
             if (ShadowPageVAddr == (void*) 0xFFFFFFFF)
             {
                 ShadowPageVAddr =
-                    VirtualMemoryManager.MapFreePageForKernel(VirtualMemoryImplementation.PageFlags.KernelOnly,
+                    VirtualMemoryManager.MapFreePageForKernel(PageFlags.KernelOnly,
                         out ShadowPagePAddr);
                 KernelProcess.TheMemoryLayout.AddKernelPage((uint) ShadowPagePAddr, (uint) ShadowPageVAddr);
             }

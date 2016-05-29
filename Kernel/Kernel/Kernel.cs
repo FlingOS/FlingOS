@@ -57,7 +57,7 @@ namespace Kernel
         [NoDebug]
         static Kernel()
         {
-            VirtualMemoryManager.Init(new x86VirtualMemoryImplementation());
+            VirtualMemoryManager.Init(new X86VirtualMemoryImplementation());
         }
 
         /// <summary>

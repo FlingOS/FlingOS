@@ -135,7 +135,7 @@ namespace Kernel.Multiprocessing.Scheduling
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting cr3...");
 #endif
-            tss->cr3 = x86VirtualMemoryImplementation.GetCR3();
+            tss->cr3 = X86VirtualMemoryImplementation.GetCR3();
 
             //Load Task Register
 #if SCHEDULER_TRACE
