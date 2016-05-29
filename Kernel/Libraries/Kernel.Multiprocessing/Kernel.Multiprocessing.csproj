@@ -99,15 +99,15 @@
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.FOS_System\Kernel.Framework.csproj">
+    <ProjectReference Include="..\Kernel.Framework\Kernel.Framework.csproj">
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.IO.csproj">
+    <ProjectReference Include="..\Kernel.IO\Kernel.IO.csproj">
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
       <Name>Kernel.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj">
+    <ProjectReference Include="..\Kernel.VirtualMemory\Kernel.VirtualMemory.csproj">
       <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
       <Name>Kernel.VirtualMemory</Name>
     </ProjectReference>

@@ -102,23 +102,23 @@
       <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
       <Name>Drivers.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.FOS_System\Kernel.Framework.csproj">
+    <ProjectReference Include="..\Kernel.Framework\Kernel.Framework.csproj">
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.Devices\Kernel.Devices.csproj">
+    <ProjectReference Include="..\Kernel.Devices\Kernel.Devices.csproj">
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.IO.csproj">
+    <ProjectReference Include="..\Kernel.IO\Kernel.IO.csproj">
       <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
       <Name>Kernel.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.PCI\Kernel.PCI.csproj">
+    <ProjectReference Include="..\Kernel.PCI\Kernel.PCI.csproj">
       <Project>{02d891e8-4aaa-48fa-8608-5135fb4dc493}</Project>
       <Name>Kernel.PCI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware\Kernel.Multiprocessing.csproj">
+    <ProjectReference Include="..\Kernel.Multiprocessing\Kernel.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
       <Name>Kernel.Multiprocessing</Name>
     </ProjectReference>
