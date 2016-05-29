@@ -306,14 +306,15 @@ namespace Drivers.Compiler.IL
             {
                 return methodInf.UnderlyingInfo;
             }
-
+            
             Type[] InterfaceTypes = DeclaringType.GetInterfaces();
             foreach (Type InterfaceType in InterfaceTypes)
             {
                 MethodBase[] InterfaceMethods = InterfaceType.GetMethods();
                 foreach (MethodBase AnInterfaceMethod in InterfaceMethods)
                 {
-                    if (AnInterfaceMethod.Name == methodInf.UnderlyingInfo.Name)
+                    if (AnInterfaceMethod.Name == methodInf.UnderlyingInfo.Name &&
+                        MatchingParameters(AnInterfaceMethod.GetParameters(), methodInf.UnderlyingInfo.GetParameters()))
                     {
                         // Assume one is an implementation of the other
                         //TODO: Is there a better way of doing this? Because IL allows for name-hiding/name-reuse that might cause this to be wrong
@@ -323,6 +324,24 @@ namespace Drivers.Compiler.IL
                 }
             }
             return null;
+        }
+
+        private static bool MatchingParameters(ParameterInfo[] params1, ParameterInfo[] params2)
+        {
+            if (params1.Length != params2.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < params1.Length; i++)
+            {
+                if (params1[i].ParameterType != params2[i].ParameterType)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static int GetInterfaceMethodIDValue(MethodBase interfaceMethod)
