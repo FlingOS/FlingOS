@@ -353,6 +353,7 @@ namespace Kernel.PCI
         /// <param name="bus">The PCI bus number.</param>
         /// <param name="slot">The PCI slot number.</param>
         /// <param name="function">The PCI function number.</param>
+        /// <param name="name">The human-readable name of the device.</param>
         [NoDebug]
         public PCIDevice(uint bus, uint slot, uint function, String name)
             : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3], false)
