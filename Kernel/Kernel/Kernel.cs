@@ -366,7 +366,7 @@ namespace Kernel
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             BasicConsole.WriteLine("Kernel halting!");
             BasicConsole.SetTextColour(BasicConsole.default_colour);
-            PreReqs.Reset();
+            Boot.Reset();
         }
 
         /// <summary>
