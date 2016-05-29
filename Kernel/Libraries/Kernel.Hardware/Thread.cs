@@ -30,9 +30,9 @@
 
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
 

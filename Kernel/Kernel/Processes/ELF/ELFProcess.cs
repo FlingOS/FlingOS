@@ -26,10 +26,10 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.FileSystems;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework.Processes;
 using Kernel.Multiprocessing;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
@@ -154,8 +154,8 @@ namespace Kernel.Processes.ELF
                     {
                         ELFSharedObject SO = (ELFSharedObject) SharedObjectDependencies[i];
 
-                        //BasicConsole.WriteLine("Shared Object base address : " + (FOS_System.String)SO.BaseAddress);
-                        //BasicConsole.WriteLine("Shared Object file base address : " + (FOS_System.String)SO.TheFile.BaseAddress);
+                        //BasicConsole.WriteLine("Shared Object base address : " + (Framework.String)SO.BaseAddress);
+                        //BasicConsole.WriteLine("Shared Object file base address : " + (Framework.String)SO.TheFile.BaseAddress);
 
                         List SOSections = SO.TheFile.Sections;
                         for (int j = 0; j < SOSections.Count; j++)
@@ -191,11 +191,11 @@ namespace Kernel.Processes.ELF
                                     String symbolName = symbolNamesTable[symbol.NameIdx];
 
                                     //BasicConsole.WriteLine("Relocation:");
-                                    ////BasicConsole.WriteLine("    > Symbol index : " + (FOS_System.String)relocation.Symbol);
-                                    //BasicConsole.WriteLine("    > Type : " + (FOS_System.String)(uint)relocation.Type);
-                                    //BasicConsole.WriteLine("    > Offset : " + (FOS_System.String)(uint)relocation.Offset);
-                                    //BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
-                                    ////BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location start value: ") + *resolvedRelLocation);
+                                    ////BasicConsole.WriteLine("    > Symbol index : " + (Framework.String)relocation.Symbol);
+                                    //BasicConsole.WriteLine("    > Type : " + (Framework.String)(uint)relocation.Type);
+                                    //BasicConsole.WriteLine("    > Offset : " + (Framework.String)(uint)relocation.Offset);
+                                    //BasicConsole.WriteLine(((Framework.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
+                                    ////BasicConsole.WriteLine(((Framework.String)"    > Resolved location start value: ") + *resolvedRelLocation);
                                     //BasicConsole.Write("    > Symbol name : ");
                                     //BasicConsole.WriteLine(symbolName);
 
@@ -228,8 +228,8 @@ namespace Kernel.Processes.ELF
 
                                     *resolvedRelLocation = newValue;
 
-                                    //BasicConsole.WriteLine("    > New value: " + (FOS_System.String)(newValue));
-                                    //BasicConsole.WriteLine("    > Resolved location end value: " + (FOS_System.String)(*resolvedRelLocation));
+                                    //BasicConsole.WriteLine("    > New value: " + (Framework.String)(newValue));
+                                    //BasicConsole.WriteLine("    > Resolved location end value: " + (Framework.String)(*resolvedRelLocation));
                                 }
                             }
                             else if (SOSection is ELFRelocationAddendTableSection)
@@ -261,11 +261,11 @@ namespace Kernel.Processes.ELF
                                         (uint*) (SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
 
                                     //BasicConsole.WriteLine("Relocation:");
-                                    ////BasicConsole.WriteLine("    > Symbol index : " + (FOS_System.String)relocation.Symbol);
-                                    //BasicConsole.WriteLine("    > Type : " + (FOS_System.String)(uint)relocation.Type);
-                                    //BasicConsole.WriteLine("    > Offset : " + (FOS_System.String)(uint)relocation.Offset);
-                                    //BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
-                                    ////BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location start value: ") + *resolvedRelLocation);
+                                    ////BasicConsole.WriteLine("    > Symbol index : " + (Framework.String)relocation.Symbol);
+                                    //BasicConsole.WriteLine("    > Type : " + (Framework.String)(uint)relocation.Type);
+                                    //BasicConsole.WriteLine("    > Offset : " + (Framework.String)(uint)relocation.Offset);
+                                    //BasicConsole.WriteLine(((Framework.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
+                                    ////BasicConsole.WriteLine(((Framework.String)"    > Resolved location start value: ") + *resolvedRelLocation);
                                     //BasicConsole.Write("    > Symbol name : ");
                                     //BasicConsole.WriteLine(symbolName);
 
@@ -288,8 +288,8 @@ namespace Kernel.Processes.ELF
 
                                     *resolvedRelLocation = newValue;
 
-                                    //BasicConsole.WriteLine("    > New value: " + (FOS_System.String)(newValue));
-                                    //BasicConsole.WriteLine("    > Resolved location end value: " + (FOS_System.String)(*resolvedRelLocation));
+                                    //BasicConsole.WriteLine("    > New value: " + (Framework.String)(newValue));
+                                    //BasicConsole.WriteLine("    > Resolved location end value: " + (Framework.String)(*resolvedRelLocation));
                                 }
                             }
                         }
@@ -298,8 +298,8 @@ namespace Kernel.Processes.ELF
                     Console.Default.WriteLine("Executable Relocations");
                     BasicConsole.WriteLine("Executable Relocations");
 
-                    //BasicConsole.WriteLine("Executable base address : " + (FOS_System.String)BaseAddress);
-                    //BasicConsole.WriteLine("Executable file base address : " + (FOS_System.String)theFile.BaseAddress);
+                    //BasicConsole.WriteLine("Executable base address : " + (Framework.String)BaseAddress);
+                    //BasicConsole.WriteLine("Executable file base address : " + (Framework.String)theFile.BaseAddress);
 
                     // Perform dynamic linking of executable
                     List ExeSections = theFile.Sections;
@@ -333,11 +333,11 @@ namespace Kernel.Processes.ELF
                                 String symbolName = symbolNamesTable[symbol.NameIdx];
 
                                 //BasicConsole.WriteLine("Relocation:");
-                                ////BasicConsole.WriteLine("    > Symbol index : " + (FOS_System.String)relocation.Symbol);
-                                //BasicConsole.WriteLine("    > Type : " + (FOS_System.String)(uint)relocation.Type);
-                                //BasicConsole.WriteLine("    > Offset : " + (FOS_System.String)(uint)relocation.Offset);
-                                //BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
-                                ////BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location start value: ") + *resolvedRelLocation);
+                                ////BasicConsole.WriteLine("    > Symbol index : " + (Framework.String)relocation.Symbol);
+                                //BasicConsole.WriteLine("    > Type : " + (Framework.String)(uint)relocation.Type);
+                                //BasicConsole.WriteLine("    > Offset : " + (Framework.String)(uint)relocation.Offset);
+                                //BasicConsole.WriteLine(((Framework.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
+                                ////BasicConsole.WriteLine(((Framework.String)"    > Resolved location start value: ") + *resolvedRelLocation);
                                 //BasicConsole.Write("    > Symbol name : ");
                                 //BasicConsole.WriteLine(symbolName);
 
@@ -396,8 +396,8 @@ namespace Kernel.Processes.ELF
                                 if (setFromNewValue)
                                 {
                                     *resolvedRelLocation = newValue;
-                                    //BasicConsole.WriteLine("    > New value: " + (FOS_System.String)(newValue));
-                                    //BasicConsole.WriteLine("    > Resolved location end value: " + (FOS_System.String)(*resolvedRelLocation));
+                                    //BasicConsole.WriteLine("    > New value: " + (Framework.String)(newValue));
+                                    //BasicConsole.WriteLine("    > Resolved location end value: " + (Framework.String)(*resolvedRelLocation));
                                 }
                             }
                         }
@@ -429,11 +429,11 @@ namespace Kernel.Processes.ELF
                                 String symbolName = symbolNamesTable[symbol.NameIdx];
 
                                 //BasicConsole.WriteLine("Relocation:");
-                                ////BasicConsole.WriteLine("    > Symbol index : " + (FOS_System.String)relocation.Symbol);
-                                //BasicConsole.WriteLine("    > Type : " + (FOS_System.String)(uint)relocation.Type);
-                                //BasicConsole.WriteLine("    > Offset : " + (FOS_System.String)(uint)relocation.Offset);
-                                //BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
-                                ////BasicConsole.WriteLine(((FOS_System.String)"    > Resolved location start value: ") + *resolvedRelLocation);
+                                ////BasicConsole.WriteLine("    > Symbol index : " + (Framework.String)relocation.Symbol);
+                                //BasicConsole.WriteLine("    > Type : " + (Framework.String)(uint)relocation.Type);
+                                //BasicConsole.WriteLine("    > Offset : " + (Framework.String)(uint)relocation.Offset);
+                                //BasicConsole.WriteLine(((Framework.String)"    > Resolved location address: ") + (uint)resolvedRelLocation);
+                                ////BasicConsole.WriteLine(((Framework.String)"    > Resolved location start value: ") + *resolvedRelLocation);
                                 //BasicConsole.Write("    > Symbol name : ");
                                 //BasicConsole.WriteLine(symbolName);
 
@@ -454,8 +454,8 @@ namespace Kernel.Processes.ELF
                                         break;
                                 }
                                 *resolvedRelLocation = newValue;
-                                //BasicConsole.WriteLine("    > New value: " + (FOS_System.String)(newValue));
-                                //BasicConsole.WriteLine("    > Resolved location end value: " + (FOS_System.String)(*resolvedRelLocation));
+                                //BasicConsole.WriteLine("    > New value: " + (Framework.String)(newValue));
+                                //BasicConsole.WriteLine("    > Resolved location end value: " + (Framework.String)(*resolvedRelLocation));
                             }
                         }
                     }
@@ -570,12 +570,12 @@ namespace Kernel.Processes.ELF
                         //    theProcess.TheMemoryLayout.AddDataPage(physPageAddr, virtPageAddr);
                         //}
 
-                        //uint copySize = FOS_System.Math.Min((uint)bytesRead, 4096 - copyOffset);
+                        //uint copySize = Framework.Math.Min((uint)bytesRead, 4096 - copyOffset);
                         //if (copySize > 0)
                         //{
                         //    Utilities.MemoryUtils.MemCpy_32(
                         //        (byte*)(virtPageAddr + copyOffset),
-                        //        ((byte*)Utilities.ObjectUtilities.GetHandle(segment.Data)) + FOS_System.Array.FieldsBytesSize + pageOffset - copyFromOffset,
+                        //        ((byte*)Utilities.ObjectUtilities.GetHandle(segment.Data)) + Framework.Array.FieldsBytesSize + pageOffset - copyFromOffset,
                         //        copySize);
 
                         //    bytesRead -= (int)copySize;

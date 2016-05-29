@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{4D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4A8B3E99-15F3-4567-BDDB-11F4057DC3BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FOS_System", "Kernel\Libraries\Kernel.FOS_System\Kernel.FOS_System.csproj", "{66C9B617-B6D9-4006-A7F9-E1DF62ED30AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Framework", "Kernel\Libraries\Kernel.FOS_System\Kernel.Framework.csproj", "{66C9B617-B6D9-4006-A7F9-E1DF62ED30AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel", "Kernel\Kernel\Kernel.csproj", "{E4076F67-686F-48E3-A5AF-55B841665F77}"
 	ProjectSection(ProjectDependencies) = postProject

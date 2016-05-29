@@ -1,4 +1,4 @@
-﻿namespace Kernel.FOS_System.Collections
+﻿namespace Kernel.Framework.Collections
 {
     public class Queue : Object
     {

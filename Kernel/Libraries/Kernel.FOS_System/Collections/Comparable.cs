@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     public abstract class Comparable : Object
     {

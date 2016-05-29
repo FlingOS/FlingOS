@@ -27,7 +27,7 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Processes.Synchronisation;
+using Kernel.Framework.Processes.Synchronisation;
 
 namespace Kernel.VirtualMemory
 {

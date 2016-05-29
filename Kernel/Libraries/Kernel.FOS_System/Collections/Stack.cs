@@ -27,12 +27,12 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Stubs;
+using Kernel.Framework.Stubs;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     /// <summary>
-    ///     Represents a weakly typed stack of objects (which must be derived from FOS_System.Object) that can be accessed by
+    ///     Represents a weakly typed stack of objects (which must be derived from Framework.Object) that can be accessed by
     ///     pushing and popping. Provides methods to manipulate stacks.
     /// </summary>
     /// <remarks>

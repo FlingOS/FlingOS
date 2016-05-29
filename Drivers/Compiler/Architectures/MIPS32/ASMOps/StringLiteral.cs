@@ -47,7 +47,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
             LiteralASM.AppendLine(string.Format(".globl {0}", Id));
             LiteralASM.AppendLine(".align 2");
             LiteralASM.AppendLine(string.Format("{0}:", Id));
-            //Put in type info as FOS_System.String type
+            //Put in type info as Framework.String type
             LiteralASM.AppendLine(string.Format(".word {0}", StringTypeId));
             //Put in string length bytes
             LiteralASM.Append(".align 0\n.byte ");

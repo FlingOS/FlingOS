@@ -28,7 +28,7 @@
 
 using Drivers.Compiler.Attributes;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     Provides constants and static methods for common mathematical functions and some operations not supported by

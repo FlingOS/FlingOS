@@ -28,9 +28,9 @@
 
 using System;
 using Drivers.Compiler.Attributes;
-using IndexOutOfRangeException = Kernel.FOS_System.Exceptions.IndexOutOfRangeException;
+using IndexOutOfRangeException = Kernel.Framework.Exceptions.IndexOutOfRangeException;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     /// <summary>
     ///     Represents a strongly typed list of Delegates that can be accessed by
@@ -115,7 +115,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="index">The index of the Delegate to get.</param>
         /// <returns>The Delegate at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+        /// <exception cref="Kernel.Framework.Exceptions.IndexOutOfRangeException">
         ///     Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
         /// </exception>
         public Delegate this[int index]

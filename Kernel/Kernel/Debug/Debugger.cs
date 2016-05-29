@@ -30,8 +30,8 @@
 #undef DEBUGGER_INTERUPT_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.IO.Serial;
 using Kernel.Multiprocessing;
 using x86Interrupts = Kernel.Interrupts.Interrupts;
@@ -148,10 +148,10 @@ namespace Kernel.Debug
                 BasicConsole.Write(ProcessManager.CurrentProcess.Name);
                 BasicConsole.Write("\n");
 
-                FOS_System.String espStr = " > Current ESP : 0x--------\n";
+                Framework.String espStr = " > Current ESP : 0x--------\n";
                 ExceptionMethods.FillString((uint)ExceptionMethods.StackPointer, 26, espStr);
                 BasicConsole.Write(espStr);
-                FOS_System.String ebpStr = " > Current EBP : 0x--------\n";
+                Framework.String ebpStr = " > Current EBP : 0x--------\n";
                 ExceptionMethods.FillString((uint)ExceptionMethods.BasePointer, 26, ebpStr);
                 BasicConsole.Write(ebpStr);
 

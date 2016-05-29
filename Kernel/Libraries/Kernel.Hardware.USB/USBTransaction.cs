@@ -26,7 +26,7 @@
 
 #endregion
 
-using Kernel.FOS_System;
+using Kernel.Framework;
 using Kernel.USB.HCIs;
 
 namespace Kernel.USB

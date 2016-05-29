@@ -28,7 +28,7 @@
 
 using Drivers.Compiler.Attributes;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     public class Bitmap : Object
     {

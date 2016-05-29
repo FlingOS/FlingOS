@@ -28,7 +28,7 @@
 
 using Drivers.Compiler.Attributes;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     public interface IObject
     {

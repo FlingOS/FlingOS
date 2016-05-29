@@ -28,9 +28,9 @@
 
 //#define HCI_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
 using Kernel.PCI;
 using Kernel.USB.Devices;
@@ -116,11 +116,11 @@ namespace Kernel.USB.HCIs
             transfer.endpoint = endpoint;
             transfer.type = type;
 #if HCI_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
+            BasicConsole.WriteLine(((Framework.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
 #endif
             transfer.packetSize = Math.Min(maxLength, ((Endpoint) usbDevice.Endpoints[endpoint]).MPS);
 #if HCI_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"SetupTransfer: packetSize=") + transfer.packetSize);
+            BasicConsole.WriteLine(((Framework.String)"SetupTransfer: packetSize=") + transfer.packetSize);
 #endif
             transfer.success = false;
             transfer.transactions = new List(3);
@@ -163,13 +163,13 @@ namespace Kernel.USB.HCIs
         public void INTransaction(USBTransfer transfer, bool controlHandshake, void* buffer, ushort length)
         {
 #if HCI_TRACE || USB_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"transfer.packetSize=") + transfer.packetSize +
+            BasicConsole.WriteLine(((Framework.String)"transfer.packetSize=") + transfer.packetSize +
                                                        ", length=" + length);
 #endif
             ushort clampedLength = Math.Min(transfer.packetSize, length);
             length -= clampedLength;
 #if HCI_TRACE || USB_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"clampedLength=") + clampedLength);
+            BasicConsole.WriteLine(((Framework.String)"clampedLength=") + clampedLength);
             BasicConsole.DelayOutput(1);
 #endif
             ushort remainingTransactions = (ushort) (length/transfer.packetSize);

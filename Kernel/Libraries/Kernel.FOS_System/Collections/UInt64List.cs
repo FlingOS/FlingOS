@@ -27,9 +27,9 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework.Exceptions;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     /// <summary>
     ///     Represents a strongly typed list of UInt64s that can be accessed by
@@ -114,7 +114,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="index">The index of the UInt64 to get.</param>
         /// <returns>The UInt64 at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+        /// <exception cref="Kernel.Framework.Exceptions.IndexOutOfRangeException">
         ///     Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
         /// </exception>
         public ulong this[int index]

@@ -1,8 +1,8 @@
 ﻿//#define TASKHELPERS_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Processes;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
 
@@ -66,8 +66,8 @@ namespace Kernel.Tasks
             else
             {
                 BasicConsole.WriteLine(CallerName + " > " + NewProcName + " started.");
-                BasicConsole.WriteLine("Process Id is " + FOS_System.Stubs.UInt32.ToDecimalString(ATADriverProcessId));
-                BasicConsole.WriteLine("Thread Id is " + FOS_System.Stubs.UInt32.ToDecimalString(ATADriverThreadId));
+                BasicConsole.WriteLine("Process Id is " + Framework.Stubs.UInt32.ToDecimalString(ATADriverProcessId));
+                BasicConsole.WriteLine("Thread Id is " + Framework.Stubs.UInt32.ToDecimalString(ATADriverThreadId));
             }
 #endif
 

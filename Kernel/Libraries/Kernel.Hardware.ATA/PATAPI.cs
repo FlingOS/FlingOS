@@ -28,10 +28,10 @@
 
 //#define PATAPI_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework;
+using Kernel.Framework.Exceptions;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
 using Kernel.Devices.Exceptions;
 
@@ -124,7 +124,7 @@ namespace Kernel.ATA
 
         public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
         {
-            //ExceptionMethods.Throw(new FOS_System.Exceptions.NotSupportedException("Cannot read from PATAPI device (yet)!"));
+            //ExceptionMethods.Throw(new Framework.Exceptions.NotSupportedException("Cannot read from PATAPI device (yet)!"));
 
             // Reset IRQ (by reading status register)
 #if PATAPI_TRACE
@@ -274,7 +274,7 @@ namespace Kernel.ATA
             // Read the data
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Read the data");
-            BasicConsole.WriteLine("Length: " + (FOS_System.String)aData.Length);
+            BasicConsole.WriteLine("Length: " + (Framework.String)aData.Length);
 #endif
             uint offset = DataOffset + 1;
             uint i = 0;
@@ -293,7 +293,7 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             unsafe
             {
-                BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(aData) + FOS_System.Array.FieldsBytesSize, aData.Length);
+                BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(aData) + Framework.Array.FieldsBytesSize, aData.Length);
             }
 
             BasicConsole.WriteLine("Wait for IRQ");

@@ -28,10 +28,10 @@
 
 //#define USB_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
 using Kernel.Devices;
 using Kernel.PCI;
@@ -264,7 +264,7 @@ namespace Kernel.USB
             if (!ProcessManager.Semaphore_Signal(UpdateSemaphoreId, ProcessManager.CurrentProcess))
             {
                 BasicConsole.WriteLine("USB Manager couldn't signal update semaphore!");
-                //ExceptionMethods.Throw(new FOS_System.Exception("USB Manager couldn't signal update semaphore!"));
+                //ExceptionMethods.Throw(new Framework.Exception("USB Manager couldn't signal update semaphore!"));
             }
         }
 
@@ -452,7 +452,7 @@ namespace Kernel.USB
                 }
                 else
                 {
-                    DBGMSG(((FOS_System.String)"Configuration not OK! wantedConfig=") + wantedConfig + ", config=" + config);
+                    DBGMSG(((Framework.String)"Configuration not OK! wantedConfig=") + wantedConfig + ", config=" + config);
                 }
                 BasicConsole.DelayOutput(10);
 #endif
@@ -547,7 +547,7 @@ namespace Kernel.USB
             device.hc.IssueTransfer(transfer);
 
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)" > New address: ") + new_address);
+            DBGMSG(((Framework.String)" > New address: ") + new_address);
             BasicConsole.DelayOutput(4);
 #endif
             return new_address;
@@ -582,7 +582,7 @@ namespace Kernel.USB
                     byte* bpDescriptor = (byte*)descriptor;
                     for (int i = 0; i < sizeof(DeviceDescriptor); i++)
                     {
-                        DBGMSG(((FOS_System.String)"i=") + i + ", bpDescriptor[i]=" + bpDescriptor[i]);
+                        DBGMSG(((Framework.String)"i=") + i + ", bpDescriptor[i]=" + bpDescriptor[i]);
                     }
 #endif
 
@@ -734,7 +734,7 @@ namespace Kernel.USB
                         else
                         {
 #if USB_TRACE
-                            DBGMSG(((FOS_System.String)"Unknown descriptor: Length=") + length + ", Type=" + type);
+                            DBGMSG(((Framework.String)"Unknown descriptor: Length=") + length + ", Type=" + type);
 #endif
                             if (length == 0)
                             {
@@ -901,7 +901,7 @@ namespace Kernel.USB
         public static UnicodeString GetUnicodeStringDescriptor(USBDeviceInfo device, byte stringIndex)
         {
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"USB: GET_DESCRIPTOR string, endpoint: 0 stringIndex: ") + stringIndex);
+            DBGMSG(((Framework.String)"USB: GET_DESCRIPTOR string, endpoint: 0 stringIndex: ") + stringIndex);
 #endif
 
             if (stringIndex == 0)
@@ -988,7 +988,7 @@ namespace Kernel.USB
         public static void SetConfiguration(USBDeviceInfo device, byte configuration)
         {
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"USB: SET_CONFIGURATION ") + configuration);
+            DBGMSG(((Framework.String)"USB: SET_CONFIGURATION ") + configuration);
 #endif
 
             USBTransfer transfer = new USBTransfer();
@@ -1008,7 +1008,7 @@ namespace Kernel.USB
         public static ushort GetStatus(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"USB: GetStatus, endpoint: ") + endpoint);
+            DBGMSG(((Framework.String)"USB: GetStatus, endpoint: ") + endpoint);
 #endif
 
             ushort status;
@@ -1021,7 +1021,7 @@ namespace Kernel.USB
             device.hc.IssueTransfer(transfer);
 
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"Got status. Status=") + status + " for endpoint " + endpoint);
+            DBGMSG(((Framework.String)"Got status. Status=") + status + " for endpoint " + endpoint);
 #endif
 
             return status;
@@ -1035,7 +1035,7 @@ namespace Kernel.USB
         public static void SetFeatureHALT(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"USB: SetFeatureHALT, endpoint: ") + endpoint);
+            DBGMSG(((Framework.String)"USB: SetFeatureHALT, endpoint: ") + endpoint);
 #endif
 
             USBTransfer transfer = new USBTransfer();
@@ -1045,7 +1045,7 @@ namespace Kernel.USB
             device.hc.IssueTransfer(transfer);
 
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"Set HALT at endpoint: ") + endpoint);
+            DBGMSG(((Framework.String)"Set HALT at endpoint: ") + endpoint);
 #endif
         }
 
@@ -1057,7 +1057,7 @@ namespace Kernel.USB
         public static void ClearFeatureHALT(USBDeviceInfo device, byte endpoint)
         {
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"USB: ClearFeatureHALT, endpoint: ") + endpoint);
+            DBGMSG(((Framework.String)"USB: ClearFeatureHALT, endpoint: ") + endpoint);
 #endif
 
             USBTransfer transfer = new USBTransfer();
@@ -1067,7 +1067,7 @@ namespace Kernel.USB
             device.hc.IssueTransfer(transfer);
 
 #if USB_TRACE
-            DBGMSG(((FOS_System.String)"Cleared HALT at endpoint: ") + endpoint);
+            DBGMSG(((Framework.String)"Cleared HALT at endpoint: ") + endpoint);
 #endif
         }
 
@@ -1090,11 +1090,11 @@ namespace Kernel.USB
         {
             if (usbDev.usbSpec == 0x0100 || usbDev.usbSpec == 0x0110 || usbDev.usbSpec == 0x0200 || usbDev.usbSpec == 0x0201 || usbDev.usbSpec == 0x0210 || usbDev.usbSpec == 0x0213 ||usbDev.usbSpec == 0x0300)
             {
-                DBGMSG(((FOS_System.String)"USB ") + (byte)((usbDev.usbSpec >> 8) & 0xFF) + "." + (byte)(usbDev.usbSpec & 0xFF)); // e.g. 0x0210 means 2.10
+                DBGMSG(((Framework.String)"USB ") + (byte)((usbDev.usbSpec >> 8) & 0xFF) + "." + (byte)(usbDev.usbSpec & 0xFF)); // e.g. 0x0210 means 2.10
             }
             else
             {
-                DBGMSG(((FOS_System.String)"Invalid USB version ") + (byte)((usbDev.usbSpec >> 8) & 0xFF) + "." + (byte)(usbDev.usbSpec & 0xFF) + "!");
+                DBGMSG(((Framework.String)"Invalid USB version ") + (byte)((usbDev.usbSpec >> 8) & 0xFF) + "." + (byte)(usbDev.usbSpec & 0xFF) + "!");
                 //return;
             }
 
@@ -1114,32 +1114,32 @@ namespace Kernel.USB
                 }
             }
 
-            DBGMSG(((FOS_System.String)"endpoint 0 mps: ") + ((Endpoint)usbDev.Endpoints[0]).MPS + " byte."); // MPS0, must be 8,16,32,64
-            DBGMSG(((FOS_System.String)"vendor:            ") + usbDev.vendor);
-            DBGMSG(((FOS_System.String)"product:           ") + usbDev.product);
-            DBGMSG(((FOS_System.String)"release number:    ") + ((usbDev.releaseNumber >> 8) & 0xFF) + "." + (usbDev.releaseNumber & 0xFF));
-            DBGMSG(((FOS_System.String)"manufacturer:      ") + usbDev.manufacturerStringID);
-            DBGMSG(((FOS_System.String)"product:           ") + usbDev.productStringID);
-            DBGMSG(((FOS_System.String)"serial number:     ") + usbDev.serialNumberStringID);
-            DBGMSG(((FOS_System.String)"number of config.: ") + usbDev.numConfigurations); // number of possible configurations
-            DBGMSG(((FOS_System.String)"MSDInterfaceNum:   ") + usbDev.MSD_InterfaceNum);
+            DBGMSG(((Framework.String)"endpoint 0 mps: ") + ((Endpoint)usbDev.Endpoints[0]).MPS + " byte."); // MPS0, must be 8,16,32,64
+            DBGMSG(((Framework.String)"vendor:            ") + usbDev.vendor);
+            DBGMSG(((Framework.String)"product:           ") + usbDev.product);
+            DBGMSG(((Framework.String)"release number:    ") + ((usbDev.releaseNumber >> 8) & 0xFF) + "." + (usbDev.releaseNumber & 0xFF));
+            DBGMSG(((Framework.String)"manufacturer:      ") + usbDev.manufacturerStringID);
+            DBGMSG(((Framework.String)"product:           ") + usbDev.productStringID);
+            DBGMSG(((Framework.String)"serial number:     ") + usbDev.serialNumberStringID);
+            DBGMSG(((Framework.String)"number of config.: ") + usbDev.numConfigurations); // number of possible configurations
+            DBGMSG(((Framework.String)"MSDInterfaceNum:   ") + usbDev.MSD_InterfaceNum);
             BasicConsole.DelayOutput(5);
         }
         private static void ShowConfiguration(Configuration d)
         {
-            DBGMSG(((FOS_System.String)"Number of interfaces: ") + d.NumInterfaces);
-            DBGMSG(((FOS_System.String)"ID of config:         ") + d.Selector);
+            DBGMSG(((Framework.String)"Number of interfaces: ") + d.NumInterfaces);
+            DBGMSG(((Framework.String)"ID of config:         ") + d.Selector);
             if (d.Description != null)
             {
-                DBGMSG(((FOS_System.String)"Description:          ") + d.Description.Value);
+                DBGMSG(((Framework.String)"Description:          ") + d.Description.Value);
             }
             else
             {
                 DBGMSG("Description:          [NONE]");
             }
-            DBGMSG(((FOS_System.String)"Remote wakeup:        ") + (((d.Attribs & Configuration.Attributes.RemoteWakeup) != 0) ? "Yes" : "No"));
-            DBGMSG(((FOS_System.String)"Self-powered:         ") + (((d.Attribs & Configuration.Attributes.SelfPowered) != 0) ? "Yes" : "No"));
-            DBGMSG(((FOS_System.String)"Max power (mA):       ") + d.MaxPower * 2); // 2 mA steps used
+            DBGMSG(((Framework.String)"Remote wakeup:        ") + (((d.Attribs & Configuration.Attributes.RemoteWakeup) != 0) ? "Yes" : "No"));
+            DBGMSG(((Framework.String)"Self-powered:         ") + (((d.Attribs & Configuration.Attributes.SelfPowered) != 0) ? "Yes" : "No"));
+            DBGMSG(((Framework.String)"Max power (mA):       ") + d.MaxPower * 2); // 2 mA steps used
             BasicConsole.DelayOutput(1);
         }
         private static void ShowInterface(Interface d)
@@ -1149,13 +1149,13 @@ namespace Kernel.USB
             switch (d.NumEndpoints)
             {
                 case 0:
-                    DBGMSG(((FOS_System.String)"Interface ") + d.InterfaceNumber + " has no endpoint and belongs to class:");
+                    DBGMSG(((Framework.String)"Interface ") + d.InterfaceNumber + " has no endpoint and belongs to class:");
                     break;
                 case 1:
-                    DBGMSG(((FOS_System.String)"Interface ") + d.InterfaceNumber + " has only one endpoint and belongs to class:");
+                    DBGMSG(((Framework.String)"Interface ") + d.InterfaceNumber + " has only one endpoint and belongs to class:");
                     break;
                 default:
-                    DBGMSG(((FOS_System.String)"Interface ") + d.InterfaceNumber + " has " + d.NumEndpoints + " endpoints and belongs to class:");
+                    DBGMSG(((Framework.String)"Interface ") + d.InterfaceNumber + " has " + d.NumEndpoints + " endpoints and belongs to class:");
                     break;
             }
 
@@ -1234,7 +1234,7 @@ namespace Kernel.USB
                     DBGMSG("Diagnostic Device");
                     break;
                 case 0xE0:
-                    DBGMSG(((FOS_System.String)"Wireless Controller, subclass: ") + d.Subclass + " protocol: " + d.Protocol + ".");
+                    DBGMSG(((Framework.String)"Wireless Controller, subclass: ") + d.Subclass + " protocol: " + d.Protocol + ".");
                     break;
                 case 0xEF:
                     DBGMSG("Miscellaneous");
@@ -1247,13 +1247,13 @@ namespace Kernel.USB
                     break;
             }
 
-            DBGMSG(((FOS_System.String)"Alternate Setting:  ") + d.AlternateSetting);
-            DBGMSG(((FOS_System.String)"Class:              ") + d.Class);
-            DBGMSG(((FOS_System.String)"Subclass:           ") + d.Subclass);
-            DBGMSG(((FOS_System.String)"Protocol:           ") + d.Protocol);
+            DBGMSG(((Framework.String)"Alternate Setting:  ") + d.AlternateSetting);
+            DBGMSG(((Framework.String)"Class:              ") + d.Class);
+            DBGMSG(((Framework.String)"Subclass:           ") + d.Subclass);
+            DBGMSG(((Framework.String)"Protocol:           ") + d.Protocol);
             if (d.Description != null)
             {
-                DBGMSG(((FOS_System.String)"Description:        ") + d.Description.Value);
+                DBGMSG(((Framework.String)"Description:        ") + d.Description.Value);
             }
             else
             {
@@ -1264,11 +1264,11 @@ namespace Kernel.USB
         private static void ShowEndpoint(Endpoint d)
         {
             DBGMSG("---------------------------------------------------------------------");
-            DBGMSG(((FOS_System.String)"Endpoint ") +  d.Address + ": " + (d.Type == Endpoint.Types.BIDIR ? "Bidirectional" : 
+            DBGMSG(((Framework.String)"Endpoint ") +  d.Address + ": " + (d.Type == Endpoint.Types.BIDIR ? "Bidirectional" : 
                                                                            d.Type == Endpoint.Types.IN    ? "In" : 
                                                                            d.Type == Endpoint.Types.OUT   ? "Out" :
                                                                                                             "Uncrecognised!") + ", ");
-            DBGMSG(((FOS_System.String)"Attributes: ") + d.Attributes);
+            DBGMSG(((Framework.String)"Attributes: ") + d.Attributes);
             // bit 1:0 00 control    01 isochronous    10 bulk                         11 interrupt
             // bit 3:2 00 no sync    01 async          10 adaptive                     11 sync (only if isochronous)
             // bit 5:4 00 data endp. 01 feedback endp. 10 explicit feedback data endp. 11 reserved (Iso Mode)
@@ -1277,8 +1277,8 @@ namespace Kernel.USB
             {
                 DBGMSG("Bulk endpoint,");
             }
-            DBGMSG(((FOS_System.String)" MPS: ") + d.MPS + " bytes");
-            DBGMSG(((FOS_System.String)" Interval: ") + d.Interval);
+            DBGMSG(((Framework.String)" MPS: ") + d.MPS + " bytes");
+            DBGMSG(((Framework.String)" Interval: ") + d.Interval);
             BasicConsole.DelayOutput(1);
         }
         private static void ShowString(StringInfo info)
@@ -1294,7 +1294,7 @@ namespace Kernel.USB
             DBGMSG(str.Value);
         }
         
-        private static void DBGMSG(FOS_System.String msg)
+        private static void DBGMSG(Framework.String msg)
         {
             BasicConsole.WriteLine(msg);
         }

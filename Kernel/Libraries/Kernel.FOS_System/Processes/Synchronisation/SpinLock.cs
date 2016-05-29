@@ -28,7 +28,7 @@
 
 using Drivers.Compiler.Attributes;
 
-namespace Kernel.FOS_System.Processes.Synchronisation
+namespace Kernel.Framework.Processes.Synchronisation
 {
     public class SpinLock : Object
     {

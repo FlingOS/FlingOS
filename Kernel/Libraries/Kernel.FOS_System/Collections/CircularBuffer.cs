@@ -26,10 +26,10 @@
 
 #endregion
 
-using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.Processes.Synchronisation;
+using Kernel.Framework.Exceptions;
+using Kernel.Framework.Processes.Synchronisation;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     public class CircularBuffer : Object
     {

@@ -26,8 +26,8 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
 
 namespace Kernel.Tasks
 {

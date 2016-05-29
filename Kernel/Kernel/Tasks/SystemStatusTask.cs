@@ -25,10 +25,10 @@
 //#endregion
 
 //using System;
-//using Kernel.FOS_System;
-//using Kernel.FOS_System.Collections;
+//using Kernel.Framework;
+//using Kernel.Framework.Collections;
 //using Kernel.FileSystems;
-//using Kernel.FOS_System.Processes;
+//using Kernel.Framework.Processes;
 
 //namespace Kernel.Tasks
 //{
@@ -164,7 +164,7 @@
 //            }
 //        }
 
-//        private static void DeviceManager_DeviceAdded(FOS_System.Object state, Hardware.Device aDevice)
+//        private static void DeviceManager_DeviceAdded(Framework.Object state, Hardware.Device aDevice)
 //        {
 //            MainConsole.WriteLine("Device added: " + aDevice._Type.Signature);
 //        }

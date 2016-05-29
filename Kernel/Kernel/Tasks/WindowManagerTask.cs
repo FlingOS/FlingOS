@@ -28,10 +28,10 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Pipes;
 using Kernel.Devices;
 using Kernel.Devices.Keyboards;
 using Kernel.Pipes;

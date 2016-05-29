@@ -26,8 +26,8 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.FileSystems.Streams;
 
 namespace Kernel.Processes.ELF

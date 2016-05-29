@@ -27,12 +27,12 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Framework.Processes.Requests.Devices;
+using Kernel.Framework.Processes.Requests.Pipes;
+using Kernel.Framework.Processes.Requests.Processes;
 using Kernel.Utilities;
 
-namespace Kernel.FOS_System.Processes
+namespace Kernel.Framework.Processes
 {
     public delegate void ThreadStartPoint();
 

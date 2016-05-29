@@ -26,8 +26,8 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 
 namespace Kernel
 {
@@ -270,7 +270,7 @@ Safely reboots the computer."
         ///     Returns Description of the command passed to it
         /// </summary>
         /// <param name="command">Name of the command to find the description of</param>
-        /// <returns>Description of the command (FOS_System.String)</returns>
+        /// <returns>Description of the command (Framework.String)</returns>
         public static String GetCommandDescription(String command)
         {
             for (int i = 0; i < CommandDescriptions.Count; i++)

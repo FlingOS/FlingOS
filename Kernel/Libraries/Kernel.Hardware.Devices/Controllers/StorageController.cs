@@ -1,8 +1,8 @@
-﻿using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Pipes;
+﻿using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Pipes;
 using Kernel.Devices;
 using Kernel.Pipes.Storage;
 
@@ -491,7 +491,7 @@ namespace Kernel.Devices.Controllers
                                     case DiskCommands.Read:
                                     {
                                         //BasicConsole.WriteLine("Storage controller > Reading " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
-                                        //BasicConsole.WriteLine("Storage controller > Disk block size: " + (FOS_System.String)TheInfo.TheDevice.BlockSize);
+                                        //BasicConsole.WriteLine("Storage controller > Disk block size: " + (Framework.String)TheInfo.TheDevice.BlockSize);
                                         byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
                                         TheInfo.TheDevice.ReadBlock(ACommand.BlockNo, ACommand.BlockCount, data);
                                         //BasicConsole.WriteLine("Data read: ");

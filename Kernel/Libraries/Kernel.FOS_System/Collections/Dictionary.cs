@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework.Exceptions;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     public unsafe class UInt32Dictionary : Object
     {

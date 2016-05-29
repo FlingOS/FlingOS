@@ -29,9 +29,9 @@
 //#define MSD_TRACE
 //#define DEVICE_INFO
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices.Controllers;
 using Kernel.Devices;
 using Kernel.Utilities;
@@ -149,7 +149,7 @@ namespace Kernel.USB.Devices
         {
 #if MSD_TRACE
             DBGMSG("------------------------------ Mass Storage Device -----------------------------");
-            DBGMSG(((FOS_System.String)"MSD Interface num: ") + DeviceInfo.MSD_InterfaceNum);
+            DBGMSG(((Framework.String)"MSD Interface num: ") + DeviceInfo.MSD_InterfaceNum);
             BasicConsole.DelayOutput(1);
 #endif
             //Immediately set up the MSD.
@@ -370,7 +370,7 @@ namespace Kernel.USB.Devices
         public void BulkReset(byte numInterface)
         {
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)"USB MSD: TransferBulkOnly - MassStorageReset, interface: ") + numInterface);
+            DBGMSG(((Framework.String)"USB MSD: TransferBulkOnly - MassStorageReset, interface: ") + numInterface);
 #endif
 
             USBTransfer transfer = new USBTransfer();
@@ -524,7 +524,7 @@ namespace Kernel.USB.Devices
                 ((byte) (CSWtag >> 24) == 0x42))
             {
 #if MSD_TRACE
-                DBGMSG(((FOS_System.String)"CSW tag ") + (byte)(CSWtag) + " OK");
+                DBGMSG(((Framework.String)"CSW tag ") + (byte)(CSWtag) + " OK");
 #endif
             }
             else
@@ -546,7 +546,7 @@ namespace Kernel.USB.Devices
             else
             {
 #if MSD_TRACE
-                DBGMSG(((FOS_System.String)"CSW data residue: ") + CSWDataResidue);
+                DBGMSG(((Framework.String)"CSW data residue: ") + CSWDataResidue);
 #endif
             }
 
@@ -596,7 +596,7 @@ namespace Kernel.USB.Devices
         {
 #if MSD_TRACE
             DBGMSG("OUT part");
-            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+            DBGMSG(((Framework.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
             bool OK = true;
 
@@ -756,7 +756,7 @@ namespace Kernel.USB.Devices
         {
 #if MSD_TRACE
             DBGMSG("OUT part");
-            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+            DBGMSG(((Framework.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
 
             //This method work pretty much the same as the SendSCSICommand_IN method so see there for docs.
@@ -924,7 +924,7 @@ namespace Kernel.USB.Devices
 #if MSD_TRACE
             DBGMSG("SyncCache Command");
             DBGMSG("OUT part");
-            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+            DBGMSG(((Framework.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
             #endif
 
             CommandBlockWrapper* cbw =
@@ -1037,7 +1037,7 @@ namespace Kernel.USB.Devices
             DBGMSG("    > Ignored / aborted");
             return;
             DBGMSG("OUT part");
-            DBGMSG(((FOS_System.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
+            DBGMSG(((Framework.String)"Toggle OUT ") + ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).toggle);
 #endif
             CommandBlockWrapper* cbw =
                 (CommandBlockWrapper*)
@@ -1225,14 +1225,14 @@ namespace Kernel.USB.Devices
             byte Linked = Utils.GetField(inquiryData, 7, 3, 1);
 
 #if MSD_TRACE || DEVICE_INFO
-            BasicConsole.WriteLine("Vendor ID  : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(inquiryData, 8, 8));
-            BasicConsole.WriteLine("Product ID : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(inquiryData, 16, 16));
+            BasicConsole.WriteLine("Vendor ID  : " + Framework.ByteConverter.GetASCIIStringFromASCII(inquiryData, 8, 8));
+            BasicConsole.WriteLine("Product ID : " + Framework.ByteConverter.GetASCIIStringFromASCII(inquiryData, 16, 16));
 
-            DBGMSG("Revision   : " + FOS_System.ByteConverter.GetASCIIStringFromASCII(inquiryData, 1024, 4));
+            DBGMSG("Revision   : " + Framework.ByteConverter.GetASCIIStringFromASCII(inquiryData, 1024, 4));
 
             // Book of Jan Axelson, "USB Mass Storage", page 140:
             // printf("\nVersion ANSI: %u  ECMA: %u  ISO: %u", ANSIapprovedVersion, ECMAversion, ISOversion);
-            DBGMSG(((FOS_System.String)"Version: ") + ANSIapprovedVersion + " (4: SPC-2, 5: SPC-3)");
+            DBGMSG(((Framework.String)"Version: ") + ANSIapprovedVersion + " (4: SPC-2, 5: SPC-3)");
 
             // Jan Axelson, USB Mass Storage, page 140
             if (ResponseDataFormat == 2)
@@ -1241,14 +1241,14 @@ namespace Kernel.USB.Devices
             }
             else
             {
-                BasicConsole.WriteLine(((FOS_System.String)"Response Data Format is not OK: ") + ResponseDataFormat + " (should be 2)");
+                BasicConsole.WriteLine(((Framework.String)"Response Data Format is not OK: ") + ResponseDataFormat + " (should be 2)");
             }
 
-            BasicConsole.WriteLine(((FOS_System.String)"Removable device type:            ") + (RMB != 0 ? "yes" : "no"));
-            BasicConsole.WriteLine(((FOS_System.String)"Supports hierarch. addr. support: ") + (HISUP != 0 ? "yes" : "no"));
-            BasicConsole.WriteLine(((FOS_System.String)"Supports normal ACA bit support:  ") + (NORMACA != 0 ? "yes" : "no"));
-            BasicConsole.WriteLine(((FOS_System.String)"Supports linked commands:         ") + (Linked != 0 ? "yes" : "no"));
-            BasicConsole.WriteLine(((FOS_System.String)"Supports tagged command queuing:  ") + (CmdQue != 0 ? "yes" : "no"));
+            BasicConsole.WriteLine(((Framework.String)"Removable device type:            ") + (RMB != 0 ? "yes" : "no"));
+            BasicConsole.WriteLine(((Framework.String)"Supports hierarch. addr. support: ") + (HISUP != 0 ? "yes" : "no"));
+            BasicConsole.WriteLine(((Framework.String)"Supports normal ACA bit support:  ") + (NORMACA != 0 ? "yes" : "no"));
+            BasicConsole.WriteLine(((Framework.String)"Supports linked commands:         ") + (Linked != 0 ? "yes" : "no"));
+            BasicConsole.WriteLine(((Framework.String)"Supports tagged command queuing:  ") + (CmdQue != 0 ? "yes" : "no"));
 
             switch (PeripheralDeviceType)
             {
@@ -1307,7 +1307,7 @@ namespace Kernel.USB.Devices
 //            DBGMSG("SCSI: read capacity");
 //#endif
 
-//            uint* capacityBuffer = (uint*)FOS_System.Heap.AllocZeroed(8);
+//            uint* capacityBuffer = (uint*)Framework.Heap.AllocZeroed(8);
 //            SendSCSICommand_IN(0x25 /*SCSI opcode*/, 0 /*LBA*/, 8 /*Bytes In*/, capacityBuffer, null);
 
 //            // MSB ... LSB
@@ -1318,7 +1318,7 @@ namespace Kernel.USB.Devices
 //            //diskDevice.SetBlockSize((ulong)capacityBuffer[1]);
 
 //#if MSD_TRACE
-//            DBGMSG(((FOS_System.String)"Capacity: ") + (diskDevice.BlockCount * diskDevice.BlockSize) + ", Last LBA: " + capacityBuffer[0] + ", block size: " + capacityBuffer[1]);
+//            DBGMSG(((Framework.String)"Capacity: ") + (diskDevice.BlockCount * diskDevice.BlockSize) + ", Last LBA: " + capacityBuffer[0] + ", block size: " + capacityBuffer[1]);
 //#endif
 //        }
 
@@ -1331,7 +1331,7 @@ namespace Kernel.USB.Devices
         public bool Read(uint sector, uint numSectors, void* buffer)
         {
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)">SCSI: read sector: ") + sector);
+            DBGMSG(((Framework.String)">SCSI: read sector: ") + sector);
 #endif
             int retries = 3;
             //Send SCSI Read (10) command
@@ -1354,7 +1354,7 @@ namespace Kernel.USB.Devices
         public bool Write(uint sector, void* buffer)
         {
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)">SCSI: write sector: ") + sector);
+            DBGMSG(((Framework.String)">SCSI: write sector: ") + sector);
 #endif
 
             //Send SCSI Write (10) command
@@ -1378,20 +1378,20 @@ namespace Kernel.USB.Devices
 
             // Clear Feature HALT to the Bulk-In  endpoint
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_INEndpointID));
+            DBGMSG(((Framework.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_INEndpointID));
 #endif
             USBManager.ClearFeatureHALT(DeviceInfo, DeviceInfo.MSD_INEndpointID);
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_INEndpointID));
+            DBGMSG(((Framework.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_INEndpointID));
 #endif
 
             // Clear Feature HALT to the Bulk-Out endpoint
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_OUTEndpointID));
+            DBGMSG(((Framework.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_OUTEndpointID));
 #endif
             USBManager.ClearFeatureHALT(DeviceInfo, DeviceInfo.MSD_OUTEndpointID);
 #if MSD_TRACE
-            DBGMSG(((FOS_System.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_OUTEndpointID));
+            DBGMSG(((Framework.String)"GetStatus: ") + USBManager.GetStatus(DeviceInfo, DeviceInfo.MSD_OUTEndpointID));
 #endif
 
             // set configuration to 1 and endpoint IN/OUT toggles to 0
@@ -1400,7 +1400,7 @@ namespace Kernel.USB.Devices
 #if MSD_TRACE
             if (config != 1)
             {
-                DBGMSG(((FOS_System.String)"Configuration: ") + config + " (to be: 1)");
+                DBGMSG(((Framework.String)"Configuration: ") + config + " (to be: 1)");
             }
 #endif
             SystemCalls.SleepThread(500);
@@ -1491,7 +1491,7 @@ namespace Kernel.USB.Devices
         }
 
 #if MSD_TRACE
-        private static void DBGMSG(FOS_System.String msg)
+        private static void DBGMSG(Framework.String msg)
         {
             BasicConsole.WriteLine(msg);
         }
@@ -1560,7 +1560,7 @@ namespace Kernel.USB.Devices
 
             byte* dataPtr = (byte*) ObjectUtilities.GetHandle(aData) + Array.FieldsBytesSize;
 #if MSD_TRACE
-            BasicConsole.Write(((FOS_System.String)"Reading block: ") + i);
+            BasicConsole.Write(((Framework.String)"Reading block: ") + i);
 #endif
 
             if (!msd.Read((uint) aBlockNo, aBlockCount, dataPtr))

@@ -27,10 +27,10 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Exceptions;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
 using Kernel.IO;
 

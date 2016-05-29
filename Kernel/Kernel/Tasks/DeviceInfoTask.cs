@@ -27,8 +27,8 @@
 #endregion
 
 using Kernel.Consoles;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
 using Kernel.Devices;
 using Kernel.Devices.Keyboards;
 using Kernel.Devices.Timers;
@@ -106,7 +106,7 @@ namespace Kernel.Tasks
                             {
                                 for (int j = 0; j < 5; j++)
                                 {
-                                    FOS_System.String TestMessage = "Shared paging proof of concept message number ";
+                                    Framework.String TestMessage = "Shared paging proof of concept message number ";
                                     TestMessage += j;
                                     TestMessage += "\n";
 
@@ -131,7 +131,7 @@ namespace Kernel.Tasks
                                 TextPtr[0] = '1';
                                 for (int i = 0; i < 10; i++)
                                 {
-                                    BasicConsole.WriteLine("Delaying semaphore signal: " + (FOS_System.String)i);
+                                    BasicConsole.WriteLine("Delaying semaphore signal: " + (Framework.String)i);
                                     SystemCalls.SleepThread(1000);
                                 }
                                 SystemCalls.SignalSemaphore(SemaphoreId);

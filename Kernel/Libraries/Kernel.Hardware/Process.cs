@@ -28,9 +28,9 @@
 
 //#define PROCESS_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes;
 using Kernel.VirtualMemory;
 
 namespace Kernel.Multiprocessing
@@ -98,7 +98,7 @@ namespace Kernel.Multiprocessing
 
 #if PAGING_TRACE
                 BasicConsole.Write("Physical address of 0x00106000 is ");
-                FOS_System.String valStr = "0x        ";
+                Framework.String valStr = "0x        ";
                 ExceptionMethods.FillString(VirtMemManager.GetPhysicalAddress(0x00106000), 9, valStr);
                 BasicConsole.WriteLine(valStr);
 #endif
@@ -129,8 +129,8 @@ namespace Kernel.Multiprocessing
                 {
                     BasicConsole.WriteLine("New thread info:");
                     BasicConsole.WriteLine("Name : " + Name);
-                    BasicConsole.WriteLine("Thread stack : " + (FOS_System.String)threadStackVirtAddr + " => " + (uint)threadStackPhysAddr);
-                    BasicConsole.WriteLine("Kernel stack : " + (FOS_System.String)kernelStackVirtAddr + " => " + (uint)kernelStackPhysAddr);
+                    BasicConsole.WriteLine("Thread stack : " + (Framework.String)threadStackVirtAddr + " => " + (uint)threadStackPhysAddr);
+                    BasicConsole.WriteLine("Kernel stack : " + (Framework.String)kernelStackVirtAddr + " => " + (uint)kernelStackPhysAddr);
                 }
 
                 BasicConsole.WriteLine("Adding thread...");

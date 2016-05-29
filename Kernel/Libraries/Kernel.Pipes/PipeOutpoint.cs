@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes.Requests.Pipes;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes.Requests.Pipes;
 
 namespace Kernel.Pipes
 {

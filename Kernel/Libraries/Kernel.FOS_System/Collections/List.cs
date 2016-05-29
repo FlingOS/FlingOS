@@ -27,12 +27,12 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework.Exceptions;
 
-namespace Kernel.FOS_System.Collections
+namespace Kernel.Framework.Collections
 {
     /// <summary>
-    ///     Represents a weakly typed list of objects (which must be derived from FOS_System.Object) that can be accessed by
+    ///     Represents a weakly typed list of objects (which must be derived from Framework.Object) that can be accessed by
     ///     index. Provides methods to search and manipulate lists.
     /// </summary>
     /// <remarks>
@@ -121,7 +121,7 @@ namespace Kernel.FOS_System.Collections
         /// </summary>
         /// <param name="index">The index of the object to get.</param>
         /// <returns>The object at the specified index.</returns>
-        /// <exception cref="Kernel.FOS_System.Exceptions.IndexOutOfRangeException">
+        /// <exception cref="Kernel.Framework.Exceptions.IndexOutOfRangeException">
         ///     Throws IndexOutOfRangeException if "index" is &lt; 0 or greater than the length of the list.
         /// </exception>
         public Object this[int index]

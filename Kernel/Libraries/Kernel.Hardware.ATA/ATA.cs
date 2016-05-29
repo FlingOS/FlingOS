@@ -26,8 +26,8 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
 
 namespace Kernel.ATA

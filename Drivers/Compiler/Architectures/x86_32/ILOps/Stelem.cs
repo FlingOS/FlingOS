@@ -286,7 +286,7 @@ namespace Drivers.Compiler.Architectures.x86
             //      4.11. Move StackSize (from element type ref) into EAX
             //      4.12. Mulitply EAX by EDX (index by element size)
             //      4.13. Move array ref into EDX
-            //      4.14. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.14. Add enough to go past Kernel.Framework.Array fields
             //      4.15. Add EAX and EBX (array ref + fields + (index * element size))
 
 
@@ -362,7 +362,7 @@ namespace Drivers.Compiler.Architectures.x86
                 Dest = "EDX",
                 Src = "[ESP+" + (sizeOnStack + 4) + "]"
             });
-            //      4.14. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.14. Add enough to go past Kernel.Framework.Array fields
             int allFieldsOffset = 0;
 
             #region Offset calculation

@@ -26,7 +26,7 @@
 
 #endregion
 
-using Kernel.FOS_System;
+using Kernel.Framework;
 
 namespace Kernel.Devices.Keyboards
 {

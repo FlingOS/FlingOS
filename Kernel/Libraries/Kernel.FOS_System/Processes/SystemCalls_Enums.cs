@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.Processes
+namespace Kernel.Framework.Processes
 {
     /// <summary>
     ///     The complete list of system calls.

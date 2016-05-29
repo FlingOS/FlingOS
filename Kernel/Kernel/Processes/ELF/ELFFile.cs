@@ -26,11 +26,11 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.FileSystems;
 using Kernel.FileSystems.Streams;
-using Kernel.FOS_System.Stubs;
+using Kernel.Framework.Stubs;
 
 namespace Kernel.Processes.ELF
 {

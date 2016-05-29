@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.Processes.Requests.Processes
+namespace Kernel.Framework.Processes.Requests.Processes
 {
     public unsafe struct StartProcessRequest
     {

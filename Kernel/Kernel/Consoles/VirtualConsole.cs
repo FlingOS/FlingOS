@@ -26,7 +26,7 @@
 
 #endregion
 
-using Kernel.FOS_System;
+using Kernel.Framework;
 using Kernel.Pipes.Standard;
 
 namespace Kernel.Consoles

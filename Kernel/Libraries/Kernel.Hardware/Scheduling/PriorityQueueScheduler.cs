@@ -32,8 +32,8 @@
 //#define SCHEDULER_UPDATE_LIST_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.Utilities;
 using Kernel.VirtualMemory.Implementations;
 
@@ -164,7 +164,7 @@ namespace Kernel.Multiprocessing.Scheduling
         {
             /*Hardware.VirtMem.MemoryLayout memLayout = ProcessManager.CurrentProcess.TheMemoryLayout;
             BasicConsole.WriteLine("Code pages:");
-            FOS_System.String TempDisplayString = "0x        ";
+            Framework.String TempDisplayString = "0x        ";
 
             BasicConsole.WriteLine("Get iterator");
             UInt32Dictionary.Iterator iterator = memLayout.CodePages.GetIterator();
@@ -446,7 +446,7 @@ namespace Kernel.Multiprocessing.Scheduling
         {
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.WriteLine("Scheduler > Updating active threads...");
-            FOS_System.String NumberOfActiveThreadsStr = "Scheduler > Number of active threads: 0x        ";
+            Framework.String NumberOfActiveThreadsStr = "Scheduler > Number of active threads: 0x        ";
             ExceptionMethods.FillString((uint)ActiveQueue.Count, 47, NumberOfActiveThreadsStr);
             BasicConsole.WriteLine(NumberOfActiveThreadsStr);
 
@@ -486,7 +486,7 @@ namespace Kernel.Multiprocessing.Scheduling
         {
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.WriteLine("Scheduler > Updating inactive threads...");
-            FOS_System.String NumberOfInactiveThreadsStr = "Scheduler > Number of inactive threads: 0x        ";
+            Framework.String NumberOfInactiveThreadsStr = "Scheduler > Number of inactive threads: 0x        ";
             ExceptionMethods.FillString((uint)InactiveQueue.Count, 49, NumberOfInactiveThreadsStr);
             BasicConsole.WriteLine(NumberOfInactiveThreadsStr);
 
@@ -681,7 +681,7 @@ namespace Kernel.Multiprocessing.Scheduling
 
         [NoDebug]
         [NoGC]
-        public void Disable( /*FOS_System.String disabler*/)
+        public void Disable( /*Framework.String disabler*/)
         {
             //Hardware.Interrupts.Interrupts.DisableInterrupts();
             Enabled = false;

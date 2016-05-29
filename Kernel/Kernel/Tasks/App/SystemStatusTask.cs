@@ -1,7 +1,7 @@
 ﻿using Kernel.Consoles;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Processes;
 using Kernel.Multiprocessing;
 
 namespace Kernel.Tasks.App

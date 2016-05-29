@@ -26,7 +26,7 @@
 
 #endregion
 
-using Kernel.FOS_System;
+using Kernel.Framework;
 using Kernel.FileSystems.Streams;
 
 namespace Kernel.Processes.ELF

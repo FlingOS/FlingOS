@@ -30,8 +30,8 @@
 //#define MEMLAYOUT_MERGE_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 
 namespace Kernel.VirtualMemory
 {
@@ -62,7 +62,7 @@ namespace Kernel.VirtualMemory
                 BasicConsole.WriteLine(
                     "Cannot add code page to memory layout! Code virtual page already mapped in the memory layout.");
                 //ExceptionMethods.PrintStackTrace();
-                //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout."));
+                //ExceptionMethods.Throw(new Framework.Exception("Cannot add code page to memory layout! Code virtual page already mapped in the memory layout."));
             }
 #endif
         }
@@ -90,7 +90,7 @@ namespace Kernel.VirtualMemory
                 if (!DataPages.ContainsKey(vAddr))
                 {
 #if MEMLAYOUT_TRACE
-                    FOS_System.String str = "Adding data page: 0x         => 0x        ";
+                    Framework.String str = "Adding data page: 0x         => 0x        ";
                     ExceptionMethods.FillString(vAddr, 27, str);
                     ExceptionMethods.FillString(pAddr, 41, str);
                     BasicConsole.WriteLine(str);
@@ -103,7 +103,7 @@ namespace Kernel.VirtualMemory
                     BasicConsole.WriteLine(
                         "Cannot add data page to memory layout! Data virtual page already mapped in the memory layout.");
                     //ExceptionMethods.PrintStackTrace();
-                    //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
+                    //ExceptionMethods.Throw(new Framework.Exception("Cannot add data page to memory layout! Data virtual page already mapped in the memory layout."));
                 }
 #endif
             }
@@ -139,7 +139,7 @@ namespace Kernel.VirtualMemory
             if (!KernelPages.ContainsKey(vAddr))
             {
 #if MEMLAYOUT_TRACE
-                FOS_System.String str = "Adding kernel page: 0x         => 0x        ";
+                Framework.String str = "Adding kernel page: 0x         => 0x        ";
                 ExceptionMethods.FillString(vAddr, 29, str);
                 ExceptionMethods.FillString(pAddr, 43, str);
                 BasicConsole.WriteLine(str);
@@ -152,7 +152,7 @@ namespace Kernel.VirtualMemory
                 BasicConsole.WriteLine(
                     "Cannot add kernel page to memory layout! Kernel virtual page already mapped in the memory layout.");
                 //ExceptionMethods.PrintStackTrace();
-                //ExceptionMethods.Throw(new FOS_System.Exception("Cannot add kernel page to memory layout! Data virtual page already mapped in the memory layout."));
+                //ExceptionMethods.Throw(new Framework.Exception("Cannot add kernel page to memory layout! Data virtual page already mapped in the memory layout."));
             }
 #endif
         }
@@ -385,8 +385,8 @@ namespace Kernel.VirtualMemory
             //    BasicConsole.WriteLine("Debug Point 9.1.5");
             //}
 
-            //FOS_System.String unloadedMsg = "SF: Unloaded: 0x        ";
-            //FOS_System.String loadedMsg = "SF: Loaded: 0x        ";
+            //Framework.String unloadedMsg = "SF: Unloaded: 0x        ";
+            //Framework.String loadedMsg = "SF: Loaded: 0x        ";
             //ExceptionMethods.FillString((uint)unloaded, 23, unloadedMsg);
             //ExceptionMethods.FillString((uint)loaded, 21, loadedMsg);
             //BasicConsole.WriteLine(unloadedMsg);
@@ -535,7 +535,7 @@ namespace Kernel.VirtualMemory
 #endif
             }
 
-            //FOS_System.String loadedMsg = "ME: Loaded: 0x        ";
+            //Framework.String loadedMsg = "ME: Loaded: 0x        ";
             //ExceptionMethods.FillString((uint)loaded, 21, loadedMsg);
             //BasicConsole.WriteLine(loadedMsg);
         }
@@ -610,7 +610,7 @@ namespace Kernel.VirtualMemory
                 }
             }
 
-            //FOS_System.String unloadedMsg = "UM: Unloaded: 0x        ";
+            //Framework.String unloadedMsg = "UM: Unloaded: 0x        ";
             //ExceptionMethods.FillString((uint)unloaded, 23, unloadedMsg);
             //BasicConsole.WriteLine(unloadedMsg);
         }

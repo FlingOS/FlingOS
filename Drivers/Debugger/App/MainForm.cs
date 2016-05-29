@@ -1183,7 +1183,7 @@ namespace Drivers.Debugger.App
 
                         ProcessFields(TheDebugger, ProcessId, AddressFromValue, Info.Fields.Values.ToList());
 
-                        if (Info.ID == "type_Kernel_FOS_System_String")
+                        if (Info.ID == "type_Kernel_Framework_String")
                         {
                             // Special treatment
 

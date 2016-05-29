@@ -153,8 +153,8 @@ namespace Drivers.Compiler.Architectures.x86
             //result.AppendLine("mov dword eax, 0xDEADBEEF");
             //result.AppendLine("mov dword ebx, 0x1");
             //result.AppendLine("mov dword ecx, 1");
-            //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_GC_Enabled], 1");
-            //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_FOS_System_Heap_PreventAllocation], 0");
+            //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_Framework_GC_Enabled], 1");
+            //result.AppendLine("mov dword [staticfield_System_Boolean_Kernel_Framework_Heap_PreventAllocation], 0");
             //result.AppendLine("jmp method_System_Void_RETEND_Kernel_PreReqs_DECLEND_PageFaultDetection_NAMEEND___Fail");
 
             conversionState.Append(new ASMOps.Call {Target = "GetEIP"});

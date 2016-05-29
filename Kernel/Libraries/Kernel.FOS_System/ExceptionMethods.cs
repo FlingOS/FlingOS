@@ -28,8 +28,8 @@
 
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework;
+using Kernel.Framework.Exceptions;
 using Kernel.Utilities;
 
 namespace Kernel
@@ -45,7 +45,7 @@ namespace Kernel
         ///     The reason the kernel is halting. Useful for debugging purposes in case an exception causes
         ///     an immediate halt.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static String HaltReason = "";
+        [Group(Name = "IsolatedKernel_Framework")] public static String HaltReason = "";
 
         /// <summary>
         ///     The message to display when the Throw method panics.
@@ -57,14 +57,14 @@ namespace Kernel
         /// </summary>
         public static string UnhandledException_PanicMessage = "Unhandled exception! Panic!";
 
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool UseCurrentState = false;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool UseCurrentState = false;
 
-        //[Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_FOS_System")]
+        //[Drivers.Compiler.Attributes.Group(Name = "IsolatedKernel_Framework")]
         //public static bool PrintMessages = false;
 
         public static ExceptionState* state;
 
-        [Group(Name = "IsolatedKernel_FOS_System")] public static ExceptionState* kernel_state;
+        [Group(Name = "IsolatedKernel_Framework")] public static ExceptionState* kernel_state;
 
         private static bool HasErrored;
 
@@ -584,7 +584,7 @@ namespace Kernel
                 //if (PrintMessages)
                 //{
                 //    BasicConsole.WriteLine("EndFinally: DP 4");
-                //    FOS_System.String addrStr = "retAddr: 0x        ";
+                //    Framework.String addrStr = "retAddr: 0x        ";
                 //    FillString((uint)retAddr, 18, addrStr);
                 //    BasicConsole.WriteLine(addrStr);
                 //}

@@ -29,8 +29,8 @@
 #define GPT_TRACE
 #undef GPT_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.Devices;
 
 namespace Kernel.FileSystems.Disk
@@ -172,7 +172,7 @@ namespace Kernel.FileSystems.Disk
             if (TheMBR.Partitions[0].SystemID != 0xEE)
             {
 #if GPT_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"MBR partition 0 system ID not GPT. ") + TheMBR.Partitions[0].SystemID);
+                BasicConsole.WriteLine(((Framework.String)"MBR partition 0 system ID not GPT. ") + TheMBR.Partitions[0].SystemID);
                 BasicConsole.DelayOutput(1);
 #endif
 
@@ -232,13 +232,13 @@ namespace Kernel.FileSystems.Disk
             LastUsableLBAForPartitions = ByteConverter.ToUInt64(blockData, 48);
 
 #if GPT_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"Revision : ") + Revision);
-            BasicConsole.WriteLine(((FOS_System.String)"Header size : ") + HeaderSize);
-            BasicConsole.WriteLine(((FOS_System.String)"Header CRC32 : ") + HeaderCRC32);
-            BasicConsole.WriteLine(((FOS_System.String)"Header LBA : ") + HeaderLBA);
-            BasicConsole.WriteLine(((FOS_System.String)"Header Backup LBA : ") + HeaderBackupLBA);
-            BasicConsole.WriteLine(((FOS_System.String)"First usable LBA for partitions : ") + FirstUsableLBAForPartitions);
-            BasicConsole.WriteLine(((FOS_System.String)"Last usable LBA for partitions : ") + LastUsableLBAForPartitions);
+            BasicConsole.WriteLine(((Framework.String)"Revision : ") + Revision);
+            BasicConsole.WriteLine(((Framework.String)"Header size : ") + HeaderSize);
+            BasicConsole.WriteLine(((Framework.String)"Header CRC32 : ") + HeaderCRC32);
+            BasicConsole.WriteLine(((Framework.String)"Header LBA : ") + HeaderLBA);
+            BasicConsole.WriteLine(((Framework.String)"Header Backup LBA : ") + HeaderBackupLBA);
+            BasicConsole.WriteLine(((Framework.String)"First usable LBA for partitions : ") + FirstUsableLBAForPartitions);
+            BasicConsole.WriteLine(((Framework.String)"Last usable LBA for partitions : ") + LastUsableLBAForPartitions);
             BasicConsole.DelayOutput(5);
 #endif
 
@@ -268,10 +268,10 @@ namespace Kernel.FileSystems.Disk
             PartitionArrayCRC32 = ByteConverter.ToUInt32(blockData, 88);
 
 #if GPT_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"Start LBA of part arrray : ") + StartingLBAOfPartitionArray);
-            BasicConsole.WriteLine(((FOS_System.String)"Num part entries : ") + NumPartitionEntries);
-            BasicConsole.WriteLine(((FOS_System.String)"Size of part entry : ") + SizeOfPartitionEntry);
-            BasicConsole.WriteLine(((FOS_System.String)"Part array CRC32 : ") + PartitionArrayCRC32);
+            BasicConsole.WriteLine(((Framework.String)"Start LBA of part arrray : ") + StartingLBAOfPartitionArray);
+            BasicConsole.WriteLine(((Framework.String)"Num part entries : ") + NumPartitionEntries);
+            BasicConsole.WriteLine(((Framework.String)"Size of part entry : ") + SizeOfPartitionEntry);
+            BasicConsole.WriteLine(((Framework.String)"Part array CRC32 : ") + PartitionArrayCRC32);
             BasicConsole.DelayOutput(5);
 #endif
 
@@ -280,8 +280,8 @@ namespace Kernel.FileSystems.Disk
 
 #if GPT_TRACE
             BasicConsole.WriteLine("Reading partition entries...");
-            BasicConsole.WriteLine(((FOS_System.String)"blockNum=") + blockNum);
-            BasicConsole.WriteLine(((FOS_System.String)"entriesPerBlock=") + entriesPerBlock);
+            BasicConsole.WriteLine(((Framework.String)"blockNum=") + blockNum);
+            BasicConsole.WriteLine(((Framework.String)"entriesPerBlock=") + entriesPerBlock);
             BasicConsole.DelayOutput(1);
 #endif
 
@@ -301,7 +301,7 @@ namespace Kernel.FileSystems.Disk
                 {
 #if GPT_TRACE
                     BasicConsole.WriteLine("Reading block data...");
-                    BasicConsole.WriteLine(((FOS_System.String)"blockNum=") + blockNum);
+                    BasicConsole.WriteLine(((Framework.String)"blockNum=") + blockNum);
                     BasicConsole.DelayOutput(1);
 #endif
                     //Load the next block of data
@@ -312,7 +312,7 @@ namespace Kernel.FileSystems.Disk
                 uint offset = i%entriesPerBlock*SizeOfPartitionEntry;
 #if GPT_TRACE
                 BasicConsole.WriteLine("Reading entry...");
-                BasicConsole.WriteLine(((FOS_System.String)"offset=") + offset);
+                BasicConsole.WriteLine(((Framework.String)"offset=") + offset);
 #endif
                 //Attempt to load the partition info
                 PartitionInfo inf = new PartitionInfo(blockData, offset, SizeOfPartitionEntry);
@@ -428,10 +428,10 @@ namespace Kernel.FileSystems.Disk
                 Name = ByteConverter.GetASCIIStringFromUTF16(data, offset + 56, 36).Trim();
 
 #if GPT_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"First LBA : ") + FirstLBA);
-                BasicConsole.WriteLine(((FOS_System.String)"Last LBA : ") + LastLBA);
-                BasicConsole.WriteLine(((FOS_System.String)"Attributes : ") + Attributes);
-                BasicConsole.WriteLine(((FOS_System.String)"Name : ") + Name);
+                BasicConsole.WriteLine(((Framework.String)"First LBA : ") + FirstLBA);
+                BasicConsole.WriteLine(((Framework.String)"Last LBA : ") + LastLBA);
+                BasicConsole.WriteLine(((Framework.String)"Attributes : ") + Attributes);
+                BasicConsole.WriteLine(((Framework.String)"Name : ") + Name);
 #endif
             }
 

@@ -29,8 +29,8 @@
 #define FATDIR_TRACE
 #undef FATDIR_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.FileSystems.Streams.FAT;
 
 namespace Kernel.FileSystems.FAT
@@ -94,7 +94,7 @@ namespace Kernel.FileSystems.FAT
 #endif
                 ulong actualSize = _fileStream.GetActualSize();
 #if FATDIR_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"actualSize: ") + actualSize);
+                BasicConsole.WriteLine(((Framework.String)"actualSize: ") + actualSize);
                 BasicConsole.WriteLine("Creating data array...");
 #endif
                 byte[] xData = new byte[(uint) actualSize];

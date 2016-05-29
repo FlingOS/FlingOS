@@ -29,9 +29,9 @@
 #define ISO9660FileStream_TRACE
 #undef ISO9660FileStream_TRACE
 
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework.Exceptions;
 using Kernel.FileSystems.ISO9660;
-using Kernel.FOS_System;
+using Kernel.Framework;
 
 namespace Kernel.FileSystems.Streams.ISO9660
 {
@@ -166,7 +166,7 @@ namespace Kernel.FileSystems.Streams.ISO9660
                     ReadSectorSize = (uint) TheFS.ThePartition.BlockSize;
 
 #if ISO9660FileStream_TRACE
-                    BasicConsole.WriteLine(((FOS_System.String)"ReadSectorSize: ") + ReadSectorSize);
+                    BasicConsole.WriteLine(((Framework.String)"ReadSectorSize: ") + ReadSectorSize);
 #endif
                 }
 
@@ -181,7 +181,7 @@ namespace Kernel.FileSystems.Streams.ISO9660
                     uint SectorIdx = (uint) position/ReadSectorSize + TheISO9660File.TheDirectoryRecord.LBALocation;
                     uint PosInSector = (uint) position%ReadSectorSize;
 #if ISO9660FileStream_TRACE
-                    BasicConsole.WriteLine(((FOS_System.String)"Reading sector ") + SectorIdx);
+                    BasicConsole.WriteLine(((Framework.String)"Reading sector ") + SectorIdx);
 #endif
                     TheFS.ThePartition.ReadBlock(SectorIdx, 1, ReadSectorBuffer);
 #if ISO9660FileStream_TRACE
@@ -201,7 +201,7 @@ namespace Kernel.FileSystems.Streams.ISO9660
                     BasicConsole.WriteLine("Read sector buffer: ");
                     unsafe
                     {
-                        BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(ReadSectorBuffer) + FOS_System.Array.FieldsBytesSize, ReadSectorBuffer.Length);
+                        BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(ReadSectorBuffer) + Framework.Array.FieldsBytesSize, ReadSectorBuffer.Length);
                     }
 #endif
                     // TODO: Should we do an argument check here just in case?

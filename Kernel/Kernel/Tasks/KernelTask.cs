@@ -34,13 +34,13 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.FileSystems;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Devices;
-using Kernel.FOS_System.Processes.Requests.Pipes;
-using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Devices;
+using Kernel.Framework.Processes.Requests.Pipes;
+using Kernel.Framework.Processes.Requests.Processes;
 using Kernel.Devices;
 using Kernel.Devices.Keyboards;
 using Kernel.Multiprocessing;
@@ -174,7 +174,7 @@ namespace Kernel.Tasks
                     while (itr.HasNext())
                     {
                         UInt32Dictionary.KeyValuePair pair = itr.Next();
-                        BasicConsole.WriteLine("Pair: key=" + (FOS_System.String)pair.Key + ", value=" + pair.Value);
+                        BasicConsole.WriteLine("Pair: key=" + (Framework.String)pair.Key + ", value=" + pair.Value);
                     }
 
                     dic.Remove(key2);
@@ -209,7 +209,7 @@ namespace Kernel.Tasks
                     while (itr.HasNext())
                     {
                         UInt32Dictionary.KeyValuePair pair = itr.Next();
-                        BasicConsole.WriteLine("Pair: key=" + (FOS_System.String)pair.Key + ", value=" + pair.Value);
+                        BasicConsole.WriteLine("Pair: key=" + (Framework.String)pair.Key + ", value=" + pair.Value);
                     }
                 }
             }
@@ -394,7 +394,7 @@ namespace Kernel.Tasks
                     {
                         try
                         {
-                            //FOS_System.String msg = "KT > Hello, world! (" + (FOS_System.String)loops++ + ")";
+                            //Framework.String msg = "KT > Hello, world! (" + (Framework.String)loops++ + ")";
                             //console.WriteLine(msg);
                             //BasicConsole.WriteLine(msg);
                             //SystemCalls.SleepThread(1000);
@@ -895,8 +895,8 @@ namespace Kernel.Tasks
 
 #if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Any physical, Specific virtual");
-                                BasicConsole.WriteLine("Request virtual address: " + (FOS_System.String)Param2);
-                                BasicConsole.WriteLine("Request count: " + (FOS_System.String)count);
+                                BasicConsole.WriteLine("Request virtual address: " + (Framework.String)Param2);
+                                BasicConsole.WriteLine("Request count: " + (Framework.String)count);
 #endif
                                 if (!VirtualMemoryManager.AreAnyVirtualMapped(Param2, (uint) count))
                                 {
@@ -913,7 +913,7 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 else
                                 {
-                                    BasicConsole.WriteLine("First page mapped physical address: " + (FOS_System.String)Hardware.VirtMemManager.GetPhysicalAddress(Param2));
+                                    BasicConsole.WriteLine("First page mapped physical address: " + (Framework.String)Hardware.VirtMemManager.GetPhysicalAddress(Param2));
                                 }
 #endif
                             }

@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.Stubs
+namespace Kernel.Framework.Stubs
 {
     /// <summary>
     ///     Replacement class for methods, properties and fields usually found on standard System.Int32 type.

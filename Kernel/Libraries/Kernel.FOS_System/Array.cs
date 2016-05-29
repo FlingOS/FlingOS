@@ -28,7 +28,7 @@
 
 using Drivers.Compiler.Attributes;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     Represents the underlying type of any array within the Kernel.
@@ -56,11 +56,11 @@ namespace Kernel.FOS_System
         public int length;
 
         /// <summary>
-        ///     Implicitly converts a System.Array to an FOS_System.Array. The two are one and the same thing within the
-        ///     kernel just Fos_System.Array allows access to actual fields.
+        ///     Implicitly converts a System.Array to an Framework.Array. The two are one and the same thing within the
+        ///     kernel just Framework.Array allows access to actual fields.
         /// </summary>
         /// <param name="x">The System.Array to convert.</param>
-        /// <returns>The FOS_System.Array (a reference to the exact same object).</returns>
+        /// <returns>The Framework.Array (a reference to the exact same object).</returns>
         [NoGC]
         [NoDebug]
         public static implicit operator Array(object[] x)

@@ -32,9 +32,9 @@
 
 using System;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Collections;
-using OutOfMemoryException = Kernel.FOS_System.Exceptions.OutOfMemoryException;
-using String = Kernel.FOS_System.String;
+using Kernel.Framework.Collections;
+using OutOfMemoryException = Kernel.Framework.Exceptions.OutOfMemoryException;
+using String = Kernel.Framework.String;
 
 namespace Kernel.VirtualMemory.Implementations
 {
@@ -331,12 +331,12 @@ namespace Kernel.VirtualMemory.Implementations
             //}
 
 #if PAGING_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"pAddr=") + pAddr);
-            BasicConsole.WriteLine(((FOS_System.String)"vAddr=") + vAddr);
-            BasicConsole.WriteLine(((FOS_System.String)"physPDIdx=") + physPDIdx);
-            BasicConsole.WriteLine(((FOS_System.String)"physPTIdx=") + physPTIdx);
-            BasicConsole.WriteLine(((FOS_System.String)"virtPDIdx=") + virtPDIdx);
-            BasicConsole.WriteLine(((FOS_System.String)"virtPTIdx=") + virtPTIdx);
+            BasicConsole.WriteLine(((Framework.String)"pAddr=") + pAddr);
+            BasicConsole.WriteLine(((Framework.String)"vAddr=") + vAddr);
+            BasicConsole.WriteLine(((Framework.String)"physPDIdx=") + physPDIdx);
+            BasicConsole.WriteLine(((Framework.String)"physPTIdx=") + physPTIdx);
+            BasicConsole.WriteLine(((Framework.String)"virtPDIdx=") + virtPDIdx);
+            BasicConsole.WriteLine(((Framework.String)"virtPTIdx=") + virtPTIdx);
 #endif
             if ((UpdateUsedPages & UpdateUsedPagesFlags.Physical) != 0)
             {
@@ -357,14 +357,14 @@ namespace Kernel.VirtualMemory.Implementations
             //Get a pointer to the pre-allocated page table
             uint* virtPTPtr = GetFixedPage(virtPDIdx);
 #if PAGING_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"ptPtr=") + (uint)virtPTPtr);
+            BasicConsole.WriteLine(((Framework.String)"ptPtr=") + (uint)virtPTPtr);
 
             if (Processes.Scheduler.OutputMessages)
             {
                 if (vAddr == 0x00106000)
                 {
                     BasicConsole.Write("Remapping 0x00106000 from ");
-                    FOS_System.String valStr = "0x        ";
+                    Framework.String valStr = "0x        ";
                     ExceptionMethods.FillString(GetPhysicalAddress(vAddr), 9, valStr);
                     BasicConsole.Write(valStr);
                     BasicConsole.Write(" to ");
@@ -609,8 +609,8 @@ namespace Kernel.VirtualMemory.Implementations
             uint KernelMemEndPtr = (uint) GetKernelMemEndPtr();
 
 #if PAGING_TRACE
-            BasicConsole.WriteLine("Start pointer : " + (FOS_System.String)KernelMemStartPtr);
-            BasicConsole.WriteLine("End pointer : " + (FOS_System.String)KernelMemEndPtr);
+            BasicConsole.WriteLine("Start pointer : " + (Framework.String)KernelMemStartPtr);
+            BasicConsole.WriteLine("End pointer : " + (Framework.String)KernelMemEndPtr);
 #endif
 
             // Round the start pointer down to nearest page
@@ -627,7 +627,7 @@ namespace Kernel.VirtualMemory.Implementations
             physAddr = KernelMemStartPtr - VirtToPhysOffset;
 
 #if PAGING_TRACE
-            BasicConsole.WriteLine("Phys addr : " + (FOS_System.String)physAddr);
+            BasicConsole.WriteLine("Phys addr : " + (Framework.String)physAddr);
             BasicConsole.DelayOutput(5);
 #endif
 
@@ -665,9 +665,9 @@ namespace Kernel.VirtualMemory.Implementations
         {
 #if PAGING_TRACE
             BasicConsole.WriteLine("Setting page entry...");
-            BasicConsole.WriteLine(((FOS_System.String)"pageTablePtr=") + (uint)pageTablePtr);
-            BasicConsole.WriteLine(((FOS_System.String)"entry=") + entry);
-            BasicConsole.WriteLine(((FOS_System.String)"addr=") + addr);
+            BasicConsole.WriteLine(((Framework.String)"pageTablePtr=") + (uint)pageTablePtr);
+            BasicConsole.WriteLine(((Framework.String)"entry=") + entry);
+            BasicConsole.WriteLine(((Framework.String)"addr=") + addr);
 #endif
 
             pageTablePtr[entry] = addr | (uint) flags;
@@ -691,9 +691,9 @@ namespace Kernel.VirtualMemory.Implementations
             uint* dirPtr = GetPageDirectoryPtr();
 #if PAGING_TRACE
             BasicConsole.WriteLine("Setting directory entry...");
-            BasicConsole.WriteLine(((FOS_System.String)"dirPtr=") + (uint)dirPtr);
-            BasicConsole.WriteLine(((FOS_System.String)"pageTablePhysPtr=") + (uint)pageTablePhysPtr);
-            BasicConsole.WriteLine(((FOS_System.String)"pageNum=") + pageNum);
+            BasicConsole.WriteLine(((Framework.String)"dirPtr=") + (uint)dirPtr);
+            BasicConsole.WriteLine(((Framework.String)"pageTablePhysPtr=") + (uint)pageTablePhysPtr);
+            BasicConsole.WriteLine(((Framework.String)"pageNum=") + pageNum);
 #endif
 
             dirPtr[pageNum] = (uint) pageTablePhysPtr | 7;
@@ -806,7 +806,7 @@ namespace Kernel.VirtualMemory.Implementations
         }
 
         [PluggedMethod(ASMFilePath = null)]
-        private static uint* GetIsolatedKernel_FOS_SystemPtr()
+        private static uint* GetIsolatedKernel_FrameworkPtr()
         {
             return null;
         }
@@ -850,7 +850,7 @@ namespace Kernel.VirtualMemory.Implementations
             uint isolatedKH_MPPtr = (uint) GetIsolatedKernel_Hardware_MultiprocessingPtr();
             uint isolatedKH_DPtr = (uint) GetIsolatedKernel_Hardware_DevicesPtr();
             uint isolatedKVMPtr = (uint) GetIsolatedKernel_VirtualMemoryPtr();
-            uint isolatedKFSPtr = (uint) GetIsolatedKernel_FOS_SystemPtr();
+            uint isolatedKFSPtr = (uint) GetIsolatedKernel_FrameworkPtr();
 
             uint cPhysPtr = GetPhysicalAddress(cPtr);
 
@@ -874,7 +874,7 @@ namespace Kernel.VirtualMemory.Implementations
                 uint isolatedKH_MPPtr = (uint) GetIsolatedKernel_Hardware_MultiprocessingPtr();
                 uint isolatedKH_DPtr = (uint) GetIsolatedKernel_Hardware_DevicesPtr();
                 uint isolatedKVMPtr = (uint) GetIsolatedKernel_VirtualMemoryPtr();
-                uint isolatedKFSPtr = (uint) GetIsolatedKernel_FOS_SystemPtr();
+                uint isolatedKFSPtr = (uint) GetIsolatedKernel_FrameworkPtr();
 
                 uint startPhysPtr = GetPhysicalAddress(startPtr);
 

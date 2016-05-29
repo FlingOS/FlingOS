@@ -28,8 +28,8 @@
 
 using System;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Processes;
-using String = Kernel.FOS_System.String;
+using Kernel.Framework.Processes;
+using String = Kernel.Framework.String;
 using Kernel.Devices;
 
 namespace Kernel.IO.Serial

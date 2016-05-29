@@ -42,16 +42,16 @@ namespace Kernel.USB.HCIs
 
         public static void Test_PointerManipulation()
         {
-            FOS_System.String testName = "Ptr Manipulation";
+            Framework.String testName = "Ptr Manipulation";
             DBGMSG(testName, "START");
 
             errors = 0;
             warnings = 0;
 
-            byte* rootPtr = (byte*)FOS_System.Heap.Alloc(4096, 32);
+            byte* rootPtr = (byte*)Framework.Heap.Alloc(4096, 32);
             try
             {
-                DBGMSG(testName, ((FOS_System.String)"rootPtr: ") + (uint)rootPtr);
+                DBGMSG(testName, ((Framework.String)"rootPtr: ") + (uint)rootPtr);
 
                 if (!Validate_PointerBoundaryAlignment(rootPtr, 32))
                 {
@@ -67,7 +67,7 @@ namespace Kernel.USB.HCIs
                 byte* shiftedPtr = (byte*)((uint*)rootPtr + 1);
                 if (((uint)shiftedPtr) != ((uint)rootPtr) + 4)
                 {
-                    DBGERR(testName, ((FOS_System.String)"Shifted pointer not shifted correctly! shiftedPtr: ") + (uint)shiftedPtr);
+                    DBGERR(testName, ((Framework.String)"Shifted pointer not shifted correctly! shiftedPtr: ") + (uint)shiftedPtr);
                 }
 
                 EHCITestingObject testObj = new EHCITestingObject();
@@ -77,19 +77,19 @@ namespace Kernel.USB.HCIs
                 testObj.ptr4 = rootPtr;
                 if (testObj.ptr1 != rootPtr)
                 {
-                    DBGERR(testName, ((FOS_System.String)"Storing test pointer 1 failed! testObj.ptr1: ") + (uint)testObj.ptr1);
+                    DBGERR(testName, ((Framework.String)"Storing test pointer 1 failed! testObj.ptr1: ") + (uint)testObj.ptr1);
                 }
                 if (testObj.ptr2 != rootPtr)
                 {
-                    DBGERR(testName, ((FOS_System.String)"Storing test pointer 2 failed! testObj.ptr2: ") + (uint)testObj.ptr2);
+                    DBGERR(testName, ((Framework.String)"Storing test pointer 2 failed! testObj.ptr2: ") + (uint)testObj.ptr2);
                 }
                 if (testObj.ptr3 != rootPtr)
                 {
-                    DBGERR(testName, ((FOS_System.String)"Storing test pointer 3 failed! testObj.ptr3: ") + (uint)testObj.ptr3);
+                    DBGERR(testName, ((Framework.String)"Storing test pointer 3 failed! testObj.ptr3: ") + (uint)testObj.ptr3);
                 }
                 if (testObj.ptr4 != rootPtr)
                 {
-                    DBGERR(testName, ((FOS_System.String)"Storing test pointer 4 failed! testObj.ptr4: ") + (uint)testObj.ptr4);
+                    DBGERR(testName, ((Framework.String)"Storing test pointer 4 failed! testObj.ptr4: ") + (uint)testObj.ptr4);
                 }
             }
             catch
@@ -101,18 +101,18 @@ namespace Kernel.USB.HCIs
             }
             finally
             {
-                FOS_System.Heap.Free(rootPtr);
+                Framework.Heap.Free(rootPtr);
             }
 
             if (errors > 0)
             {
-                DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
+                DBGERR(testName, ((Framework.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
             }
             else
             {
                 if (warnings > 0)
                 {
-                    DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + warnings);
+                    DBGWRN(testName, ((Framework.String)"Test passed with warnings: ") + warnings);
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace Kernel.USB.HCIs
         
         public static void Test_StructValueSetting()
         {
-            FOS_System.String testName = "Strct Value Setting";
+            Framework.String testName = "Strct Value Setting";
             DBGMSG(testName, "START");
 
             errors = 0;
@@ -140,15 +140,15 @@ namespace Kernel.USB.HCIs
             uint structSize = (uint)sizeof(EHCITestingStruct);
             if (structSize != 8 * 4)
             {
-                DBGERR(testName, ((FOS_System.String)"Struct size incorrect! structSize: ") + structSize);
+                DBGERR(testName, ((Framework.String)"Struct size incorrect! structSize: ") + structSize);
             }
             if (errors == 0)
             {
-                EHCITestingStruct* rootPtr = (EHCITestingStruct*)FOS_System.Heap.Alloc(structSize);
+                EHCITestingStruct* rootPtr = (EHCITestingStruct*)Framework.Heap.Alloc(structSize);
                 byte* bRootPtr = (byte*)rootPtr;
                 try
                 {
-                    DBGMSG(testName, ((FOS_System.String)"rootPtr: ") + (uint)rootPtr);
+                    DBGMSG(testName, ((Framework.String)"rootPtr: ") + (uint)rootPtr);
 
                     rootPtr->u1 = 0xDEADBEEF;
                     if (rootPtr->u1 != 0xDEADBEEF ||
@@ -253,19 +253,19 @@ namespace Kernel.USB.HCIs
                 }
                 finally
                 {
-                    FOS_System.Heap.Free(rootPtr);
+                    Framework.Heap.Free(rootPtr);
                 }
             }
 
             if (errors > 0)
             {
-                DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
+                DBGERR(testName, ((Framework.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
             }
             else
             {
                 if (warnings > 0)
                 {
-                    DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + warnings);
+                    DBGWRN(testName, ((Framework.String)"Test passed with warnings: ") + warnings);
                 }
                 else
                 {
@@ -277,7 +277,7 @@ namespace Kernel.USB.HCIs
 
             BasicConsole.DelayOutput(1);
         }
-        private static void Test_StructValueSettingAsArg(FOS_System.String testName, EHCITestingStruct root)
+        private static void Test_StructValueSettingAsArg(Framework.String testName, EHCITestingStruct root)
         {
             byte* bRootPtr = (byte*)&root;
 
@@ -376,7 +376,7 @@ namespace Kernel.USB.HCIs
                 DBGERR(testName, "Getting/setting struct u4 failed!");
             }
         }
-        private static void Test_StructValueSettingAsArg(FOS_System.String testName, EHCITestingStruct* rootPtr, byte* bRootPtr)
+        private static void Test_StructValueSettingAsArg(Framework.String testName, EHCITestingStruct* rootPtr, byte* bRootPtr)
         {
             for (int i = 0; i < sizeof(EHCITestingStruct); i++)
             {
@@ -482,7 +482,7 @@ namespace Kernel.USB.HCIs
 
         public static void Test_QueueHeadWrapper()
         {
-            FOS_System.String testName = "Queue Head Wrapper";
+            Framework.String testName = "Queue Head Wrapper";
             DBGMSG(testName, "START");
 
             errors = 0;
@@ -921,13 +921,13 @@ namespace Kernel.USB.HCIs
 
             if (errors > 0)
             {
-                DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
+                DBGERR(testName, ((Framework.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
             }
             else
             {
                 if (warnings > 0)
                 {
-                    DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + warnings);
+                    DBGWRN(testName, ((Framework.String)"Test passed with warnings: ") + warnings);
                 }
                 else
                 {
@@ -941,7 +941,7 @@ namespace Kernel.USB.HCIs
         }
         public static void Test_qTDWrapper()
         {
-            FOS_System.String testName = "Queue Transfer Descrip";
+            Framework.String testName = "Queue Transfer Descrip";
             DBGMSG(testName, "START");
 
             errors = 0;
@@ -1255,13 +1255,13 @@ namespace Kernel.USB.HCIs
 
             if (errors > 0)
             {
-                DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
+                DBGERR(testName, ((Framework.String)"Test failed! Errors: ") + errors + " Warnings: " + warnings);
             }
             else
             {
                 if (warnings > 0)
                 {
-                    DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + warnings);
+                    DBGWRN(testName, ((Framework.String)"Test passed with warnings: ") + warnings);
                 }
                 else
                 {
@@ -1286,17 +1286,17 @@ namespace Kernel.USB.HCIs
 
         #endregion
 
-        public static void DBGMSG(FOS_System.String testName, FOS_System.String msg)
+        public static void DBGMSG(Framework.String testName, Framework.String msg)
         {
             BasicConsole.WriteLine(testName.PadRight(25, ' ') + " : " + msg);
         }
-        public static void DBGWRN(FOS_System.String testName, FOS_System.String msg)
+        public static void DBGWRN(Framework.String testName, Framework.String msg)
         {
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
             DBGMSG(testName, msg);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
         }
-        public static void DBGERR(FOS_System.String testName, FOS_System.String msg)
+        public static void DBGERR(Framework.String testName, Framework.String msg)
         {
             BasicConsole.SetTextColour(BasicConsole.error_colour);
             DBGMSG(testName, msg);
@@ -1304,7 +1304,7 @@ namespace Kernel.USB.HCIs
             errors++;
         }
     }
-    internal unsafe class EHCITestingObject : FOS_System.Object
+    internal unsafe class EHCITestingObject : Framework.Object
     {
         public byte* ptr1;
         public uint* ptr2;

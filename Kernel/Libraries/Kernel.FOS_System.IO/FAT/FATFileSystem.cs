@@ -29,9 +29,9 @@
 #define FATFS_TRACE
 #undef FATFS_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 
 namespace Kernel.FileSystems.FAT
 {
@@ -279,10 +279,10 @@ namespace Kernel.FileSystems.FAT
         /// <returns>The new byte array.</returns>
         public byte[] NewClusterArray()
         {
-            //BasicConsole.WriteLine(((FOS_System.String)"Attempting to allocate ") + BytesPerCluster + " bytes");
-            //BasicConsole.WriteLine(((FOS_System.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
+            //BasicConsole.WriteLine(((Framework.String)"Attempting to allocate ") + BytesPerCluster + " bytes");
+            //BasicConsole.WriteLine(((Framework.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
             byte[] result = new byte[BytesPerCluster];
-            //BasicConsole.WriteLine(((FOS_System.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
+            //BasicConsole.WriteLine(((Framework.String)"Heap free mem (bytes): ") + (Heap.FBlock->size - (Heap.FBlock->used * Heap.FBlock->bsize)));
             return result;
         }
 
@@ -1270,7 +1270,7 @@ namespace Kernel.FileSystems.FAT
         public static void FormatPartitionAsFAT32(Partition thePartition)
         {
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"Creating block array... Block size: ") + thePartition.BlockSize);
+            BasicConsole.WriteLine(((Framework.String)"Creating block array... Block size: ") + thePartition.BlockSize);
 #endif
 
             byte[] newBPBData = thePartition.TheDiskDevice.NewBlockArray(1);
@@ -1290,7 +1290,7 @@ namespace Kernel.FileSystems.FAT
             ulong partitionSize = thePartition.BlockCount*thePartition.BlockSize;
 
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"partitionSize: ") + partitionSize);
+            BasicConsole.WriteLine(((Framework.String)"partitionSize: ") + partitionSize);
 #endif
 
             byte sectorsPerCluster = 0x1;
@@ -1349,7 +1349,7 @@ namespace Kernel.FileSystems.FAT
             //FAT sector count = 2 * RoundUp(Number of bytes for 1 FAT / Bytes per sector)
 
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
+            BasicConsole.WriteLine(((Framework.String)"totalSectors: ") + totalSectors +
                                                        ", reservedSectors: " + reservedSectors +
                                                        ", sectorsPerCluster: " + sectorsPerCluster +
                                                        ", bytesPerSector: " + bytesPerSector);
@@ -1361,24 +1361,24 @@ namespace Kernel.FileSystems.FAT
             //               bytesPer2FAT = (4 * X * bytesPerCluster) / (bytesPerCluster + 8)
             uint dataClusters = (totalSectors - reservedSectors)/sectorsPerCluster;
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"dataClusters: ") + dataClusters);
+            BasicConsole.WriteLine(((Framework.String)"dataClusters: ") + dataClusters);
 #endif
             uint bytesPerCluster = (uint) sectorsPerCluster*bytesPerSector;
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster: ") + bytesPerCluster);
-            BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters: ") + (4 * dataClusters));
-            BasicConsole.WriteLine(((FOS_System.String)"4 * dataClusters * bytesPerCluster: ") + (4 * dataClusters * bytesPerCluster));
-            BasicConsole.WriteLine(((FOS_System.String)"bytesPerCluster + 8: ") + (bytesPerCluster + 8));
+            BasicConsole.WriteLine(((Framework.String)"bytesPerCluster: ") + bytesPerCluster);
+            BasicConsole.WriteLine(((Framework.String)"4 * dataClusters: ") + (4 * dataClusters));
+            BasicConsole.WriteLine(((Framework.String)"4 * dataClusters * bytesPerCluster: ") + (4 * dataClusters * bytesPerCluster));
+            BasicConsole.WriteLine(((Framework.String)"bytesPerCluster + 8: ") + (bytesPerCluster + 8));
 #endif
 
             uint bytesPer2FAT = (uint) Math.Divide(4*(ulong) dataClusters*bytesPerCluster, bytesPerCluster + 8);
             //Calculation rounds down
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"bytesPer2FAT: ") + bytesPer2FAT);
+            BasicConsole.WriteLine(((Framework.String)"bytesPer2FAT: ") + bytesPer2FAT);
 #endif
             uint FATSectorCount = bytesPer2FAT/bytesPerSector;
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"FATSectorCount: ") + FATSectorCount);
+            BasicConsole.WriteLine(((Framework.String)"FATSectorCount: ") + FATSectorCount);
 #endif
             newBPBData[36] = (byte) FATSectorCount;
             newBPBData[37] = (byte) (FATSectorCount >> 8);
@@ -1386,7 +1386,7 @@ namespace Kernel.FileSystems.FAT
             newBPBData[39] = (byte) (FATSectorCount >> 24);
 
 #if FATFS_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"totalSectors: ") + totalSectors +
+            BasicConsole.WriteLine(((Framework.String)"totalSectors: ") + totalSectors +
                                                        ", reservedSectors: " + reservedSectors +
                                                        ", sectorsPerCluster: " + sectorsPerCluster +
                                                        ", bytesPerSector: " + bytesPerSector +
@@ -1457,8 +1457,8 @@ namespace Kernel.FileSystems.FAT
             catch
             {
                 BasicConsole.WriteLine("Failed to clear potentially pre-existing FAT table! File system may not function as expected.");
-                FOS_System.GC.Cleanup();
-                FOS_System.GC.Cleanup();
+                Framework.GC.Cleanup();
+                Framework.GC.Cleanup();
             }
 
             BasicConsole.WriteLine("Marking root directory cluster as used...");

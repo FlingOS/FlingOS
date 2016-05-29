@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     An exception object.

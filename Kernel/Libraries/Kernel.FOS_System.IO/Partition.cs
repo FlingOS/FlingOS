@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
-using Kernel.FOS_System;
+using Kernel.Framework;
 
 namespace Kernel.FileSystems
 {

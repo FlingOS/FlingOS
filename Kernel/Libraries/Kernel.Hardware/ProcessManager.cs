@@ -31,10 +31,10 @@
 //#define PROCESSMANAGER_KERNEL_ACCESS_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Requests.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Requests.Processes;
 using Kernel.Multiprocessing.Synchronisation;
 using Kernel.Utilities;
 using Kernel.VirtualMemory;
@@ -106,21 +106,21 @@ namespace Kernel.Multiprocessing
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                    BasicConsole.WriteLine("VAddr: " + (Framework.String)pair.Key + " => " + pair.Value);
                 }
                 BasicConsole.WriteLine(" - Data pages:");
                 iterator = NewProcess.TheMemoryLayout.DataPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                    BasicConsole.WriteLine("VAddr: " + (Framework.String)pair.Key + " => " + pair.Value);
                 }
                 BasicConsole.WriteLine(" - Kernel pages:");
                 iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                    BasicConsole.WriteLine("VAddr: " + (Framework.String)pair.Key + " => " + pair.Value);
                 }
             }
 #endif
@@ -206,21 +206,21 @@ namespace Kernel.Multiprocessing
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                    BasicConsole.WriteLine("VAddr: " + (Framework.String)pair.Key + " => " + pair.Value);
                 }
                 BasicConsole.WriteLine(" - Data pages:");
                 iterator = NewProcess.TheMemoryLayout.DataPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                    BasicConsole.WriteLine("VAddr: " + (Framework.String)pair.Key + " => " + pair.Value);
                 }
                 BasicConsole.WriteLine(" - Kernel pages:");
                 iterator = NewProcess.TheMemoryLayout.KernelPages.GetNewIterator();
                 while (iterator.HasNext())
                 {
                     UInt32Dictionary.KeyValuePair pair = iterator.Next();
-                    BasicConsole.WriteLine("VAddr: " + (FOS_System.String)pair.Key + " => " + pair.Value);
+                    BasicConsole.WriteLine("VAddr: " + (Framework.String)pair.Key + " => " + pair.Value);
                 }
             }
 #endif
@@ -257,7 +257,7 @@ namespace Kernel.Multiprocessing
                 if (j%1024 == 0)
                 {
 #if PROCESSMANAGER_TRACE
-                    BasicConsole.WriteLine("vAddr=" + (FOS_System.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
+                    BasicConsole.WriteLine("vAddr=" + (Framework.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
 #endif
                 }
 
@@ -295,7 +295,7 @@ namespace Kernel.Multiprocessing
                 if (j%1024 == 0)
                 {
 #if PROCESSMANAGER_TRACE
-                    BasicConsole.WriteLine("vAddr=" + (FOS_System.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
+                    BasicConsole.WriteLine("vAddr=" + (Framework.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
 #endif
                 }
 

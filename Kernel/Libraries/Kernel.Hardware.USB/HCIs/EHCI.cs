@@ -34,8 +34,8 @@
 
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
 using Kernel.PCI;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.ConstantsUtils;
@@ -752,7 +752,7 @@ namespace Kernel.USB.HCIs
             usbBaseAddress = pciDevice.BaseAddresses[0].BaseAddress();
 
 #if EHCI_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"EHCI: usbBaseAddress=") + (uint)usbBaseAddress);
+            BasicConsole.WriteLine(((Framework.String)"EHCI: usbBaseAddress=") + (uint)usbBaseAddress);
 #endif
 
             // Map in the required memory
@@ -794,7 +794,7 @@ namespace Kernel.USB.HCIs
             // Section 2 of the Intel EHCI Spec
             CapabilitiesRegAddr = usbBaseAddress;
 #if EHCI_TRACE
-            DBGMSG("CapabilitiesRegAddr: " + (FOS_System.String)(uint)CapabilitiesRegAddr);
+            DBGMSG("CapabilitiesRegAddr: " + (Framework.String)(uint)CapabilitiesRegAddr);
 #endif
             // Read the Serial Bus Release Number
             //  This is an 8-bit register where 0xXY means Revision X.Y
@@ -802,7 +802,7 @@ namespace Kernel.USB.HCIs
             // Section 2.1.4 of the Intel EHCI Spec
             SBRN = pciDevice.ReadRegister8(0x60);
 #if EHCI_TRACE
-            DBGMSG("SBRN: " + (FOS_System.String)SBRN);
+            DBGMSG("SBRN: " + (Framework.String)SBRN);
 #endif
 
             // The first register of the Capabilities Registers tells you the length
@@ -831,12 +831,12 @@ namespace Kernel.USB.HCIs
             OpRegAddr = (uint*) (usbBaseAddress + CapabilitiesRegsLength);
 
 #if EHCI_TRACE
-            DBGMSG("CapabilitiesRegsLength: " + (FOS_System.String)CapabilitiesRegsLength);
-            DBGMSG("HCIVersion: " + (FOS_System.String)HCIVersion);
-            DBGMSG("HCSParams: " + (FOS_System.String)HCSParams);
-            DBGMSG("HCCParams: " + (FOS_System.String)HCCParams);
-            //DBGMSG("HCSPPortRouteDesc: " + (FOS_System.String)HCSPPortRouteDesc);
-            DBGMSG("OpRegAddr: " + (FOS_System.String)(uint)OpRegAddr);
+            DBGMSG("CapabilitiesRegsLength: " + (Framework.String)CapabilitiesRegsLength);
+            DBGMSG("HCIVersion: " + (Framework.String)HCIVersion);
+            DBGMSG("HCSParams: " + (Framework.String)HCSParams);
+            DBGMSG("HCCParams: " + (Framework.String)HCCParams);
+            //DBGMSG("HCSPPortRouteDesc: " + (Framework.String)HCSPPortRouteDesc);
+            DBGMSG("OpRegAddr: " + (Framework.String)(uint)OpRegAddr);
 #endif
             // Number of root ports 
             //  Section 2.2.3 of Intel EHCI Spec
@@ -948,7 +948,7 @@ namespace Kernel.USB.HCIs
             {
                 // Setup the interrupt handler (IRQ number = PCIDevice.InterruptLine)
 #if EHCI_TRACE
-                DBGMSG(((FOS_System.String)"EHCI Interrupt line: ") + pciDevice.InterruptLine);
+                DBGMSG(((Framework.String)"EHCI Interrupt line: ") + pciDevice.InterruptLine);
 #endif
                 SystemCalls.RegisterIRQHandler(pciDevice.InterruptLine);
             }
@@ -1116,7 +1116,7 @@ namespace Kernel.USB.HCIs
             byte eecp = EECP;
 
 #if EHCI_TRACE
-            DBGMSG(((FOS_System.String)"DeactivateLegacySupport: eecp = ") + eecp);
+            DBGMSG(((Framework.String)"DeactivateLegacySupport: eecp = ") + eecp);
 #endif
             /*
             cf. EHCI 1.0 spec, 2.2.4 HCCPARAMS - Capability Parameters, Bit 15:8 (BYTE2)
@@ -1138,11 +1138,11 @@ namespace Kernel.USB.HCIs
                 while (eecp != 0) // 00h indicates end of the ext. cap. list.
                 {
 #if EHCI_TRACE
-                    DBGMSG(((FOS_System.String)"eecp = ") + eecp);
+                    DBGMSG(((Framework.String)"eecp = ") + eecp);
 #endif
                     eecp_id = pciDevice.ReadRegister8(eecp);
 #if EHCI_TRACE
-                    DBGMSG(((FOS_System.String)"eecp_id = ") + eecp_id);
+                    DBGMSG(((Framework.String)"eecp_id = ") + eecp_id);
 #endif
                     if (eecp_id == 1)
                     {
@@ -1192,7 +1192,7 @@ namespace Kernel.USB.HCIs
                     {
                         DBGMSG("OS-Semaphore being set.");
                     }
-                    DBGMSG(((FOS_System.String)"Check: BIOSownedSemaphore: ") + pciDevice.ReadRegister8(BIOSownedSemaphore) + 
+                    DBGMSG(((Framework.String)"Check: BIOSownedSemaphore: ") + pciDevice.ReadRegister8(BIOSownedSemaphore) + 
                                                      " OSownedSemaphore: " + pciDevice.ReadRegister8(OSownedSemaphore));
 #endif
 
@@ -1448,7 +1448,7 @@ namespace Kernel.USB.HCIs
                     USBIntCount--;
                 }
 #if EHCI_TRACE
-    //DBGMSG(((FOS_System.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
+    //DBGMSG(((Framework.String)"EHCI: USB Interrupt occurred! USBIntCount: ") + USBIntCount);
                 DBGMSG("EHCI: USB Interrupt occurred!");
 #endif
             }
@@ -1741,16 +1741,16 @@ namespace Kernel.USB.HCIs
             eTransaction.inLength = length;
 
 #if EHCI_TRACE
-            DBGMSG(((FOS_System.String)"IN Transaction : buffer=") + (uint)buffer);
+            DBGMSG(((Framework.String)"IN Transaction : buffer=") + (uint)buffer);
 
-            DBGMSG(((FOS_System.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer);
+            DBGMSG(((Framework.String)"IN Transaction : Before CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer);
 #endif
 
             // Create and initialise the IN queue transfer descriptor
             eTransaction.qTD = CreateQTD_IO(null, 1, toggle, length, length);
 
 #if EHCI_TRACE
-            DBGMSG(((FOS_System.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer + ", Buffer0=" + (uint)eTransaction.qTD.Buffer0);
+            DBGMSG(((Framework.String)"IN Transaction : After CreateQTD : bufferPtr=&qTDBuffer=") + (uint)buffer + ", Buffer0=" + (uint)eTransaction.qTD.Buffer0);
 #endif
             // If the number of existing transactions is greater than 0
             //  i.e. some transactions have already been added. 
@@ -1871,10 +1871,10 @@ namespace Kernel.USB.HCIs
                 treeOK = treeOK && (qtd1.NextqTDPointer == GetPhysicalAddress(transaction2.qTD.qtd)) && !qtd1.NextqTDPointerTerminate;
                 if (!treeOK)
                 {
-                    BasicConsole.Write(((FOS_System.String)"Incorrect tansfer index: ") + k);
+                    BasicConsole.Write(((Framework.String)"Incorrect tansfer index: ") + k);
                     if (qtd1.NextqTDPointer != GetPhysicalAddress(transaction2.qTD.qtd))
                     {
-                        BasicConsole.WriteLine(((FOS_System.String)"    > Pointers incorrect! QTD1.NextPtr=") + (uint)qtd1.NextqTDPointer + ", &QTD2=" + (uint)GetPhysicalAddress(transaction2.qTD.qtd));
+                        BasicConsole.WriteLine(((Framework.String)"    > Pointers incorrect! QTD1.NextPtr=") + (uint)qtd1.NextqTDPointer + ", &QTD2=" + (uint)GetPhysicalAddress(transaction2.qTD.qtd));
                     }
                     else if (qtd1.NextqTDPointerTerminate)
                     {
@@ -1901,7 +1901,7 @@ namespace Kernel.USB.HCIs
                     }
                 }
             }
-            DBGMSG(((FOS_System.String)"Transfer transactions tree OK: ") + treeOK);
+            DBGMSG(((Framework.String)"Transfer transactions tree OK: ") + treeOK);
             BasicConsole.DelayOutput(10);
 #endif
             // Get the first qTD of the transfer. This is passed to InitQH to tell it the start of the linked
@@ -1930,7 +1930,7 @@ namespace Kernel.USB.HCIs
                     byte status = transaction.qTD.Status;
                     transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
-                    DBGMSG(((FOS_System.String)"PRE Issue: Transaction ") + k + " status: " + status);
+                    DBGMSG(((Framework.String)"PRE Issue: Transaction ") + k + " status: " + status);
                 }
                 if (!transfer.success)
                 {
@@ -1980,14 +1980,14 @@ namespace Kernel.USB.HCIs
                         transfer.success = transfer.success && (status == 0 || status == Utils.BIT(0));
 
 #if EHCI_TRACE
-                        DBGMSG(((FOS_System.String)"POST Issue: Transaction ") + k + " status: " + status);
+                        DBGMSG(((Framework.String)"POST Issue: Transaction ") + k + " status: " + status);
 #endif
                     }
 
 #if EHCI_TRACE
                     if (!transfer.success)
                     {
-                        DBGMSG(((FOS_System.String)"EHCI: Retry transfer: ") + (i + 1));
+                        DBGMSG(((Framework.String)"EHCI: Retry transfer: ") + (i + 1));
                         BasicConsole.DelayOutput(2);
 
                         // Reset the status bits so the transactions are active again
@@ -2034,7 +2034,7 @@ namespace Kernel.USB.HCIs
                 if (transaction.inBuffer != null && transaction.inLength != 0)
                 {
 #if EHCI_TRACE
-                    DBGMSG(((FOS_System.String)"Doing MemCpy of in data... inBuffer=") + (uint)transaction.inBuffer + 
+                    DBGMSG(((Framework.String)"Doing MemCpy of in data... inBuffer=") + (uint)transaction.inBuffer + 
                                                ", qTDBuffer=" + (uint)transaction.qTD.qtd + 
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
@@ -2044,7 +2044,7 @@ namespace Kernel.USB.HCIs
 #if EHCI_TRACE
     //for (int i = 0; i < transaction.inLength; i++)
     //{
-    //    DBGMSG(((FOS_System.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTD.qtd)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
+    //    DBGMSG(((Framework.String)"i=") + i + ", qTDBuffer[i]=" + ((byte*)transaction.qTD.qtd)[i] + ", inBuffer[i]=" + ((byte*)transaction.inBuffer)[i]);
     //}
 #endif
 #if EHCI_TRACE
@@ -2389,7 +2389,7 @@ namespace Kernel.USB.HCIs
         }
 
 #if EHCI_TRACE
-        internal static void DBGMSG(FOS_System.String msg)
+        internal static void DBGMSG(Framework.String msg)
         {
             BasicConsole.WriteLine(msg);
         }
@@ -2404,7 +2404,7 @@ namespace Kernel.USB.HCIs
         {
             uint address = 0xFFFFFFFF;
 #if EHCI_TRACE
-            DBGMSG("Getting physical address of: " + ((FOS_System.String)vAddr));
+            DBGMSG("Getting physical address of: " + ((Framework.String)vAddr));
 #endif
             SystemCallResults result = SystemCalls.GetPhysicalAddress(vAddr, out address);
             if (result != SystemCallResults.OK)
@@ -2417,7 +2417,7 @@ namespace Kernel.USB.HCIs
 #if EHCI_TRACE
             else
             {
-                DBGMSG("Physical address is: " + ((FOS_System.String)address));
+                DBGMSG("Physical address is: " + ((Framework.String)address));
             }
 #endif
             return (void*) address;
@@ -2436,7 +2436,7 @@ namespace Kernel.USB.HCIs
         //Create_QH
         public void Test_Create_QH()
         {
-            FOS_System.String testName = "Queue Transfer Descrip";
+            Framework.String testName = "Queue Transfer Descrip";
             EHCITesting.DBGMSG(testName, "START");
 
             EHCITesting.errors = 0;
@@ -2465,13 +2465,13 @@ namespace Kernel.USB.HCIs
 
             if (EHCITesting.errors > 0)
             {
-                EHCITesting.DBGERR(testName, ((FOS_System.String)"Test failed! Errors: ") + EHCITesting.errors + " Warnings: " + EHCITesting.warnings);
+                EHCITesting.DBGERR(testName, ((Framework.String)"Test failed! Errors: ") + EHCITesting.errors + " Warnings: " + EHCITesting.warnings);
             }
             else
             {
                 if (EHCITesting.warnings > 0)
                 {
-                    EHCITesting.DBGWRN(testName, ((FOS_System.String)"Test passed with warnings: ") + EHCITesting.warnings);
+                    EHCITesting.DBGWRN(testName, ((Framework.String)"Test passed with warnings: ") + EHCITesting.warnings);
                 }
                 else
                 {

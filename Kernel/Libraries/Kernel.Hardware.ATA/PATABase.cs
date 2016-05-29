@@ -27,9 +27,9 @@
 #endregion
 
 using System;
-using Exception = Kernel.FOS_System.Exception;
-using NotSupportedException = Kernel.FOS_System.Exceptions.NotSupportedException;
-using String = Kernel.FOS_System.String;
+using Exception = Kernel.Framework.Exception;
+using NotSupportedException = Kernel.Framework.Exceptions.NotSupportedException;
+using String = Kernel.Framework.String;
 
 namespace Kernel.ATA
 {

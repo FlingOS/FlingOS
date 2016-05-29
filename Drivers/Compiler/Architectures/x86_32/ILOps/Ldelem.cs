@@ -388,7 +388,7 @@ namespace Drivers.Compiler.Architectures.x86
             //      4.8. Move StackSize (from element type ref) into EAX
             //      4.9. Mulitply EAX by EBX (index by element size)
             //      4.10. Move array ref into EBX
-            //      4.11. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.11. Add enough to go past Kernel.Framework.Array fields
             //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
 
             //      4.1. Pop index into EBX
@@ -448,7 +448,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.Append(new ASMOps.Mul {Arg = "EBX"});
             //      4.10. Pop array ref into EBX
             conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
-            //      4.11. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.11. Add enough to go past Kernel.Framework.Array fields
             int allFieldsOffset = 0;
 
             #region Offset calculation

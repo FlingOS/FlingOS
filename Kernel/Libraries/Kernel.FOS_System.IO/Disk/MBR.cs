@@ -29,8 +29,8 @@
 #define MBR_TRACE
 #undef MBR_TRACE
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.Devices;
 
 namespace Kernel.FileSystems.Disk
@@ -203,8 +203,8 @@ namespace Kernel.FileSystems.Disk
             uint sectorCount = ByteConverter.ToUInt32(aMBR, aLoc + 12);
 
 #if MBR_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"startSector: ") + startSector);
-                BasicConsole.WriteLine(((FOS_System.String)"sectorCount: ") + sectorCount);
+                BasicConsole.WriteLine(((Framework.String)"startSector: ") + startSector);
+                BasicConsole.WriteLine(((Framework.String)"sectorCount: ") + sectorCount);
                 BasicConsole.DelayOutput(5);
 #endif
 
@@ -287,10 +287,10 @@ namespace Kernel.FileSystems.Disk
             newMBRData[0x1FF] = 0xAA;
 
 #if MBR_TRACE
-            BasicConsole.WriteLine(((FOS_System.String)"Set signature: ") + newMBRData[0x1FE] + " " + newMBRData[0x1FF]);
+            BasicConsole.WriteLine(((Framework.String)"Set signature: ") + newMBRData[0x1FE] + " " + newMBRData[0x1FF]);
             BasicConsole.DelayOutput(1);
 
-            BasicConsole.WriteLine(((FOS_System.String)"Num new partitions: ") + partitionInfos.Count);
+            BasicConsole.WriteLine(((Framework.String)"Num new partitions: ") + partitionInfos.Count);
             BasicConsole.DelayOutput(1);
 #endif
 
@@ -300,11 +300,11 @@ namespace Kernel.FileSystems.Disk
                 PartitionInfo partInfo = (PartitionInfo) partitionInfos[(int) i];
                 uint partOffset = part1Offset + 0x10*i;
 #if MBR_TRACE
-                BasicConsole.WriteLine(((FOS_System.String)"Partition ") + i + " @ " + partOffset);
-                BasicConsole.WriteLine(((FOS_System.String)"Bootable : ") + partInfo.Bootable);
-                BasicConsole.WriteLine(((FOS_System.String)"SystemID : ") + partInfo.SystemID);
-                BasicConsole.WriteLine(((FOS_System.String)"StartSector : ") + partInfo.StartSector);
-                BasicConsole.WriteLine(((FOS_System.String)"SectorCount : ") + partInfo.SectorCount);
+                BasicConsole.WriteLine(((Framework.String)"Partition ") + i + " @ " + partOffset);
+                BasicConsole.WriteLine(((Framework.String)"Bootable : ") + partInfo.Bootable);
+                BasicConsole.WriteLine(((Framework.String)"SystemID : ") + partInfo.SystemID);
+                BasicConsole.WriteLine(((Framework.String)"StartSector : ") + partInfo.StartSector);
+                BasicConsole.WriteLine(((Framework.String)"SectorCount : ") + partInfo.SectorCount);
                 BasicConsole.DelayOutput(2);
 #endif
 
@@ -329,10 +329,10 @@ namespace Kernel.FileSystems.Disk
                 byte systemID = newMBRData[partOffset + 4];
                 UInt32 startSector = ByteConverter.ToUInt32(newMBRData, partOffset + 8);
                 UInt32 sectorCount = ByteConverter.ToUInt32(newMBRData, partOffset + 12);
-                BasicConsole.WriteLine(((FOS_System.String)"Bootable : ") + bootable);
-                BasicConsole.WriteLine(((FOS_System.String)"SystemID : ") + systemID);
-                BasicConsole.WriteLine(((FOS_System.String)"StartSector : ") + startSector);
-                BasicConsole.WriteLine(((FOS_System.String)"SectorCount : ") + sectorCount);
+                BasicConsole.WriteLine(((Framework.String)"Bootable : ") + bootable);
+                BasicConsole.WriteLine(((Framework.String)"SystemID : ") + systemID);
+                BasicConsole.WriteLine(((Framework.String)"StartSector : ") + startSector);
+                BasicConsole.WriteLine(((Framework.String)"SectorCount : ") + sectorCount);
                 BasicConsole.DelayOutput(2);
 #endif
             }

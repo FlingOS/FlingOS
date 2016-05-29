@@ -33,7 +33,7 @@
 
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
+using Kernel.Framework;
 using Kernel.Multiprocessing.Scheduling;
 
 namespace Kernel.Multiprocessing

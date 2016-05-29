@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
 using Kernel.Utilities;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     Represents an object type specification. Please see remarks before using.

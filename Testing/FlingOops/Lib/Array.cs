@@ -57,7 +57,7 @@ namespace FlingOops
 
         /// <summary>
         ///     Implicitly converts a System.Array to an FlingOops.Array. The two are one and the same thing within the
-        ///     kernel just Fos_System.Array allows access to actual fields.
+        ///     kernel just Framework.Array allows access to actual fields.
         /// </summary>
         /// <param name="x">The System.Array to convert.</param>
         /// <returns>The FlingOops.Array (a reference to the exact same object).</returns>

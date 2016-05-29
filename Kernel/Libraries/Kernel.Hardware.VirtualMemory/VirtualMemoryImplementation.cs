@@ -28,7 +28,7 @@
 
 using System;
 using Drivers.Compiler.Attributes;
-using Object = Kernel.FOS_System.Object;
+using Object = Kernel.Framework.Object;
 
 namespace Kernel.VirtualMemory
 {

@@ -27,9 +27,9 @@
 #endregion
 
 using Kernel.Consoles;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Stubs;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Stubs;
 using Kernel.Devices.Timers;
 
 namespace Kernel

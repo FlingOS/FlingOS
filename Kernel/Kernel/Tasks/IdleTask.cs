@@ -27,7 +27,7 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
+using Kernel.Framework;
 using Kernel.Devices.CPUs;
 using Kernel.Devices;
 

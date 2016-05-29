@@ -358,7 +358,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      4.8. Move StackSize (from element type ref) into $t0
             //      4.9. Mulitply $t0 by $t1 (index by element size)
             //      4.10. Move array ref into $t1
-            //      4.11. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.11. Add enough to go past Kernel.Framework.Array fields
             //      4.12. Add $t0 and $t1 (array ref + fields + (index * element size))
 
             //      4.1. Pop index into $t1
@@ -416,7 +416,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //      4.10. Pop array ref into $t1
             conversionState.Append(new Mflo {Dest = "$t0"});
             conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
-            //      4.11. Add enough to go past Kernel.FOS_System.Array fields
+            //      4.11. Add enough to go past Kernel.Framework.Array fields
             int allFieldsOffset = 0;
 
             #region Offset calculation

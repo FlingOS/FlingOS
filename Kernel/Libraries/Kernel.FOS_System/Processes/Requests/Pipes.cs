@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.Processes.Requests.Pipes
+namespace Kernel.Framework.Processes.Requests.Pipes
 {
     /// <summary>
     ///     Global, constant values used in the pipes subsystem.

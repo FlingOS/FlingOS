@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.FOS_System.Exceptions
+namespace Kernel.Framework.Exceptions
 {
     /// <summary>
     ///     Represents a double fault exception.

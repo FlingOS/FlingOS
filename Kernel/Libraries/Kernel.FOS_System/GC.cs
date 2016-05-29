@@ -29,10 +29,10 @@
 //#define GC_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Processes.Synchronisation;
+using Kernel.Framework.Processes.Synchronisation;
 using Kernel.Utilities;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     The garbage collector.
@@ -50,13 +50,13 @@ namespace Kernel.FOS_System
         ///     Whether the GC has been initialised yet or not.
         ///     Used to prevent the GC running before it has been initialised properly.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool Enabled;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool Enabled;
 
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool UseCurrentState = false;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool UseCurrentState = false;
 
         private static GCState state;
 
-        [Group(Name = "IsolatedKernel_FOS_System")] private static GCState kernel_state;
+        [Group(Name = "IsolatedKernel_Framework")] private static GCState kernel_state;
 
         public static GCState State
         {
@@ -591,7 +591,7 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     DO NOT CALL DIRECTLY. Use FOS_System.String.New
+        ///     DO NOT CALL DIRECTLY. Use Framework.String.New
         ///     Creates a new string with specified length (but does not call the default constructor).
         /// </summary>
         /// <param name="length">The length of the string to create.</param>
@@ -662,7 +662,7 @@ namespace Kernel.FOS_System
 
                 //Initialise the GCHeader
                 SetSignature(newObjPtr);
-                //RefCount to 0 initially because of FOS_System.String.New should be used
+                //RefCount to 0 initially because of Framework.String.New should be used
                 //      - In theory, New should be called, creates new string and passes it back to caller
                 //        Caller is then required to store the string in a variable resulting in inc.
                 //        ref count so ref count = 1 in only stored location. 

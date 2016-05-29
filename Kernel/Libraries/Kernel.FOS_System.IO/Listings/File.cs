@@ -27,7 +27,7 @@
 #endregion
 
 using Kernel.FileSystems.Streams;
-using Kernel.FOS_System;
+using Kernel.Framework;
 
 namespace Kernel.FileSystems
 {

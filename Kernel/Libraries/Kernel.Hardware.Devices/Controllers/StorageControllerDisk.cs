@@ -1,5 +1,5 @@
-﻿using Kernel.FOS_System;
-using Kernel.FOS_System.Processes.Requests.Devices;
+﻿using Kernel.Framework;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Pipes.Storage;
 
 namespace Kernel.Devices.Controllers
@@ -32,7 +32,7 @@ namespace Kernel.Devices.Controllers
             byte[] blockSizeData = new byte[8];
             DataInPipe.Read(blockSizeData, 0, 8, true);
             blockSize = ByteConverter.ToUInt64(blockSizeData, 0);
-            //BasicConsole.WriteLine("Storage Controller Disk : Block size = " + (FOS_System.String)blockSize);
+            //BasicConsole.WriteLine("Storage Controller Disk : Block size = " + (Framework.String)blockSize);
 
             JunkData = NewBlockArray(1);
         }
@@ -44,7 +44,7 @@ namespace Kernel.Devices.Controllers
                 BasicConsole.WriteLine("WARNING! StorageControllerDisk.Read is about to cause a buffer overflow.");
             }
 
-            //BasicConsole.WriteLine("Storage controller disk > Issuing read (storage cmd) " + (FOS_System.String)aBlockCount + " blocks from " + (FOS_System.String)aBlockNo + " blocks offset.");
+            //BasicConsole.WriteLine("Storage controller disk > Issuing read (storage cmd) " + (Framework.String)aBlockCount + " blocks from " + (Framework.String)aBlockNo + " blocks offset.");
             //TODO: Wrap in a loop so we don't hit buffer overflow
             CmdPipe.Send_Read(CmdPipeId, Id, aBlockNo, aBlockCount);
             int FullBytesToRead = (int) (aBlockCount*(uint) BlockSize);

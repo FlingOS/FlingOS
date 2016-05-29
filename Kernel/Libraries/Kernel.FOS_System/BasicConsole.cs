@@ -27,7 +27,7 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
+using Kernel.Framework;
 
 namespace Kernel
 {
@@ -101,7 +101,7 @@ namespace Kernel
         ///         output directly to a file.
         ///     </para>
         /// </remarks>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool PrimaryOutputEnabled = true;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool PrimaryOutputEnabled = true;
 
         /// <summary>
         ///     Whether the secondary output destination is enabled or not.
@@ -112,7 +112,7 @@ namespace Kernel
         ///     </para>
         /// </remarks>
         /// <seealso cref="SecondaryOutput" />
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool SecondaryOutputEnabled = true;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool SecondaryOutputEnabled = true;
 
         /// <summary>
         ///     The secondary output handler.
@@ -121,7 +121,7 @@ namespace Kernel
         ///     If <see cref="SecondaryOutputEnabled" /> is set to true, this handler will be called for all Write calls to
         ///     the BasicConsole.
         /// </remarks>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static SecondaryOutputHandler SecondaryOutput = null;
+        [Group(Name = "IsolatedKernel_Framework")] public static SecondaryOutputHandler SecondaryOutput = null;
 
         /// <summary>
         ///     Used to indicate whether the Basic Console has been initialised or not.
@@ -130,7 +130,7 @@ namespace Kernel
         ///     Useful for when fixing low-level errors in compiler which result in incorrect execution order
         ///     and thus use of Basic Console before it is ready.
         /// </remarks>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool Initialised;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool Initialised;
 
         /// <summary>
         ///     The offset from the start of the memory (in characters) to write the next character to.
@@ -139,52 +139,52 @@ namespace Kernel
         ///     This would cause an issue if you changed the line length after already having printed text
         ///     because you'd want to leave the next print location at the start of a new line.
         /// </remarks>
-        [Group(Name = "IsolatedKernel_FOS_System")] private static int offset;
+        [Group(Name = "IsolatedKernel_Framework")] private static int offset;
 
         /// <summary>
         ///     A pointer to the start of the (character-based) video memory.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static char* vidMemBasePtr = (char*) 0xB8000;
+        [Group(Name = "IsolatedKernel_Framework")] public static char* vidMemBasePtr = (char*) 0xB8000;
 
         /// <summary>
         ///     Numbers of rows in the video memory.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static int rows = 25;
+        [Group(Name = "IsolatedKernel_Framework")] public static int rows = 25;
 
         /// <summary>
         ///     Number of columns in the video memory.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static int cols = 80;
+        [Group(Name = "IsolatedKernel_Framework")] public static int cols = 80;
 
         /// <summary>
         ///     The colour to print characters in. Do not set directly, use SetTextColour/SetBackgroundColour.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static char colour;
+        [Group(Name = "IsolatedKernel_Framework")] public static char colour;
 
         /// <summary>
         ///     The background colour. Do not set directly, use SetTextColour/SetBackgroundColour.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static char bg_colour;
+        [Group(Name = "IsolatedKernel_Framework")] public static char bg_colour;
 
         /// <summary>
         ///     Default colour to print characters in.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static char default_colour;
+        [Group(Name = "IsolatedKernel_Framework")] public static char default_colour;
 
         /// <summary>
         ///     Colour to print warning characters in.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static char warning_colour;
+        [Group(Name = "IsolatedKernel_Framework")] public static char warning_colour;
 
         /// <summary>
         ///     Colour to print error characters in.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static char error_colour;
+        [Group(Name = "IsolatedKernel_Framework")] public static char error_colour;
 
         /// <summary>
         ///     Whether to disable the delay output method. Used when debugging is enabled.
         /// </summary>
-        [Group(Name = "IsolatedKernel_FOS_System")] public static bool DisableDelayOutput = false;
+        [Group(Name = "IsolatedKernel_Framework")] public static bool DisableDelayOutput = false;
 
         /// <summary>
         ///     Static constructor for the Basic Console.

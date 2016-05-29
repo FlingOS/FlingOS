@@ -23,10 +23,10 @@
 ; - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  ;
 BITS 32
 
-GLOBAL method_System_Void_RETEND_Kernel_FOS_System_Processes_SystemCalls_DECLEND_Call_NAMEEND__Kernel_FOS_System_Processes_SystemCallNumbers_System_UInt32_System_UInt32_System_UInt32_System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__:function
+GLOBAL method_System_Void_RETEND_Kernel_Framework_Processes_SystemCalls_DECLEND_Call_NAMEEND__Kernel_Framework_Processes_SystemCallNumbers_System_UInt32_System_UInt32_System_UInt32_System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__:function
 
 SECTION .text
-method_System_Void_RETEND_Kernel_FOS_System_Processes_SystemCalls_DECLEND_Call_NAMEEND__Kernel_FOS_System_Processes_SystemCallNumbers_System_UInt32_System_UInt32_System_UInt32_System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__:
+method_System_Void_RETEND_Kernel_Framework_Processes_SystemCalls_DECLEND_Call_NAMEEND__Kernel_Framework_Processes_SystemCallNumbers_System_UInt32_System_UInt32_System_UInt32_System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__System_UInt32_AMP__:
 push dword ebp
 mov dword ebp, esp
 

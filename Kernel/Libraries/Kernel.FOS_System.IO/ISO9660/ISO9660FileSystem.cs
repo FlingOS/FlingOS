@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 
 namespace Kernel.FileSystems.ISO9660
 {

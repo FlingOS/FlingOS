@@ -27,11 +27,11 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 using Kernel.Utilities;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     Replacement class for methods, properties and fields usually found on standard System.String type.
@@ -107,7 +107,7 @@ namespace Kernel.FOS_System
         /*   ----------- DO NOT CREATE A CONSTRUCTOR FOR THIS CLASS - IT WILL NEVER BE CALLED IF YOU DO ----------- */
 
         /// <summary>
-        ///     Creates a new, blank FOS_System.String of specified length.
+        ///     Creates a new, blank Framework.String of specified length.
         ///     IMPORTANT NOTE: You MUST assign the return value of this to a variable / local / arg /
         ///     field etc. You may not use IL or C# that results in an IL Pop op of the return value
         ///     of this method as it will screw up the GC RefCount handling.
@@ -122,7 +122,7 @@ namespace Kernel.FOS_System
             {
                 ExceptionMethods.Throw(
                     new ArgumentException(
-                        "Parameter \"length\" cannot be less than 0 in FOS_System.String.New(int length)."));
+                        "Parameter \"length\" cannot be less than 0 in Framework.String.New(int length)."));
             }
             String result = (String) ObjectUtilities.GetObject(GC.NewString(length));
             if (result == null)
@@ -581,10 +581,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to an FOS_System.String.
+        ///     Implicitly converts the specified value to an Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         [NoGC]
         public static implicit operator String(string x)
@@ -593,10 +593,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to an FOS_System.String.
+        ///     Implicitly converts the specified value to an Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(bool x)
         {
@@ -604,7 +604,7 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified FOS_System.String to a System.String.
+        ///     Implicitly converts the specified Framework.String to a System.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
         /// <returns>The System.String.</returns>
@@ -615,10 +615,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(byte x)
         {
@@ -626,10 +626,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(ushort x)
         {
@@ -637,10 +637,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to an FOS_System.String.
+        ///     Implicitly converts the specified value to an Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(char x)
         {
@@ -650,10 +650,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(short x)
         {
@@ -661,10 +661,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(uint x)
         {
@@ -672,10 +672,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(int x)
         {
@@ -683,10 +683,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(ulong x)
         {
@@ -694,10 +694,10 @@ namespace Kernel.FOS_System
         }
 
         /// <summary>
-        ///     Implicitly converts the specified value to a hex FOS_System.String.
+        ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
-        /// <returns>The FOS_System.String value.</returns>
+        /// <returns>The Framework.String value.</returns>
         [NoDebug]
         public static implicit operator String(long x)
         {

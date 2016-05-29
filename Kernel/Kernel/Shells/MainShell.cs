@@ -30,15 +30,15 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.ATA;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Collections;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 using Kernel.FileSystems;
 using Kernel.FileSystems.Disk;
 using Kernel.FileSystems.FAT;
 using Kernel.FileSystems.ISO9660;
 using Kernel.FileSystems.Streams;
-using Kernel.FOS_System.Processes;
+using Kernel.Framework.Processes;
 using Kernel.Devices;
 using Kernel.Devices.Exceptions;
 using Kernel.Devices.Keyboards;
@@ -312,7 +312,7 @@ namespace Kernel.Shells
                                     //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     //{
                                     //    console.Write("Are you sure you wish to continue? (Y/N) : ");
-                                    //    FOS_System.String str = ReadLine().ToLower();
+                                    //    Framework.String str = ReadLine().ToLower();
                                     //    if (str == "y")
                                     //    {
                                     //        console.Write("Formatting disk ");
@@ -3078,7 +3078,7 @@ which should have been provided with the executable.");
 
                 #endregion
 
-                #region Cast to FOS_System.String
+                #region Cast to Framework.String
 
                 {
                     ulong x = 0x8FFFFFFFFFFFF8FF;
@@ -3504,7 +3504,7 @@ which should have been provided with the executable.");
 
                 #endregion
 
-                #region Cast to FOS_System.String
+                #region Cast to Framework.String
 
                 {
                     long x = -8070450532247930625;

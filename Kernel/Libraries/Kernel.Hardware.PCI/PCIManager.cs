@@ -30,7 +30,7 @@
 #undef PCI_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Collections;
+using Kernel.Framework.Collections;
 using Kernel.Devices;
 using Kernel.IO;
 

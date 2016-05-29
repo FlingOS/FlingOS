@@ -1,4 +1,4 @@
-﻿namespace Kernel.FOS_System.Processes.Requests.Devices
+﻿namespace Kernel.Framework.Processes.Requests.Devices
 {
     public enum DeviceGroup
     {

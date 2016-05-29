@@ -27,9 +27,9 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework.Exceptions;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     /// <summary>
     ///     Methods for converting to and from byte arrays.

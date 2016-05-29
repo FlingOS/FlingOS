@@ -28,10 +28,10 @@
 
 using System;
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Processes.Requests.Devices;
+using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.IO;
 using PCI_IO = Kernel.PCI.PCIManager;
-using String = Kernel.FOS_System.String;
+using String = Kernel.Framework.String;
 using Kernel.Devices;
 
 namespace Kernel.PCI
@@ -281,10 +281,10 @@ namespace Kernel.PCI
 #if PCI_TRACE || COMPILER_TRACE
             ushort vendorID = ReadRegister16(0x00);
             VendorID = ReadRegister16(0x00);
-            BasicConsole.WriteLine(((FOS_System.String)"New PCI device. bus(arg)=") + bus + ", bus(fld)=" + this.bus);
-            BasicConsole.WriteLine(((FOS_System.String)"                slot(arg)=") + slot + ", slot(fld)=" + this.slot);
-            BasicConsole.WriteLine(((FOS_System.String)"                func(arg)=") + function + ", func(fld)=" + this.function);
-            BasicConsole.WriteLine(((FOS_System.String)"                vendorID(loc)=") + vendorID + ", vendorID(fld)=" + this.VendorID);
+            BasicConsole.WriteLine(((Framework.String)"New PCI device. bus(arg)=") + bus + ", bus(fld)=" + this.bus);
+            BasicConsole.WriteLine(((Framework.String)"                slot(arg)=") + slot + ", slot(fld)=" + this.slot);
+            BasicConsole.WriteLine(((Framework.String)"                func(arg)=") + function + ", func(fld)=" + this.function);
+            BasicConsole.WriteLine(((Framework.String)"                vendorID(loc)=") + vendorID + ", vendorID(fld)=" + this.VendorID);
             BasicConsole.DelayOutput(4);
 #else
             VendorID = ReadRegister16(0x00);

@@ -30,11 +30,11 @@
 //#define PROCESS_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System.Processes;
-using Kernel.FOS_System.Processes.Synchronisation;
+using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Synchronisation;
 using Kernel.Utilities;
 
-namespace Kernel.FOS_System
+namespace Kernel.Framework
 {
     //This implementation is based off of Leonard Kevin McGuire Jr's Binary Heap Implementation
     //found at http://wiki.osdev.org/User:Pancakes/BitmapHeapImplementation
@@ -509,7 +509,7 @@ namespace Kernel.FOS_System
 
                                         //#if HEAP_TRACE
                                         //                                      ExitCritical();
-                                        //                                      BasicConsole.WriteLine(((FOS_System.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
+                                        //                                      BasicConsole.WriteLine(((Framework.String)"Allocated address ") + (uint)result + " on boundary " + boundary + " for " + caller);
                                         //                                      EnterCritical("Alloc:Boundary condition");
                                         //#endif
                                     }

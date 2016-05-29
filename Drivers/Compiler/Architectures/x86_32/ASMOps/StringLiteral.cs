@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
             //This is UTF-16 (Unicode)/ASCII text
             LiteralASM.AppendLine(string.Format("GLOBAL {0}:data", Id));
             LiteralASM.AppendLine(string.Format("{0}:", Id));
-            //Put in type info as FOS_System.String type
+            //Put in type info as Framework.String type
             LiteralASM.AppendLine(string.Format("dd {0}", StringTypeId));
             //Put in string length bytes
             LiteralASM.Append("db ");

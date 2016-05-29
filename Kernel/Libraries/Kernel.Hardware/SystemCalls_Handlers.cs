@@ -28,7 +28,7 @@
 
 //#define SYSCALLS_TRACE
 
-using Kernel.FOS_System.Processes;
+using Kernel.Framework.Processes;
 
 namespace Kernel.Multiprocessing
 {

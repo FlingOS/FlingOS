@@ -28,8 +28,8 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Object = Kernel.FOS_System.Object;
-using String = Kernel.FOS_System.String;
+using Object = Kernel.Framework.Object;
+using String = Kernel.Framework.String;
 
 namespace Kernel.USB
 {

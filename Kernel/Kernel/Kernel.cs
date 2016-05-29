@@ -27,8 +27,8 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.FOS_System;
-using Kernel.FOS_System.Exceptions;
+using Kernel.Framework;
+using Kernel.Framework.Exceptions;
 using Kernel.Devices;
 using Kernel.IO.Serial;
 using Kernel.Multiprocessing;
