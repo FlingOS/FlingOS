@@ -1,19 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DirectedGraph DataVirtualized="True" GraphDirection="TopToBottom" Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="@10" Category="CodeSchema_Assembly" Bounds="354.646666666667,0,108.706666666667,25" CodeSchemaProperty_StrongName="Kernel, Version=1.0.5992.36226, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Kernel\bin\Docs\Kernel.dll" Group="Collapsed" Label="Kernel.dll" />
-    <Node Id="@12" Category="CodeSchema_Assembly" Bounds="529.415,330,175.17,25" CodeSchemaProperty_StrongName="Kernel.FOS_System, Version=1.0.5992.36225, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.FOS_System\bin\Docs\Kernel.FOS_System.dll" Group="Collapsed" Label="Kernel.FOS_System.dll" />
-    <Node Id="@14" Category="CodeSchema_Assembly" Bounds="408.378333333334,275,177.243333333333,25" CodeSchemaProperty_StrongName="Kernel.Hardware.IO, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware.IO\bin\Docs\Kernel.Hardware.IO.dll" Group="Collapsed" Label="Kernel.Hardware.IO.dll" />
-    <Node Id="@16" Category="CodeSchema_Assembly" Bounds="31.995,110,190.01,24.9999999999999" CodeSchemaProperty_StrongName="Kernel.FOS_System.IO, Version=1.0.5992.36226, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.FOS_System.IO\bin\Docs\Kernel.FOS_System.IO.dll" Group="Collapsed" Label="Kernel.FOS_System.IO.dll" />
-    <Node Id="@18" Category="CodeSchema_Assembly" Bounds="412.37,165,205.26,25" CodeSchemaProperty_StrongName="Kernel.Hardware.Devices, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware.Devices\bin\Docs\Kernel.Hardware.Devices.dll" Group="Collapsed" Label="Kernel.Hardware.Devices.dll" />
-    <Node Id="@2" Category="CodeSchema_Assembly" Bounds="476.455,110,185.09,25" CodeSchemaProperty_StrongName="Kernel.Hardware.ATA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware.ATA\bin\Docs\Kernel.Hardware.ATA.dll" Group="Collapsed" Label="Kernel.Hardware.ATA.dll" />
-    <Node Id="@20" Category="CodeSchema_Assembly" Bounds="102.096666666667,275,243.806666666666,25" CodeSchemaProperty_StrongName="Kernel.Hardware.VirtualMemory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware.VirtualMemory\bin\Docs\Kernel.Hardware.VirtualMemory.dll" Group="Collapsed" Label="Kernel.Hardware.VirtualMemory.dll" />
-    <Node Id="@4" Category="CodeSchema_Assembly" Bounds="315.75,54.9999999999999,186.5,25" CodeSchemaProperty_StrongName="Kernel.Hardware.USB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware.USB\bin\Docs\Kernel.Hardware.USB.dll" Group="Collapsed" Label="Kernel.Hardware.USB.dll" />
-    <Node Id="@6" Category="CodeSchema_Assembly" Bounds="134.261666666667,220,249.476666666667,25.0000000000001" CodeSchemaProperty_StrongName="Kernel.Hardware.Multiprocessing, Version=1.0.5992.36225, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware\bin\Docs\Kernel.Hardware.Multiprocessing.dll" Group="Collapsed" Label="Kernel.Hardware.Multiprocessing.dll" />
-    <Node Id="@8" Category="CodeSchema_Assembly" Bounds="691.826666666666,110,182.346666666667,25" CodeSchemaProperty_StrongName="Kernel.Hardware.PCI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(VsSolution)\Kernel\Libraries\Kernel.Hardware.PCI\bin\Docs\Kernel.Hardware.PCI.dll" Group="Collapsed" Label="Kernel.Hardware.PCI.dll" />
+    <Node Id="@10" Category="CodeSchema_Assembly" Bounds="227.05,385,169.9,25" CodeSchemaProperty_StrongName="Kernel.Framework, Version=1.0.5993.2896, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(66c9b617-b6d9-4006-a7f9-e1df62ed30ad.OutputPath)" Group="Collapsed" Label="Kernel.Framework.dll" />
+    <Node Id="@12" Category="CodeSchema_Assembly" Bounds="289.646666666667,0,108.706666666667,25" CodeSchemaProperty_StrongName="Kernel, Version=1.0.5993.2897, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(e4076f67-686f-48e3-a5af-55b841665f77.OutputPath)" Group="Collapsed" Label="Kernel.dll" />
+    <Node Id="@14" Category="CodeSchema_Assembly" Bounds="343.226666666667,330,123.546666666667,25" CodeSchemaProperty_StrongName="Kernel.IO, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(9feb0b47-9730-44fa-a5cb-0e47194176f0.OutputPath)" Group="Collapsed" Label="Kernel.IO.dll" />
+    <Node Id="@16" Category="CodeSchema_Assembly" Bounds="374.218333333333,165,151.563333333333,25" CodeSchemaProperty_StrongName="Kernel.Devices, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e.OutputPath)" Group="Collapsed" Label="Kernel.Devices.dll" />
+    <Node Id="@18" Category="CodeSchema_Assembly" Bounds="161.321666666667,220,139.356666666667,25" CodeSchemaProperty_StrongName="Kernel.Pipes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(f64a12df-0514-4f93-90c7-5e86b0a35f86.OutputPath)" Group="Collapsed" Label="Kernel.Pipes.dll" />
+    <Node Id="@2" Category="CodeSchema_Assembly" Bounds="64.3033333333334,110,131.393333333333,25" CodeSchemaProperty_StrongName="Kernel.ATA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(2d18c11e-3c86-4131-8de9-c4385c9131b4.OutputPath)" Group="Collapsed" Label="Kernel.ATA.dll" />
+    <Node Id="@20" Category="CodeSchema_Assembly" Bounds="258.023333333333,110,171.953333333333,25" CodeSchemaProperty_StrongName="Kernel.FileSystems, Version=1.0.5993.2897, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(5c9fdb7d-604e-4927-9d3f-e2c599b20797.OutputPath)" Group="Collapsed" Label="Kernel.FileSystems.dll" />
+    <Node Id="@22" Category="CodeSchema_Assembly" Bounds="528.945,330,190.11,25" CodeSchemaProperty_StrongName="Kernel.VirtualMemory, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2.OutputPath)" Group="Collapsed" Label="Kernel.VirtualMemory.dll" />
+    <Node Id="@4" Category="CodeSchema_Assembly" Bounds="523.598333333333,55,132.803333333333,25" CodeSchemaProperty_StrongName="Kernel.USB, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(63c61b22-f7fb-4de2-8d25-73bc0d1dc04f.OutputPath)" Group="Collapsed" Label="Kernel.USB.dll" />
+    <Node Id="@6" Category="CodeSchema_Assembly" Bounds="491.11,275,195.78,25" CodeSchemaProperty_StrongName="Kernel.Multiprocessing, Version=1.0.5993.2897, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(f59b042c-435d-48ed-ad7b-23666931a952.OutputPath)" Group="Collapsed" Label="Kernel.Multiprocessing.dll" />
+    <Node Id="@8" Category="CodeSchema_Assembly" Bounds="651.675,110,128.65,25" CodeSchemaProperty_StrongName="Kernel.PCI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" DelayedChildNodesState="NotFetched" DelayedCrossGroupLinksState="Fetched" FilePath="$(02d891e8-4aaa-48fa-8608-5135fb4dc493.OutputPath)" Group="Collapsed" Label="Kernel.PCI.dll" />
   </Nodes>
   <Links>
-    <Link Source="@10" Target="@12" Category="References" Bounds="463.353332519531,18.5270824432373,441.646667480469,309.784685134888" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="2669">
+    <Link Source="@12" Target="@10" Category="References" Bounds="1,18.6256999969482,288.646667480469,364.883333206177" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="2669">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
@@ -21,62 +22,53 @@
       <Category Ref="CodeSchema_ReturnTypeLink" />
       <Category Ref="InheritsFrom" />
     </Link>
-    <Link Source="@10" Target="@14" Category="References" Bounds="285,25,185.889251708984,244.986694335938" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="8">
+    <Link Source="@12" Target="@14" Category="References" Bounds="59.881649017334,22.0357189178467,301.759433746338,304.928514480591" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="8">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
     </Link>
-    <Link Source="@10" Target="@16" Category="References" Bounds="156.131637573242,24.9827079772949,203.099563598633,80.4721794128418" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="154">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-      <Category Ref="CodeSchema_FieldRead" />
-      <Category Ref="CodeSchema_ReturnTypeLink" />
-    </Link>
-    <Link Source="@10" Target="@18" Category="References" Bounds="437.242462158203,25,84.4825744628906,134.439605712891" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="312">
+    <Link Source="@12" Target="@16" Category="References" Bounds="370.590911865234,25,90.4090881347656,131.174774169922" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="290">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
       <Category Ref="CodeSchema_FieldWrite" />
     </Link>
-    <Link Source="@10" Target="@2" Category="CodeSchema_Calls" Bounds="447.109039306641,25,119.939788818359,76.0369644165039" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="14">
+    <Link Source="@12" Target="@18" Category="References" Bounds="227,25,90.4090881347656,186.023712158203" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="22">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@12" Target="@2" Category="CodeSchema_Calls" Bounds="151.643203735352,25,157.077194213867,79.1865234375" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="14">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_FieldRead" />
     </Link>
-    <Link Source="@10" Target="@20" Category="CodeSchema_Calls" Bounds="1,19.8270416259766,353.646667480469,251.448745727539" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="40">
+    <Link Source="@12" Target="@20" Category="References" Bounds="344,25,0,76" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="154">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+    </Link>
+    <Link Source="@12" Target="@22" Category="CodeSchema_Calls" Bounds="379.279602050781,25,321.527954101563,300.454895019531" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="42">
       <Category Ref="CodeMap_ProjectReference" />
     </Link>
-    <Link Source="@10" Target="@4" Category="CodeSchema_Calls" Bounds="409,25,0,21" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="48">
+    <Link Source="@12" Target="@4" Category="CodeSchema_Calls" Bounds="396.133422851563,24.1558475494385,129.17431640625,28.8804378509521" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="48">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_FieldRead" />
     </Link>
-    <Link Source="@10" Target="@6" Category="References" Bounds="253,25,118.149322509766,186.053085327148" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="443">
+    <Link Source="@12" Target="@6" Category="References" Bounds="398.353332519531,18.9013557434082,412.646667480469,252.102794647217" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="442">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
       <Category Ref="CodeSchema_FieldWrite" />
       <Category Ref="CodeSchema_ReturnTypeLink" />
     </Link>
-    <Link Source="@10" Target="@8" Category="CodeSchema_Calls" Bounds="458.454071044922,24.9989852905273,277.385650634766,82.228141784668" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="11">
+    <Link Source="@12" Target="@8" Category="CodeSchema_Calls" Bounds="398.353332519531,18.2166347503662,306.824584960938,83.8281192779541" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="11">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_FieldRead" />
     </Link>
-    <Link Source="@14" Target="@12" Category="InheritsFrom" Bounds="524.272705078125,300,57.2730102539063,26.2501220703125" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="3">
+    <Link Source="@14" Target="@10" Category="InheritsFrom" Bounds="340.883056640625,355,42.9805908203125,25.4186401367188" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="3">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
     </Link>
-    <Link Source="@16" Target="@12" Category="References" Bounds="39,135,481.431396484375,201.663726806641" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="1013">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-      <Category Ref="CodeSchema_FieldRead" />
-      <Category Ref="CodeSchema_ReturnTypeLink" />
-      <Category Ref="InheritsFrom" />
-    </Link>
-    <Link Source="@16" Target="@18" Category="References" Bounds="215.181823730469,135,202.725433349609,28.7368469238281" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="108">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-      <Category Ref="CodeSchema_FieldRead" />
-      <Category Ref="InheritsFrom" />
-    </Link>
-    <Link Source="@18" Target="@12" Category="References" Bounds="538.181823730469,190,78.8181762695313,131" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="763">
+    <Link Source="@16" Target="@10" Category="References" Bounds="318.644592285156,190,111.809967041016,186.416198730469" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="470">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
@@ -84,68 +76,103 @@
       <Category Ref="CodeSchema_ReturnTypeLink" />
       <Category Ref="InheritsFrom" />
     </Link>
-    <Link Source="@18" Target="@14" Category="References" Bounds="500.498840332031,190,12.4556884765625,76.1181335449219" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="64">
+    <Link Source="@16" Target="@14" Category="References" Bounds="396,190,41.7272644042969,131.118133544922" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="64">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
     </Link>
-    <Link Source="@18" Target="@6" Category="References" Bounds="325.981018066406,190,130.837158203125,28.1095428466797" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="95">
+    <Link Source="@16" Target="@18" Category="References" Bounds="289.501647949219,190,110.725616455078,27.8078002929688" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="36">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
     </Link>
-    <Link Source="@2" Target="@12" Category="References" Bounds="594.454528808594,135,118.545471191406,190.526000976563" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="174">
+    <Link Source="@16" Target="@6" Category="References" Bounds="459.772735595703,190,99.5998840332031,80.5260009765625" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="26">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+    </Link>
+    <Link Source="@18" Target="@10" Category="References" Bounds="231,245,55.1451416015625,134.944244384766" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="293">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_FieldWrite" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@18" Target="@6" Category="References" Bounds="299.643585205078,243.045806884766,199.097137451172,30.5875549316406" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="69">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+    </Link>
+    <Link Source="@2" Target="@10" Category="References" Bounds="66,135,181.307754516602,248.036285400391" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="174">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldWrite" />
       <Category Ref="CodeSchema_ReturnTypeLink" />
       <Category Ref="InheritsFrom" />
     </Link>
-    <Link Source="@2" Target="@14" Category="References" Bounds="540.008483886719,135,108.991516113281,136.937713623047" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="64">
+    <Link Source="@2" Target="@14" Category="References" Bounds="130,135,206.933197021484,193.886627197266" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="64">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
     </Link>
-    <Link Source="@2" Target="@18" Category="References" Bounds="533.578063964844,135,23.1492309570313,23.5779266357422" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="60">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-      <Category Ref="CodeSchema_FieldRead" />
-      <Category Ref="CodeSchema_FieldWrite" />
-      <Category Ref="InheritsFrom" />
-    </Link>
-    <Link Source="@20" Target="@12" Category="References" Bounds="313.318176269531,300,209.794250488281,29.3605041503906" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="361">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-      <Category Ref="CodeSchema_FieldRead" />
-      <Category Ref="CodeSchema_ReturnTypeLink" />
-      <Category Ref="InheritsFrom" />
-    </Link>
-    <Link Source="@4" Target="@12" Category="References" Bounds="84.2281494140625,80,436.203247070313,256.665863037109" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="662">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-      <Category Ref="CodeSchema_FieldRead" />
-      <Category Ref="CodeSchema_ReturnTypeLink" />
-      <Category Ref="InheritsFrom" />
-    </Link>
-    <Link Source="@4" Target="@14" Category="References" Bounds="392.277770996094,80,85.0097961425781,188.807189941406" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="67">
-      <Category Ref="CodeMap_ProjectReference" />
-      <Category Ref="CodeSchema_Calls" />
-    </Link>
-    <Link Source="@4" Target="@18" Category="References" Bounds="409.909088134766,80,73.9873352050781,80.7284698486328" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="80">
+    <Link Source="@2" Target="@16" Category="References" Bounds="194.228469848633,133.539260864258,174.963333129883,30.0718231201172" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="60">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
       <Category Ref="CodeSchema_FieldWrite" />
       <Category Ref="InheritsFrom" />
     </Link>
-    <Link Source="@4" Target="@6" Category="CodeSchema_Calls" Bounds="274.926422119141,80,120.437225341797,133.034378051758" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="2">
+    <Link Source="@20" Target="@10" Category="References" Bounds="313.951171875,135,27.3215637207031,241.036956787109" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="1013">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@20" Target="@16" Category="References" Bounds="368.090911865234,135,49.8295288085938,25.8549499511719" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="63">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@20" Target="@18" Category="References" Bounds="250.289901733398,135,80.8691864013672,78.7222137451172" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="45">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+    </Link>
+    <Link Source="@22" Target="@10" Category="References" Bounds="391.772430419922,355,161.318450927734,28.4375610351563" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="361">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@4" Target="@10" Category="References" Bounds="405.922576904297,80,332.127105712891,310.149200439453" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="662">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_ReturnTypeLink" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@4" Target="@14" Category="References" Bounds="425.270751953125,80,159.804992675781,243.918487548828" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="67">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+    </Link>
+    <Link Source="@4" Target="@16" Category="References" Bounds="474.303100585938,80,100.924194335938,79.677734375" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="80">
+      <Category Ref="CodeMap_ProjectReference" />
+      <Category Ref="CodeSchema_Calls" />
+      <Category Ref="CodeSchema_FieldRead" />
+      <Category Ref="CodeSchema_FieldWrite" />
+      <Category Ref="InheritsFrom" />
+    </Link>
+    <Link Source="@4" Target="@6" Category="CodeSchema_Calls" Bounds="589,80,0.772705078125,186" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="2">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_FieldRead" />
     </Link>
-    <Link Source="@4" Target="@8" Category="References" Bounds="494,80,195.095764160156,28.6905517578125" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="41">
+    <Link Source="@4" Target="@8" Category="References" Bounds="618.636352539063,80,60.4788818359375,26.3994979858398" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="41">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_ReturnTypeLink" />
     </Link>
-    <Link Source="@6" Target="@12" Category="References" Bounds="285.818176269531,245,248.03466796875,83.5063171386719" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="232">
+    <Link Source="@6" Target="@10" Category="References" Bounds="372.929290771484,300,195.388885498047,82.9031982421875" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="232">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
@@ -154,26 +181,26 @@
       <Category Ref="Implements" />
       <Category Ref="InheritsFrom" />
     </Link>
-    <Link Source="@6" Target="@14" Category="CodeSchema_Calls" Bounds="313.090911865234,245,121.049285888672,27.9735717773438" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="8">
+    <Link Source="@6" Target="@14" Category="CodeSchema_Calls" Bounds="455.441192626953,300,91.7406311035156,27.4224548339844" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="8">
       <Category Ref="CodeMap_ProjectReference" />
     </Link>
-    <Link Source="@6" Target="@20" Category="References" Bounds="236.786422729492,245,14.259033203125,22.4070434570313" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="28">
+    <Link Source="@6" Target="@22" Category="References" Bounds="596.954528808594,300,14.259033203125,22.4070434570313" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="28">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldWrite" />
     </Link>
-    <Link Source="@8" Target="@12" Category="References" Bounds="663.270568847656,135,119.729431152344,192.169403076172" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="76">
+    <Link Source="@8" Target="@10" Category="References" Bounds="405.923492431641,135,376.076507568359,255.275939941406" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="76">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_ReturnTypeLink" />
       <Category Ref="InheritsFrom" />
     </Link>
-    <Link Source="@8" Target="@14" Category="References" Bounds="529.565368652344,135,237.525512695313,135.915771484375" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="17">
+    <Link Source="@8" Target="@14" Category="References" Bounds="423.863952636719,135,285.090576171875,188.636047363281" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="17">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
     </Link>
-    <Link Source="@8" Target="@18" Category="InheritsFrom" Bounds="584.725341796875,135,137.365539550781,28.1906890869141" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="6">
+    <Link Source="@8" Target="@16" Category="InheritsFrom" Bounds="519.268127441406,134.933944702148,136.596801757813,28.2436981201172" IsSourceVirtualized="True" IsTargetVirtualized="True" Weight="6">
       <Category Ref="CodeMap_ProjectReference" />
       <Category Ref="CodeSchema_Calls" />
       <Category Ref="CodeSchema_FieldRead" />
@@ -227,26 +254,28 @@
     <Name Id="Assembly" Label="Assembly" ValueType="Uri" />
   </QualifiedNames>
   <IdentifierAliases>
-    <Alias n="1" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware.ATA/bin/Docs/Kernel.Hardware.ATA.dll" />
+    <Alias n="1" Uri="Assembly=$(2d18c11e-3c86-4131-8de9-c4385c9131b4.OutputPathUri)" />
     <Alias n="2" Id="(@1)" />
-    <Alias n="3" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware.USB/bin/Docs/Kernel.Hardware.USB.dll" />
+    <Alias n="3" Uri="Assembly=$(63c61b22-f7fb-4de2-8d25-73bc0d1dc04f.OutputPathUri)" />
     <Alias n="4" Id="(@3)" />
-    <Alias n="5" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware/bin/Docs/Kernel.Hardware.Multiprocessing.dll" />
+    <Alias n="5" Uri="Assembly=$(f59b042c-435d-48ed-ad7b-23666931a952.OutputPathUri)" />
     <Alias n="6" Id="(@5)" />
-    <Alias n="7" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware.PCI/bin/Docs/Kernel.Hardware.PCI.dll" />
+    <Alias n="7" Uri="Assembly=$(02d891e8-4aaa-48fa-8608-5135fb4dc493.OutputPathUri)" />
     <Alias n="8" Id="(@7)" />
-    <Alias n="9" Uri="Assembly=$(VsSolutionUri)/Kernel/Kernel/bin/Docs/Kernel.dll" />
+    <Alias n="9" Uri="Assembly=$(66c9b617-b6d9-4006-a7f9-e1df62ed30ad.OutputPathUri)" />
     <Alias n="10" Id="(@9)" />
-    <Alias n="11" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.FOS_System/bin/Docs/Kernel.FOS_System.dll" />
+    <Alias n="11" Uri="Assembly=$(e4076f67-686f-48e3-a5af-55b841665f77.OutputPathUri)" />
     <Alias n="12" Id="(@11)" />
-    <Alias n="13" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware.IO/bin/Docs/Kernel.Hardware.IO.dll" />
+    <Alias n="13" Uri="Assembly=$(9feb0b47-9730-44fa-a5cb-0e47194176f0.OutputPathUri)" />
     <Alias n="14" Id="(@13)" />
-    <Alias n="15" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.FOS_System.IO/bin/Docs/Kernel.FOS_System.IO.dll" />
+    <Alias n="15" Uri="Assembly=$(f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e.OutputPathUri)" />
     <Alias n="16" Id="(@15)" />
-    <Alias n="17" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware.Devices/bin/Docs/Kernel.Hardware.Devices.dll" />
+    <Alias n="17" Uri="Assembly=$(f64a12df-0514-4f93-90c7-5e86b0a35f86.OutputPathUri)" />
     <Alias n="18" Id="(@17)" />
-    <Alias n="19" Uri="Assembly=$(VsSolutionUri)/Kernel/Libraries/Kernel.Hardware.VirtualMemory/bin/Docs/Kernel.Hardware.VirtualMemory.dll" />
+    <Alias n="19" Uri="Assembly=$(5c9fdb7d-604e-4927-9d3f-e2c599b20797.OutputPathUri)" />
     <Alias n="20" Id="(@19)" />
+    <Alias n="21" Uri="Assembly=$(2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2.OutputPathUri)" />
+    <Alias n="22" Id="(@21)" />
   </IdentifierAliases>
   <Styles>
     <Style TargetType="Node" GroupLabel="Circular References" ToolTip="Node is part of a strongly coupled component" ValueLabel="Nodes">
@@ -476,7 +505,28 @@
     </Style>
   </Styles>
   <Paths>
+    <Path Id="02d891e8-4aaa-48fa-8608-5135fb4dc493.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.PCI\bin\Docs\Kernel.PCI.dll" />
+    <Path Id="02d891e8-4aaa-48fa-8608-5135fb4dc493.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.PCI/bin/Docs/Kernel.PCI.dll" />
+    <Path Id="2d18c11e-3c86-4131-8de9-c4385c9131b4.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.ATA\bin\Docs\Kernel.ATA.dll" />
+    <Path Id="2d18c11e-3c86-4131-8de9-c4385c9131b4.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.ATA/bin/Docs/Kernel.ATA.dll" />
+    <Path Id="2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.VirtualMemory\bin\Docs\Kernel.VirtualMemory.dll" />
+    <Path Id="2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.VirtualMemory/bin/Docs/Kernel.VirtualMemory.dll" />
+    <Path Id="5c9fdb7d-604e-4927-9d3f-e2c599b20797.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.FileSystems\bin\Docs\Kernel.FileSystems.dll" />
+    <Path Id="5c9fdb7d-604e-4927-9d3f-e2c599b20797.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.FileSystems/bin/Docs/Kernel.FileSystems.dll" />
+    <Path Id="63c61b22-f7fb-4de2-8d25-73bc0d1dc04f.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.USB\bin\Docs\Kernel.USB.dll" />
+    <Path Id="63c61b22-f7fb-4de2-8d25-73bc0d1dc04f.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.USB/bin/Docs/Kernel.USB.dll" />
+    <Path Id="66c9b617-b6d9-4006-a7f9-e1df62ed30ad.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.Framework\bin\Docs\Kernel.Framework.dll" />
+    <Path Id="66c9b617-b6d9-4006-a7f9-e1df62ed30ad.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.Framework/bin/Docs/Kernel.Framework.dll" />
+    <Path Id="9feb0b47-9730-44fa-a5cb-0e47194176f0.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.IO\bin\Docs\Kernel.IO.dll" />
+    <Path Id="9feb0b47-9730-44fa-a5cb-0e47194176f0.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.IO/bin/Docs/Kernel.IO.dll" />
+    <Path Id="e4076f67-686f-48e3-a5af-55b841665f77.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Kernel\bin\Docs\Kernel.dll" />
+    <Path Id="e4076f67-686f-48e3-a5af-55b841665f77.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Kernel/bin/Docs/Kernel.dll" />
+    <Path Id="f59b042c-435d-48ed-ad7b-23666931a952.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.Multiprocessing\bin\Docs\Kernel.Multiprocessing.dll" />
+    <Path Id="f59b042c-435d-48ed-ad7b-23666931a952.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.Multiprocessing/bin/Docs/Kernel.Multiprocessing.dll" />
+    <Path Id="f64a12df-0514-4f93-90c7-5e86b0a35f86.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.Pipes\bin\Docs\Kernel.Pipes.dll" />
+    <Path Id="f64a12df-0514-4f93-90c7-5e86b0a35f86.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.Pipes/bin/Docs/Kernel.Pipes.dll" />
+    <Path Id="f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e.OutputPath" Value="C:\Users\Edward\Documents\FlingOS\FlingOS\Kernel\Libraries\Kernel.Devices\bin\Docs\Kernel.Devices.dll" />
+    <Path Id="f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e.OutputPathUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS/Kernel/Libraries/Kernel.Devices/bin/Docs/Kernel.Devices.dll" />
     <Path Id="VsSolution" Value="C:\Users\Edward\Documents\FlingOS\FlingOS" />
-    <Path Id="VsSolutionUri" Value="file:///C:/Users/Edward/Documents/FlingOS/FlingOS" />
   </Paths>
 </DirectedGraph>

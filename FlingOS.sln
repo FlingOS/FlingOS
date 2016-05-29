@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kernel", "Kernel", "{623B7546-CB66-4B2B-B730-D5A19AA558B0}"
+	ProjectSection(SolutionItems) = preProject
+		Kernel\Kernel Code Map Neat.dgml = Kernel\Kernel Code Map Neat.dgml
+		Kernel\Kernel Code Map TtB.dgml = Kernel\Kernel Code Map TtB.dgml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{4D38C232-FA9C-4CB0-A91E-D0A9E0E01BF0}"
 EndProject

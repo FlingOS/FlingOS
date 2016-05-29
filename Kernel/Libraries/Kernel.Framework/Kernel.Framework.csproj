@@ -7,8 +7,8 @@
     <ProjectGuid>{66C9B617-B6D9-4006-A7F9-E1DF62ED30AD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.FOS_System</RootNamespace>
-    <AssemblyName>Kernel.FOS_System</AssemblyName>
+    <RootNamespace>Kernel.Framework</RootNamespace>
+    <AssemblyName>Kernel.Framework</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -25,7 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\Kernel.FOS_System.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Framework.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>0660;0661;</NoWarn>
   </PropertyGroup>
@@ -44,7 +44,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.FOS_System.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Framework.XML</DocumentationFile>
     <NoWarn>0660;0661;</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -60,7 +60,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>bin\Debug\Kernel.FOS_System.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Framework.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>0660;0661;</NoWarn>
   </PropertyGroup>
@@ -79,7 +79,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.FOS_System.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Framework.XML</DocumentationFile>
     <NoWarn>0660;0661;</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
