@@ -23,13 +23,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Multiprocessing.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UKKEYBOARD;x86</DefineConstants>
+    <DefineConstants>TRACE;x86</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -38,7 +38,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Docs|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;x86;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Multiprocessing.XML</DocumentationFile>
     <DebugType>full</DebugType>
@@ -56,13 +56,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Multiprocessing.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|MIPS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;MIPS;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -71,7 +71,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|MIPS'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;MIPS;UKKEYBOARD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Multiprocessing.XML</DocumentationFile>
     <DebugType>full</DebugType>

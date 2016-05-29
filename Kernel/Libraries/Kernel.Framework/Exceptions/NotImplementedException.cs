@@ -29,16 +29,16 @@
 namespace Kernel.Framework.Exceptions
 {
     /// <summary>
-    ///     Represents a not supported exception.
+    ///     Represents a not implemented exception.
     /// </summary>
-    public class NotSupportedException : Exception
+    public class NotImplementedException : Exception
     {
         /// <summary>
-        ///     Sets the message to "Not supported exception." appended with the extended message.
+        ///     Sets the message to "Not implemented exception." appended with the extended message.
         /// </summary>
-        /// <param name="anExtendedMessage">The extended message to append to the main message.</param>
-        public NotSupportedException(String anExtendedMessage)
-            : base("Not supported exception. " + anExtendedMessage)
+        /// <param name="ExtendedMessage">The extended message to append to the main message.</param>
+        public NotImplementedException(String ExtendedMessage)
+            : base("Not implemented exception. " + ExtendedMessage)
         {
         }
     }

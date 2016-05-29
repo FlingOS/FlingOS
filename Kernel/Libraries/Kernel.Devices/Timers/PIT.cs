@@ -473,6 +473,7 @@ namespace Kernel.Devices.Timers
         {
             WaitSignaled = false;
 
+            //TODO: Do we need to keep the handler Id?
             RegisterHandler(new PITHandler(SignalWait, this, TimeoutNS, false));
 
             while (!WaitSignaled)
@@ -482,9 +483,9 @@ namespace Kernel.Devices.Timers
         }
 
         [NoDebug]
-        public override int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, IObject state)
+        public override int RegisterHandler(TimerHandler Handler, long TimeoutNS, bool Recurring, IObject State)
         {
-            return RegisterHandler(new PITHandler(handler, state, TimeoutNS, Recurring));
+            return RegisterHandler(new PITHandler(Handler, State, TimeoutNS, Recurring));
         }
 
         /// <summary>
@@ -509,12 +510,12 @@ namespace Kernel.Devices.Timers
         /// <summary>
         ///     Unregisters the handler with the specified id.
         /// </summary>
-        /// <param name="handlerId">The Id of the handler to unregister.</param>
-        public override void UnregisterHandler(int handlerId)
+        /// <param name="HandlerId">The Id of the handler to unregister.</param>
+        public override void UnregisterHandler(int HandlerId)
         {
             for (int i = 0; i < ActiveHandlers.Count; i++)
             {
-                if (((PITHandler)ActiveHandlers[i]).id == handlerId)
+                if (((PITHandler)ActiveHandlers[i]).id == HandlerId)
                 {
                     ((PITHandler)ActiveHandlers[i]).id = -1;
                     ActiveHandlers.RemoveAt(i);

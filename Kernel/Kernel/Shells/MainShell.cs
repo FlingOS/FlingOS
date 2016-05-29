@@ -1123,12 +1123,12 @@ namespace Kernel.Shells
         /// </summary>
         private void Reboot()
         {
-            if (PS2.ThePS2 != null)
+            if (PS2.SingletonPS2 != null)
             {
                 console.WarningColour();
                 console.Write("Attempting 8042 reset...");
 
-                PS2.ThePS2.Reset();
+                PS2.SingletonPS2.Reset();
 
                 console.ErrorColour();
                 console.WriteLine("failed.");

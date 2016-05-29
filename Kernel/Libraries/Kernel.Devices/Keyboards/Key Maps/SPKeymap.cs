@@ -28,14 +28,16 @@
 
 using Kernel.Framework.Collections;
 
+// ReSharper disable once CheckNamespace
 namespace Kernel.Devices.Keyboards
 {
+#if SPKEYBOARD
     public abstract partial class Keyboard
     {
         /// <summary>
         ///     Creates the Spanish keyboard mapping
         /// </summary>
-        protected void CreateSPKeymap()
+        private void CreateSPKeymap()
         {
             //  This creates (most/some of) a Spain keyboard mapping.
             //  You can go look up scancodes / characters etc. for other
@@ -48,7 +50,7 @@ namespace Kernel.Devices.Keyboards
             //TODO: Full numpad?
             //TODO: Alt special symbols
 
-            #region Letters
+#region Letters
 
             AddKey(0x10, 'q', KeyboardKey.Q);
             AddKey(0x100000, 'Q', KeyboardKey.Q);
@@ -107,9 +109,9 @@ namespace Kernel.Devices.Keyboards
             AddKey(0x32, 'm', KeyboardKey.M);
             AddKey(0x320000, 'M', KeyboardKey.M);
 
-            #endregion
+#endregion
 
-            #region Digits
+#region Digits
 
             AddKey(0x29, 'º', KeyboardKey.NoName);
             AddKey(0x290000, 'ª', KeyboardKey.NoName);
@@ -134,9 +136,9 @@ namespace Kernel.Devices.Keyboards
             AddKey(0xB, '0', KeyboardKey.D0);
             AddKey(0xB0000, '=', KeyboardKey.D0);
 
-            #endregion
+#endregion
 
-            #region Special
+#region Special
 
             AddKeyWithAndWithoutShift(0x0E, '\b', KeyboardKey.Backspace); // Backspace
             AddKeyWithAndWithoutShift(0x0F, '\t', KeyboardKey.Tab); // Tabulator
@@ -178,9 +180,9 @@ namespace Kernel.Devices.Keyboards
 
             AddKeyWithShift(0x1, KeyboardKey.Escape);
 
-            #endregion
+#endregion
 
-            #region Punctuation and Signs
+#region Punctuation and Signs
 
             AddKey(0x2B, 'ç', KeyboardKey.NoName);
             AddKey(0x2B0000, 'Ç', KeyboardKey.NoName);
@@ -208,7 +210,8 @@ namespace Kernel.Devices.Keyboards
 
             AddKeyWithAndWithoutShift(0x37, '*', KeyboardKey.Multiply);
 
-            #endregion
+#endregion
         }
     }
+#endif
 }

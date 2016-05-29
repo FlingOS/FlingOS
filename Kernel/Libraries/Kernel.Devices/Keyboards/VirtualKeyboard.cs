@@ -28,6 +28,18 @@
 
 namespace Kernel.Devices.Keyboards
 {
+    /// <summary>
+    ///     Represents a virtual keyboard. Virtual keyboards can be used to treat incoming data as key strokes
+    ///     thus allowing you to process and access them like any other keyboard input. This is currently 
+    ///     mostly used when connecting a process to the Window Manager.
+    /// </summary>
+    /// <remarks>
+    ///     This class is currently very limiting and relies on the Window Manager to handle certain output
+    ///     commands to a physical keyboard e.g. caps lock light. 
+    /// 
+    ///     TODO: Future work should allow the virtual keyboard to send commands back to the remote process
+    ///           e.g. indicator light controls. 
+    /// </remarks>
     public class VirtualKeyboard : Keyboard
     {
         /// <summary>
@@ -35,9 +47,9 @@ namespace Kernel.Devices.Keyboards
         /// </summary>
         public override void Enable()
         {
-            if (!enabled)
+            if (!Enabled)
             {
-                enabled = true;
+                Enabled = true;
             }
         }
 
@@ -46,59 +58,63 @@ namespace Kernel.Devices.Keyboards
         /// </summary>
         public override void Disable()
         {
-            if (enabled)
+            if (Enabled)
             {
-                enabled = false;
+                Enabled = false;
             }
         }
 
-        public override void HandleScancode(uint scancode)
+        /// <summary>
+        ///     Handles an incoming scancode by inspecting it and queuing it if necessary.
+        /// </summary>
+        /// <param name="Scancode">The incoming scancode.</param>
+        public override void HandleScancode(uint Scancode)
         {
             //Determine whether the key has been released or not
-            bool released = (scancode & 0x80) == 0x80;
+            bool Released = (Scancode & 0x80) == 0x80;
             //If it has:
-            if (released)
+            if (Released)
             {
                 //Clear the released bit so we get the correct key scancode
-                scancode = (byte)(scancode ^ 0x80);
+                Scancode = (byte)(Scancode ^ 0x80);
             }
 
             //And handle the (now corrected) scancode
 
-            switch (scancode)
+            switch (Scancode)
             {
                 //Left and right shift keys
                 case 0x36:
                 case 0x2A:
                 {
-                    shiftPressed = !released;
+                    ShiftPressed = !Released;
                     break;
                 }
                 //Ctrl key
                 case 0x1D:
                 {
-                    ctrlPressed = !released;
+                    CtrlPressed = !Released;
                     break;
                 }
                 //Alt key
                 case 0x38:
                 {
-                    altPressed = !released;
+                    AltPressed = !Released;
                     break;
                 }
                 //All other keys
                 default:
                 {
                     //If the key was just pressed, enqueue it
-                    if (!released)
+                    if (!Released)
                     {
                         //If shift pressed, adjust the scancode appropriately.
-                        if (shiftPressed)
+                        if (ShiftPressed)
                         {
-                            scancode = scancode << 16;
+                            Scancode = Scancode << 16;
                         }
 
-                        Enqueue(scancode);
+                        Enqueue(Scancode);
                     }
                     break;
                 }

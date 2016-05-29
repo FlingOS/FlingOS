@@ -58,8 +58,9 @@ namespace Kernel.ATA
         private readonly PATABase BaseDevice;
 
         /// <summary>
-        ///     The serial number of the device. <seealso cref="PATABase.SerialNo" />
+        ///     The serial number of the device.
         /// </summary>
+        /// <seealso cref="PATABase.SerialNo" />
         public String SerialNo => BaseDevice.SerialNo;
 
         /// <summary>
@@ -128,8 +129,8 @@ namespace Kernel.ATA
 
         /// <summary>
         ///     Handles IRQs by checking if they are relevant and setting the correct IRQ Invoked flag if necessary.
-        ///     <seealso cref="IRQInvoked" />
         /// </summary>
+        /// <seealso cref="IRQInvoked" />
         /// <param name="IRQNumber">The number of the IRQ that has triggered the interrupt.</param>
         public static void IRQHandler(uint IRQNumber)
         {

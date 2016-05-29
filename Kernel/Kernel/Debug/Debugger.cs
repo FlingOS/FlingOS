@@ -32,7 +32,7 @@
 using Drivers.Compiler.Attributes;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.IO.Serial;
+using Kernel.Devices.Serial;
 using Kernel.Multiprocessing;
 using x86Interrupts = Kernel.Interrupts.Interrupts;
 using NoDebug = Drivers.Compiler.Attributes.NoDebugAttribute;

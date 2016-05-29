@@ -35,16 +35,10 @@ namespace Kernel.Devices.CPUs
     /// </summary>
     public class CPUx86_32 : CPU
     {
-        /// <summary>
-        ///     The main x86 CPU instance.
-        /// </summary>
-        public static CPUx86_32 TheCPU;
-
 #if x86
         static CPUx86_32()
         {
-            Init();
-            Default = TheCPU;
+            Default = new CPUx86_32();
         }
 #endif
 
@@ -54,17 +48,6 @@ namespace Kernel.Devices.CPUs
         [PluggedMethod(ASMFilePath = @"ASM\CPUs\CPUx86_32\Halt")]
         public override void Halt()
         {
-        }
-
-        /// <summary>
-        ///     Initialises the main x86 CPU instance.
-        /// </summary>
-        public static void Init()
-        {
-            if (TheCPU == null)
-            {
-                TheCPU = new CPUx86_32();
-            }
         }
     }
 }

@@ -7,8 +7,29 @@ using Kernel.Pipes.Storage;
 
 namespace Kernel.Devices.Controllers
 {
+    /// <summary>
+    ///     A storage controller is the interconnect between processes wishing to read/write storage mediums (clients accessing disks)
+    ///     and the drivers managing those disks.
+    /// </summary>
+    /// <remarks>
+    ///     A storage controller serialises the requests from multiple clients to the disk driver
+    ///     and handles receiving any read data from the disk followed by sending it to the relevant client.
+    /// 
+    ///     A storage controller executes within the process for the disk drivers it is managing. It creates a separate thread for each
+    ///     disk to act as the command processing thread for that disk. It also creates a separate thread for each client to act as the
+    ///     command processing thread for that client. It uses simple semaphore locking to ensure no two clients can attempt to access a 
+    ///     single disk's command queue simultaneously. 
+    /// 
+    ///     Due to limitations in the FlingOS threading system, the storage controller class is currently a static class meaning it 
+    ///     essentially exists once per process. 
+    /// 
+    ///     TODO: Once FlingOS supports thread start arguments, this should become an instance class.
+    /// </remarks>
     public static class StorageController
     {
+        /// <summary>
+        ///     The commands that can be sent to a disk.
+        /// </summary>
         private enum DiskCommands
         {
             Invalid = -1,
@@ -18,17 +39,58 @@ namespace Kernel.Devices.Controllers
             CleanCaches
         }
 
+        /// <summary>
+        ///     The list of disks being managed by the storage controller.
+        /// </summary>
         private static List DiskList;
+        /// <summary>
+        ///     The Id of the semaphore used to control exclusive read-modify access to the disk list.
+        /// </summary>
         private static int DiskListSemaphoreId;
-        private static bool Initialised;
 
+        /// <summary>
+        ///     Whether the controller has been initialised or not.
+        /// </summary>
+        private static bool Initialised;
+        /// <summary>
+        ///     Whether the controller is terminating or not. 
+        /// </summary>
+        /// <remarks>
+        ///     If the controller is terminating, all worker threads (for disks and clients) should
+        ///     also terminate. In practice, this will not work yet because of the use of blocking
+        ///     calls to semaphores and pipes.
+        /// </remarks>
         private static bool Terminating;
 
+        /// <summary>
+        ///     The list of clients connected to the storage controller.
+        /// </summary>
         private static List Clients;
+        /// <summary>
+        ///     The Id of the semaphore used to control exclusive read-modify access to the client list.
+        /// </summary>
         private static int ClientListSemaphoreId;
+        /// <summary>
+        ///     The Id of the thread which is listening for client connections.
+        /// </summary>
+        /// <remarks>
+        ///     The listening thread is a single thread listening on a single outpoint. When a client attempts to
+        ///     connect, a new pipe is created and the system wakes the listener thread, passing it the information
+        ///     about the new pipe. The listener thread then creates and starts a new client worker thread and then
+        ///     returns to waiting for clients. The upshot of this, is that if two independent processes attempted 
+        ///     to connect simultaneously, one of them would be missed. This is essentially a flaw in the FlingOS
+        ///     pipes design that will need to be rectified in future.
+        /// </remarks>
         private static uint WaitForClientsThreadId;
+        /// <summary>
+        ///     The data outpoint to which clients can connect and through which, data read from disks is sent to 
+        ///     clients.
+        /// </summary>
         private static StorageDataOutpoint DataOutpoint;
 
+        /// <summary>
+        ///     Intialises the storage controller.
+        /// </summary>
         public static void Init()
         {
             if (!Initialised)
@@ -58,6 +120,11 @@ namespace Kernel.Devices.Controllers
             }
         }
 
+        /// <summary>
+        ///     Worker thread that waits for clients and start a client manager thread (see <see cref="ManageClient"/>) when a client
+        ///     connects.
+        /// </summary>
+        /// <seealso cref="ManageClient"/>
         private static void WaitForClients()
         {
             while (!Terminating)
@@ -100,6 +167,9 @@ namespace Kernel.Devices.Controllers
             }
         }
 
+        /// <summary>
+        ///     Main method for client management worker threads.
+        /// </summary>
         private static void ManageClient()
         {
             ClientInfo TheClient = null;
@@ -178,7 +248,7 @@ namespace Kernel.Devices.Controllers
                                                     DiskCommand NewCommand = new DiskCommand
                                                     {
                                                         Command = DiskCommands.Read,
-                                                        BlockCount = CommandPtr->BlockCount,
+                                                        Blocks = CommandPtr->BlockCount,
                                                         BlockNo = CommandPtr->BlockNo,
                                                         DataOutPipeId = TheClient.DataOutPipeId
                                                     };
@@ -235,7 +305,7 @@ namespace Kernel.Devices.Controllers
                                                     DiskCommand NewCommand = new DiskCommand
                                                     {
                                                         Command = DiskCommands.Write,
-                                                        BlockCount = CommandPtr->BlockCount,
+                                                        Blocks = CommandPtr->BlockCount,
                                                         BlockNo = CommandPtr->BlockNo,
                                                         DataInPipe = DataInpoint
                                                     };
@@ -409,6 +479,12 @@ namespace Kernel.Devices.Controllers
             }
         }
 
+        /// <summary>
+        ///     Adds the specified disk device to the list of disks being managed by the controller and
+        ///     starts a new management thread for it (see <see cref="ManageDisk"/>).
+        /// </summary>
+        /// <param name="TheDisk">The disk to manage.</param>
+        /// <seealso cref="ManageDisk"/>
         public static void AddDisk(DiskDevice TheDisk)
         {
             if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
@@ -456,17 +532,23 @@ namespace Kernel.Devices.Controllers
                 BasicConsole.WriteLine("Storage Controller > Failed to wait on a semaphore! (AD 4)");
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="TheDisk"></param>
+        /// <exception cref="NotImplementedException">This method has not been implemented yet.</exception>
+        public static void RemoveDisk(DiskDevice TheDisk) => ExceptionMethods.Throw(new NotImplementedException("Remove a disk from a storage controller has not been implemented yet."));
+        
+        /// <summary>
+        ///     Terminates the storage controller, including all worker threads, closes all client connections and relinquishes control of the disks. 
+        /// </summary>
+        /// <exception cref="NotImplementedException">This method has not been implemented yet.</exception>
+        public static void Terminate() => ExceptionMethods.Throw(new NotImplementedException("Termination of a storage controller has not been implemented yet."));
 
-        public static void RemoveDisk(DiskDevice TheDisk)
-        {
-            //TODO: Removal of disk from controller
-        }
-
-        public static void Terminate()
-        {
-            //TODO: Termination of controller
-        }
-
+        /// <summary>
+        ///     Main method for disk management worker threads.
+        /// </summary>
         private static void ManageDisk()
         {
             if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
@@ -500,8 +582,8 @@ namespace Kernel.Devices.Controllers
                                     {
                                         //BasicConsole.WriteLine("Storage controller > Reading " + (String)ACommand.BlockCount + " blocks from " + (String)ACommand.BlockNo + " blocks offset.");
                                         //BasicConsole.WriteLine("Storage controller > Disk block size: " + (Framework.String)TheInfo.TheDevice.BlockSize);
-                                        byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
-                                        TheInfo.TheDevice.ReadBlock(ACommand.BlockNo, ACommand.BlockCount, data);
+                                        byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.Blocks);
+                                        TheInfo.TheDevice.ReadBlock(ACommand.BlockNo, ACommand.Blocks, data);
                                         //BasicConsole.WriteLine("Data read: ");
                                         //for (int i = 0; i < data.Length; i++)
                                         //{
@@ -515,18 +597,18 @@ namespace Kernel.Devices.Controllers
                                     case DiskCommands.Write:
                                     {
                                         BasicConsole.WriteLine("Storage controller > Writing " +
-                                                               (String)ACommand.BlockCount + " blocks from " +
+                                                               (String)ACommand.Blocks + " blocks from " +
                                                                ACommand.BlockNo + " blocks offset.");
-                                        byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
+                                        byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.Blocks);
                                         int BytesRead = ACommand.DataInPipe.Read(data, 0, data.Length, true);
                                         int DesiredBytesRead =
-                                            (int)(ACommand.BlockCount*(uint)TheInfo.TheDevice.BlockSize);
+                                            (int)(ACommand.Blocks*(uint)TheInfo.TheDevice.BlockSize);
                                         if (BytesRead < DesiredBytesRead)
                                         {
                                             BasicConsole.WriteLine(
                                                 "Storage controller > Error! Virtual disk controller (Storage Controller Disk) did not provide enough data for Write command.");
                                         }
-                                        TheInfo.TheDevice.WriteBlock(ACommand.BlockNo, ACommand.BlockCount, data);
+                                        TheInfo.TheDevice.WriteBlock(ACommand.BlockNo, ACommand.Blocks, data);
                                     }
                                         break;
                                     case DiskCommands.CleanCaches:
@@ -574,7 +656,7 @@ namespace Kernel.Devices.Controllers
 
         private class DiskCommand : Object
         {
-            public uint BlockCount;
+            public uint Blocks;
             public ulong BlockNo;
             public DiskCommands Command;
             public int CompletedSemaphoreId;

@@ -30,7 +30,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.Devices.Timers;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
-using Kernel.IO.Serial;
+using Kernel.Devices.Serial;
 using Kernel.Multiprocessing;
 using Kernel.Multiprocessing.Scheduling;
 using Kernel.Tasks;
@@ -220,6 +220,7 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Starting scheduler...");
                 PreemptionHandler PreempHandler = Scheduler.Start();
+                //TODO: Should store the handler Id for future reference
                 // ReSharper disable once PossibleInvalidCastException
                 Timer.Default.RegisterHandler((TimerHandler)(object)PreempHandler, Scheduler.PreemptionPeriod, true,
                     Scheduler.PreemptionState);

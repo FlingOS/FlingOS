@@ -35,8 +35,8 @@ namespace Kernel.USB
 {
     public class USBTests : Test
     {
-        public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning,
-            OutputErrorDel OutputError)
+        public void Test_LongRead(OutputMessageDelegate OutputMessage, OutputWarningDelegate OutputWarning,
+            OutputErrorDelegate OutputError)
         {
             OutputMessage("USBTests : Test_LongRead", "Test started.");
 

@@ -261,11 +261,11 @@ namespace Kernel.Tasks
             }
         }
 
-        public static void ReceiveKey(uint ScanCode)
+        public static void ReceiveKey(uint Scancode)
         {
             if (keyboard != null)
             {
-                keyboard.HandleScancode(ScanCode);
+                keyboard.HandleScancode(Scancode);
             }
         }
     }

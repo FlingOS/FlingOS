@@ -23,13 +23,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Devices.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86;UKKEYBOARD</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;x86</DefineConstants>
+    <DefineConstants>TRACE;x86;UKKEYBOARD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -38,7 +38,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Docs|x86' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;x86;UKKEYBOARD</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Devices.XML</DocumentationFile>
     <DebugType>full</DebugType>
@@ -56,13 +56,13 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Devices.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS;UKKEYBOARD</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|MIPS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;MIPS</DefineConstants>
+    <DefineConstants>TRACE;MIPS;UKKEYBOARD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -71,7 +71,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Docs|MIPS'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Docs\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MIPS;UKKEYBOARD</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\Kernel.Devices.XML</DocumentationFile>
     <DebugType>full</DebugType>
@@ -95,7 +95,7 @@
     <Compile Include="Keyboards\Key Maps\UKKeymap.cs" />
     <Compile Include="Keyboards\Key Maps\USKeymap.cs" />
     <Compile Include="Keyboards\Keyboard.cs" />
-    <Compile Include="Keyboards\KeyMapping.cs" />
+    <Compile Include="Keyboards\Key Maps\KeyMapping.cs" />
     <Compile Include="Controllers\StorageControllerDisk.cs" />
     <Compile Include="Timers\Timer.cs" />
     <Compile Include="Serial\Serial.cs" />

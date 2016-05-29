@@ -28,6 +28,7 @@
 
 using Kernel.Framework;
 
+// ReSharper disable once CheckNamespace
 namespace Kernel.Devices.Keyboards
 {
     /// <summary>
@@ -53,24 +54,24 @@ namespace Kernel.Devices.Keyboards
         /// <summary>
         ///     Initialises a new key mapping.
         /// </summary>
-        /// <param name="aScanCode">The scancode to map.</param>
-        /// <param name="aValue">The character to represent the scancode.</param>
-        /// <param name="aKey">The character to represent the scancode.</param>
-        public KeyMapping(uint aScanCode, char aValue, KeyboardKey aKey)
+        /// <param name="Scancode">The scancode to map.</param>
+        /// <param name="Value">The character to represent the scancode.</param>
+        /// <param name="Key">The character to represent the scancode.</param>
+        public KeyMapping(uint Scancode, char Value, KeyboardKey Key)
         {
-            Scancode = aScanCode;
-            Value = aValue;
-            Key = aKey;
+            this.Scancode = Scancode;
+            this.Value = Value;
+            this.Key = Key;
         }
 
         /// <summary>
         ///     Initialises a new key mapping without a character representation.
         /// </summary>
-        /// <param name="aScanCode">The scancode to map.</param>
+        /// <param name="Scancode">The scancode to map.</param>
         /// <param name="aKey">The character to represent the scancode.</param>
-        public KeyMapping(uint aScanCode, KeyboardKey aKey)
+        public KeyMapping(uint Scancode, KeyboardKey aKey)
         {
-            Scancode = aScanCode;
+            this.Scancode = Scancode;
             Value = '\0';
             Key = aKey;
         }

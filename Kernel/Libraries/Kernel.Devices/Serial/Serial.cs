@@ -26,16 +26,28 @@
 
 #endregion
 
-using System;
+using System.Diagnostics.CodeAnalysis;
 using Drivers.Compiler.Attributes;
-using Kernel.Devices;
+using Kernel.IO;
 using Kernel.Framework.Processes;
+using FlagsAttribute = System.FlagsAttribute;
 using String = Kernel.Framework.String;
 
-namespace Kernel.IO.Serial
+namespace Kernel.Devices.Serial
 {
-    public class Serial : Device
+    /// <summary>
+    ///     Represents a serial port (e.g. a COM port).
+    /// </summary>
+    /// <remarks>
+    ///     TODO: In a similar fashion to PS2, this driver should use system device claiming for
+    ///           claiming COM ports 1 to 4 when required.
+    /// </remarks>
+    public sealed class Serial : Device
     {
+        /// <summary>
+        ///     The standard baud rates available for use.
+        /// </summary>
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public enum BaudRates : byte
         {
             _115200 = 0x1,
@@ -81,6 +93,9 @@ namespace Kernel.IO.Serial
             _480 = 0xF0
         }
 
+        /// <summary>
+        ///     The standard available (physical) COM ports.
+        /// </summary>
         public enum COMPorts : ushort
         {
             COM1 = 0x3F8,
@@ -89,6 +104,9 @@ namespace Kernel.IO.Serial
             COM4 = 0x2E8
         }
 
+        /// <summary>
+        ///     The number of bits per byte.
+        /// </summary>
         public enum DataBits : byte
         {
             _5 = 0x0,
@@ -97,6 +115,9 @@ namespace Kernel.IO.Serial
             _8 = 0x3
         }
 
+        /// <summary>
+        ///     The FIFO control flags used to determine the serial signalling type.
+        /// </summary>
         [Flags]
         public enum FIFOControlFlags : byte
         {
@@ -113,6 +134,9 @@ namespace Kernel.IO.Serial
             TriggerLevel_14Byte = 0xC0
         }
 
+        /// <summary>
+        ///     Flags for enabling various available interrupts from the serial controller.
+        /// </summary>
         [Flags]
         public enum Interrupts : byte
         {
@@ -123,6 +147,9 @@ namespace Kernel.IO.Serial
             StatusChange = 0x8
         }
 
+        /// <summary>
+        ///     Flags for enabling various line control features.
+        /// </summary>
         [Flags]
         public enum LineControlFlags : byte
         {
@@ -130,6 +157,9 @@ namespace Kernel.IO.Serial
             DivisorLatchAccessBit = 0x80
         }
 
+        /// <summary>
+        ///     Flags for determing the various line statuses.
+        /// </summary>
         [Flags]
         public enum LineStatusFlags : byte
         {
@@ -143,6 +173,9 @@ namespace Kernel.IO.Serial
             ErronousDataInFIFO = 0x80
         }
 
+        /// <summary>
+        ///     Flags for setting the modem control mode.
+        /// </summary>
         [Flags]
         public enum ModemControlFlags : byte
         {
@@ -151,6 +184,9 @@ namespace Kernel.IO.Serial
             AutoFlowControl = 0x10
         }
 
+        /// <summary>
+        ///     The number and type of parity bit(s) to use.
+        /// </summary>
         public enum ParityBits : byte
         {
             None = 0x00,
@@ -160,98 +196,127 @@ namespace Kernel.IO.Serial
             Space = 0x38
         }
 
+        /// <summary>
+        ///     The number of stop bits to use.
+        /// </summary>
         public enum StopBits : byte
         {
             One = 0x0,
             OneAndHalf_Or_Two = 0x2
         }
 
+        /// <summary>
+        ///     The default instance for accessing COM port 1. Limited to Kernel process only at the moment.
+        /// </summary>
         [Group(Name = "IsolatedKernel_Hardware_Devices")] public static Serial COM1;
 
+        /// <summary>
+        ///     The default instance for accessing COM port 2.
+        /// </summary>
         public static Serial COM2;
+        /// <summary>
+        ///     The default instance for accessing COM port 3.
+        /// </summary>
         public static Serial COM3;
-        protected IOPort BaudLSB;
-        protected IOPort BaudMSB;
-        protected BaudRates baudRate;
+        private IOPort BaudLSB;
+        private IOPort BaudMSB;
+        private readonly BaudRates BaudRate;
 
-        protected IOPort Data;
-        protected DataBits dataBits;
-        protected IOPort FIFOControl;
-        protected FIFOControlFlags FIFOTriggerLevel = FIFOControlFlags.TriggerLevel_14Byte;
-        protected IOPort InterruptEnable;
-        protected Interrupts interrupts;
-        protected IOPort LineControl;
-        protected IOPort LineStatus;
-        protected IOPort ModemControl;
-        protected IOPort ModemStatus;
-        protected ParityBits parityBits;
+        private IOPort Data;
+        private readonly DataBits _dataBits;
+        private IOPort FIFOControl;
+        private FIFOControlFlags FIFOTriggerLevel = FIFOControlFlags.TriggerLevel_14Byte;
+        private IOPort InterruptEnable;
+        private readonly Interrupts _interrupts;
+        private IOPort LineControl;
+        private IOPort LineStatus;
+        private IOPort ModemControl;
+        private IOPort ModemStatus;
+        private readonly ParityBits _parityBits;
 
-        protected COMPorts port;
-        protected IOPort Scratch;
-        protected StopBits stopBits;
+        private readonly COMPorts Port;
+        private IOPort Scratch;
+        private readonly StopBits _stopBits;
 
-        protected bool TransmitReady
+        private bool TransmitReady
         {
             [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte)LineStatusFlags.THREmpty) != 0; }
         }
 
-        protected bool ReceiveReady
+        private bool ReceiveReady
         {
             [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte)LineStatusFlags.DataAvailable) != 0; }
         }
 
-        public Serial(COMPorts port, DataBits dataBits, ParityBits parityBits, StopBits stopBits, BaudRates baudRate,
-            Interrupts interrupts)
+        /// <summary>
+        ///     Initialises a new serial port device with the specified information.
+        /// </summary>
+        /// <param name="Port">The COM port to access.</param>
+        /// <param name="DataBits">The number of bits per byte to use.</param>
+        /// <param name="ParityBits">The number of parity bits to use.</param>
+        /// <param name="StopBits">The number of stop bits to use.</param>
+        /// <param name="BaudRate">The baud rate to use.</param>
+        /// <param name="Interrupts">Which interrupts to enable.</param>
+        public Serial(COMPorts Port, DataBits DataBits, ParityBits ParityBits, StopBits StopBits, BaudRates BaudRate,
+            Interrupts Interrupts)
         {
-            this.port = port;
-            this.dataBits = dataBits;
-            this.parityBits = parityBits;
-            this.stopBits = stopBits;
-            this.baudRate = baudRate;
-            this.interrupts = interrupts;
+            this.Port = Port;
+            this._dataBits = DataBits;
+            this._parityBits = ParityBits;
+            this._stopBits = StopBits;
+            this.BaudRate = BaudRate;
+            this._interrupts = Interrupts;
 
             Init();
         }
 
-        protected void Init()
+        private void Init()
         {
-            Data = new IOPort((ushort)(port + 0));
-            InterruptEnable = new IOPort((ushort)(port + 1));
-            BaudLSB = new IOPort((ushort)(port + 0));
-            BaudMSB = new IOPort((ushort)(port + 1));
-            FIFOControl = new IOPort((ushort)(port + 2));
-            LineControl = new IOPort((ushort)(port + 3));
-            ModemControl = new IOPort((ushort)(port + 4));
-            LineStatus = new IOPort((ushort)(port + 5));
-            ModemStatus = new IOPort((ushort)(port + 6));
-            Scratch = new IOPort((ushort)(port + 7));
+            Data = new IOPort((ushort)(Port + 0));
+            InterruptEnable = new IOPort((ushort)(Port + 1));
+            BaudLSB = new IOPort((ushort)(Port + 0));
+            BaudMSB = new IOPort((ushort)(Port + 1));
+            FIFOControl = new IOPort((ushort)(Port + 2));
+            LineControl = new IOPort((ushort)(Port + 3));
+            ModemControl = new IOPort((ushort)(Port + 4));
+            LineStatus = new IOPort((ushort)(Port + 5));
+            ModemStatus = new IOPort((ushort)(Port + 6));
+            Scratch = new IOPort((ushort)(Port + 7));
 
-            InterruptEnable.Write_Byte((byte)interrupts);
+            InterruptEnable.Write_Byte((byte)_interrupts);
 
             LineControl.Write_Byte((byte)LineControlFlags.DivisorLatchAccessBit);
-            BaudLSB.Write_Byte((byte)((byte)baudRate & 0x00FF));
-            BaudMSB.Write_Byte((byte)((byte)baudRate & 0xFF00));
+            BaudLSB.Write_Byte((byte)((byte)BaudRate & 0x00FF));
+            BaudMSB.Write_Byte((byte)((byte)BaudRate & 0xFF00));
 
             // This also clears the DLAB flag
-            LineControl.Write_Byte((byte)((byte)dataBits | (byte)stopBits | (byte)parityBits));
+            LineControl.Write_Byte((byte)((byte)_dataBits | (byte)_stopBits | (byte)_parityBits));
             FIFOControl.Write_Byte((byte)(FIFOControlFlags.Enable |
                                           FIFOControlFlags.ClearReceive | FIFOControlFlags.ClearTransmit |
                                           FIFOTriggerLevel));
             ModemControl.Write_Byte((byte)(ModemControlFlags.DTR | ModemControlFlags.RTS));
         }
 
+        /// <summary>
+        ///     Writes the specified byte to the serial connection. This is a blocking call.
+        /// </summary>
+        /// <param name="Value">The byte to write.</param>
         [NoGC]
         [NoDebug]
-        public void Write(byte val)
+        public void Write(byte Value)
         {
             while (!TransmitReady)
             {
                 SystemCalls.SleepThread(10);
                 //Hardware.Devices.Timer.Default.Wait(10);
             }
-            Data.Write_Byte(val);
+            Data.Write_Byte(Value);
         }
 
+        /// <summary>
+        ///     Reads a byte from the serial connection. This is a blocking call.
+        /// </summary>
+        /// <returns></returns>
         [NoGC]
         [NoDebug]
         public byte Read()
@@ -264,16 +329,23 @@ namespace Kernel.IO.Serial
             return Data.Read_Byte();
         }
 
+        /// <summary>
+        ///     Writes the specified string to the serial connection. This is a blocking call.
+        /// </summary>
+        /// <param name="Value">The string to write.</param>
         [NoGC]
         [NoDebug]
-        public void Write(String str)
+        public void Write(String Value)
         {
-            for (int i = 0; i < str.Length; i++)
+            for (int i = 0; i < Value.Length; i++)
             {
-                Write((byte)str[i]);
+                Write((byte)Value[i]);
             }
         }
 
+        /// <summary>
+        ///     Initialises the default instance for COM port 1, if it has not already been initialised. This should only be called from the Kernel process at the moment.
+        /// </summary>
         public static void InitCOM1()
         {
             if (COM1 == null)
@@ -283,6 +355,9 @@ namespace Kernel.IO.Serial
             }
         }
 
+        /// <summary>
+        ///     Initialises the default instance for COM port 2, if it has not already been initialised.
+        /// </summary>
         public static void InitCOM2()
         {
             if (COM2 == null)
@@ -292,6 +367,9 @@ namespace Kernel.IO.Serial
             }
         }
 
+        /// <summary>
+        ///     Initialises the default instance for COM port 3, if it has not already been initialised.
+        /// </summary>
         public static void InitCOM3()
         {
             if (COM3 == null)

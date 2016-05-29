@@ -32,7 +32,12 @@ using Kernel.Framework.Processes.Requests.Devices;
 
 namespace Kernel.Devices.Timers
 {
-    public delegate void TimerHandler(IObject state);
+    /// <summary>
+    ///     The delegate type for a timer event handler method. An example of a timer event
+    ///     is a one-shot countdown expiring or a periodic/recurring countdown ticking.
+    /// </summary>
+    /// <param name="State">The state object that was provided when the handler was registered.</param>
+    public delegate void TimerHandler(IObject State);
 
     /// <summary>
     ///     Represents a timer device. Also contains static methods for handling the default timer.
@@ -53,13 +58,18 @@ namespace Kernel.Devices.Timers
         /// <summary>
         ///     Whether the timer is enabled or not.
         /// </summary>
-        public bool Enabled
-        {
-            get { return enabled; }
-        }
+        public bool Enabled => enabled;
 
-        public Timer(DeviceGroup group, DeviceSubClass subClass, String name, uint[] SomeInfo, bool IsClaimed)
-            : base(group, DeviceClass.Timer, subClass, name, SomeInfo, IsClaimed)
+        /// <summary>
+        ///     Initialises a Timer instance with the specified device info.
+        /// </summary>
+        /// <param name="Group">The device group of the timer.</param>
+        /// <param name="SubClass">The device sub class of the timer.</param>
+        /// <param name="Name">The human-readable name of the timer.</param>
+        /// <param name="SomeInfo">Device-specific information to store with the timer.</param>
+        /// <param name="IsClaimed">Whether the timer has already been claimed by a driver or not.</param>
+        protected Timer(DeviceGroup Group, DeviceSubClass SubClass, String Name, uint[] SomeInfo, bool IsClaimed)
+            : base(Group, DeviceClass.Timer, SubClass, Name, SomeInfo, IsClaimed)
         {
         }
 
@@ -85,9 +95,22 @@ namespace Kernel.Devices.Timers
         /// <param name="ns">The number of nanoseconds to block.</param>
         public abstract void WaitNS(long ns);
 
+        /// <summary>
+        ///     Registers a handler for a timer event to occur after the specified timeout. The timeout can occur repeatedly. 
+        /// </summary>
+        /// <param name="Handler">The handler to invoke when the timer event occurs.</param>
+        /// <param name="TimeoutNS">The time after which the timer event should occur.</param>
+        /// <param name="Recurring">Whether the timer event should repeat after every Timeout period.</param>
+        /// <param name="State">A state object to pass the handler when the timer event occurs.</param>
+        /// <returns>The Id of the registered handler or -1 if the handler did not register.</returns>
         [NoDebug]
-        public abstract int RegisterHandler(TimerHandler handler, long TimeoutNS, bool Recurring, IObject state);
+        public abstract int RegisterHandler(TimerHandler Handler, long TimeoutNS, bool Recurring, IObject State);
 
-        public abstract void UnregisterHandler(int handlerId);
+        /// <summary>
+        ///     Removes the specified handler from the timer's list of handlers. The associated timer event will
+        ///     not occur while the handler is not registered.
+        /// </summary>
+        /// <param name="HandlerId">The Id of the registered handler.</param>
+        public abstract void UnregisterHandler(int HandlerId);
     }
 }

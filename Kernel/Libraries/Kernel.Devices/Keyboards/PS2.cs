@@ -33,31 +33,54 @@ namespace Kernel.Devices.Keyboards
     /// <summary>
     ///     Represents a PS2 keyboard device.
     /// </summary>
-    public class PS2 : Keyboard
+    /// <remarks>
+    ///     Since only one PS2 keyboard can exist at a time, the singleton pattern is used in this class
+    ///     to ensure only a since PS2 keyboard driver can be created.
+    /// 
+    ///     This does not, of course, limit multiple instances being created in different processes. This
+    ///     only applies within a given process. 
+    /// 
+    ///     TODO: The PS2 controller should be added to the system's devices list at startup (if it's available)
+    ///     TODO: This driver should attempt to claim control of the PS2 device from the system. 
+    ///           Failure to claim will indicate the PS2 controller is either already in use or does not exist.
+    /// </remarks>
+    public sealed class PS2 : Keyboard
     {
         /// <summary>
         ///     The (only) PS2 keyboard instance.
         /// </summary>
-        public static PS2 ThePS2;
+        public static PS2 SingletonPS2;
 
         /// <summary>
         ///     The keyboard command port.
         /// </summary>
-        protected IOPort CommandPort = new IOPort(0x64);
+        private readonly IOPort CommandPort = new IOPort(0x64);
 
         /// <summary>
         ///     The keyboard data port.
         /// </summary>
-        protected IOPort DataPort = new IOPort(0x60);
+        private readonly IOPort DataPort = new IOPort(0x60);
+
+        /// <summary>
+        ///     Initialises a new PS2 instance.
+        /// </summary>
+        /// <remarks>
+        ///     The constructor is made private so that a PS2 object can
+        ///     only be created within this class. This allows us to 
+        ///     enforce the singleton requirement.
+        /// </remarks>
+        private PS2()
+        {
+        }
 
         /// <summary>
         ///     Enables the PS2 keyboard.
         /// </summary>
         public override void Enable()
         {
-            if (!enabled)
+            if (!Enabled)
             {
-                enabled = true;
+                Enabled = true;
             }
         }
 
@@ -66,13 +89,13 @@ namespace Kernel.Devices.Keyboards
         /// </summary>
         public override void Disable()
         {
-            if (enabled)
+            if (Enabled)
             {
                 //TODO: This should be done through a DeviceManager.Deregister system call.
                 //TODO: This needs un-commenting and fixing
                 //TODO: Hmm.. perhaps this should actually be in the Clean function? To reflect what happens in Init
                 //DeviceManager.Devices.Remove(this);
-                enabled = false;
+                Enabled = false;
             }
         }
 
@@ -81,71 +104,85 @@ namespace Kernel.Devices.Keyboards
         /// </summary>
         public void InterruptHandler()
         {
-            byte scancode = DataPort.Read_Byte();
-            HandleScancode(scancode);
+            byte Scancode = DataPort.Read_Byte();
+            HandleScancode(Scancode);
         }
 
         /// <summary>
-        ///     Handles the specified scancode.
+        ///     Handles an incoming scancode by inspecting it and queuing it if necessary.
         /// </summary>
-        /// <param name="scancode">The scancode to handle.</param>
-        /// <param name="released">Whether the key has been released or not.</param>
-        public override void HandleScancode(uint scancode)
+        /// <param name="Scancode">The incoming scancode.</param>
+        public override void HandleScancode(uint Scancode)
         {
             //Determine whether the key has been released or not
-            bool released = (scancode & 0x80) == 0x80;
+            bool Released = (Scancode & 0x80) == 0x80;
             //If it has:
-            if (released)
+            if (Released)
             {
                 //Clear the released bit so we get the correct key scancode
-                scancode = (byte)(scancode ^ 0x80);
+                Scancode = (byte)(Scancode ^ 0x80);
             }
 
             //And handle the (now corrected) scancode
-            switch (scancode)
+            switch (Scancode)
             {
                 //Left and right shift keys
                 case 0x36:
                 case 0x2A:
                 {
-                    shiftPressed = !released;
+                    ShiftPressed = !Released;
                     break;
                 }
                 //Ctrl key
                 case 0x1D:
                 {
-                    ctrlPressed = !released;
+                    CtrlPressed = !Released;
                     break;
                 }
                 //Alt key
                 case 0x38:
                 {
-                    altPressed = !released;
+                    AltPressed = !Released;
                     break;
                 }
                 //All other keys
                 default:
                 {
                     //If the key was just pressed, enqueue it
-                    if (!released)
+                    if (!Released)
                     {
                         //If shift pressed, adjust the scancode appropriately.
-                        if (shiftPressed)
+                        if (ShiftPressed)
                         {
-                            scancode = scancode << 16;
+                            Scancode = Scancode << 16;
                         }
 
-                        Enqueue(scancode);
+                        Enqueue(Scancode);
                     }
                     break;
                 }
             }
         }
 
+        /// <summary>
+        ///     Pulses the CPU Reset line using the PS2 controller chip. 
+        ///     This will cause a physical system reset which should result in a reboot but the actual
+        ///     effect will depend upon the BIOS configuration.
+        /// </summary>
+        /// <remarks>
+        ///     This is not the recommended way to reboot an x86 system. It is, however, the easiest.
+        ///     Proper reboot is done via ACPI (Advanced Configuration and Power Interface) but that
+        ///     is tricky to implement. 
+        /// 
+        ///     Note that on some very new or specialist systems, this method will not work as the PS2 
+        ///     controller will not exist. However, it should work on most systems (even those without
+        ///     a usable PS2 port) because, for legacy reasons, they still contain a PS2 controller 
+        ///     (or at least an emulator of one).
+        /// </remarks>
         public void Reset()
         {
             // If the driver is enabled
-            if (enabled)
+            if (Enabled)
             {
                 // Wait for the Input Buffer Full flag to clear
                 byte StatusRegValue = 0x02;
@@ -165,23 +202,17 @@ namespace Kernel.Devices.Keyboards
         /// </summary>
         public static void Init()
         {
-            if (ThePS2 == null)
+            if (SingletonPS2 == null)
             {
-                ThePS2 = new PS2();
-                DeviceManager.RegisterDevice(ThePS2);
+                SingletonPS2 = new PS2();
+                DeviceManager.RegisterDevice(SingletonPS2);
             }
-            ThePS2.Enable();
+            SingletonPS2.Enable();
         }
 
         /// <summary>
         ///     Cleans up the (only) PS2 instance.
         /// </summary>
-        public static void Clean()
-        {
-            if (ThePS2 != null)
-            {
-                ThePS2.Disable();
-            }
-        }
+        public static void Clean() => SingletonPS2?.Disable();
     }
 }

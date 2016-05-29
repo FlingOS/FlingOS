@@ -84,7 +84,7 @@ namespace Kernel.USB
         public bool success;
 
         /// <summary>
-        ///     The list of "USBTransaction"s to send.
+        ///     The list of <see cref="USBTransaction"/>s to send.
         /// </summary>
         /// <seealso cref="Kernel.USB.USBTransaction" />
         public List transactions;

@@ -30,13 +30,37 @@ using Kernel.Framework;
 
 namespace Kernel.Devices.Testing
 {
-    public delegate void OutputMessageDel(String TestName, String Message);
+    /// <summary>
+    ///     Delegate for outputting informational messages during a test.
+    /// </summary>
+    /// <param name="TestName">The (human-readable) name of the current test.</param>
+    /// <param name="Message">The message to output.</param>
+    public delegate void OutputMessageDelegate(String TestName, String Message);
 
-    public delegate void OutputWarningDel(String TestName, String message);
+    /// <summary>
+    ///     Delegate for outputting warning messages during a test.
+    /// </summary>
+    /// <param name="TestName">The (human-readable) name of the current test.</param>
+    /// <param name="Message">The message to output.</param>
+    public delegate void OutputWarningDelegate(String TestName, String Message);
 
-    public delegate void OutputErrorDel(String TestName, String message);
+    /// <summary>
+    ///     Delegate for outputting error messages during a test.
+    /// </summary>
+    /// <param name="TestName">The (human-readable) name of the current test.</param>
+    /// <param name="Message">The message to output.</param>
+    public delegate void OutputErrorDelegate(String TestName, String Message);
 
-    public class Test : Object
+    /// <summary>
+    ///     Stub base class for implementing device tests. 
+    /// </summary>
+    /// <remarks>
+    ///     FlingOS basically has no automated testing at the moment. The FlingOS Drivers Compiler is behaviourally tested 
+    ///     with around 70% coverage using FlingOops - it catches the biggest compielr bugs along with lots of the corner
+    ///     cases found during development.
+    ///     TODO: Testing should be moved to a new project and be expanded into a fuller framework.
+    /// </remarks>
+    public abstract class Test : Object
     {
     }
 }
