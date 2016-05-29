@@ -34,7 +34,7 @@ namespace Kernel
     ///     Contains plugged methos that are pre-requisites for the kernel to boot.
     ///     For example, the Multiboot Signature.
     /// </summary>
-    public static class PreReqs
+    public static class Boot
     {
         //These methods are listed in the order they are included
         //Most of them are not callable methods - so don't touch/try!

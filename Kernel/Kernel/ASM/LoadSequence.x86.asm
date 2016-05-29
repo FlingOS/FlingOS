@@ -1051,7 +1051,7 @@ mov fs, ax
 
 push dword eax
 push dword 0x02
-call method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
+call method_System_Void_RETEND_Kernel_Boot_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_
 add esp, 8
 
 mov ecx, 0x0F0FFFFF
@@ -1360,25 +1360,25 @@ __MAIN_ENTRYPOINT__:
 	call %KERNEL_MAIN_METHOD% ; Call our main method - this is a macro used by the kernel compiler.
 	
 	; We shouldn't ever get to this point! But just in case we do...
-	jmp method_System_Void_Kernel_PreReqs_Reset__ ; For now this is our intended behaviour
+	jmp method_System_Void_Kernel_Boot_Reset__ ; For now this is our intended behaviour
 
 ; END - Main Entrypoint
 
-GLOBAL method_System_Void_Kernel_PreReqs_Reset__:function
-GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_Reset_NAMEEND___:function
+GLOBAL method_System_Void_Kernel_Boot_Reset__:function
+GLOBAL method_System_Void_RETEND_Kernel_Boot_DECLEND_Reset_NAMEEND___:function
 
 ; BEGIN - Reset
-method_System_Void_Kernel_PreReqs_Reset__:
-method_System_Void_RETEND_Kernel_PreReqs_DECLEND_Reset_NAMEEND___:
+method_System_Void_Kernel_Boot_Reset__:
+method_System_Void_RETEND_Kernel_Boot_DECLEND_Reset_NAMEEND___:
 	cli ; Clear all interrupts so we aren't re-awoken
 	hlt	; Halt the OS / CPU / etc.
-	jmp method_System_Void_Kernel_PreReqs_Reset__ ; Just in case...
+	jmp method_System_Void_Kernel_Boot_Reset__ ; Just in case...
 ; END - Reset
 
-GLOBAL method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:function
+GLOBAL method_System_Void_RETEND_Kernel_Boot_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:function
 
 ; BEGIN - Write Debug Video
-method_System_Void_RETEND_Kernel_PreReqs_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:
+method_System_Void_RETEND_Kernel_Boot_DECLEND_WriteDebugVideo_NAMEEND__System_String_System_UInt32_:
 
 ; MethodStart
 push dword ebp
