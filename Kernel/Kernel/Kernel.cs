@@ -27,13 +27,12 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
+using Kernel.Devices.Timers;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
-using Kernel.Devices;
 using Kernel.IO.Serial;
 using Kernel.Multiprocessing;
 using Kernel.Multiprocessing.Scheduling;
-using Kernel.Devices.Timers;
 using Kernel.Tasks;
 using Kernel.VirtualMemory;
 using Kernel.VirtualMemory.Implementations;

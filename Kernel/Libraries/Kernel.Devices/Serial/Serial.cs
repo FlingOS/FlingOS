@@ -28,9 +28,9 @@
 
 using System;
 using Drivers.Compiler.Attributes;
+using Kernel.Devices;
 using Kernel.Framework.Processes;
 using String = Kernel.Framework.String;
-using Kernel.Devices;
 
 namespace Kernel.IO.Serial
 {

@@ -26,12 +26,12 @@
 
 #endregion
 
+using Kernel.Devices.Controllers;
+using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Pipes;
-using Kernel.Devices.Controllers;
-using Kernel.Framework;
 using Kernel.Pipes;
 using Kernel.Pipes.Storage;
 

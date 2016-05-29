@@ -26,10 +26,10 @@
 
 #endregion
 
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes.Requests.Devices;
-using Kernel.Devices;
 using Kernel.USB.HCIs;
 
 namespace Kernel.USB.Devices

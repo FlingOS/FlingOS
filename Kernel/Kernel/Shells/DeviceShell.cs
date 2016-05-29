@@ -1,8 +1,8 @@
-﻿using Kernel.Framework;
+﻿using Kernel.Devices;
+using Kernel.Devices.Keyboards;
+using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes;
-using Kernel.Devices;
-using Kernel.Devices.Keyboards;
 using Kernel.Tasks;
 using Kernel.Tasks.Driver;
 

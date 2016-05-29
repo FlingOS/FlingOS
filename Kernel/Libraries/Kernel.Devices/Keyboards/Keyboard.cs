@@ -26,7 +26,6 @@
 
 #endregion
 
-using Kernel.Devices.Keyboards;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes;

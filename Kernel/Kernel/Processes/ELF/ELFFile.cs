@@ -26,10 +26,10 @@
 
 #endregion
 
-using Kernel.Framework;
-using Kernel.Framework.Collections;
 using Kernel.FileSystems;
 using Kernel.FileSystems.Streams;
+using Kernel.Framework;
+using Kernel.Framework.Collections;
 using Kernel.Framework.Stubs;
 
 namespace Kernel.Processes.ELF

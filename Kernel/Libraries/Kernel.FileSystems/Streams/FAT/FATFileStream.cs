@@ -29,10 +29,10 @@
 #define FATFileStream_TRACE
 #undef FATFileStream_TRACE
 
-using Kernel.Framework.Collections;
-using Kernel.Framework.Exceptions;
 using Kernel.FileSystems.FAT;
 using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 
 namespace Kernel.FileSystems.Streams.FAT
 {

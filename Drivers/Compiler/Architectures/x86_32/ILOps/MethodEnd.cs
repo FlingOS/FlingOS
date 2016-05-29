@@ -84,9 +84,9 @@ namespace Drivers.Compiler.Architectures.x86
                     //SUPPORT - floats
                     throw new NotSupportedException("Floats return type not supported yet!");
                 }
-                    //Otherwise, store the return value at [ebp+8]
-                    //[ebp+8] because that is last "argument"
-                    //      - read the calling convention spec
+                //Otherwise, store the return value at [ebp+8]
+                //[ebp+8] because that is last "argument"
+                //      - read the calling convention spec
                 for (int i = 0; i < retSize; i += 4)
                 {
                     conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});

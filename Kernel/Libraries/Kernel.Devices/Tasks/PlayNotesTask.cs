@@ -26,11 +26,11 @@
 
 #endregion
 
+using Kernel.Devices.Timers;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes;
 using Kernel.Multiprocessing;
-using Kernel.Devices.Timers;
 
 namespace Kernel.Devices.Tasks
 {

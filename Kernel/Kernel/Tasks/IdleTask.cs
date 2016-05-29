@@ -27,9 +27,8 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.Framework;
 using Kernel.Devices.CPUs;
-using Kernel.Devices;
+using Kernel.Framework;
 
 namespace Kernel.Tasks
 {

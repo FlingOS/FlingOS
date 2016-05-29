@@ -27,11 +27,11 @@
 #endregion
 
 using Kernel.Consoles;
-using Kernel.Framework;
-using Kernel.Framework.Processes;
 using Kernel.Devices;
 using Kernel.Devices.Keyboards;
 using Kernel.Devices.Timers;
+using Kernel.Framework;
+using Kernel.Framework.Processes;
 using Kernel.Shells;
 
 namespace Kernel.Tasks

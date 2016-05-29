@@ -1,8 +1,8 @@
-﻿using Kernel.Consoles;
+﻿using Kernel.ATA;
+using Kernel.Consoles;
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Processes;
-using Kernel.Devices;
-using Kernel.ATA;
 
 namespace Kernel.Tasks.Driver
 {

@@ -29,9 +29,9 @@
 #define GPT_TRACE
 #undef GPT_TRACE
 
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.Devices;
 
 namespace Kernel.FileSystems.Disk
 {
@@ -157,8 +157,8 @@ namespace Kernel.FileSystems.Disk
 
                 return;
             }
-                //Or, if there is not one and only one partition in the MBR then the 
-                //  protective MBR isn't valid so this isn't a valid GPT
+            //Or, if there is not one and only one partition in the MBR then the 
+            //  protective MBR isn't valid so this isn't a valid GPT
             if (TheMBR.NumPartitions != 1)
             {
 #if GPT_TRACE
@@ -167,8 +167,8 @@ namespace Kernel.FileSystems.Disk
 #endif
                 return;
             }
-                //Or, the first (/only) partition entry has the wrong ID. 0xEE is the partition
-                //  ID for a GOT formatted MBR partition.
+            //Or, the first (/only) partition entry has the wrong ID. 0xEE is the partition
+            //  ID for a GOT formatted MBR partition.
             if (TheMBR.Partitions[0].SystemID != 0xEE)
             {
 #if GPT_TRACE

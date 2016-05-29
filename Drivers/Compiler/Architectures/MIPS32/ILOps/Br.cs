@@ -536,7 +536,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                        //If the test item is Int64 or UInt64
+                    //If the test item is Int64 or UInt64
                     if (testItem.sizeOnStackInBytes == 8)
                     {
                         //Compare first 32 bits (low bits)

@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
 using Kernel.Framework;
+using Kernel.Framework.Processes.Requests.Devices;
 
 namespace Kernel.FileSystems
 {

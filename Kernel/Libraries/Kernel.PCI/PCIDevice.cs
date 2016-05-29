@@ -28,11 +28,11 @@
 
 using System;
 using Drivers.Compiler.Attributes;
+using Kernel.Devices;
 using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.IO;
 using PCI_IO = Kernel.PCI.PCIManager;
 using String = Kernel.Framework.String;
-using Kernel.Devices;
 
 namespace Kernel.PCI
 {

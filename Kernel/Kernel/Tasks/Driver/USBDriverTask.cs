@@ -1,7 +1,7 @@
 ﻿using Kernel.Consoles;
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Processes;
-using Kernel.Devices;
 using Kernel.PCI;
 using Kernel.USB;
 using Kernel.USB.Devices;

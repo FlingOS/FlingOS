@@ -27,11 +27,11 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
+using Kernel.Devices.CPUs;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes.Requests.Devices;
-using Kernel.Devices;
 using Kernel.IO;
 
 namespace Kernel.Devices.Timers
@@ -477,7 +477,7 @@ namespace Kernel.Devices.Timers
 
             while (!WaitSignaled)
             {
-                CPUs.CPU.Default.Halt();
+                CPU.Default.Halt();
             }
         }
 

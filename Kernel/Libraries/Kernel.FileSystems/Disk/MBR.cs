@@ -29,9 +29,9 @@
 #define MBR_TRACE
 #undef MBR_TRACE
 
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.Devices;
 
 namespace Kernel.FileSystems.Disk
 {

@@ -27,9 +27,9 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
+using Kernel.Devices.Keyboards;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
-using Kernel.Devices.Keyboards;
 
 namespace Kernel
 {

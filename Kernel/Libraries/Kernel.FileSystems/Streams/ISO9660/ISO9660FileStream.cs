@@ -29,9 +29,9 @@
 #define ISO9660FileStream_TRACE
 #undef ISO9660FileStream_TRACE
 
-using Kernel.Framework.Exceptions;
 using Kernel.FileSystems.ISO9660;
 using Kernel.Framework;
+using Kernel.Framework.Exceptions;
 
 namespace Kernel.FileSystems.Streams.ISO9660
 {

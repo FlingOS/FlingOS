@@ -555,7 +555,7 @@ namespace Drivers.Compiler.Architectures.x86
                         //SUPPORT - floats
                         throw new NotSupportedException("Branch test based on float not supported!");
                     }
-                        //If the test item is Int64 or UInt64           TODO: or Struct
+                    //If the test item is Int64 or UInt64           TODO: or Struct
                     if (testItem.sizeOnStackInBytes == 8)
                     {
                         //Compare first 32 bits (low bits)
@@ -636,7 +636,7 @@ namespace Drivers.Compiler.Architectures.x86
                     {
                         throw new InvalidOperationException("Branch test operands must be same size!");
                     }
-                        //If the test item is Int64 or UInt64           TODO: or Struct
+                    //If the test item is Int64 or UInt64           TODO: or Struct
                     if (itemA.sizeOnStackInBytes == 8)
                     {
                         //Pop the test item B

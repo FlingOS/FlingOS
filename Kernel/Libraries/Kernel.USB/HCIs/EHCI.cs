@@ -364,7 +364,7 @@ namespace Kernel.USB.HCIs
     {
         //TODO: Periodic schedule support
         //TODO: Isochronous transfer support
-        
+
         /*
          * Based on the Intel EHCI Specification for USB 2.0
          *  http://www.intel.co.uk/content/dam/www/public/us/en/documents/technical-specifications/ehci-specification-for-usb.pdf

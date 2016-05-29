@@ -26,8 +26,8 @@
 
 #endregion
 
-using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Devices;
+using Kernel.Framework.Processes.Requests.Devices;
 
 namespace Kernel.ATA
 {

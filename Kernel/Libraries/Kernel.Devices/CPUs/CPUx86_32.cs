@@ -27,7 +27,6 @@
 #endregion
 
 using Drivers.Compiler.Attributes;
-using Kernel.Devices;
 
 namespace Kernel.Devices.CPUs
 {

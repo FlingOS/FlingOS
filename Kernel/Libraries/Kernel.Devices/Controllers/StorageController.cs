@@ -3,7 +3,6 @@ using Kernel.Framework.Collections;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Pipes;
-using Kernel.Devices;
 using Kernel.Pipes.Storage;
 
 namespace Kernel.Devices.Controllers

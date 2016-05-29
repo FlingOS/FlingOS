@@ -29,11 +29,11 @@
 //#define MSD_TRACE
 //#define DEVICE_INFO
 
+using Kernel.Devices;
+using Kernel.Devices.Controllers;
 using Kernel.Framework;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Devices;
-using Kernel.Devices.Controllers;
-using Kernel.Devices;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.MemoryUtils;
 

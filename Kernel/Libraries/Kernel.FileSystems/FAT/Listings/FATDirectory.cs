@@ -29,9 +29,9 @@
 #define FATDIR_TRACE
 #undef FATDIR_TRACE
 
+using Kernel.FileSystems.Streams.FAT;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.FileSystems.Streams.FAT;
 
 namespace Kernel.FileSystems.FAT
 {

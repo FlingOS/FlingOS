@@ -26,10 +26,10 @@
 
 #endregion
 
+using Kernel.Devices;
+using Kernel.Devices.Controllers;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.Devices.Controllers;
-using Kernel.Devices;
 
 namespace Kernel.ATA
 {

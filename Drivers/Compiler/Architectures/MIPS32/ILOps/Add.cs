@@ -91,8 +91,8 @@ namespace Drivers.Compiler.Architectures.MIPS32
             {
                 throw new InvalidOperationException("Invalid stack operand sizes!");
             }
-                //If either item is floating point, we must use floating point conversions
-                //and floating point arithmetic
+            //If either item is floating point, we must use floating point conversions
+            //and floating point arithmetic
             if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats

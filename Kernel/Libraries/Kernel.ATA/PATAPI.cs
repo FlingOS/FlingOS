@@ -28,12 +28,12 @@
 
 //#define PATAPI_TRACE
 
+using Kernel.Devices;
+using Kernel.Devices.Exceptions;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Devices;
-using Kernel.Devices;
-using Kernel.Devices.Exceptions;
 
 namespace Kernel.ATA
 {

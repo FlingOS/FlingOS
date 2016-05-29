@@ -26,7 +26,6 @@
 
 #endregion
 
-using Kernel.Devices;
 using Kernel.IO;
 
 namespace Kernel.Devices.Keyboards

@@ -34,17 +34,17 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
+using Kernel.Devices;
+using Kernel.Devices.Keyboards;
+using Kernel.Devices.Timers;
+using Kernel.FileSystems;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.FileSystems;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Framework.Processes.Requests.Pipes;
 using Kernel.Framework.Processes.Requests.Processes;
-using Kernel.Devices;
-using Kernel.Devices.Keyboards;
 using Kernel.Multiprocessing;
-using Kernel.Devices.Timers;
 using Kernel.Pipes;
 using Kernel.Shells;
 using Kernel.Tasks.App;

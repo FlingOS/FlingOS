@@ -26,9 +26,9 @@
 
 #endregion
 
+using Kernel.FileSystems.Streams;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.FileSystems.Streams;
 
 namespace Kernel.Processes.ELF
 {

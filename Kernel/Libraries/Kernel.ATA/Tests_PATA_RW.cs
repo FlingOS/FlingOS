@@ -26,9 +26,9 @@
 
 #endregion
 
-using Kernel.Framework;
 using Kernel.Devices;
 using Kernel.Devices.Testing;
+using Kernel.Framework;
 
 namespace Kernel.ATA
 {

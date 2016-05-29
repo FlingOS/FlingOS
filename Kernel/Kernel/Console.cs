@@ -27,10 +27,10 @@
 #endregion
 
 using Kernel.Consoles;
+using Kernel.Devices.Timers;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Stubs;
-using Kernel.Devices.Timers;
 
 namespace Kernel
 {

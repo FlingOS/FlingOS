@@ -29,10 +29,10 @@
 #define ISO9660DIR_TRACE
 #undef ISO9660DIR_TRACE
 
-using Kernel.Framework.Collections;
-using Kernel.Framework.Exceptions;
 using Kernel.FileSystems.Streams.ISO9660;
 using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 
 namespace Kernel.FileSystems.ISO9660
 {

@@ -30,8 +30,8 @@
 #undef PCI_TRACE
 
 using Drivers.Compiler.Attributes;
-using Kernel.Framework.Collections;
 using Kernel.Devices;
+using Kernel.Framework.Collections;
 using Kernel.IO;
 
 namespace Kernel.PCI

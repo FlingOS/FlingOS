@@ -28,12 +28,11 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
+using Kernel.Devices.Keyboards;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Pipes;
-using Kernel.Devices;
-using Kernel.Devices.Keyboards;
 using Kernel.Pipes;
 using Kernel.Pipes.Exceptions;
 using Kernel.Pipes.Standard;
