@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{4D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4A8B3E99-15F3-4567-BDDB-11F4057DC3BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Framework", "Kernel\Libraries\Kernel.FOS_System\Kernel.Framework.csproj", "{66C9B617-B6D9-4006-A7F9-E1DF62ED30AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Framework", "Kernel\Libraries\Kernel.Framework\Kernel.Framework.csproj", "{66C9B617-B6D9-4006-A7F9-E1DF62ED30AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel", "Kernel\Kernel\Kernel.csproj", "{E4076F67-686F-48E3-A5AF-55B841665F77}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -28,7 +28,7 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Fling OS Documentation Proj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{1A5BFB25-60C1-4E6B-8B97-0E142634929D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Multiprocessing", "Kernel\Libraries\Kernel.Hardware\Kernel.Multiprocessing.csproj", "{F59B042C-435D-48ED-AD7B-23666931A952}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Multiprocessing", "Kernel\Libraries\Kernel.Multiprocessing\Kernel.Multiprocessing.csproj", "{F59B042C-435D-48ED-AD7B-23666931A952}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{9CC7D8B1-30B5-4099-ADAD-F32067871179}"
 EndProject
@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kernel", "Kernel", "{C45DB1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASM Method Label Builder", "Tools\Kernel\ASM Method Label Builder\ASM Method Label Builder.csproj", "{A58080B9-2E1D-4F12-8ABA-35E4E6E4E3FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FileSystems", "Kernel\Libraries\Kernel.FOS_System.IO\Kernel.FileSystems.csproj", "{5C9FDB7D-604E-4927-9D3F-E2C599B20797}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.FileSystems", "Kernel\Libraries\Kernel.FileSystems\Kernel.FileSystems.csproj", "{5C9FDB7D-604E-4927-9D3F-E2C599B20797}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISO9660Generator", "Kernel\Compiler\ISO9660Generator\ISO9660Generator.csproj", "{AE35B438-A252-40E3-8DB1-AA6FD22AC156}"
 EndProject
@@ -89,17 +89,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Debugger", "Drivers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drivers.Debugger.App", "Drivers\Debugger\App\Drivers.Debugger.App.csproj", "{5BFCBFB8-5C32-49E1-AEDD-E55B515DDF6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.USB", "Kernel\Libraries\Kernel.Hardware.USB\Kernel.USB.csproj", "{63C61B22-F7FB-4DE2-8D25-73BC0D1DC04F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.USB", "Kernel\Libraries\Kernel.USB\Kernel.USB.csproj", "{63C61B22-F7FB-4DE2-8D25-73BC0D1DC04F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.ATA", "Kernel\Libraries\Kernel.Hardware.ATA\Kernel.ATA.csproj", "{2D18C11E-3C86-4131-8DE9-C4385C9131B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.ATA", "Kernel\Libraries\Kernel.ATA\Kernel.ATA.csproj", "{2D18C11E-3C86-4131-8DE9-C4385C9131B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Devices", "Kernel\Libraries\Kernel.Hardware.Devices\Kernel.Devices.csproj", "{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Devices", "Kernel\Libraries\Kernel.Devices\Kernel.Devices.csproj", "{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.VirtualMemory", "Kernel\Libraries\Kernel.Hardware.VirtualMemory\Kernel.VirtualMemory.csproj", "{2F9D1B2A-6CC2-45E2-BD36-BDF7AB8626B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.VirtualMemory", "Kernel\Libraries\Kernel.VirtualMemory\Kernel.VirtualMemory.csproj", "{2F9D1B2A-6CC2-45E2-BD36-BDF7AB8626B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.PCI", "Kernel\Libraries\Kernel.Hardware.PCI\Kernel.PCI.csproj", "{02D891E8-4AAA-48FA-8608-5135FB4DC493}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.PCI", "Kernel\Libraries\Kernel.PCI\Kernel.PCI.csproj", "{02D891E8-4AAA-48FA-8608-5135FB4DC493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.IO", "Kernel\Libraries\Kernel.Hardware.IO\Kernel.IO.csproj", "{9FEB0B47-9730-44FA-A5CB-0E47194176F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.IO", "Kernel\Libraries\Kernel.IO\Kernel.IO.csproj", "{9FEB0B47-9730-44FA-A5CB-0E47194176F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kernel.Pipes", "Kernel\Libraries\Kernel.Pipes\Kernel.Pipes.csproj", "{F64A12DF-0514-4F93-90C7-5E86B0A35F86}"
 EndProject
