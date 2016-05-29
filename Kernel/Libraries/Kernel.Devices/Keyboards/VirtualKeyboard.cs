@@ -60,7 +60,7 @@ namespace Kernel.Devices.Keyboards
             if (released)
             {
                 //Clear the released bit so we get the correct key scancode
-                scancode = (byte) (scancode ^ 0x80);
+                scancode = (byte)(scancode ^ 0x80);
             }
 
             //And handle the (now corrected) scancode

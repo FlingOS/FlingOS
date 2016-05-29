@@ -295,7 +295,7 @@ namespace Drivers.Compiler
                         Tuple<VoidDelegate, object> Callback = null;
                         lock (CallbacksLock)
                         {
-                            Process theProc = (Process) sender;
+                            Process theProc = (Process)sender;
                             Callback = OnCompleteCallbacks[theProc.Id];
                             OnCompleteCallbacks.Remove(theProc.Id);
                             Processes.Remove(theProc.Id);

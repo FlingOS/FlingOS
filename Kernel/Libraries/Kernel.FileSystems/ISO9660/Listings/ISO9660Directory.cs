@@ -46,7 +46,7 @@ namespace Kernel.FileSystems.ISO9660
         public ISO9660Directory(ISO9660FileSystem fileSystem, ISO9660Directory parent,
             Disk.ISO9660.DirectoryRecord record)
             : base(
-                fileSystem, parent, record.FileIdentifier.Length > 0 ? (String) record.FileIdentifier.Split(';')[0] : ""
+                fileSystem, parent, record.FileIdentifier.Length > 0 ? (String)record.FileIdentifier.Split(';')[0] : ""
                 )
         {
             TheDirectoryRecord = record;
@@ -84,7 +84,7 @@ namespace Kernel.FileSystems.ISO9660
             if (_cachedlistings == null)
             {
                 Get_FileStream();
-                byte[] data = new byte[(uint) _theFile.Size];
+                byte[] data = new byte[(uint)_theFile.Size];
                 _fileStream.Position = 0;
                 int actuallyRead = _fileStream.Read(data, 0, data.Length);
                 _cachedlistings = new List(10);
@@ -102,12 +102,12 @@ namespace Kernel.FileSystems.ISO9660
                         if ((newRecord.TheFileFlags & Disk.ISO9660.DirectoryRecord.FileFlags.Directory) != 0)
                         {
                             // Directory
-                            _cachedlistings.Add(new ISO9660Directory((ISO9660FileSystem) TheFileSystem, this, newRecord));
+                            _cachedlistings.Add(new ISO9660Directory((ISO9660FileSystem)TheFileSystem, this, newRecord));
                         }
                         else
                         {
                             // File
-                            _cachedlistings.Add(new ISO9660File((ISO9660FileSystem) TheFileSystem, this, newRecord));
+                            _cachedlistings.Add(new ISO9660File((ISO9660FileSystem)TheFileSystem, this, newRecord));
                         }
 
                         position += newRecord.RecordLength;
@@ -121,7 +121,7 @@ namespace Kernel.FileSystems.ISO9660
         {
             if (_fileStream == null)
             {
-                _fileStream = (ISO9660FileStream) _theFile.GetStream();
+                _fileStream = (ISO9660FileStream)_theFile.GetStream();
             }
         }
 

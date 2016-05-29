@@ -56,6 +56,31 @@ namespace Kernel.Pipes
     public abstract unsafe class BasicInpoint : Object
     {
         /// <summary>
+        ///     The Id of the process which owns the outpoint this inpoint is connected to.
+        /// </summary>
+        public uint OutProcessId { get; protected set; }
+
+        /// <summary>
+        ///     The Id of the pipe this inpoint is connected to.
+        /// </summary>
+        public int PipeId { get; protected set; }
+
+        /// <summary>
+        ///     The class of the pipe this inpoint is connected to.
+        /// </summary>
+        public PipeClasses Class { get; protected set; }
+
+        /// <summary>
+        ///     The subclass of the pipe this inpoint is connected to.
+        /// </summary>
+        public PipeSubclasses Subclass { get; protected set; }
+
+        /// <summary>
+        ///     The size of the buffer used within the core OS.
+        /// </summary>
+        public int BufferSize { get; protected set; }
+
+        /// <summary>
         ///     Creates and connects a new pipe to the specified target process.
         /// </summary>
         /// <param name="anOutProcessId">The target process to connect to.</param>
@@ -71,7 +96,7 @@ namespace Kernel.Pipes
 
             CreatePipeRequest* RequestPtr =
                 (CreatePipeRequest*)
-                    Heap.AllocZeroed((uint) sizeof(CreatePipeRequest), "BasicInPipe : Alloc CreatePipeRequest");
+                    Heap.AllocZeroed((uint)sizeof(CreatePipeRequest), "BasicInPipe : Alloc CreatePipeRequest");
             if (RequestPtr != null)
             {
                 try
@@ -114,31 +139,6 @@ namespace Kernel.Pipes
         }
 
         /// <summary>
-        ///     The Id of the process which owns the outpoint this inpoint is connected to.
-        /// </summary>
-        public uint OutProcessId { get; protected set; }
-
-        /// <summary>
-        ///     The Id of the pipe this inpoint is connected to.
-        /// </summary>
-        public int PipeId { get; protected set; }
-
-        /// <summary>
-        ///     The class of the pipe this inpoint is connected to.
-        /// </summary>
-        public PipeClasses Class { get; protected set; }
-
-        /// <summary>
-        ///     The subclass of the pipe this inpoint is connected to.
-        /// </summary>
-        public PipeSubclasses Subclass { get; protected set; }
-
-        /// <summary>
-        ///     The size of the buffer used within the core OS.
-        /// </summary>
-        public int BufferSize { get; protected set; }
-
-        /// <summary>
         ///     Reads up to the specified length of data into the specified buffer at the specified offset in the buffer.
         /// </summary>
         /// <param name="Data">The buffer to read into.</param>
@@ -152,7 +152,7 @@ namespace Kernel.Pipes
 
             ReadPipeRequest* ReadPipeRequestPtr =
                 (ReadPipeRequest*)
-                    Heap.AllocZeroed((uint) sizeof(ReadPipeRequest), "BasicInPipe : Alloc ReadPipeRequest");
+                    Heap.AllocZeroed((uint)sizeof(ReadPipeRequest), "BasicInPipe : Alloc ReadPipeRequest");
             try
             {
                 if (ReadPipeRequestPtr != null)
@@ -160,7 +160,7 @@ namespace Kernel.Pipes
                     ReadPipeRequestPtr->PipeId = PipeId;
                     ReadPipeRequestPtr->Offset = Offset;
                     ReadPipeRequestPtr->Length = Math.Min(Data.Length - Offset, Length);
-                    ReadPipeRequestPtr->OutBuffer = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
+                    ReadPipeRequestPtr->OutBuffer = (byte*)ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
                     ReadPipeRequestPtr->Blocking = Blocking;
 
                     SystemCallResults SysCallResult = SystemCalls.ReadPipe(ReadPipeRequestPtr, out BytesRead);

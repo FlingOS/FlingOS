@@ -96,18 +96,18 @@ namespace Drivers.Framework
         public static SpinLock AccessLock;
         public static bool AccessLockInitialised;
 
-        [NoDebug]
-        [NoGC]
-        static Heap()
-        {
-        }
-
         /// <summary>
         ///     A pointer to the most-recently added heap block.
         /// </summary>
         public static HeapBlock* FBlock
         {
             [NoDebug] [NoGC] get { return fblock; }
+        }
+
+        [NoDebug]
+        [NoGC]
+        static Heap()
+        {
         }
 
         [NoDebug]
@@ -269,12 +269,12 @@ namespace Drivers.Framework
         {
             uint bcnt;
 
-            b->size = size - (uint) sizeof(HeapBlock);
+            b->size = size - (uint)sizeof(HeapBlock);
             b->bsize = bsize;
             b->expanding = false;
 
             bcnt = size/bsize;
-            byte* bm = (byte*) &b[1];
+            byte* bm = (byte*)&b[1];
 
             /* clear bitmap */
             for (uint x = 0; x < bcnt; ++x)
@@ -332,7 +332,7 @@ namespace Drivers.Framework
         public static byte GetNID(byte a, byte b)
         {
             byte c;
-            for (c = (byte) (a + 1); c == b || c == 0; ++c) ;
+            for (c = (byte)(a + 1); c == b || c == 0; ++c) ;
             return c;
         }
 
@@ -383,7 +383,7 @@ namespace Drivers.Framework
             {
                 oldValue = result;
                 result = AllocZeroed(size, boundary, caller);
-                resultAddr = (uint) result;
+                resultAddr = (uint)result;
                 if (oldValue != null)
                 {
                     Free(oldValue);
@@ -470,14 +470,14 @@ namespace Drivers.Framework
                 }
 
                 /* iterate blocks */
-                for (b = fblock; (uint) b != 0; b = b->next)
+                for (b = fblock; (uint)b != 0; b = b->next)
                 {
                     /* check if block has enough room */
                     if (b->size - b->used*b->bsize >= size)
                     {
                         bcnt = b->size/b->bsize;
                         bneed = size/b->bsize*b->bsize < size ? size/b->bsize + 1 : size/b->bsize;
-                        bm = (byte*) &b[1];
+                        bm = (byte*)&b[1];
 
                         for (x = b->lfb + 1 >= bcnt ? 0 : b->lfb + 1; x != b->lfb; ++x)
                         {
@@ -510,10 +510,10 @@ namespace Drivers.Framework
                                     /* count used blocks NOT bytes */
                                     b->used += y;
 
-                                    void* result = (void*) (x*b->bsize + (uint) &b[1]);
+                                    void* result = (void*)(x*b->bsize + (uint)&b[1]);
                                     if (boundary > 1)
                                     {
-                                        result = (void*) (((uint) result + (boundary - 1)) & ~(boundary - 1));
+                                        result = (void*)(((uint)result + (boundary - 1)) & ~(boundary - 1));
 
 //#if HEAP_TRACE
 //                                      ExitCritical();
@@ -611,16 +611,16 @@ namespace Drivers.Framework
             byte id;
             uint max;
 
-            for (b = fblock; (uint) b != 0; b = b->next)
+            for (b = fblock; (uint)b != 0; b = b->next)
             {
-                if ((uint) ptr > (uint) b && (uint) ptr < (uint) b + b->size)
+                if ((uint)ptr > (uint)b && (uint)ptr < (uint)b + b->size)
                 {
                     /* found block */
-                    ptroff = (uint) ptr - (uint) &b[1]; /* get offset to get block */
+                    ptroff = (uint)ptr - (uint)&b[1]; /* get offset to get block */
                     /* block offset in BM */
                     bi = ptroff/b->bsize;
                     /* .. */
-                    bm = (byte*) &b[1];
+                    bm = (byte*)&b[1];
                     /* clear allocation */
                     id = bm[bi];
                     /* oddly.. HeapC did not optimize this */

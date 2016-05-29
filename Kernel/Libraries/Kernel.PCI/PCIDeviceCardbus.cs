@@ -34,43 +34,6 @@ namespace Kernel.PCI
     public class PCIDeviceCardbus : PCIDevice
     {
         /// <summary>
-        ///     Initialises a new PCIDeviceCardbus instance.
-        /// </summary>
-        /// <param name="bus">The PCI device's Bus number.</param>
-        /// <param name="slot">The PCI device's Slot number.</param>
-        /// <param name="function">The PCI device's Function number.</param>
-        public PCIDeviceCardbus(uint bus, uint slot, uint function)
-            : base(bus, slot, function, "PCI Cardbus")
-        {
-            CardbusBaseAddress = ReadRegister32(0x10);
-
-            OffsetOfCapabilityList = ReadRegister8(0x14);
-            SecondaryStatus = ReadRegister16(0x16);
-
-            PCIBusNumber = ReadRegister8(0x18);
-            CardbusBusNumber = ReadRegister8(0x19);
-            SubordinateBusNumber = ReadRegister8(0x1A);
-            CardbusLatencyTimer = ReadRegister8(0x1B);
-
-            MemoryBaseAddress0 = ReadRegister32(0x1C);
-            MemoryLimit0 = ReadRegister32(0x20);
-            MemoryBaseAddress1 = ReadRegister32(0x24);
-            MemoryLimit1 = ReadRegister32(0x28);
-
-            IOBaseAddress0 = ReadRegister32(0x2C);
-            IOLimit0 = ReadRegister32(0x30);
-            IOBaseAddress1 = ReadRegister32(0x34);
-            IOLimit1 = ReadRegister32(0x38);
-
-            BridgeControl = ReadRegister16(0x3C);
-
-            SubsystemDeviceID = ReadRegister16(0x40);
-            SubsystemVendorID = ReadRegister16(0x42);
-
-            PCCardBaseAddress = ReadRegister32(0x44);
-        }
-
-        /// <summary>
         ///     The device's CardbusBaseAddress.
         /// </summary>
         public uint CardbusBaseAddress { get; private set; }
@@ -164,5 +127,42 @@ namespace Kernel.PCI
         ///     The device's PCCardBaseAddress.
         /// </summary>
         public uint PCCardBaseAddress { get; private set; }
+
+        /// <summary>
+        ///     Initialises a new PCIDeviceCardbus instance.
+        /// </summary>
+        /// <param name="bus">The PCI device's Bus number.</param>
+        /// <param name="slot">The PCI device's Slot number.</param>
+        /// <param name="function">The PCI device's Function number.</param>
+        public PCIDeviceCardbus(uint bus, uint slot, uint function)
+            : base(bus, slot, function, "PCI Cardbus")
+        {
+            CardbusBaseAddress = ReadRegister32(0x10);
+
+            OffsetOfCapabilityList = ReadRegister8(0x14);
+            SecondaryStatus = ReadRegister16(0x16);
+
+            PCIBusNumber = ReadRegister8(0x18);
+            CardbusBusNumber = ReadRegister8(0x19);
+            SubordinateBusNumber = ReadRegister8(0x1A);
+            CardbusLatencyTimer = ReadRegister8(0x1B);
+
+            MemoryBaseAddress0 = ReadRegister32(0x1C);
+            MemoryLimit0 = ReadRegister32(0x20);
+            MemoryBaseAddress1 = ReadRegister32(0x24);
+            MemoryLimit1 = ReadRegister32(0x28);
+
+            IOBaseAddress0 = ReadRegister32(0x2C);
+            IOLimit0 = ReadRegister32(0x30);
+            IOBaseAddress1 = ReadRegister32(0x34);
+            IOLimit1 = ReadRegister32(0x38);
+
+            BridgeControl = ReadRegister16(0x3C);
+
+            SubsystemDeviceID = ReadRegister16(0x40);
+            SubsystemVendorID = ReadRegister16(0x42);
+
+            PCCardBaseAddress = ReadRegister32(0x44);
+        }
     }
 }

@@ -43,12 +43,6 @@ namespace Kernel.Multiprocessing.Synchronisation
 
         public UInt32List OwnerProcesses = new UInt32List(2);
 
-        public Semaphore(int anId, int aLimit)
-        {
-            id = anId;
-            count = (limit = aLimit) == -1 ? 0 : limit;
-        }
-
         public int Id
         {
             get { return id; }
@@ -64,9 +58,15 @@ namespace Kernel.Multiprocessing.Synchronisation
             get { return limit; }
         }
 
+        public Semaphore(int anId, int aLimit)
+        {
+            id = anId;
+            count = (limit = aLimit) == -1 ? 0 : limit;
+        }
+
         public void Wait()
         {
-            ulong identifier = ((ulong) ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
+            ulong identifier = ((ulong)ProcessManager.CurrentProcess.Id << 32) | ProcessManager.CurrentThread.Id;
 
             ExclLock.Enter();
             bool notLocked = count > 0;
@@ -85,7 +85,7 @@ namespace Kernel.Multiprocessing.Synchronisation
 
         public bool WaitOnBehalf(Process aProcess, Thread aThread)
         {
-            ulong identifier = ((ulong) aProcess.Id << 32) | aThread.Id;
+            ulong identifier = ((ulong)aProcess.Id << 32) | aThread.Id;
 
             ExclLock.Enter();
             bool notLocked = count > 0;
@@ -116,7 +116,7 @@ namespace Kernel.Multiprocessing.Synchronisation
                     WaitingThreads.RemoveAt(0);
                     //BasicConsole.Write("Identifier: ");
                     //BasicConsole.WriteLine(identifier);
-                } while (!ProcessManager.WakeThread((uint) (identifier >> 32), (uint) identifier) &&
+                } while (!ProcessManager.WakeThread((uint)(identifier >> 32), (uint)identifier) &&
                          WaitingThreads.Count > 0);
             }
             else if (count < limit || limit == -1)

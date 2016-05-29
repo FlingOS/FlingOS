@@ -51,21 +51,6 @@ namespace Kernel.FileSystems
         protected Partition thePartition;
 
         /// <summary>
-        ///     Initializes a new file system for the specified partition.
-        /// </summary>
-        /// <param name="aPartition">The partition in which the partition resides.</param>
-        public FileSystem(Partition aPartition)
-        {
-            thePartition = aPartition;
-
-            if (SystemCalls.CreateSemaphore(1, out ActionSemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("File System > Failed to create a semaphore!");
-                ExceptionMethods.Throw(new NullReferenceException());
-            }
-        }
-
-        /// <summary>
         ///     The partition in which the file system resides.
         /// </summary>
         public Partition ThePartition
@@ -84,6 +69,21 @@ namespace Kernel.FileSystems
         public bool IsValid
         {
             get { return isValid; }
+        }
+
+        /// <summary>
+        ///     Initializes a new file system for the specified partition.
+        /// </summary>
+        /// <param name="aPartition">The partition in which the partition resides.</param>
+        public FileSystem(Partition aPartition)
+        {
+            thePartition = aPartition;
+
+            if (SystemCalls.CreateSemaphore(1, out ActionSemaphoreId) != SystemCallResults.OK)
+            {
+                BasicConsole.WriteLine("File System > Failed to create a semaphore!");
+                ExceptionMethods.Throw(new NullReferenceException());
+            }
         }
 
         public bool Lock()
@@ -114,7 +114,7 @@ namespace Kernel.FileSystems
         public Base GetListingFromListings(List nameParts, Directory parent, List listings)
         {
             //  ".." means "parent directory"
-            if ((String) nameParts[0] == "..")
+            if ((String)nameParts[0] == "..")
             {
                 nameParts.RemoveAt(0);
                 if (nameParts.Count == 0)
@@ -127,8 +127,8 @@ namespace Kernel.FileSystems
 
             for (int i = 0; i < listings.Count; i++)
             {
-                Base aListing = (Base) listings[i];
-                if (aListing.Name == (String) nameParts[0])
+                Base aListing = (Base)listings[i];
+                if (aListing.Name == (String)nameParts[0])
                 {
                     nameParts.RemoveAt(0);
                     if (nameParts.Count == 0)
@@ -137,7 +137,7 @@ namespace Kernel.FileSystems
                     }
                     if (aListing.IsDirectory)
                     {
-                        return ((Directory) aListing).GetListing(nameParts);
+                        return ((Directory)aListing).GetListing(nameParts);
                     }
                 }
             }

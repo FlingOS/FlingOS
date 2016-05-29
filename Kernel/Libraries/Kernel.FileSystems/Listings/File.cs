@@ -82,7 +82,7 @@ namespace Kernel.FileSystems
             }
             if (baseListing is File)
             {
-                return (File) baseListing;
+                return (File)baseListing;
             }
             return null;
         }

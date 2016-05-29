@@ -189,7 +189,7 @@ namespace Drivers.Compiler.Types
                         {
                             UnderlyingInfo = aMethodInfo,
                             PlugAttribute =
-                                (PluggedMethodAttribute) aMethodInfo.GetCustomAttribute(typeof(PluggedMethodAttribute))
+                                (PluggedMethodAttribute)aMethodInfo.GetCustomAttribute(typeof(PluggedMethodAttribute))
                         };
                         newTypeInfo.MethodInfos.Add(newMethodInfo);
 

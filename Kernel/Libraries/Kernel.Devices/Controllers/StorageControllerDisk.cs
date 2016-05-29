@@ -39,7 +39,7 @@ namespace Kernel.Devices.Controllers
 
         public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            if (BlockCount*BlockSize > (ulong) DataInPipe.BufferSize)
+            if (BlockCount*BlockSize > (ulong)DataInPipe.BufferSize)
             {
                 BasicConsole.WriteLine("WARNING! StorageControllerDisk.Read is about to cause a buffer overflow.");
             }
@@ -47,7 +47,7 @@ namespace Kernel.Devices.Controllers
             //BasicConsole.WriteLine("Storage controller disk > Issuing read (storage cmd) " + (Framework.String)BlockCount + " blocks from " + (Framework.String)BlockNo + " blocks offset.");
             //TODO: Wrap in a loop so we don't hit buffer overflow
             CmdPipe.Send_Read(CmdPipeId, Id, BlockNo, BlockCount);
-            int FullBytesToRead = (int) (BlockCount*(uint) BlockSize);
+            int FullBytesToRead = (int)(BlockCount*(uint)BlockSize);
             int BytesRead = DataInPipe.Read(Data, 0, FullBytesToRead, true);
             if (BytesRead != Data.Length)
             {
@@ -68,11 +68,11 @@ namespace Kernel.Devices.Controllers
 
         public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            if (BlockCount*BlockSize > (ulong) DataInPipe.BufferSize)
+            if (BlockCount*BlockSize > (ulong)DataInPipe.BufferSize)
             {
                 BasicConsole.WriteLine("WARNING! StorageControllerDisk.Write might be about to cause a buffer overflow.");
             }
-            else if (Data.Length < (uint) (BlockCount*BlockSize))
+            else if (Data.Length < (uint)(BlockCount*BlockSize))
             {
                 BasicConsole.WriteLine(
                     "ERROR! Data buffer supplied to StorageControllerDisk.Write is not long enough for the requested number of blocks.");
@@ -83,7 +83,7 @@ namespace Kernel.Devices.Controllers
 
             //TODO: Wrap in a loop so we don't hit buffer overflow
             CmdPipe.Send_Write(CmdPipeId, Id, BlockNo, BlockCount);
-            DataOutPipe.Write(DataOutPipeId, Data, 0, (int) (BlockCount*(uint) BlockSize), true);
+            DataOutPipe.Write(DataOutPipeId, Data, 0, (int)(BlockCount*(uint)BlockSize), true);
         }
 
         public override void CleanCaches()

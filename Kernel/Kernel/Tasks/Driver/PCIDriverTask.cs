@@ -58,7 +58,7 @@ namespace Kernel.Tasks.Driver
         {
             for (int i = 0; i < PCIManager.Devices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice) PCIManager.Devices[i];
+                PCIDevice aDevice = (PCIDevice)PCIManager.Devices[i];
                 console.WriteLine(PCIDevice.DeviceClassInfo.GetString(aDevice));
                 console.Write(" - Address: ");
                 console.Write(aDevice.bus);

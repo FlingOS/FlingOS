@@ -49,16 +49,6 @@ namespace Drivers.Framework.Collections
         private readonly List ImplicitHeap;
         public string Name = "[No Name]";
 
-        public PriorityQueue()
-            : this(20)
-        {
-        }
-
-        public PriorityQueue(int InitialCapacity)
-        {
-            ImplicitHeap = new List(InitialCapacity);
-        }
-
         public int Count
         {
             get { return ImplicitHeap.Count; }
@@ -68,6 +58,16 @@ namespace Drivers.Framework.Collections
         {
             get { return ImplicitHeap.Capacity; }
             set { ImplicitHeap.Capacity = value; }
+        }
+
+        public PriorityQueue()
+            : this(20)
+        {
+        }
+
+        public PriorityQueue(int InitialCapacity)
+        {
+            ImplicitHeap = new List(InitialCapacity);
         }
 
         public void DecreaseKey(Comparable X, int NewKey)
@@ -114,12 +114,12 @@ namespace Drivers.Framework.Collections
 
             if (ImplicitHeap.Count > 0)
             {
-                result = (Comparable) ImplicitHeap[0];
+                result = (Comparable)ImplicitHeap[0];
                 result.Position = 0;
 
                 if (ImplicitHeap.Count > 1)
                 {
-                    Comparable Y = (Comparable) ImplicitHeap.Last();
+                    Comparable Y = (Comparable)ImplicitHeap.Last();
                     ImplicitHeap.RemoveAt(Y.Position - 1);
 
                     Y.Position = 1;
@@ -142,7 +142,7 @@ namespace Drivers.Framework.Collections
 
             if (ImplicitHeap.Count > 0)
             {
-                result = (Comparable) ImplicitHeap[0];
+                result = (Comparable)ImplicitHeap[0];
             }
 
             return result;
@@ -176,7 +176,7 @@ namespace Drivers.Framework.Collections
             if (ImplicitHeap.Count > 1)
             {
                 //BasicConsole.WriteLine("Using last item");
-                Comparable Y = (Comparable) ImplicitHeap.Last();
+                Comparable Y = (Comparable)ImplicitHeap.Last();
                 if (X != Y)
                 {
                     //BasicConsole.WriteLine("X not equal to Y");
@@ -211,7 +211,7 @@ namespace Drivers.Framework.Collections
         {
             for (int i = 0; i < ImplicitHeap.Count; i++)
             {
-                Comparable x = (Comparable) ImplicitHeap[i];
+                Comparable x = (Comparable)ImplicitHeap[i];
                 int NewKey = x.Key - amount;
                 DecreaseKey(x, NewKey < min ? min : NewKey);
             }
@@ -256,7 +256,7 @@ namespace Drivers.Framework.Collections
 
             for (int i = 0; i < ImplicitHeap.Count; i++)
             {
-                result += ((String) ((Comparable) ImplicitHeap[i]).Key).PadRight(20, ' ');
+                result += ((String)((Comparable)ImplicitHeap[i]).Key).PadRight(20, ' ');
             }
 
             return result;
@@ -277,7 +277,7 @@ namespace Drivers.Framework.Collections
             int idx = ParentIndex(X) - 1;
             if (idx > -1)
             {
-                return (Comparable) ImplicitHeap[idx];
+                return (Comparable)ImplicitHeap[idx];
             }
             return null;
         }
@@ -287,7 +287,7 @@ namespace Drivers.Framework.Collections
             int idx = LeftChildIndex(X) - 1;
             if (idx < ImplicitHeap.Count)
             {
-                return (Comparable) ImplicitHeap[idx];
+                return (Comparable)ImplicitHeap[idx];
             }
             return null;
         }
@@ -297,7 +297,7 @@ namespace Drivers.Framework.Collections
             int idx = RightChildIndex(X) - 1;
             if (idx < ImplicitHeap.Count)
             {
-                return (Comparable) ImplicitHeap[idx];
+                return (Comparable)ImplicitHeap[idx];
             }
             return null;
         }

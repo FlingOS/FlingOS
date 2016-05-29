@@ -117,7 +117,7 @@ namespace Kernel.Pipes
             // Check no existing outpoints of the same type exist for the specified process
             for (int i = 0; i < PipeOutpoints.Count; i++)
             {
-                PipeOutpoint anOutpoint = (PipeOutpoint) PipeOutpoints[i];
+                PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
                 if (anOutpoint.ProcessId == OutProcessId &&
                     anOutpoint.Class == Class &&
                     anOutpoint.Subclass == Subclass)
@@ -153,7 +153,7 @@ namespace Kernel.Pipes
             // Search for outpoints of correct class and subclass, incrementing count as we go
             for (int i = 0; i < PipeOutpoints.Count; i++)
             {
-                PipeOutpoint anOutpoint = (PipeOutpoint) PipeOutpoints[i];
+                PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
 
                 if (anOutpoint.Class == Class &&
                     anOutpoint.Subclass == Subclass &&
@@ -217,7 +217,7 @@ namespace Kernel.Pipes
                 int maxDescriptors = request->MaxDescriptors;
                 for (int i = 0, j = 0; i < PipeOutpoints.Count && j < maxDescriptors; i++)
                 {
-                    PipeOutpoint anOutpoint = (PipeOutpoint) PipeOutpoints[i];
+                    PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
 
                     if (anOutpoint.Class == Class &&
                         anOutpoint.Subclass == Subclass &&
@@ -329,15 +329,15 @@ namespace Kernel.Pipes
                 ulong identifier = outpoint.WaitingThreads[0];
                 outpoint.WaitingThreads.RemoveAt(0);
 
-                uint processId = (uint) (identifier >> 32);
-                uint threadId = (uint) identifier;
+                uint processId = (uint)(identifier >> 32);
+                uint threadId = (uint)identifier;
 
                 Process process = ProcessManager.GetProcessById(processId);
                 Thread thread = ProcessManager.GetThreadById(threadId, process);
 
                 ProcessManager.EnableKernelAccessToProcessMemory(process);
 
-                WaitOnPipeCreateRequest* request = (WaitOnPipeCreateRequest*) thread.Param1;
+                WaitOnPipeCreateRequest* request = (WaitOnPipeCreateRequest*)thread.Param1;
                 request->Result.Id = NewPipe.Id;
                 request->Result.BufferSize = NewPipe.BufferSize;
                 request->Result.Class = outpoint.Class;
@@ -345,7 +345,7 @@ namespace Kernel.Pipes
                 request->Result.InpointProcessId = inpoint.ProcessId;
                 request->Result.OutpointProcessId = outpoint.ProcessId;
 
-                thread.Return1 = (uint) SystemCallResults.OK;
+                thread.Return1 = (uint)SystemCallResults.OK;
                 thread.Return2 = 0;
                 thread.Return3 = 0;
                 thread.Return4 = 0;
@@ -390,7 +390,7 @@ namespace Kernel.Pipes
             }
 
             // Mark the outpoint as being waited on by the specified process/thread
-            outpoint.WaitingThreads.Add(((ulong) OutProcessId << 32) | OutThreadId);
+            outpoint.WaitingThreads.Add(((ulong)OutProcessId << 32) | OutThreadId);
 
             ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
 
@@ -482,7 +482,7 @@ namespace Kernel.Pipes
 
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
             // Set up initial failure return value
-            CallerThread.Return1 = (uint) SystemCallResults.Fail;
+            CallerThread.Return1 = (uint)SystemCallResults.Fail;
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
 #if PIPES_TRACE
@@ -506,7 +506,7 @@ namespace Kernel.Pipes
                     }
 
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-                    CallerThread.Return1 = (uint) SystemCallResults.Fail;
+                    CallerThread.Return1 = (uint)SystemCallResults.Fail;
                     ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
                     CallerThread._Wake();
                 }
@@ -575,11 +575,11 @@ namespace Kernel.Pipes
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
             // Add caller thread to the write queue
-            WritePipeRequest* Request = (WritePipeRequest*) CallerThread.Param1;
+            WritePipeRequest* Request = (WritePipeRequest*)CallerThread.Param1;
             pipe.QueueToWrite(CallerThread.Id, Request->Length);
 
             // Set up initial failure return value
-            CallerThread.Return1 = (uint) SystemCallResults.Fail;
+            CallerThread.Return1 = (uint)SystemCallResults.Fail;
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
@@ -604,7 +604,7 @@ namespace Kernel.Pipes
                     }
 
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-                    CallerThread.Return1 = (uint) SystemCallResults.Fail;
+                    CallerThread.Return1 = (uint)SystemCallResults.Fail;
                     ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
                     CallerThread._Wake();
@@ -668,21 +668,21 @@ namespace Kernel.Pipes
 #endif
                     ProcessManager.EnableKernelAccessToProcessMemory(OutProcess);
 
-                    WritePipeRequest* Request = (WritePipeRequest*) WriteThread.Param1;
+                    WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
                     bool Successful = pipe.Write(Request->InBuffer, Request->Offset, Request->Length);
                     if (Successful)
                     {
 #if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Write successful");
 #endif
-                        WriteThread.Return1 = (uint) SystemCallResults.OK;
+                        WriteThread.Return1 = (uint)SystemCallResults.OK;
                     }
                     else
                     {
 #if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Write failed");
 #endif
-                        WriteThread.Return1 = (uint) SystemCallResults.Fail;
+                        WriteThread.Return1 = (uint)SystemCallResults.Fail;
                     }
 
                     ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
@@ -727,7 +727,7 @@ namespace Kernel.Pipes
 #endif
                     ProcessManager.EnableKernelAccessToProcessMemory(InProcess);
 
-                    ReadPipeRequest* Request = (ReadPipeRequest*) ReadThread.Param1;
+                    ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
                     int BytesRead;
                     bool Successful = pipe.Read(Request->OutBuffer, Request->Offset, Request->Length, out BytesRead);
                     if (Successful)
@@ -735,15 +735,15 @@ namespace Kernel.Pipes
 #if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Read successful");
 #endif
-                        ReadThread.Return1 = (uint) SystemCallResults.OK;
-                        ReadThread.Return2 = (uint) BytesRead;
+                        ReadThread.Return1 = (uint)SystemCallResults.OK;
+                        ReadThread.Return2 = (uint)BytesRead;
                     }
                     else
                     {
 #if PIPES_TRACE
                         BasicConsole.WriteLine("ProcessPipeQueue: Read failed");
 #endif
-                        ReadThread.Return1 = (uint) SystemCallResults.Fail;
+                        ReadThread.Return1 = (uint)SystemCallResults.Fail;
                     }
 
                     ProcessManager.DisableKernelAccessToProcessMemory(InProcess);
@@ -769,7 +769,7 @@ namespace Kernel.Pipes
             PipeOutpoint outpoint = null;
             for (int i = 0; i < PipeOutpoints.Count; i++)
             {
-                PipeOutpoint anOutpoint = (PipeOutpoint) PipeOutpoints[i];
+                PipeOutpoint anOutpoint = (PipeOutpoint)PipeOutpoints[i];
 
                 if (anOutpoint.ProcessId == OutProcessId &&
                     anOutpoint.Class == Class &&
@@ -791,7 +791,7 @@ namespace Kernel.Pipes
         {
             for (int i = 0; i < Pipes.Count; i++)
             {
-                Pipe pipe = (Pipe) Pipes[i];
+                Pipe pipe = (Pipe)Pipes[i];
                 if (pipe.Id == PipeId)
                 {
                     return pipe;

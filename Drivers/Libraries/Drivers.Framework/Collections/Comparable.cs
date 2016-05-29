@@ -30,6 +30,10 @@ namespace Drivers.Framework.Collections
 {
     public abstract class Comparable : Object
     {
+        public virtual int Position { get; set; }
+
+        public virtual int Key { get; set; }
+
         public Comparable()
         {
         }
@@ -38,10 +42,6 @@ namespace Drivers.Framework.Collections
         {
             Key = key;
         }
-
-        public virtual int Position { get; set; }
-
-        public virtual int Key { get; set; }
 
         public virtual int Compare(Comparable x, Comparable y)
         {

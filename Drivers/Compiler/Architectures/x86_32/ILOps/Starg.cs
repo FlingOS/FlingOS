@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             //Get the index of the argument to load
             short index = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Starg:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);

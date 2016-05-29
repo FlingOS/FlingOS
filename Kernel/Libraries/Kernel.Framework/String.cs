@@ -65,17 +65,17 @@ namespace Kernel.Framework
             [NoGC]
             get
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                return ((char*) thisPtr)[Index];
+                return ((char*)thisPtr)[Index];
             }
             [NoDebug]
             [NoGC]
             set
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                ((char*) thisPtr)[Index] = value;
+                ((char*)thisPtr)[Index] = value;
             }
         }
 
@@ -90,17 +90,17 @@ namespace Kernel.Framework
             [NoGC]
             get
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                return ((char*) thisPtr)[Index];
+                return ((char*)thisPtr)[Index];
             }
             [NoDebug]
             [NoGC]
             set
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                ((char*) thisPtr)[Index] = value;
+                ((char*)thisPtr)[Index] = value;
             }
         }
 
@@ -124,7 +124,7 @@ namespace Kernel.Framework
                     new ArgumentException(
                         "Parameter \"length\" cannot be less than 0 in Framework.String.New(int Length)."));
             }
-            String Result = (String) ObjectUtilities.GetObject(GC.NewString(Length));
+            String Result = (String)ObjectUtilities.GetObject(GC.NewString(Length));
             if (Result == null)
             {
                 ExceptionMethods.Throw(new NullReferenceException());
@@ -159,7 +159,7 @@ namespace Kernel.Framework
         /// <returns>A pointer to the first char (that represents a character) of the specified string.</returns>
         [NoDebug]
         [NoGC]
-        public unsafe char* GetCharPointer() => (char*) ((byte*) ObjectUtilities.GetHandle(this) + FieldsBytesSize);
+        public unsafe char* GetCharPointer() => (char*)((byte*)ObjectUtilities.GetHandle(this) + FieldsBytesSize);
 
         /// <summary>
         ///     Creates a new string and pads the left side of the string with the specified character until the
@@ -424,7 +424,7 @@ namespace Kernel.Framework
                 char CurrentChar = this[i];
                 if (CurrentChar >= 'a' && CurrentChar <= 'z')
                 {
-                    CurrentChar = (char) ('A' + (CurrentChar - 'a'));
+                    CurrentChar = (char)('A' + (CurrentChar - 'a'));
                 }
                 Result[i] = CurrentChar;
             }
@@ -446,7 +446,7 @@ namespace Kernel.Framework
                 char CurrentChar = this[i];
                 if (CurrentChar >= 'A' && CurrentChar <= 'Z')
                 {
-                    CurrentChar = (char) ('a' + (CurrentChar - 'A'));
+                    CurrentChar = (char)('a' + (CurrentChar - 'A'));
                 }
                 Result[i] = CurrentChar;
             }
@@ -574,7 +574,7 @@ namespace Kernel.Framework
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
         [NoGC]
-        public static implicit operator String(string x) => (object) x as String;
+        public static implicit operator String(string x) => (object)x as String;
 
         /// <summary>
         ///     Implicitly converts the specified value to a Framework.String.
@@ -590,7 +590,7 @@ namespace Kernel.Framework
         /// <param name="x">The value to convert.</param>
         /// <returns>The System.String.</returns>
         [NoDebug]
-        public static explicit operator string(String x) => (object) x as string;
+        public static explicit operator string(String x) => (object)x as string;
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
@@ -627,7 +627,7 @@ namespace Kernel.Framework
         /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(short Value) => (ushort) Value;
+        public static implicit operator String(short Value) => (ushort)Value;
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
@@ -643,7 +643,7 @@ namespace Kernel.Framework
         /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(int Value) => (uint) Value;
+        public static implicit operator String(int Value) => (uint)Value;
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
@@ -659,7 +659,7 @@ namespace Kernel.Framework
         /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(long Value) => (ulong) Value;
+        public static implicit operator String(long Value) => (ulong)Value;
 
         private static String ConvertToString(String Result, ulong Value)
         {
@@ -674,7 +674,7 @@ namespace Kernel.Framework
             ulong y = Value;
             while (y > 0)
             {
-                uint Rem = (uint) (y & 0xFu);
+                uint Rem = (uint)(y & 0xFu);
                 switch (Rem)
                 {
                     case 0:

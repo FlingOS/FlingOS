@@ -63,7 +63,7 @@ namespace Kernel.Pipes.Standard
         /// </remarks>
         public void Write(int PipeId, char Character, bool Blocking)
         {
-            byte[] data = new byte[1] {(byte) Character};
+            byte[] data = new byte[1] {(byte)Character};
             base.Write(PipeId, data, 0, data.Length, Blocking);
         }
 
@@ -113,7 +113,7 @@ namespace Kernel.Pipes.Standard
             }
             byte[] data = ByteConverter.GetASCIIBytes(Message);
             base.Write(PipeId, data, 0, data.Length, Blocking);
-            data[0] = (byte) '\n';
+            data[0] = (byte)'\n';
             base.Write(PipeId, data, 0, 1, Blocking);
         }
     }

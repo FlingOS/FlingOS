@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             JmpOp jumpOp = JmpOp.Jump;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
                 case OpCodes.Br_S:
@@ -176,7 +176,7 @@ namespace Drivers.Compiler.Architectures.x86
             //to the IL op to jump to.
             int ILOffset = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -184,7 +184,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -192,7 +192,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -200,7 +200,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Beq:
@@ -209,7 +209,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bne_Un:
@@ -218,7 +218,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bge:
@@ -227,7 +227,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
@@ -235,7 +235,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Ble:
@@ -244,7 +244,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
@@ -252,7 +252,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Blt:
@@ -261,7 +261,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Blt_Un:
                     //See above : This is unsigned variant
@@ -269,7 +269,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bgt:
@@ -278,7 +278,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bgt_Un:
                     //See above : This is unsigned variant
@@ -286,7 +286,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
             }
 
@@ -317,7 +317,7 @@ namespace Drivers.Compiler.Architectures.x86
             //The value for the jump op to test against - currently always "0" since on jnz and jz ops are used.
             string testVal = "0";
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -325,7 +325,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -337,7 +337,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpNotZero;
                     break;
@@ -351,7 +351,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpZero;
                     break;
@@ -367,7 +367,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpEqual;
                     inverseJumpOp = JmpOp.JumpNotEqual;
@@ -384,7 +384,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpNotEqual;
                     isNegativeTest = true;
@@ -402,7 +402,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpGreaterThanEqual;
                     inverseJumpOp = JmpOp.JumpLessThan;
@@ -417,7 +417,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     jumpOp = JmpOp.JumpGreaterThanEqual;
@@ -436,7 +436,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpLessThanEqual;
                     inverseJumpOp = JmpOp.JumpGreaterThan;
@@ -451,7 +451,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     jumpOp = JmpOp.JumpLessThanEqual;
@@ -470,7 +470,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpLessThan;
                     isNegativeTest = true;
@@ -485,7 +485,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     jumpOp = JmpOp.JumpLessThan;
@@ -504,7 +504,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     jumpOp = JmpOp.JumpGreaterThan;
                     isNegativeTest = true;
@@ -519,7 +519,7 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     jumpOp = JmpOp.JumpGreaterThan;

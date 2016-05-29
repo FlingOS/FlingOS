@@ -32,18 +32,13 @@ namespace Drivers.Framework
     {
         private readonly long seconds;
 
-        public TimeSpan(long aSeconds)
-        {
-            seconds = aSeconds;
-        }
-
         //TODO: Remove cast downs when signed 64-bit division is supported
 
         public int Years
         {
             get
             {
-                int castTime = (int) seconds;
+                int castTime = (int)seconds;
                 return castTime/31556926;
             }
         }
@@ -52,7 +47,7 @@ namespace Drivers.Framework
         {
             get
             {
-                int castTime = (int) seconds;
+                int castTime = (int)seconds;
                 castTime -= castTime/31556926*31556926;
                 return castTime/2629743;
             }
@@ -62,7 +57,7 @@ namespace Drivers.Framework
         {
             get
             {
-                int castTime = (int) seconds;
+                int castTime = (int)seconds;
                 castTime -= castTime/31556926*31556926;
                 castTime -= castTime/2629743*2629743;
                 return castTime/86400;
@@ -73,7 +68,7 @@ namespace Drivers.Framework
         {
             get
             {
-                int castTime = (int) seconds;
+                int castTime = (int)seconds;
                 castTime -= castTime/31556926*31556926;
                 castTime -= castTime/2629743*2629743;
                 castTime -= castTime/86400*86400;
@@ -85,7 +80,7 @@ namespace Drivers.Framework
         {
             get
             {
-                int castTime = (int) seconds;
+                int castTime = (int)seconds;
                 castTime -= castTime/31556926*31556926;
                 castTime -= castTime/2629743*2629743;
                 castTime -= castTime/86400*86400;
@@ -98,7 +93,7 @@ namespace Drivers.Framework
         {
             get
             {
-                int castTime = (int) seconds;
+                int castTime = (int)seconds;
                 castTime -= castTime/31556926*31556926;
                 castTime -= castTime/2629743*2629743;
                 castTime -= castTime/86400*86400;
@@ -106,6 +101,11 @@ namespace Drivers.Framework
                 castTime -= castTime/60*60;
                 return castTime;
             }
+        }
+
+        public TimeSpan(long aSeconds)
+        {
+            seconds = aSeconds;
         }
 
         public String ToShortString()

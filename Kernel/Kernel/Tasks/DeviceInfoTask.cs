@@ -188,7 +188,7 @@ namespace Kernel.Tasks
                 ref Return2, ref Return3, ref Return4,
                 callerProcessId, callerThreadId);
 
-            return (int) result;
+            return (int)result;
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace Kernel.Tasks
         {
             SystemCallResults result = SystemCallResults.Unhandled;
 
-            switch ((SystemCallNumbers) syscallNumber)
+            switch ((SystemCallNumbers)syscallNumber)
             {
                 case SystemCallNumbers.ReceiveMessage:
 #if SYSCALLS_TRACE
@@ -228,8 +228,8 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DI > Syscall: Get time");
 #endif
                     ulong CurrentUTCTime = RTC.GetUTCTime();
-                    Return2 = (uint) CurrentUTCTime;
-                    Return3 = (uint) (CurrentUTCTime >> 32);
+                    Return2 = (uint)CurrentUTCTime;
+                    Return3 = (uint)(CurrentUTCTime >> 32);
                     result = SystemCallResults.OK;
                 }
                     break;
@@ -240,8 +240,8 @@ namespace Kernel.Tasks
 #endif
                     ulong CurrentUTCTime = RTC.GetUTCTime();
                     ulong UpTime = CurrentUTCTime - StartTime;
-                    Return2 = (uint) UpTime;
-                    Return3 = (uint) (UpTime >> 32);
+                    Return2 = (uint)UpTime;
+                    Return3 = (uint)(UpTime >> 32);
                     result = SystemCallResults.OK;
                 }
                     break;

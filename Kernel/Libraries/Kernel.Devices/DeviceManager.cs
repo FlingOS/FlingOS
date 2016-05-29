@@ -60,7 +60,7 @@ namespace Kernel.Devices
         {
             SystemCallResults result = SystemCallResults.Fail;
             DeviceDescriptor* descriptor =
-                (DeviceDescriptor*) Heap.AllocZeroed((uint) sizeof(DeviceDescriptor), "DeviceManager : Register Device");
+                (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : Register Device");
 
             try
             {
@@ -104,7 +104,7 @@ namespace Kernel.Devices
                 {
                     DeviceDescriptor* DeviceList =
                         (DeviceDescriptor*)
-                            Heap.AllocZeroed((uint) (sizeof(DeviceDescriptor)*NumDevices),
+                            Heap.AllocZeroed((uint)(sizeof(DeviceDescriptor)*NumDevices),
                                 "DeviceManager : GetDeviceList");
 
                     try
@@ -148,7 +148,7 @@ namespace Kernel.Devices
         {
             bool result = false;
             DeviceDescriptor* descriptor =
-                (DeviceDescriptor*) Heap.AllocZeroed((uint) sizeof(DeviceDescriptor), "DeviceManager : FillDeviceInfo");
+                (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : FillDeviceInfo");
 
             try
             {
@@ -282,7 +282,7 @@ namespace Kernel.Devices
             int pos = 0;
             for (int i = 0; i < Devices.Count && pos < MaxDescriptors; i++)
             {
-                Device aDevice = (Device) Devices[i];
+                Device aDevice = (Device)Devices[i];
                 DeviceDescriptor* TheDescriptor = DeviceList + pos++;
                 aDevice.FillDeviceDescriptor(TheDescriptor,
                     aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id);
@@ -366,7 +366,7 @@ namespace Kernel.Devices
         {
             for (int i = 0; i < Devices.Count; i++)
             {
-                Device aDevice = (Device) Devices[i];
+                Device aDevice = (Device)Devices[i];
                 if (aDevice.Id == Id)
                 {
                     return aDevice;
@@ -375,17 +375,18 @@ namespace Kernel.Devices
             return null;
         }
 
-        //public static Device FindDevice(Framework.Type DeviceType)
-        //{
-        //    for (int i = 0; i < Devices.Count; i++)
-        //    {
-        //        Device device = (Device)Devices[i];
-        //        if (device._Type == DeviceType)
-        //        {
-        //            return device;
-        //        }
-        //    }
-        //    return null;
         //}
+        //    return null;
+        //    }
+        //        }
+        //            return device;
+        //        {
+        //        if (device._Type == DeviceType)
+        //        Device device = (Device)Devices[i];
+        //    {
+        //    for (int i = 0; i < Devices.Count; i++)
+        //{
+
+        //public static Device FindDevice(Framework.Type DeviceType)
     }
 }

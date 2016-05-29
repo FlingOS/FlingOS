@@ -99,17 +99,17 @@ namespace Kernel
                 ProcessManager.KernelProcess = KernelProcess;
 
                 BasicConsole.WriteLine("Getting kernel thread...");
-                Thread KernelThread = (Thread) KernelProcess.Threads[0];
+                Thread KernelThread = (Thread)KernelProcess.Threads[0];
 
                 BasicConsole.WriteLine("Initialising kernel thread stack...");
                 VirtualMemoryManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
-                KernelProcess.TheMemoryLayout.RemovePage((uint) KernelThread.State->ThreadStackTop -
+                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop -
                                                          Thread.ThreadStackTopOffset);
                 VirtualMemoryManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
                 KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
-                KernelThread.State->ESP = (uint) KernelThread.State->ThreadStackTop;
-                KernelThread.State->ExState = (ExceptionState*) (KernelThread.State->ThreadStackTop + 4);
-                byte* ExStateBytePtr = (byte*) KernelThread.State->ExState;
+                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
+                KernelThread.State->ExState = (ExceptionState*)(KernelThread.State->ThreadStackTop + 4);
+                byte* ExStateBytePtr = (byte*)KernelThread.State->ExState;
                 for (int i = 0; i < sizeof(ExceptionState); i++)
                 {
                     *ExStateBytePtr++ = 0;
@@ -221,7 +221,7 @@ namespace Kernel
                 BasicConsole.WriteLine("Starting scheduler...");
                 PreemptionHandler PreempHandler = Scheduler.Start();
                 // ReSharper disable once PossibleInvalidCastException
-                Timer.Default.RegisterHandler((TimerHandler) (object) PreempHandler, Scheduler.PreemptionPeriod, true,
+                Timer.Default.RegisterHandler((TimerHandler)(object)PreempHandler, Scheduler.PreemptionPeriod, true,
                     Scheduler.PreemptionState);
                 Scheduler.Enable();
 
@@ -351,14 +351,14 @@ namespace Kernel
                 if (ExceptionMethods.CurrentException is PageFaultException)
                 {
                     BasicConsole.Write("Address: ");
-                    BasicConsole.WriteLine(((PageFaultException) ExceptionMethods.CurrentException).address);
+                    BasicConsole.WriteLine(((PageFaultException)ExceptionMethods.CurrentException).address);
                     BasicConsole.Write("Code: ");
-                    BasicConsole.WriteLine(((PageFaultException) ExceptionMethods.CurrentException).errorCode);
+                    BasicConsole.WriteLine(((PageFaultException)ExceptionMethods.CurrentException).errorCode);
                 }
                 else if (ExceptionMethods.CurrentException is DoubleFaultException)
                 {
                     BasicConsole.Write("Code: ");
-                    BasicConsole.WriteLine(((DoubleFaultException) ExceptionMethods.CurrentException).ErrorCode);
+                    BasicConsole.WriteLine(((DoubleFaultException)ExceptionMethods.CurrentException).ErrorCode);
                 }
                 BasicConsole.SetTextColour(BasicConsole.default_colour);
             }

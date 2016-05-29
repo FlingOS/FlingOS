@@ -145,7 +145,7 @@ namespace Drivers.Debugger
             byte[] readBuffer = new byte[numToRead];
             for (int i = 0; i < numToRead && !AbortRead; i++)
             {
-                readBuffer[i] = (byte) ThePipe.ReadByte();
+                readBuffer[i] = (byte)ThePipe.ReadByte();
             }
             return readBuffer;
         }
@@ -159,7 +159,7 @@ namespace Drivers.Debugger
             char c = '\0';
             do
             {
-                c = (char) ThePipe.ReadByte();
+                c = (char)ThePipe.ReadByte();
 
                 if (c == '\n' || c == '\r')
                 {

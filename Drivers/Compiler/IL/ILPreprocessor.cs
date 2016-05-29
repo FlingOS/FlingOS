@@ -162,7 +162,7 @@ namespace Drivers.Compiler.IL
             bool SetMethodID = true;
             if (!theMethodInfo.IsConstructor)
             {
-                System.Reflection.MethodInfo methodInf = (System.Reflection.MethodInfo) theMethodInfo.UnderlyingInfo;
+                System.Reflection.MethodInfo methodInf = (System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo;
                 if (methodInf.GetBaseDefinition() != methodInf)
                 {
                     MethodInfo baseMethodInfo = TheLibrary.GetMethodInfo(methodInf.GetBaseDefinition());
@@ -231,7 +231,7 @@ namespace Drivers.Compiler.IL
 
             ParameterInfo returnArgItem = theMethodInfo.IsConstructor
                 ? null
-                : ((System.Reflection.MethodInfo) theMethodInfo.UnderlyingInfo).ReturnParameter;
+                : ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnParameter;
             if (returnArgItem != null)
             {
                 VariableInfo newVarInfo = new VariableInfo
@@ -306,7 +306,7 @@ namespace Drivers.Compiler.IL
             {
                 return methodInf.UnderlyingInfo;
             }
-            
+
             Type[] InterfaceTypes = DeclaringType.GetInterfaces();
             foreach (Type InterfaceType in InterfaceTypes)
             {
@@ -368,7 +368,7 @@ namespace Drivers.Compiler.IL
             if (theMethodInfo.UnderlyingInfo is ConstructorInfo &&
                 theMethodInfo.IsStatic)
             {
-                ConstructorInfo aConstructor = (ConstructorInfo) theMethodInfo.UnderlyingInfo;
+                ConstructorInfo aConstructor = (ConstructorInfo)theMethodInfo.UnderlyingInfo;
                 staticConstructorDependencyRoot = ILLibrary.TheStaticConstructorDependencyTree[aConstructor];
                 if (staticConstructorDependencyRoot == null)
                 {
@@ -391,20 +391,20 @@ namespace Drivers.Compiler.IL
                 ILOp theOp = theILBlock.ILOps[i];
 
                 // Remove cast class ops
-                if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Castclass)
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Castclass)
                 {
                     theILBlock.ILOps.RemoveAt(i);
                     i--;
                     continue;
                 }
-                if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Nop)
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Nop)
                 {
                     if (theMethodInfo.ApplyDebug)
                     {
                         theOp.IsDebugOp = true;
                     }
                 }
-                else if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Call)
+                else if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Call)
                 {
                     if (theOp.MethodToCall != null &&
                         theOp.MethodToCall.DeclaringType.AssemblyQualifiedName.Contains("mscorlib"))
@@ -459,7 +459,7 @@ namespace Drivers.Compiler.IL
 
                 try
                 {
-                    ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes) theOp.opCode.Value];
+                    ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)theOp.opCode.Value];
 
                     ConverterOp.Preprocess(preprosState, theOp);
 
@@ -468,7 +468,7 @@ namespace Drivers.Compiler.IL
                         //Create our static constructor dependency tree
 
                         //Each of these ops could try to access a static method or field
-                        switch ((ILOp.OpCodes) theOp.opCode.Value)
+                        switch ((ILOp.OpCodes)theOp.opCode.Value)
                         {
                             case ILOp.OpCodes.Call:
                                 //Check if the method to call is static and not a constructor itself
@@ -481,7 +481,7 @@ namespace Drivers.Compiler.IL
                                     if (!(methodBaseInf.IsConstructor || methodBaseInf is ConstructorInfo))
                                     {
                                         System.Reflection.MethodInfo methodInf =
-                                            (System.Reflection.MethodInfo) methodBaseInf;
+                                            (System.Reflection.MethodInfo)methodBaseInf;
                                         ConstructorInfo[] staticConstructors =
                                             methodInf.DeclaringType.GetConstructors(BindingFlags.Static |
                                                                                     BindingFlags.Public)
@@ -575,7 +575,7 @@ namespace Drivers.Compiler.IL
             {
                 ILOp theOp = theILBlock.ILOps[i];
 
-                if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Ret)
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Ret)
                 {
                     theILBlock.ILOps.Insert(i, new MethodEnd
                     {
@@ -649,7 +649,7 @@ namespace Drivers.Compiler.IL
                     bool IncRefCount = false;
                     int incOpIndexBy = 0;
 
-                    switch ((ILOp.OpCodes) currOp.opCode.Value)
+                    switch ((ILOp.OpCodes)currOp.opCode.Value)
                     {
                         case ILOp.OpCodes.Stsfld:
 
@@ -695,10 +695,10 @@ namespace Drivers.Compiler.IL
 
                         {
                             ushort localIndex = 0;
-                            switch ((ILOp.OpCodes) currOp.opCode.Value)
+                            switch ((ILOp.OpCodes)currOp.opCode.Value)
                             {
                                 case ILOp.OpCodes.Stloc:
-                                    localIndex = (ushort) Utilities.ReadInt16(currOp.ValueBytes, 0);
+                                    localIndex = (ushort)Utilities.ReadInt16(currOp.ValueBytes, 0);
                                     break;
                                 case ILOp.OpCodes.Stloc_0:
                                     localIndex = 0;
@@ -819,7 +819,7 @@ namespace Drivers.Compiler.IL
                         {
                             bool doDecrement = false;
                             bool isRefOp = false;
-                            if ((ILOp.OpCodes) currOp.opCode.Value == ILOp.OpCodes.Stelem_Ref)
+                            if ((ILOp.OpCodes)currOp.opCode.Value == ILOp.OpCodes.Stelem_Ref)
                             {
                                 doDecrement = preprocessState.CurrentStackFrame.GetStack(currOp).Peek().isGCManaged;
                                 isRefOp = true;
@@ -1008,9 +1008,9 @@ namespace Drivers.Compiler.IL
                             #region Starg
 
                         {
-                            ushort index = (ILOp.OpCodes) currOp.opCode.Value == ILOp.OpCodes.Starg_S
+                            ushort index = (ILOp.OpCodes)currOp.opCode.Value == ILOp.OpCodes.Starg_S
                                 ? currOp.ValueBytes[0]
-                                : (ushort) Utilities.ReadInt16(currOp.ValueBytes, 0);
+                                : (ushort)Utilities.ReadInt16(currOp.ValueBytes, 0);
                             if (theMethodInfo.ArgumentInfos[index].TheTypeInfo.IsGCManaged)
                             {
                                 theILBlock.ILOps.Insert(opIndx, new ILOp
@@ -1098,9 +1098,9 @@ namespace Drivers.Compiler.IL
                         else
                         {
                             // Leave unsupported ops for the IL Scanner to deal with (or later code e.g. castclass op)
-                            if (TargetArchitecture.TargetILOps.ContainsKey((ILOp.OpCodes) currOp.opCode.Value))
+                            if (TargetArchitecture.TargetILOps.ContainsKey((ILOp.OpCodes)currOp.opCode.Value))
                             {
-                                ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes) currOp.opCode.Value];
+                                ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)currOp.opCode.Value];
                                 ConverterOp.PerformStackOperations(preprocessState, currOp);
                             }
                         }
@@ -1146,7 +1146,7 @@ namespace Drivers.Compiler.IL
                         // If there is a return value, we will need to temp store it
                         if (theMethodInfo.UnderlyingInfo is System.Reflection.MethodInfo)
                         {
-                            Type returnType = ((System.Reflection.MethodInfo) theMethodInfo.UnderlyingInfo).ReturnType;
+                            Type returnType = ((System.Reflection.MethodInfo)theMethodInfo.UnderlyingInfo).ReturnType;
                             //Void return type = no return value
                             if (returnType != typeof(void))
                             {
@@ -1327,7 +1327,7 @@ namespace Drivers.Compiler.IL
                             }
 
                             if (Inside &&
-                                (ILOp.OpCodes) theILBlock.ILOps[opIndx].opCode.Value == ILOp.OpCodes.Ret)
+                                (ILOp.OpCodes)theILBlock.ILOps[opIndx].opCode.Value == ILOp.OpCodes.Ret)
                             {
                                 ILOp ARetOp = theILBlock.ILOps[opIndx];
                                 theILBlock.ILOps.RemoveAt(opIndx);
@@ -1407,15 +1407,15 @@ namespace Drivers.Compiler.IL
             {
                 ILOp theOp = theILBlock.ILOps[i];
 
-                if ((ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Leave ||
-                    (ILOp.OpCodes) theOp.opCode.Value == ILOp.OpCodes.Leave_S)
+                if ((ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Leave ||
+                    (ILOp.OpCodes)theOp.opCode.Value == ILOp.OpCodes.Leave_S)
                 {
                     theILBlock.ILOps.RemoveAt(i);
 
                     int ILOffset = 0;
                     if (theOp.LoadAtILOpAfterOp == null)
                     {
-                        if (theOp.opCode.Value == (int) ILOp.OpCodes.Leave)
+                        if (theOp.opCode.Value == (int)ILOp.OpCodes.Leave)
                         {
                             ILOffset = BitConverter.ToInt32(theOp.ValueBytes, 0);
                         }
@@ -1445,7 +1445,7 @@ namespace Drivers.Compiler.IL
 
                     i++;
                 }
-                else if (theOp.opCode.Value == (int) ILOp.OpCodes.Endfinally)
+                else if (theOp.opCode.Value == (int)ILOp.OpCodes.Endfinally)
                 {
                     //Endfinally is for leaving a (critical) finally section
                     //We handle it by a higher-level implementation rather than 

@@ -73,108 +73,6 @@ namespace Kernel.Multiprocessing
 
         protected int timeToSleep;
 
-        public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, String AName,
-            out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
-        {
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Constructing thread object...");
-#endif
-            LastActiveState = ActiveStates.NotStarted;
-            Owner = AnOwner;
-
-            //Init thread state
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Allocating state memory...");
-#endif
-            State = (ThreadState*) Heap.AllocZeroed((uint) sizeof(ThreadState), "Thread : Thread() (1)");
-
-            // Init Id and EIP
-            //  Set EIP to the first instruction of the main method
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting thread info...");
-#endif
-            Id = AnId;
-            Name = AName;
-            State->StartEIP = (uint) ObjectUtilities.GetHandle(StartPoint);
-
-            // Allocate kernel memory for the kernel stack for this thread
-            //  Used when this thread is preempted or does a sys call. Stack is switched to
-            //  this thread-specific kernel stack
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Allocating kernel stack...");
-#endif
-            State->KernelStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
-                UserMode
-                    ? PageFlags.None
-                    : PageFlags.KernelOnly, out KernelStackBottomPAddr) +
-                                    KernelStackTopOffset;
-            //4KiB, page-aligned
-
-            // Allocate free memory for the user stack for this thread
-            //  Used by this thread in normal execution
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Mapping thread stack page...");
-#endif
-            State->UserMode = UserMode;
-            if (AnOwner == ProcessManager.KernelProcess)
-            {
-                State->ThreadStackTop = (byte*) VirtualMemoryManager.MapFreePageForKernel(
-                    UserMode
-                        ? PageFlags.None
-                        : PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
-                                        ThreadStackTopOffset; //4KiB, page-aligned
-            }
-            else
-            {
-                State->ThreadStackTop = (byte*) VirtualMemoryManager.MapFreePage(
-                    UserMode
-                        ? PageFlags.None
-                        : PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
-                                        ThreadStackTopOffset; //4KiB, page-aligned
-            }
-
-            // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
-            //  downwards
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting ESP...");
-#endif
-            State->ESP = (uint) State->ThreadStackTop;
-
-            // TimeToRun and TimeToRunReload are set up in Scheduler.InitProcess which
-            //      is called when a process is registered.
-
-            // Init SS
-            //  Stack Segment = User or Kernel space data segment selector offset
-            //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
-            //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
-            //          User data segment selector must also be or'ed with 3 for User Privilege level
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting SS...");
-#endif
-            State->SS = UserMode ? (ushort) 0x23 : (ushort) 0x10;
-
-            // Init Started
-            //  Not started yet so set to false
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Setting started...");
-#endif
-            State->Started = false;
-
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Allocating exception state...");
-#endif
-            State->ExState = (ExceptionState*) (State->ThreadStackTop + 4);
-            byte* exStateBytePtr = (byte*) State->ExState;
-            for (int i = 0; i < sizeof(ExceptionState); i++)
-            {
-                *exStateBytePtr++ = 0;
-            }
-
-#if THREAD_TRACE
-            BasicConsole.WriteLine("Done.");
-#endif
-        }
-
         public bool Debug_Suspend
         {
             get { return debug_Suspend; }
@@ -268,7 +166,7 @@ namespace Kernel.Multiprocessing
 
         public static uint ThreadStackTopOffset
         {
-            get { return (uint) (4096 - sizeof(ExceptionState) - 4); }
+            get { return (uint)(4096 - sizeof(ExceptionState) - 4); }
         }
 
         public static uint KernelStackTopOffset
@@ -286,26 +184,26 @@ namespace Kernel.Multiprocessing
 
         public uint EAXFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 44); }
-            [NoDebug] set { *(uint*) (State->ESP + 44) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 44); }
+            [NoDebug] set { *(uint*)(State->ESP + 44) = value; }
         }
 
         public uint EBXFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 32); }
-            [NoDebug] set { *(uint*) (State->ESP + 32) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 32); }
+            [NoDebug] set { *(uint*)(State->ESP + 32) = value; }
         }
 
         public uint ECXFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 40); }
-            [NoDebug] set { *(uint*) (State->ESP + 40) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 40); }
+            [NoDebug] set { *(uint*)(State->ESP + 40) = value; }
         }
 
         public uint EDXFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 36); }
-            [NoDebug] set { *(uint*) (State->ESP + 36) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 36); }
+            [NoDebug] set { *(uint*)(State->ESP + 36) = value; }
         }
 
         public uint ESPFromInterruptStack
@@ -314,26 +212,26 @@ namespace Kernel.Multiprocessing
             get
             {
                 // +12 to get over return pointer, CS and EFLAGS pushed by hardware on interrupt
-                return *(uint*) (State->ESP + 28) + 12;
+                return *(uint*)(State->ESP + 28) + 12;
             }
         }
 
         public uint EBPFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 24); }
-            [NoDebug] set { *(uint*) (State->ESP + 24) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 24); }
+            [NoDebug] set { *(uint*)(State->ESP + 24) = value; }
         }
 
         public uint EIPFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 48); }
-            [NoDebug] set { *(uint*) (State->ESP + 48) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 48); }
+            [NoDebug] set { *(uint*)(State->ESP + 48) = value; }
         }
 
         public uint EFLAGSFromInterruptStack
         {
-            [NoDebug] get { return *(uint*) (State->ESP + 56); }
-            [NoDebug] set { *(uint*) (State->ESP + 56) = value; }
+            [NoDebug] get { return *(uint*)(State->ESP + 56); }
+            [NoDebug] set { *(uint*)(State->ESP + 56) = value; }
         }
 
         public uint SysCallNumber
@@ -378,6 +276,108 @@ namespace Kernel.Multiprocessing
         {
             get { return EDXFromInterruptStack; }
             set { EDXFromInterruptStack = value; }
+        }
+
+        public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, String AName,
+            out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
+        {
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Constructing thread object...");
+#endif
+            LastActiveState = ActiveStates.NotStarted;
+            Owner = AnOwner;
+
+            //Init thread state
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating state memory...");
+#endif
+            State = (ThreadState*)Heap.AllocZeroed((uint)sizeof(ThreadState), "Thread : Thread() (1)");
+
+            // Init Id and EIP
+            //  Set EIP to the first instruction of the main method
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting thread info...");
+#endif
+            Id = AnId;
+            Name = AName;
+            State->StartEIP = (uint)ObjectUtilities.GetHandle(StartPoint);
+
+            // Allocate kernel memory for the kernel stack for this thread
+            //  Used when this thread is preempted or does a sys call. Stack is switched to
+            //  this thread-specific kernel stack
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating kernel stack...");
+#endif
+            State->KernelStackTop = (byte*)VirtualMemoryManager.MapFreePageForKernel(
+                UserMode
+                    ? PageFlags.None
+                    : PageFlags.KernelOnly, out KernelStackBottomPAddr) +
+                                    KernelStackTopOffset;
+            //4KiB, page-aligned
+
+            // Allocate free memory for the user stack for this thread
+            //  Used by this thread in normal execution
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Mapping thread stack page...");
+#endif
+            State->UserMode = UserMode;
+            if (AnOwner == ProcessManager.KernelProcess)
+            {
+                State->ThreadStackTop = (byte*)VirtualMemoryManager.MapFreePageForKernel(
+                    UserMode
+                        ? PageFlags.None
+                        : PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
+                                        ThreadStackTopOffset; //4KiB, page-aligned
+            }
+            else
+            {
+                State->ThreadStackTop = (byte*)VirtualMemoryManager.MapFreePage(
+                    UserMode
+                        ? PageFlags.None
+                        : PageFlags.KernelOnly, out ThreadStackBottomPAddr) +
+                                        ThreadStackTopOffset; //4KiB, page-aligned
+            }
+
+            // Set ESP to the top of the stack - 4 byte aligned, high address since x86 stack works
+            //  downwards
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting ESP...");
+#endif
+            State->ESP = (uint)State->ThreadStackTop;
+
+            // TimeToRun and TimeToRunReload are set up in Scheduler.InitProcess which
+            //      is called when a process is registered.
+
+            // Init SS
+            //  Stack Segment = User or Kernel space data segment selector offset
+            //  Kernel data segment selector offset (offset in GDT) = 0x10 (16)
+            //  User   data segment selector offset (offset in GDT) = 0x23 (32|3)
+            //          User data segment selector must also be or'ed with 3 for User Privilege level
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting SS...");
+#endif
+            State->SS = UserMode ? (ushort)0x23 : (ushort)0x10;
+
+            // Init Started
+            //  Not started yet so set to false
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Setting started...");
+#endif
+            State->Started = false;
+
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Allocating exception state...");
+#endif
+            State->ExState = (ExceptionState*)(State->ThreadStackTop + 4);
+            byte* exStateBytePtr = (byte*)State->ExState;
+            for (int i = 0; i < sizeof(ExceptionState); i++)
+            {
+                *exStateBytePtr++ = 0;
+            }
+
+#if THREAD_TRACE
+            BasicConsole.WriteLine("Done.");
+#endif
         }
 
         //public static bool EnterSleepPrint = false;
@@ -487,7 +487,7 @@ namespace Kernel.Multiprocessing
             //    Scheduler.Enable();
             //}
         }
-        
+
         [NoGC]
         [NoDebug]
         public static bool Sleep(int ms)

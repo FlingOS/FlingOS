@@ -518,7 +518,7 @@ namespace Drivers.Compiler.IL
                     }
                     else
                     {
-                        ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes) anOp.opCode.Value];
+                        ILOp ConverterOp = TargetArchitecture.TargetILOps[(ILOp.OpCodes)anOp.opCode.Value];
                         ConverterOp.Convert(convState, anOp);
                     }
 

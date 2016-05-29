@@ -57,7 +57,7 @@ namespace Kernel.Pipes.File
             int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, true);
             if (bytesRead > 0)
             {
-                return (FilePipeCommand*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
+                return (FilePipeCommand*)((byte*)ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
             }
             return null;
         }

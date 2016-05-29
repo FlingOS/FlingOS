@@ -69,6 +69,13 @@ namespace Kernel.USB.HCIs
         /// </summary>
         protected List RootPorts = new List(4);
 
+        public HCIStatus Status { get; protected set; }
+
+        public PCIDeviceNormal ThePCIDevice
+        {
+            get { return pciDevice; }
+        }
+
         /// <summary>
         ///     Initializes a new generic host controller interface using the specified PCI device.
         /// </summary>
@@ -92,13 +99,6 @@ namespace Kernel.USB.HCIs
             }
         }
 
-        public HCIStatus Status { get; protected set; }
-
-        public PCIDeviceNormal ThePCIDevice
-        {
-            get { return pciDevice; }
-        }
-
         internal abstract void Start();
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Kernel.USB.HCIs
 #if HCI_TRACE
             BasicConsole.WriteLine(((Framework.String)"SetupTransfer: maxLength=") + maxLength + ", endpoint=" + endpoint + ", mps=" + ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
 #endif
-            transfer.packetSize = Math.Min(maxLength, ((Endpoint) usbDevice.Endpoints[endpoint]).MPS);
+            transfer.packetSize = Math.Min(maxLength, ((Endpoint)usbDevice.Endpoints[endpoint]).MPS);
 #if HCI_TRACE
             BasicConsole.WriteLine(((Framework.String)"SetupTransfer: packetSize=") + transfer.packetSize);
 #endif
@@ -150,7 +150,7 @@ namespace Kernel.USB.HCIs
 
             transfer.transactions.Add(transaction);
 
-            ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Kernel.USB.HCIs
             BasicConsole.WriteLine(((Framework.String)"clampedLength=") + clampedLength);
             BasicConsole.DelayOutput(1);
 #endif
-            ushort remainingTransactions = (ushort) (length/transfer.packetSize);
+            ushort remainingTransactions = (ushort)(length/transfer.packetSize);
 #if HCI_TRACE || USB_TRACE
             BasicConsole.WriteLine("Division passed.");
             BasicConsole.DelayOutput(1);
@@ -187,7 +187,7 @@ namespace Kernel.USB.HCIs
 
             if (controlHandshake) // Handshake transaction of control transfers always have toggle set to 1
             {
-                ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
+                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
             }
 
 #if HCI_TRACE
@@ -195,7 +195,7 @@ namespace Kernel.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            _INTransaction(transfer, transaction, ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle,
+            _INTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle,
                 buffer, clampedLength);
 
 #if HCI_TRACE
@@ -205,12 +205,12 @@ namespace Kernel.USB.HCIs
 
             transfer.transactions.Add(transaction);
 
-            ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle =
-                !((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle; // Switch toggle
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle =
+                !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle; // Switch toggle
 
             if (remainingTransactions > 0)
             {
-                INTransaction(transfer, controlHandshake, (byte*) buffer + clampedLength, length);
+                INTransaction(transfer, controlHandshake, (byte*)buffer + clampedLength, length);
             }
         }
 
@@ -225,7 +225,7 @@ namespace Kernel.USB.HCIs
         {
             ushort clampedLength = Math.Min(transfer.packetSize, length);
             length -= clampedLength;
-            ushort remainingTransactions = (ushort) (length/transfer.packetSize);
+            ushort remainingTransactions = (ushort)(length/transfer.packetSize);
             if (length%transfer.packetSize != 0)
                 remainingTransactions++;
 
@@ -234,20 +234,20 @@ namespace Kernel.USB.HCIs
 
             if (controlHandshake) // Handshake transaction of control transfers always have toggle set to 1
             {
-                ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
+                ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle = true;
             }
 
-            _OUTTransaction(transfer, transaction, ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle,
+            _OUTTransaction(transfer, transaction, ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle,
                 buffer, clampedLength);
 
             transfer.transactions.Add(transaction);
 
-            ((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle =
-                !((Endpoint) transfer.device.Endpoints[transfer.endpoint]).Toggle; // Switch toggle
+            ((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle =
+                !((Endpoint)transfer.device.Endpoints[transfer.endpoint]).Toggle; // Switch toggle
 
             if (remainingTransactions > 0)
             {
-                OUTTransaction(transfer, controlHandshake, (byte*) buffer + clampedLength, length);
+                OUTTransaction(transfer, controlHandshake, (byte*)buffer + clampedLength, length);
             }
         }
 
@@ -328,7 +328,7 @@ namespace Kernel.USB.HCIs
         {
             HCPort port = GetPort(portNum);
             port.deviceInfo = USBManager.CreateDeviceInfo(this, port);
-            USBManager.SetupDevice(port.deviceInfo, (byte) (portNum + 1));
+            USBManager.SetupDevice(port.deviceInfo, (byte)(portNum + 1));
         }
 
         /// <summary>
@@ -339,12 +339,12 @@ namespace Kernel.USB.HCIs
         public HCPort GetPort(byte num)
         {
             if (num < RootPortCount)
-                return (HCPort) RootPorts[num];
+                return (HCPort)RootPorts[num];
 
             num -= RootPortCount;
             if (num < OtherPorts.Count)
             {
-                return (HCPort) OtherPorts[num];
+                return (HCPort)OtherPorts[num];
             }
             for (int i = OtherPorts.Count; i <= num; i++)
             {
@@ -352,12 +352,12 @@ namespace Kernel.USB.HCIs
                 {
                     connected = false,
                     deviceInfo = null,
-                    portNum = (byte) (i + RootPortCount),
+                    portNum = (byte)(i + RootPortCount),
                     speed = USBPortSpeed.UNSET
                 });
             }
 
-            return (HCPort) OtherPorts[num];
+            return (HCPort)OtherPorts[num];
         }
     }
 

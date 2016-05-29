@@ -67,9 +67,9 @@ namespace Drivers.Compiler.IL
                     typeof(OpCodes).GetFields(BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.Public))
             {
                 //Get an instance of the op code
-                var anOpCode = (OpCode) aField.GetValue(null);
+                var anOpCode = (OpCode)aField.GetValue(null);
                 //Get the op code's identifying value and use it as the index in our array
-                ushort index = (ushort) anOpCode.Value;
+                ushort index = (ushort)anOpCode.Value;
                 //Set the op code in our array
                 AllOpCodes[index] = anOpCode;
             }
@@ -141,7 +141,7 @@ namespace Drivers.Compiler.IL
 
                     if (ILBytes[ILBytesPos] == 0xFE)
                     {
-                        currOpCodeID = (ushort) (0xFE00 + ILBytes[ILBytesPos + 1]);
+                        currOpCodeID = (ushort)(0xFE00 + ILBytes[ILBytesPos + 1]);
                         currOpBytesSize += 2;
                     }
                     else
@@ -187,7 +187,7 @@ namespace Drivers.Compiler.IL
                         {
                             uint count = Utilities.ReadUInt32(ILBytes, ILBytesPos + currOpBytesSize);
                             currOpBytesSize += 4;
-                            operandSize = (int) (count*4);
+                            operandSize = (int)(count*4);
                         }
                             break;
                         case OperandType.InlineTok:

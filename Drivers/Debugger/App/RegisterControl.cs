@@ -37,11 +37,6 @@ namespace Drivers.Debugger.App
 
     public partial class RegisterControl : UserControl
     {
-        public RegisterControl()
-        {
-            InitializeComponent();
-        }
-
         [Description("Name of the register."), Category("Data")]
         public string Register
         {
@@ -64,6 +59,11 @@ namespace Drivers.Debugger.App
                 }
             }
             set { ValueBox.Text = value.ToString("X8"); }
+        }
+
+        public RegisterControl()
+        {
+            InitializeComponent();
         }
 
         [Description("Value changed event."), Category("Event")]

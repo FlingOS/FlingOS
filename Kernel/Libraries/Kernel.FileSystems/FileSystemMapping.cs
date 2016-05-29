@@ -48,17 +48,6 @@ namespace Kernel.FileSystems
         protected FileSystem theFileSystem;
 
         /// <summary>
-        ///     Initializes a new file system mapping.
-        /// </summary>
-        /// <param name="aPrefix">The prefix to map.</param>
-        /// <param name="aFileSystem">The file system to map.</param>
-        public FileSystemMapping(String aPrefix, FileSystem aFileSystem)
-        {
-            prefix = aPrefix;
-            theFileSystem = aFileSystem;
-        }
-
-        /// <summary>
         ///     The prefix to map. This must be unique.
         /// </summary>
         public String Prefix
@@ -73,6 +62,17 @@ namespace Kernel.FileSystems
         public FileSystem TheFileSystem
         {
             get { return theFileSystem; }
+        }
+
+        /// <summary>
+        ///     Initializes a new file system mapping.
+        /// </summary>
+        /// <param name="aPrefix">The prefix to map.</param>
+        /// <param name="aFileSystem">The file system to map.</param>
+        public FileSystemMapping(String aPrefix, FileSystem aFileSystem)
+        {
+            prefix = aPrefix;
+            theFileSystem = aFileSystem;
         }
 
         /// <summary>

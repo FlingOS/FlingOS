@@ -49,14 +49,14 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (methodToCall is System.Reflection.MethodInfo)
             {
-                if (typeof(Delegate).IsAssignableFrom(((System.Reflection.MethodInfo) methodToCall).DeclaringType))
+                if (typeof(Delegate).IsAssignableFrom(((System.Reflection.MethodInfo)methodToCall).DeclaringType))
                 {
                     List<Type> allParams =
-                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                        ((System.Reflection.MethodInfo)methodToCall).GetParameters()
                             .Select(x => x.ParameterType)
                             .ToList();
 
-                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    Type retType = ((System.Reflection.MethodInfo)methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem
                     {
@@ -86,7 +86,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     TypeInfo declaringTypeInfo = conversionState.TheILLibrary.GetTypeInfo(methodToCall.DeclaringType);
 
-                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    Type retType = ((System.Reflection.MethodInfo)methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem
                     {
@@ -98,7 +98,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     int bytesToAdd = 0;
                     List<Type> allParams =
-                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                        ((System.Reflection.MethodInfo)methodToCall).GetParameters()
                             .Select(x => x.ParameterType)
                             .ToList();
                     if (!methodToCall.IsStatic)
@@ -150,7 +150,7 @@ namespace Drivers.Compiler.Architectures.x86
                 //Need to do callvirt related stuff to load address of method to call
                 // - Check for invoke of a delegate - if so, treat rather differently from normal callvirt
 
-                if (typeof(Delegate).IsAssignableFrom(((System.Reflection.MethodInfo) methodToCall).DeclaringType))
+                if (typeof(Delegate).IsAssignableFrom(((System.Reflection.MethodInfo)methodToCall).DeclaringType))
                 {
                     //Callvirt to delegate method
                     // - We only support calls to Invoke at the moment
@@ -160,7 +160,7 @@ namespace Drivers.Compiler.Architectures.x86
                                                         methodToCall.Name);
                     }
                     int bytesForAllParams =
-                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                        ((System.Reflection.MethodInfo)methodToCall).GetParameters()
                             .Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes)
                             .Sum();
 
@@ -168,7 +168,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     //All the parameters for the method that was called
                     List<Type> allParams =
-                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                        ((System.Reflection.MethodInfo)methodToCall).GetParameters()
                             .Select(x => x.ParameterType)
                             .ToList();
 
@@ -183,7 +183,7 @@ namespace Drivers.Compiler.Architectures.x86
 
 
                     //Allocate space on the stack for the return value as necessary
-                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    Type retType = ((System.Reflection.MethodInfo)methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem
                     {
@@ -286,7 +286,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                     //Get object ref
                     int bytesForAllParams =
-                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                        ((System.Reflection.MethodInfo)methodToCall).GetParameters()
                             .Select(x => conversionState.TheILLibrary.GetTypeInfo(x.ParameterType).SizeOnStackInBytes)
                             .Sum();
                     conversionState.Append(new Mov
@@ -398,7 +398,7 @@ namespace Drivers.Compiler.Architectures.x86
                     conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Call"});
 
                     //Allocate space on the stack for the return value as necessary
-                    Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                    Type retType = ((System.Reflection.MethodInfo)methodToCall).ReturnType;
                     TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                     StackItem returnItem = new StackItem
                     {
@@ -436,7 +436,7 @@ namespace Drivers.Compiler.Architectures.x86
                     int bytesToAdd = 0;
                     //All the parameters for the method that was called
                     List<Type> allParams =
-                        ((System.Reflection.MethodInfo) methodToCall).GetParameters()
+                        ((System.Reflection.MethodInfo)methodToCall).GetParameters()
                             .Select(x => x.ParameterType)
                             .ToList();
                     //Go through each one

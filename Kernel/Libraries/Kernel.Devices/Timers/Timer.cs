@@ -50,17 +50,17 @@ namespace Kernel.Devices.Timers
         /// </summary>
         protected bool enabled;
 
-        public Timer(DeviceGroup @group, DeviceSubClass subClass, String name, uint[] SomeInfo, bool IsClaimed)
-            : base(@group, DeviceClass.Timer, subClass, name, SomeInfo, IsClaimed)
-        {
-        }
-
         /// <summary>
         ///     Whether the timer is enabled or not.
         /// </summary>
         public bool Enabled
         {
             get { return enabled; }
+        }
+
+        public Timer(DeviceGroup group, DeviceSubClass subClass, String name, uint[] SomeInfo, bool IsClaimed)
+            : base(group, DeviceClass.Timer, subClass, name, SomeInfo, IsClaimed)
+        {
         }
 
         /// <summary>

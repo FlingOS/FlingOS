@@ -78,7 +78,7 @@ namespace Kernel.PCI
                 //Bit 0 is IO indicator
                 //Bit 1 is reserved
                 //4-byte aligned base port address
-                baseAddress = (byte*) (raw & 0xFFFFFFFC);
+                baseAddress = (byte*)(raw & 0xFFFFFFFC);
             }
             else
             {
@@ -95,17 +95,17 @@ namespace Kernel.PCI
                  * the 16-bit Memory Space).                                                          *
                  *                                                                                    *
                  * Source: http://wiki.osdev.org/PCI#Base_Address_Registers, para 2, 1st Sep 2014     */
-                type = (byte) ((raw >> 1) & 0x03);
+                type = (byte)((raw >> 1) & 0x03);
                 //Bit 3 - Determines whether you can prefetch data from memory or not (in C this would
                 //  determine whether something is volatile or not.)
-                prefetchable = (ushort) ((raw >> 3) & 0x01);
+                prefetchable = (ushort)((raw >> 3) & 0x01);
                 switch (type)
                 {
                     case 0x00:
-                        baseAddress = (byte*) (raw & 0xFFFFFFF0);
+                        baseAddress = (byte*)(raw & 0xFFFFFFF0);
                         break;
                     case 0x01:
-                        baseAddress = (byte*) (raw & 0xFFFFFFF0);
+                        baseAddress = (byte*)(raw & 0xFFFFFFF0);
                         break;
                     //Type 0x2 - 64-bit address not supported
                 }

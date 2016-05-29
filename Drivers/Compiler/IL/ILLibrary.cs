@@ -334,7 +334,7 @@ namespace Drivers.Compiler.IL
         {
             if (obj is ILLibrary)
             {
-                return GetHashCode() == ((ILLibrary) obj).GetHashCode();
+                return GetHashCode() == ((ILLibrary)obj).GetHashCode();
             }
 
             return base.Equals(obj);

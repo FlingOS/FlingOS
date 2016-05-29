@@ -63,7 +63,7 @@ namespace Kernel.Tasks.Driver
             int numDrives = 0;
             for (int i = 0; i < ATAManager.Devices.Count; i++)
             {
-                Device aDevice = (Device) ATAManager.Devices[i];
+                Device aDevice = (Device)ATAManager.Devices[i];
                 if (aDevice is PATA)
                 {
                     console.WriteLine();
@@ -72,14 +72,14 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine(" ---------------------");
                     console.WriteLine("Type: PATA");
 
-                    PATA theATA = (PATA) aDevice;
+                    PATA theATA = (PATA)aDevice;
                     console.WriteLine("Serial No: " + theATA.SerialNo);
                     console.WriteLine("Firmware Rev: " + theATA.FirmwareRev);
                     console.WriteLine("Model No: " + theATA.ModelNo);
-                    console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
-                    console.WriteLine((String) "Block Count: " + theATA.Blocks);
-                    console.WriteLine((String) "Size: " + ((theATA.Blocks*theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine((String) "Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
+                    console.WriteLine((String)"Block Size: " + theATA.BlockSize + " bytes");
+                    console.WriteLine((String)"Block Count: " + theATA.Blocks);
+                    console.WriteLine((String)"Size: " + ((theATA.Blocks*theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine((String)"Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
 
                     numDrives++;
                 }
@@ -92,14 +92,14 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine("Type: PATAPI");
                     console.WriteLine("Warning: Read-only support.");
 
-                    PATAPI theATA = (PATAPI) aDevice;
+                    PATAPI theATA = (PATAPI)aDevice;
                     console.WriteLine("Serial No: " + theATA.SerialNo);
                     console.WriteLine("Firmware Rev: " + theATA.FirmwareRev);
                     console.WriteLine("Model No: " + theATA.ModelNo);
-                    console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
-                    console.WriteLine((String) "Block Count: " + theATA.Blocks);
-                    console.WriteLine((String) "Size: " + ((theATA.Blocks*theATA.BlockSize) >> 20) + " MB");
-                    console.WriteLine((String) "Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
+                    console.WriteLine((String)"Block Size: " + theATA.BlockSize + " bytes");
+                    console.WriteLine((String)"Block Count: " + theATA.Blocks);
+                    console.WriteLine((String)"Size: " + ((theATA.Blocks*theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine((String)"Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
 
                     numDrives++;
                 }

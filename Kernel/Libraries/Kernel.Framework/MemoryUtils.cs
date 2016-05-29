@@ -77,8 +77,8 @@ namespace Kernel.Utilities
         [NoDebug]
         public static void* ZeroMem(void* ptr, uint size)
         {
-            byte* bPtr = (byte*) ptr;
-            byte* bEndPtr = (byte*) ptr + size;
+            byte* bPtr = (byte*)ptr;
+            byte* bEndPtr = (byte*)ptr + size;
             while (bPtr < bEndPtr)
             {
                 *bPtr++ = 0;
@@ -101,7 +101,7 @@ namespace Kernel.Utilities
         [NoDebug]
         public static byte GetField(byte* addr, byte byteNum, byte shift, byte len)
         {
-            return (byte) ((addr[byteNum] >> shift) & ((1 << len) - 1));
+            return (byte)((addr[byteNum] >> shift) & ((1 << len) - 1));
         }
 
         /// <summary>

@@ -98,6 +98,11 @@ namespace Kernel.Pipes
         /// </summary>
         public PipeOutpoint Outpoint;
 
+        public int BufferSize
+        {
+            get { return Buffer.Length; }
+        }
+
         /// <summary>
         ///     Creates a new pipe.
         /// </summary>
@@ -119,11 +124,6 @@ namespace Kernel.Pipes
             SizesWaitingToWrite = new UInt32Queue(5, true);
         }
 
-        public int BufferSize
-        {
-            get { return Buffer.Length; }
-        }
-
         /// <summary>
         ///     Whether the pipe can be read (by the caller or a queued thread) at the time of calling.
         /// </summary>
@@ -141,7 +141,7 @@ namespace Kernel.Pipes
         {
             if (SizesWaitingToWrite.Count > 0)
             {
-                return CanWrite((int) SizesWaitingToWrite.Peek());
+                return CanWrite((int)SizesWaitingToWrite.Peek());
             }
             return CanWrite(0);
         }
@@ -234,7 +234,7 @@ namespace Kernel.Pipes
         public bool QueueToWrite(uint ThreadId, int SizeToBeWritten)
         {
             ThreadsWaitingToWrite.Push(ThreadId);
-            SizesWaitingToWrite.Push((uint) SizeToBeWritten);
+            SizesWaitingToWrite.Push((uint)SizeToBeWritten);
             return true;
         }
 

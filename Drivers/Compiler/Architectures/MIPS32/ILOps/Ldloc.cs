@@ -41,14 +41,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
     {
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
-            bool loadAddr = (OpCodes) theOp.opCode.Value == OpCodes.Ldloca ||
-                            (OpCodes) theOp.opCode.Value == OpCodes.Ldloca_S;
+            bool loadAddr = (OpCodes)theOp.opCode.Value == OpCodes.Ldloca ||
+                            (OpCodes)theOp.opCode.Value == OpCodes.Ldloca_S;
             ushort localIndex = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldloc:
                 case OpCodes.Ldloca:
-                    localIndex = (ushort) Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    localIndex = (ushort)Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldloc_0:
                     localIndex = 0;
@@ -109,14 +109,14 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             //Load local
 
-            bool loadAddr = (OpCodes) theOp.opCode.Value == OpCodes.Ldloca ||
-                            (OpCodes) theOp.opCode.Value == OpCodes.Ldloca_S;
+            bool loadAddr = (OpCodes)theOp.opCode.Value == OpCodes.Ldloca ||
+                            (OpCodes)theOp.opCode.Value == OpCodes.Ldloca_S;
             ushort localIndex = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldloc:
                 case OpCodes.Ldloca:
-                    localIndex = (ushort) Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    localIndex = (ushort)Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Ldloc_0:
                     localIndex = 0;

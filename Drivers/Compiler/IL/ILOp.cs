@@ -1068,7 +1068,7 @@ namespace Drivers.Compiler.IL
             {
                 return GetType().Name + (MethodToCall == null ? "" : " - " + MethodToCall);
             }
-            return Enum.GetName(typeof(OpCodes), (OpCodes) opCode.Value) +
+            return Enum.GetName(typeof(OpCodes), (OpCodes)opCode.Value) +
                    (MethodToCall == null ? "" : " - " + MethodToCall);
         }
     }

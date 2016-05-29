@@ -129,7 +129,7 @@ namespace CI20Booter
 
         private void InitUSB(int VendorID, int ProductID)
         {
-            dev = (IUsbDevice) UsbDevice.OpenUsbDevice(x => x.Vid == VendorID && x.Pid == ProductID);
+            dev = (IUsbDevice)UsbDevice.OpenUsbDevice(x => x.Vid == VendorID && x.Pid == ProductID);
 
             if (dev == null)
             {
@@ -215,7 +215,7 @@ namespace CI20Booter
 
         private void SendControlTransfer(byte request, uint value)
         {
-            SendControlTransfer(request, (short) (value >> 16), (short) (value & 0xFFFF), 0);
+            SendControlTransfer(request, (short)(value >> 16), (short)(value & 0xFFFF), 0);
         }
 
         private void SendControlTransfer(byte request, short value, short index, short outLength)
@@ -226,7 +226,7 @@ namespace CI20Booter
         private int SendControlTransfer(byte[] buffer, byte request, short value, short index, short outLength)
         {
             LibUsbDotNet.Main.UsbSetupPacket setupPacket =
-                new LibUsbDotNet.Main.UsbSetupPacket((byte) UsbRequestType.TypeVendor | BM_REQUEST_DEVICE_TO_HOST,
+                new LibUsbDotNet.Main.UsbSetupPacket((byte)UsbRequestType.TypeVendor | BM_REQUEST_DEVICE_TO_HOST,
                     request, value, index, outLength);
             int bytesRead = 0;
             dev.ControlTransfer(ref setupPacket, buffer, 8, out bytesRead);

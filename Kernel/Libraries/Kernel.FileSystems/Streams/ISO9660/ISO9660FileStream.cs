@@ -50,6 +50,40 @@ namespace Kernel.FileSystems.Streams.ISO9660
         private byte[] ReadSectorBuffer;
         private uint ReadSectorSize;
 
+        //TODO: This implementation has no way of shrinking files - only growing them!
+
+        /// <summary>
+        ///     The ISO9660 file system to which the file the stream is for belongs.
+        /// </summary>
+        public ISO9660FileSystem TheISO9660FileSystem
+        {
+            get { return (ISO9660FileSystem)TheFile.TheFileSystem; }
+        }
+
+        /// <summary>
+        ///     The ISO9660 file the stream is for.
+        /// </summary>
+        public ISO9660File TheISO9660File
+        {
+            get { return (ISO9660File)TheFile; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
+        public override long Position
+        {
+            get { return (long)position; }
+            set
+            {
+                if (value < 0L)
+                {
+                    ExceptionMethods.Throw(new ArgumentException("ISO9660FileStream.Position value must be > 0!"));
+                }
+                position = (ulong)value;
+            }
+        }
+
         /// <summary>
         ///     Initializes a new ISO9660 file stream for the specified file.
         /// </summary>
@@ -61,40 +95,6 @@ namespace Kernel.FileSystems.Streams.ISO9660
             {
                 ExceptionMethods.Throw(
                     new Exception("Could not create ISO9660FileStream. Specified file object was null!"));
-            }
-        }
-
-        //TODO: This implementation has no way of shrinking files - only growing them!
-
-        /// <summary>
-        ///     The ISO9660 file system to which the file the stream is for belongs.
-        /// </summary>
-        public ISO9660FileSystem TheISO9660FileSystem
-        {
-            get { return (ISO9660FileSystem) TheFile.TheFileSystem; }
-        }
-
-        /// <summary>
-        ///     The ISO9660 file the stream is for.
-        /// </summary>
-        public ISO9660File TheISO9660File
-        {
-            get { return (ISO9660File) TheFile; }
-        }
-
-        /// <summary>
-        ///     Gets or sets the position (as an offset from the start of the file) of the stream in the file.
-        /// </summary>
-        public override long Position
-        {
-            get { return (long) position; }
-            set
-            {
-                if (value < 0L)
-                {
-                    ExceptionMethods.Throw(new ArgumentException("ISO9660FileStream.Position value must be > 0!"));
-                }
-                position = (ulong) value;
             }
         }
 
@@ -148,7 +148,7 @@ namespace Kernel.FileSystems.Streams.ISO9660
                 // Clamp the count value so that no out of bounds exceptions occur
                 ulong FileSize = TheFile.Size;
                 ulong MaxReadableBytes = FileSize - position;
-                ulong ActualCount = (ulong) count;
+                ulong ActualCount = (ulong)count;
                 if (ActualCount > MaxReadableBytes)
                 {
                     ActualCount = MaxReadableBytes;
@@ -163,7 +163,7 @@ namespace Kernel.FileSystems.Streams.ISO9660
                 if (ReadSectorBuffer == null)
                 {
                     ReadSectorBuffer = TheFS.ThePartition.NewBlockArray(1);
-                    ReadSectorSize = (uint) TheFS.ThePartition.BlockSize;
+                    ReadSectorSize = (uint)TheFS.ThePartition.BlockSize;
 
 #if ISO9660FileStream_TRACE
                     BasicConsole.WriteLine(((Framework.String)"ReadSectorSize: ") + ReadSectorSize);
@@ -178,8 +178,8 @@ namespace Kernel.FileSystems.Streams.ISO9660
                 //Loop reading in the data
                 while (ActualCount > 0)
                 {
-                    uint SectorIdx = (uint) position/ReadSectorSize + TheISO9660File.TheDirectoryRecord.LBALocation;
-                    uint PosInSector = (uint) position%ReadSectorSize;
+                    uint SectorIdx = (uint)position/ReadSectorSize + TheISO9660File.TheDirectoryRecord.LBALocation;
+                    uint PosInSector = (uint)position%ReadSectorSize;
 #if ISO9660FileStream_TRACE
                     BasicConsole.WriteLine(((Framework.String)"Reading sector ") + SectorIdx);
 #endif
@@ -194,7 +194,7 @@ namespace Kernel.FileSystems.Streams.ISO9660
                     }
                     else
                     {
-                        ReadSize = (uint) ActualCount;
+                        ReadSize = (uint)ActualCount;
                     }
 
 #if ISO9660FileStream_TRACE
@@ -205,10 +205,10 @@ namespace Kernel.FileSystems.Streams.ISO9660
                     }
 #endif
                     // TODO: Should we do an argument check here just in case?
-                    Array.Copy(ReadSectorBuffer, (int) PosInSector, buffer, offset, (int) ReadSize);
-                    offset += (int) ReadSize;
+                    Array.Copy(ReadSectorBuffer, (int)PosInSector, buffer, offset, (int)ReadSize);
+                    offset += (int)ReadSize;
                     ActualCount -= ReadSize;
-                    read += (int) ReadSize;
+                    read += (int)ReadSize;
                     position += ReadSize;
                 }
 

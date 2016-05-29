@@ -294,11 +294,6 @@ namespace Kernel.Devices.Timers
         /// </summary>
         private bool WaitSignaled;
 
-        public PIT()
-            : base(DeviceGroup.System, DeviceSubClass.Timer, "Programmable Interval Timer", new uint[0], true)
-        {
-        }
-
         /// <summary>
         ///     The timer 0 reload value.
         /// </summary>
@@ -309,9 +304,9 @@ namespace Kernel.Devices.Timers
             {
                 _T0Reload = value;
 
-                Command.Write_Byte((byte) (T0RateGen ? 0x34 : 0x30));
-                Data0.Write_Byte((byte) (value & 0xFF));
-                Data0.Write_Byte((byte) (value >> 8));
+                Command.Write_Byte((byte)(T0RateGen ? 0x34 : 0x30));
+                Data0.Write_Byte((byte)(value & 0xFF));
+                Data0.Write_Byte((byte)(value >> 8));
             }
         }
 
@@ -329,7 +324,7 @@ namespace Kernel.Devices.Timers
                         "Frequency must be between 19 and 1193180!"));
                 }
 
-                T0Reload = (ushort) (PITFrequency/value);
+                T0Reload = (ushort)(PITFrequency/value);
             }
         }
 
@@ -347,7 +342,7 @@ namespace Kernel.Devices.Timers
                         "Delay must be no greater that 54918330"));
                 }
 
-                T0Reload = (ushort) (value/PITDelayNS);
+                T0Reload = (ushort)(value/PITDelayNS);
             }
         }
 
@@ -362,8 +357,8 @@ namespace Kernel.Devices.Timers
                 _T2Reload = value;
 
                 Command.Write_Byte(0xB6);
-                Data2.Write_Byte((byte) (value & 0xFF));
-                Data2.Write_Byte((byte) (value >> 8));
+                Data2.Write_Byte((byte)(value & 0xFF));
+                Data2.Write_Byte((byte)(value >> 8));
             }
         }
 
@@ -381,7 +376,7 @@ namespace Kernel.Devices.Timers
                         "Frequency must be between 19 and 1193180!"));
                 }
 
-                T2Reload = (ushort) (PITFrequency/value);
+                T2Reload = (ushort)(PITFrequency/value);
             }
         }
 
@@ -399,8 +394,13 @@ namespace Kernel.Devices.Timers
                         "Delay must be no greater than 54918330"));
                 }
 
-                T2Reload = (ushort) (value/PITDelayNS);
+                T2Reload = (ushort)(value/PITDelayNS);
             }
+        }
+
+        public PIT()
+            : base(DeviceGroup.System, DeviceSubClass.Timer, "Programmable Interval Timer", new uint[0], true)
+        {
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace Kernel.Devices.Timers
         public void EnableSound()
         {
             //OR with 0x03 to enable sound
-            SpeakerPort.Write_Byte((byte) (SpeakerPort.Read_Byte() | 0x03));
+            SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() | 0x03));
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace Kernel.Devices.Timers
         public void DisableSound()
         {
             //AND with 0xFC to disable sound
-            SpeakerPort.Write_Byte((byte) (SpeakerPort.Read_Byte() & 0xFC));
+            SpeakerPort.Write_Byte((byte)(SpeakerPort.Read_Byte() & 0xFC));
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace Kernel.Devices.Timers
         /// <param name="aFreq">The frequency to play.</param>
         public void PlaySound(int aFreq)
         {
-            T2Frequency = (uint) aFreq;
+            T2Frequency = (uint)aFreq;
             EnableSound();
         }
 
@@ -445,7 +445,7 @@ namespace Kernel.Devices.Timers
         /// <param name="state">The PIT object state.</param>
         private static void SignalWait(IObject state)
         {
-            ((PIT) state).SignalWait();
+            ((PIT)state).SignalWait();
         }
 
         /// <summary>
@@ -514,9 +514,9 @@ namespace Kernel.Devices.Timers
         {
             for (int i = 0; i < ActiveHandlers.Count; i++)
             {
-                if (((PITHandler) ActiveHandlers[i]).id == handlerId)
+                if (((PITHandler)ActiveHandlers[i]).id == handlerId)
                 {
-                    ((PITHandler) ActiveHandlers[i]).id = -1;
+                    ((PITHandler)ActiveHandlers[i]).id = -1;
                     ActiveHandlers.RemoveAt(i);
                     return;
                 }
@@ -545,7 +545,7 @@ namespace Kernel.Devices.Timers
                 //if (Processes.ProcessManager.Processes.Count > 1)
                 //    BasicConsole.WriteLine("PIT: 2");
 
-                hndlr = (PITHandler) ActiveHandlers[i];
+                hndlr = (PITHandler)ActiveHandlers[i];
 
                 //if (Processes.ProcessManager.Processes.Count > 1)
                 //    BasicConsole.WriteLine("PIT: 3");
@@ -647,7 +647,7 @@ namespace Kernel.Devices.Timers
 
         public void PlayNote(MusicalNote note, MusicalNoteValue duration, uint bpm)
         {
-            uint dur_ms = (uint) duration*60*1000/(bpm*16);
+            uint dur_ms = (uint)duration*60*1000/(bpm*16);
 
             if (note == MusicalNote.Silent)
             {
@@ -655,7 +655,7 @@ namespace Kernel.Devices.Timers
             }
             else
             {
-                PlaySound((int) note);
+                PlaySound((int)note);
                 Wait(dur_ms);
                 MuteSound();
             }
@@ -698,6 +698,14 @@ namespace Kernel.Devices.Timers
         internal IObject state;
 
         /// <summary>
+        ///     The handler Id.
+        /// </summary>
+        public int Id
+        {
+            get { return id; }
+        }
+
+        /// <summary>
         ///     Initialises a new PIT handler.
         /// </summary>
         /// <param name="HandleOnTrigger">The method to call when the timeout expires.</param>
@@ -727,14 +735,6 @@ namespace Kernel.Devices.Timers
             NSRemaining = NanosecondsLeft;
             Recurring = true;
             state = aState;
-        }
-
-        /// <summary>
-        ///     The handler Id.
-        /// </summary>
-        public int Id
-        {
-            get { return id; }
         }
     }
 }

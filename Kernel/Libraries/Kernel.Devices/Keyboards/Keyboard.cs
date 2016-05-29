@@ -84,6 +84,38 @@ namespace Kernel.Devices.Keyboards
         protected bool shiftPressed;
 
         /// <summary>
+        ///     Whether the keyboard is enabled or not.
+        /// </summary>
+        public bool Enabled
+        {
+            get { return enabled; }
+        }
+
+        /// <summary>
+        ///     Whether the shift key is currently pressed or not.
+        /// </summary>
+        public bool ShiftPressed
+        {
+            get { return shiftPressed; }
+        }
+
+        /// <summary>
+        ///     Whether the control key is currently pressed or not.
+        /// </summary>
+        public bool CtrlPressed
+        {
+            get { return ctrlPressed; }
+        }
+
+        /// <summary>
+        ///     Whether the alternate key is currently pressed or not.
+        /// </summary>
+        public bool AltPressed
+        {
+            get { return altPressed; }
+        }
+
+        /// <summary>
         ///     Initialises a new keyboard instance including setting up the default
         ///     key mappings if they have not already been initialised.
         ///     To change the keyboard mapping, define a compile time symbol
@@ -117,38 +149,6 @@ namespace Kernel.Devices.Keyboards
             {
                 ExceptionMethods.Throw(new Exception("Couldn't create the necessary semaphore!"));
             }
-        }
-
-        /// <summary>
-        ///     Whether the keyboard is enabled or not.
-        /// </summary>
-        public bool Enabled
-        {
-            get { return enabled; }
-        }
-
-        /// <summary>
-        ///     Whether the shift key is currently pressed or not.
-        /// </summary>
-        public bool ShiftPressed
-        {
-            get { return shiftPressed; }
-        }
-
-        /// <summary>
-        ///     Whether the control key is currently pressed or not.
-        /// </summary>
-        public bool CtrlPressed
-        {
-            get { return ctrlPressed; }
-        }
-
-        /// <summary>
-        ///     Whether the alternate key is currently pressed or not.
-        /// </summary>
-        public bool AltPressed
-        {
-            get { return altPressed; }
         }
 
         public void Destroy()
@@ -283,11 +283,11 @@ namespace Kernel.Devices.Keyboards
 
             for (int i = 0; i < KeyMappings.Count; i++)
             {
-                if (((KeyMapping) KeyMappings[i]).Scancode == aScanCode)
+                if (((KeyMapping)KeyMappings[i]).Scancode == aScanCode)
                 {
-                    if (((KeyMapping) KeyMappings[i]).Value != '\0')
+                    if (((KeyMapping)KeyMappings[i]).Value != '\0')
                     {
-                        aValue = ((KeyMapping) KeyMappings[i]).Value;
+                        aValue = ((KeyMapping)KeyMappings[i]).Value;
                         return true;
                     }
                     break;
@@ -315,9 +315,9 @@ namespace Kernel.Devices.Keyboards
 
             for (int i = 0; i < KeyMappings.Count; i++)
             {
-                if (((KeyMapping) KeyMappings[i]).Scancode == aScanCode)
+                if (((KeyMapping)KeyMappings[i]).Scancode == aScanCode)
                 {
-                    aValue = ((KeyMapping) KeyMappings[i]).Key;
+                    aValue = ((KeyMapping)KeyMappings[i]).Key;
                     return true;
                 }
             }
@@ -343,9 +343,9 @@ namespace Kernel.Devices.Keyboards
 
             for (int i = 0; i < KeyMappings.Count; i++)
             {
-                if (((KeyMapping) KeyMappings[i]).Scancode == aScanCode)
+                if (((KeyMapping)KeyMappings[i]).Scancode == aScanCode)
                 {
-                    aValue = (KeyMapping) KeyMappings[i];
+                    aValue = (KeyMapping)KeyMappings[i];
                     return true;
                 }
             }

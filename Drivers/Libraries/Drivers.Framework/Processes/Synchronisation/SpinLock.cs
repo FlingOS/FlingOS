@@ -36,6 +36,16 @@ namespace Drivers.Framework.Processes.Synchronisation
 
         private readonly ushort locked = 0;
 
+        public int Id
+        {
+            [NoGC] [NoDebug] get { return id; }
+        }
+
+        public bool Locked
+        {
+            [NoGC] [NoDebug] get { return locked != 0; }
+        }
+
         [NoDebug]
         public SpinLock()
             : this(-1)
@@ -46,16 +56,6 @@ namespace Drivers.Framework.Processes.Synchronisation
         public SpinLock(int anId)
         {
             id = anId;
-        }
-
-        public int Id
-        {
-            [NoGC] [NoDebug] get { return id; }
-        }
-
-        public bool Locked
-        {
-            [NoGC] [NoDebug] get { return locked != 0; }
         }
 
         [PluggedMethod(ASMFilePath = @"ASM\Processes\Synchronisation\SpinLock")]

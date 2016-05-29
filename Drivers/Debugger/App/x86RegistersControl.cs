@@ -36,11 +36,6 @@ namespace Drivers.Debugger.App
 
     public partial class x86RegistersControl : UserControl
     {
-        public x86RegistersControl()
-        {
-            InitializeComponent();
-        }
-
         [Description("Value of the register."), Category("Data")]
         public uint EAX
         {
@@ -88,6 +83,11 @@ namespace Drivers.Debugger.App
         {
             get { return EIPRegisterControl.Value; }
             set { EIPRegisterControl.Value = value; }
+        }
+
+        public x86RegistersControl()
+        {
+            InitializeComponent();
         }
 
         [Description("Value changed event."), Category("Event")]

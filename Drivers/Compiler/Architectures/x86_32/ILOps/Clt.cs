@@ -80,7 +80,7 @@ namespace Drivers.Compiler.Architectures.x86
             StackItem itemB = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             StackItem itemA = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            bool unsignedComparison = (OpCodes) theOp.opCode.Value == OpCodes.Clt_Un;
+            bool unsignedComparison = (OpCodes)theOp.opCode.Value == OpCodes.Clt_Un;
             int currOpPosition = conversionState.PositionOf(theOp);
 
             if (itemB.isFloat || itemA.isFloat)

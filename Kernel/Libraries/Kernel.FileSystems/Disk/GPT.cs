@@ -371,6 +371,32 @@ namespace Kernel.FileSystems.Disk
             public byte[] TypeID = new byte[16];
 
             /// <summary>
+            ///     Whether the partition entry is empty or not.
+            /// </summary>
+            public bool Empty
+            {
+                get
+                {
+                    return ID[0] == 0 &&
+                           ID[1] == 0 &&
+                           ID[2] == 0 &&
+                           ID[3] == 0 &&
+                           ID[4] == 0 &&
+                           ID[5] == 0 &&
+                           ID[6] == 0 &&
+                           ID[7] == 0 &&
+                           ID[8] == 0 &&
+                           ID[9] == 0 &&
+                           ID[10] == 0 &&
+                           ID[11] == 0 &&
+                           ID[12] == 0 &&
+                           ID[13] == 0 &&
+                           ID[14] == 0 &&
+                           ID[15] == 0;
+                }
+            }
+
+            /// <summary>
             ///     Initialises new partition information using the specified data.
             /// </summary>
             /// <param name="data">The data to read the partition info from.</param>
@@ -433,32 +459,6 @@ namespace Kernel.FileSystems.Disk
                 BasicConsole.WriteLine(((Framework.String)"Attributes : ") + Attributes);
                 BasicConsole.WriteLine(((Framework.String)"Name : ") + Name);
 #endif
-            }
-
-            /// <summary>
-            ///     Whether the partition entry is empty or not.
-            /// </summary>
-            public bool Empty
-            {
-                get
-                {
-                    return ID[0] == 0 &&
-                           ID[1] == 0 &&
-                           ID[2] == 0 &&
-                           ID[3] == 0 &&
-                           ID[4] == 0 &&
-                           ID[5] == 0 &&
-                           ID[6] == 0 &&
-                           ID[7] == 0 &&
-                           ID[8] == 0 &&
-                           ID[9] == 0 &&
-                           ID[10] == 0 &&
-                           ID[11] == 0 &&
-                           ID[12] == 0 &&
-                           ID[13] == 0 &&
-                           ID[14] == 0 &&
-                           ID[15] == 0;
-                }
             }
         }
     }

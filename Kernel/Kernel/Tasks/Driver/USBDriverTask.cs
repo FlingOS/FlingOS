@@ -100,21 +100,21 @@ namespace Kernel.Tasks.Driver
         /// </summary>
         private static void OutputUSB()
         {
-            console.WriteLine((String) "USB system initialised.        HCIs : " + USBManager.HCIDevices.Count);
-            console.WriteLine((String) "                              UHCIs : " + USBManager.NumUHCIDevices);
-            console.WriteLine((String) "                              OHCIs : " + USBManager.NumOHCIDevices);
-            console.WriteLine((String) "                              EHCIs : " + USBManager.NumEHCIDevices);
-            console.WriteLine((String) "                              xHCIs : " + USBManager.NumxHCIDevices);
-            console.WriteLine((String) "                        USB devices : " + USBManager.Devices.Count);
+            console.WriteLine((String)"USB system initialised.        HCIs : " + USBManager.HCIDevices.Count);
+            console.WriteLine((String)"                              UHCIs : " + USBManager.NumUHCIDevices);
+            console.WriteLine((String)"                              OHCIs : " + USBManager.NumOHCIDevices);
+            console.WriteLine((String)"                              EHCIs : " + USBManager.NumEHCIDevices);
+            console.WriteLine((String)"                              xHCIs : " + USBManager.NumxHCIDevices);
+            console.WriteLine((String)"                        USB devices : " + USBManager.Devices.Count);
 
             int numDrives = 0;
             for (int i = 0; i < USBManager.Devices.Count; i++)
             {
-                Device aDevice = (Device) USBManager.Devices[i];
+                Device aDevice = (Device)USBManager.Devices[i];
 
                 if (aDevice is HCI)
                 {
-                    HCI hciDevice = (HCI) aDevice;
+                    HCI hciDevice = (HCI)aDevice;
                     console.WriteLine();
 
                     console.Write("--------------------- HCI ");
@@ -141,7 +141,7 @@ namespace Kernel.Tasks.Driver
                 }
                 else if (aDevice is USBDevice)
                 {
-                    USBDevice usbDevice = (USBDevice) aDevice;
+                    USBDevice usbDevice = (USBDevice)aDevice;
                     USBDeviceInfo usbDeviceInfo = usbDevice.DeviceInfo;
                     console.WriteLine();
 
@@ -152,14 +152,14 @@ namespace Kernel.Tasks.Driver
                     if (aDevice is MassStorageDevice)
                     {
                         console.WriteLine("USB Mass Storage Device found.");
-                        MassStorageDevice theMSD = (MassStorageDevice) usbDevice;
+                        MassStorageDevice theMSD = (MassStorageDevice)usbDevice;
                         MassStorageDevice_DiskDevice theMSDDisk = theMSD.diskDevice;
 
                         console.Write("Disk device num: ");
                         console.WriteLine_AsDecimal(USBManager.Devices.IndexOf(theMSDDisk));
-                        console.WriteLine((String) "Block Size: " + theMSDDisk.BlockSize + " bytes");
-                        console.WriteLine((String) "Block Count: " + theMSDDisk.Blocks);
-                        console.WriteLine((String) "Size: " + ((theMSDDisk.Blocks*theMSDDisk.BlockSize) >> 20) +
+                        console.WriteLine((String)"Block Size: " + theMSDDisk.BlockSize + " bytes");
+                        console.WriteLine((String)"Block Count: " + theMSDDisk.Blocks);
+                        console.WriteLine((String)"Size: " + ((theMSDDisk.Blocks*theMSDDisk.BlockSize) >> 20) +
                                           " MB");
 
                         numDrives++;
@@ -208,7 +208,7 @@ namespace Kernel.Tasks.Driver
                     }
 
                     console.Write("Endpoint 0 mps: ");
-                    console.Write_AsDecimal(((Endpoint) usbDeviceInfo.Endpoints[0]).MPS);
+                    console.Write_AsDecimal(((Endpoint)usbDeviceInfo.Endpoints[0]).MPS);
                     console.WriteLine(" byte.");
                     console.Write("Vendor:            ");
                     console.WriteLine(usbDeviceInfo.vendor);

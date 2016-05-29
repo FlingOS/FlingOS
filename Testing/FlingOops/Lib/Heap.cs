@@ -85,18 +85,18 @@ namespace FlingOops
         /// </summary>
         private static bool FixedHeapInitialised;
 
-        [NoDebug]
-        [NoGC]
-        static Heap()
-        {
-        }
-
         /// <summary>
         ///     A pointer to the most-recently added heap block.
         /// </summary>
         public static HeapBlock* FBlock
         {
             [NoDebug] [NoGC] get { return fblock; }
+        }
+
+        [NoDebug]
+        [NoGC]
+        static Heap()
+        {
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace FlingOops
         public static uint* GetFixedHeapPtr()
         {
             //Stub for use by testing framework
-            return (uint*) Marshal.AllocHGlobal((int) GetFixedHeapSize());
+            return (uint*)Marshal.AllocHGlobal((int)GetFixedHeapSize());
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace FlingOops
             if (!FixedHeapInitialised)
             {
                 Init();
-                AddBlock((uint) GetFixedHeapPtr(), GetFixedHeapSize(), 16);
+                AddBlock((uint)GetFixedHeapPtr(), GetFixedHeapSize(), 16);
                 FixedHeapInitialised = true;
             }
         }
@@ -223,7 +223,7 @@ namespace FlingOops
         [NoGC]
         public static void Init()
         {
-            fblock = (HeapBlock*) 0;
+            fblock = (HeapBlock*)0;
         }
 
         /// <summary>
@@ -242,15 +242,15 @@ namespace FlingOops
             uint x;
             byte* bm;
 
-            b = (HeapBlock*) addr;
-            b->size = size - (uint) sizeof(HeapBlock);
+            b = (HeapBlock*)addr;
+            b->size = size - (uint)sizeof(HeapBlock);
             b->bsize = bsize;
 
             b->next = fblock;
             fblock = b;
 
             bcnt = size/bsize;
-            bm = (byte*) &b[1];
+            bm = (byte*)&b[1];
 
             /* clear bitmap */
             for (x = 0; x < bcnt; ++x)
@@ -283,7 +283,7 @@ namespace FlingOops
         public static byte GetNID(byte a, byte b)
         {
             byte c;
-            for (c = (byte) (a + 1); c == b || c == 0; ++c) ;
+            for (c = (byte)(a + 1); c == b || c == 0; ++c) ;
             return c;
         }
 
@@ -334,7 +334,7 @@ namespace FlingOops
             {
                 oldValue = result;
                 result = AllocZeroed(size, boundary, caller);
-                resultAddr = (uint) result;
+                resultAddr = (uint)result;
                 if (oldValue != null)
                 {
                     Free(oldValue);
@@ -403,14 +403,14 @@ namespace FlingOops
             }
 
             /* iterate blocks */
-            for (b = fblock; (uint) b != 0; b = b->next)
+            for (b = fblock; (uint)b != 0; b = b->next)
             {
                 /* check if block has enough room */
                 if (b->size - b->used*b->bsize >= size)
                 {
                     bcnt = b->size/b->bsize;
                     bneed = size/b->bsize*b->bsize < size ? size/b->bsize + 1 : size/b->bsize;
-                    bm = (byte*) &b[1];
+                    bm = (byte*)&b[1];
 
                     for (x = b->lfb + 1 >= bcnt ? 0 : b->lfb + 1; x != b->lfb; ++x)
                     {
@@ -443,10 +443,10 @@ namespace FlingOops
                                 /* count used blocks NOT bytes */
                                 b->used += y;
 
-                                void* result = (void*) (x*b->bsize + (uint) &b[1]);
+                                void* result = (void*)(x*b->bsize + (uint)&b[1]);
                                 if (boundary > 1)
                                 {
-                                    result = (void*) (((uint) result + (boundary - 1)) & ~(boundary - 1));
+                                    result = (void*)(((uint)result + (boundary - 1)) & ~(boundary - 1));
 
 #if HEAP_TRACE
                                     ExitCritical();
@@ -490,16 +490,16 @@ namespace FlingOops
             byte id;
             uint max;
 
-            for (b = fblock; (uint) b != 0; b = b->next)
+            for (b = fblock; (uint)b != 0; b = b->next)
             {
-                if ((uint) ptr > (uint) b && (uint) ptr < (uint) b + b->size)
+                if ((uint)ptr > (uint)b && (uint)ptr < (uint)b + b->size)
                 {
                     /* found block */
-                    ptroff = (uint) ptr - (uint) &b[1]; /* get offset to get block */
+                    ptroff = (uint)ptr - (uint)&b[1]; /* get offset to get block */
                     /* block offset in BM */
                     bi = ptroff/b->bsize;
                     /* .. */
-                    bm = (byte*) &b[1];
+                    bm = (byte*)&b[1];
                     /* clear allocation */
                     id = bm[bi];
                     /* oddly.. HeapC did not optimize this */

@@ -64,12 +64,12 @@ namespace Kernel.Pipes.Storage
                 int Count;
                 {
                     StoragePipeDataHeader* HdrPtr =
-                        (StoragePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
+                        (StoragePipeDataHeader*)((byte*)ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
                     Count = HdrPtr->Count;
                 }
 
                 StoragePipeDataDiskInfo* DataPtr =
-                    (StoragePipeDataDiskInfo*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
+                    (StoragePipeDataDiskInfo*)((byte*)ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
 
                 ulong[] result = new ulong[Count];
                 for (int i = 0; i < Count; i++)

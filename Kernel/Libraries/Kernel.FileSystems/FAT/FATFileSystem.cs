@@ -171,6 +171,21 @@ namespace Kernel.FileSystems.FAT
         private List _rootDirectoryListings;
 
         /// <summary>
+        ///     The underlying root directory - used by FAT32 only.
+        /// </summary>
+        public FATDirectory RootDirectory_FAT32
+        {
+            get
+            {
+                if (_rootDirectoryFAT32 == null)
+                {
+                    GetRootDirectoryListings();
+                }
+                return _rootDirectoryFAT32;
+            }
+        }
+
+        /// <summary>
         ///     Initializes a new FAT file system from the specified partition.
         /// </summary>
         /// <param name="aPartition">The partition on which the file system resides.</param>
@@ -259,21 +274,6 @@ namespace Kernel.FileSystems.FAT
         }
 
         /// <summary>
-        ///     The underlying root directory - used by FAT32 only.
-        /// </summary>
-        public FATDirectory RootDirectory_FAT32
-        {
-            get
-            {
-                if (_rootDirectoryFAT32 == null)
-                {
-                    GetRootDirectoryListings();
-                }
-                return _rootDirectoryFAT32;
-            }
-        }
-
-        /// <summary>
         ///     Creates a new byte array of the size of one cluster.
         /// </summary>
         /// <returns>The new byte array.</returns>
@@ -322,7 +322,7 @@ namespace Kernel.FileSystems.FAT
         {
             //The capacity calculation is designed to make the internal array of the list exactly
             //  the correct size (or one bigger) for the number of cluster numbers in the chain.
-            UInt32List Result = new UInt32List((int) ((uint) fileSize/(SectorsPerCluster*BytesPerSector)) + 1);
+            UInt32List Result = new UInt32List((int)((uint)fileSize/(SectorsPerCluster*BytesPerSector)) + 1);
 
             //Preallocated array for a sector of data. Used to store table data
             byte[] SectorBuffer = new byte[BytesPerSector];
@@ -508,33 +508,33 @@ namespace Kernel.FileSystems.FAT
                     // Even
                     FATEntry &= 0x0FFF;
 
-                    aFATTableSector[aOffset] = (byte) FATEntry;
+                    aFATTableSector[aOffset] = (byte)FATEntry;
                     aFATTableSector[aOffset + 1] =
-                        (byte) ((uint) (aFATTableSector[aOffset + 1] & 0xF0) | (FATEntry >> 8));
+                        (byte)((uint)(aFATTableSector[aOffset + 1] & 0xF0) | (FATEntry >> 8));
                 }
                 else
                 {
                     // Odd
                     FATEntry <<= 4;
-                    aFATTableSector[aOffset] = (byte) ((uint) (aFATTableSector[aOffset] & 0x0F) | FATEntry);
-                    aFATTableSector[aOffset + 1] = (byte) (FATEntry >> 8);
+                    aFATTableSector[aOffset] = (byte)((uint)(aFATTableSector[aOffset] & 0x0F) | FATEntry);
+                    aFATTableSector[aOffset + 1] = (byte)(FATEntry >> 8);
                 }
             }
             else if (FATType == FATTypeEnum.FAT16)
             {
-                aFATTableSector[aOffset] = (byte) FATEntry;
-                aFATTableSector[aOffset + 1] = (byte) (FATEntry >> 8);
+                aFATTableSector[aOffset] = (byte)FATEntry;
+                aFATTableSector[aOffset + 1] = (byte)(FATEntry >> 8);
             }
             else
             {
                 FATEntry = FATEntry & 0x0FFFFFFFu;
-                aFATTableSector[aOffset + 0] = (byte) FATEntry;
-                aFATTableSector[aOffset + 1] = (byte) (FATEntry >> 4);
-                aFATTableSector[aOffset + 2] = (byte) (FATEntry >> 8);
-                aFATTableSector[aOffset + 3] = (byte) (FATEntry >> 12);
-                aFATTableSector[aOffset + 4] = (byte) (FATEntry >> 16);
-                aFATTableSector[aOffset + 5] = (byte) (FATEntry >> 20);
-                aFATTableSector[aOffset + 6] = (byte) (FATEntry >> 24);
+                aFATTableSector[aOffset + 0] = (byte)FATEntry;
+                aFATTableSector[aOffset + 1] = (byte)(FATEntry >> 4);
+                aFATTableSector[aOffset + 2] = (byte)(FATEntry >> 8);
+                aFATTableSector[aOffset + 3] = (byte)(FATEntry >> 12);
+                aFATTableSector[aOffset + 4] = (byte)(FATEntry >> 16);
+                aFATTableSector[aOffset + 5] = (byte)(FATEntry >> 20);
+                aFATTableSector[aOffset + 6] = (byte)(FATEntry >> 24);
                 // --- DO NOT WRITE TOP 4 BITS --- (as per spec)
             }
         }
@@ -793,7 +793,7 @@ namespace Kernel.FileSystems.FAT
                         }
 
                         uint xFirstCluster =
-                            (uint) (ByteConverter.ToUInt16(xData, i + 20) << 16 | ByteConverter.ToUInt16(xData, i + 26));
+                            (uint)(ByteConverter.ToUInt16(xData, i + 20) << 16 | ByteConverter.ToUInt16(xData, i + 26));
 
                         xName = xName.ToUpper();
 
@@ -834,10 +834,10 @@ namespace Kernel.FileSystems.FAT
             int LongFilenamesSize = 0;
             for (int i = 0; i < listings.Count; i++)
             {
-                if (IsLongNameListing((Base) listings[i]))
+                if (IsLongNameListing((Base)listings[i]))
                 {
                     //+1 for null terminator on long name
-                    int nameLength = ((Base) listings[i]).Name.Length + 1;
+                    int nameLength = ((Base)listings[i]).Name.Length + 1;
                     LongFilenamesSize += nameLength/13;
                     if (nameLength%13 > 0)
                     {
@@ -849,7 +849,7 @@ namespace Kernel.FileSystems.FAT
 
             //                       +32 for VolumeID entry                         + 32 for end entry
             byte[] result = new byte[
-                Math.Max(32 + listings.Count*32 + LongFilenamesSize + 32, (int) minTableSize)];
+                Math.Max(32 + listings.Count*32 + LongFilenamesSize + 32, (int)minTableSize)];
 
             int offset = 0;
 
@@ -860,7 +860,7 @@ namespace Kernel.FileSystems.FAT
                 List shortName = GetShortName(thePartition.VolumeID, true);
 
                 //Put in short name entry
-                byte[] DIR_Name = ByteConverter.GetASCIIBytes((String) shortName[0]);
+                byte[] DIR_Name = ByteConverter.GetASCIIBytes((String)shortName[0]);
                 byte DIR_Attr = ListingAttribs.VolumeID;
                 for (int j = 0; j < DIR_Name.Length; j++)
                 {
@@ -873,7 +873,7 @@ namespace Kernel.FileSystems.FAT
 
             for (int i = 0; i < listings.Count; i++)
             {
-                Base currListing = (Base) listings[i];
+                Base currListing = (Base)listings[i];
                 if (IsLongNameListing(currListing))
                 {
                     offset = EncodeLongNameListing(currListing, result, offset);
@@ -894,7 +894,7 @@ namespace Kernel.FileSystems.FAT
         /// <returns>True if it is a long-named listing. Otherwise, false.</returns>
         private bool IsLongNameListing(Base listing)
         {
-            return ((String) listing.Name.Split('.')[0]).Length > 8;
+            return ((String)listing.Name.Split('.')[0]).Length > 8;
         }
 
         /// <summary>
@@ -919,20 +919,20 @@ namespace Kernel.FileSystems.FAT
             List shortNameParts = GetShortName(longName, listing.IsDirectory);
             if (shortNameParts.Count == 2)
             {
-                shortName = (String) shortNameParts[0] + (String) shortNameParts[1];
+                shortName = (String)shortNameParts[0] + (String)shortNameParts[1];
             }
             else
             {
-                shortName = (String) shortNameParts[0];
+                shortName = (String)shortNameParts[0];
             }
             byte ShortNameChecksum = CalculateShortNameCheckSum(ByteConverter.GetASCIIBytes(shortName));
 
-            longName += (char) 0;
+            longName += (char)0;
             int nameLengthDiff = 13 - longName.Length%13;
 
             if (nameLengthDiff < 13)
             {
-                longName = longName.PadRight(longName.Length + nameLengthDiff, (char) 0xFFFF);
+                longName = longName.PadRight(longName.Length + nameLengthDiff, (char)0xFFFF);
             }
 
             int longNameLength = longName.Length;
@@ -960,10 +960,10 @@ namespace Kernel.FileSystems.FAT
                 //[   ...   ] = ...
                 //[offset+31] = MSB UTF16Bytes[25]
 
-                result[offset + 0] = (byte) (i + 1);
+                result[offset + 0] = (byte)(i + 1);
                 if (first)
                 {
-                    result[offset + 0] = (byte) (result[offset + 0] | 0x40);
+                    result[offset + 0] = (byte)(result[offset + 0] | 0x40);
                     first = false;
                 }
                 for (int j = 0; j < 10; j++)
@@ -1011,11 +1011,11 @@ namespace Kernel.FileSystems.FAT
             String shortName;
             if (shortNameParts.Count == 2)
             {
-                shortName = (String) shortNameParts[0] + (String) shortNameParts[1];
+                shortName = (String)shortNameParts[0] + (String)shortNameParts[1];
             }
             else
             {
-                shortName = (String) shortNameParts[0];
+                shortName = (String)shortNameParts[0];
             }
 
             byte[] ASCIIBytes = ByteConverter.GetASCIIBytes(shortName);
@@ -1036,30 +1036,30 @@ namespace Kernel.FileSystems.FAT
             uint firstClusterNum;
             if (listing.IsDirectory)
             {
-                firstClusterNum = ((FATDirectory) listing).FirstClusterNum;
+                firstClusterNum = ((FATDirectory)listing).FirstClusterNum;
             }
             else
             {
-                firstClusterNum = ((FATFile) listing).FirstClusterNum;
+                firstClusterNum = ((FATFile)listing).FirstClusterNum;
             }
 
-            result[offset + 20] = (byte) (firstClusterNum >> 16);
-            result[offset + 21] = (byte) (firstClusterNum >> 24);
+            result[offset + 20] = (byte)(firstClusterNum >> 16);
+            result[offset + 21] = (byte)(firstClusterNum >> 24);
 
             //TODO: WrtTime
             //TODO: WrtDate
 
-            result[offset + 26] = (byte) firstClusterNum;
-            result[offset + 27] = (byte) (firstClusterNum >> 8);
+            result[offset + 26] = (byte)firstClusterNum;
+            result[offset + 27] = (byte)(firstClusterNum >> 8);
 
             if (!listing.IsDirectory)
             {
-                uint fileSize = (uint) listing.Size;
+                uint fileSize = (uint)listing.Size;
 
-                result[offset + 28] = (byte) fileSize;
-                result[offset + 29] = (byte) (fileSize >> 8);
-                result[offset + 30] = (byte) (fileSize >> 16);
-                result[offset + 31] = (byte) (fileSize >> 24);
+                result[offset + 28] = (byte)fileSize;
+                result[offset + 29] = (byte)(fileSize >> 8);
+                result[offset + 30] = (byte)(fileSize >> 16);
+                result[offset + 31] = (byte)(fileSize >> 24);
             }
 
             offset += 32;
@@ -1087,13 +1087,13 @@ namespace Kernel.FileSystems.FAT
                 List nameParts = longName.Split('.');
                 if (nameParts.Count > 1)
                 {
-                    result.Add(((String) nameParts[0]).Substring(0, 8).PadRight(8, ' '));
-                    result.Add(((String) nameParts[1]).Substring(0, 3).PadRight(3, ' '));
+                    result.Add(((String)nameParts[0]).Substring(0, 8).PadRight(8, ' '));
+                    result.Add(((String)nameParts[1]).Substring(0, 3).PadRight(3, ' '));
                 }
                 else
                 {
                     result.Add(longName.Substring(0, 8).PadRight(8, ' '));
-                    result.Add(((String) "").PadRight(3, ' '));
+                    result.Add(((String)"").PadRight(3, ' '));
                 }
                 return result;
             }
@@ -1114,7 +1114,7 @@ namespace Kernel.FileSystems.FAT
             for (FcbNameLen = 11; FcbNameLen != 0; FcbNameLen--, charIdx++)
             {
                 // NOTE: The operation is an unsigned char rotate right
-                Sum = (byte) (((Sum & 1) == 0x1 ? 0x80 : 0) + (Sum >> 1) + shortNameBytes[charIdx]);
+                Sum = (byte)(((Sum & 1) == 0x1 ? 0x80 : 0) + (Sum >> 1) + shortNameBytes[charIdx]);
             }
             return Sum;
         }
@@ -1177,7 +1177,7 @@ namespace Kernel.FileSystems.FAT
                 //BasicConsole.WriteLine("Cleared. Setting FAT entry...");
                 SetFATEntryAndSave(freeCluster, GetFATEntryEOFValue(FATType));
                 //BasicConsole.WriteLine("Set FAT entry. Creating new directory...");
-                FATDirectory newDir = new FATDirectory(this, (FATDirectory) parent, name, freeCluster);
+                FATDirectory newDir = new FATDirectory(this, (FATDirectory)parent, name, freeCluster);
                 //BasicConsole.WriteLine("Adding listing to parent...");
                 parent.AddListing(newDir);
                 //BasicConsole.WriteLine("Added listing. Writing listings...");
@@ -1242,7 +1242,7 @@ namespace Kernel.FileSystems.FAT
                 //BasicConsole.WriteLine("Cleared. Setting FAT entry...");
                 SetFATEntryAndSave(freeCluster, GetFATEntryEOFValue(FATType));
                 //BasicConsole.WriteLine("Set FAT entry. Creating new file...");
-                File newFile = new FATFile(this, (FATDirectory) parent, name, 0, freeCluster);
+                File newFile = new FATFile(this, (FATDirectory)parent, name, 0, freeCluster);
                 //BasicConsole.WriteLine("File created. Adding listing to parent...");
                 if (parent == null)
                 {
@@ -1285,8 +1285,8 @@ namespace Kernel.FileSystems.FAT
 
             //Bytes per sector - 512
             ushort bytesPerSector = 512;
-            newBPBData[11] = (byte) bytesPerSector;
-            newBPBData[12] = (byte) (bytesPerSector >> 8);
+            newBPBData[11] = (byte)bytesPerSector;
+            newBPBData[12] = (byte)(bytesPerSector >> 8);
             ulong partitionSize = thePartition.Blocks*thePartition.BlockSize;
 
 #if FATFS_TRACE
@@ -1324,8 +1324,8 @@ namespace Kernel.FileSystems.FAT
             newBPBData[13] = sectorsPerCluster;
             //Reserved sector count - 32 for FAT32 (by convention... and FAT32 does not imply 32 sectors)
             ushort reservedSectors = 32;
-            newBPBData[14] = (byte) reservedSectors;
-            newBPBData[15] = (byte) (reservedSectors >> 8);
+            newBPBData[14] = (byte)reservedSectors;
+            newBPBData[15] = (byte)(reservedSectors >> 8);
             //Number of FATs - always 2
             newBPBData[16] = 0x02;
             //Root entry count - always 0 for FAT32
@@ -1335,11 +1335,11 @@ namespace Kernel.FileSystems.FAT
             // - At newBPBData[19] - N/A for FAT32
             //      - Do nothing
             // - At newBPBData[32] - Total number of sectors in the file system
-            uint totalSectors = (uint) thePartition.Blocks;
-            newBPBData[32] = (byte) totalSectors;
-            newBPBData[33] = (byte) (totalSectors >> 8);
-            newBPBData[34] = (byte) (totalSectors >> 16);
-            newBPBData[35] = (byte) (totalSectors >> 24);
+            uint totalSectors = (uint)thePartition.Blocks;
+            newBPBData[32] = (byte)totalSectors;
+            newBPBData[33] = (byte)(totalSectors >> 8);
+            newBPBData[34] = (byte)(totalSectors >> 16);
+            newBPBData[35] = (byte)(totalSectors >> 24);
 
 
             //FAT sector count
@@ -1363,7 +1363,7 @@ namespace Kernel.FileSystems.FAT
 #if FATFS_TRACE
             BasicConsole.WriteLine(((Framework.String)"dataClusters: ") + dataClusters);
 #endif
-            uint bytesPerCluster = (uint) sectorsPerCluster*bytesPerSector;
+            uint bytesPerCluster = (uint)sectorsPerCluster*bytesPerSector;
 #if FATFS_TRACE
             BasicConsole.WriteLine(((Framework.String)"bytesPerCluster: ") + bytesPerCluster);
             BasicConsole.WriteLine(((Framework.String)"4 * dataClusters: ") + (4 * dataClusters));
@@ -1371,7 +1371,7 @@ namespace Kernel.FileSystems.FAT
             BasicConsole.WriteLine(((Framework.String)"bytesPerCluster + 8: ") + (bytesPerCluster + 8));
 #endif
 
-            uint bytesPer2FAT = (uint) Math.Divide(4*(ulong) dataClusters*bytesPerCluster, bytesPerCluster + 8);
+            uint bytesPer2FAT = (uint)Math.Divide(4*(ulong)dataClusters*bytesPerCluster, bytesPerCluster + 8);
             //Calculation rounds down
 #if FATFS_TRACE
             BasicConsole.WriteLine(((Framework.String)"bytesPer2FAT: ") + bytesPer2FAT);
@@ -1380,10 +1380,10 @@ namespace Kernel.FileSystems.FAT
 #if FATFS_TRACE
             BasicConsole.WriteLine(((Framework.String)"FATSectorCount: ") + FATSectorCount);
 #endif
-            newBPBData[36] = (byte) FATSectorCount;
-            newBPBData[37] = (byte) (FATSectorCount >> 8);
-            newBPBData[38] = (byte) (FATSectorCount >> 16);
-            newBPBData[39] = (byte) (FATSectorCount >> 24);
+            newBPBData[36] = (byte)FATSectorCount;
+            newBPBData[37] = (byte)(FATSectorCount >> 8);
+            newBPBData[38] = (byte)(FATSectorCount >> 16);
+            newBPBData[39] = (byte)(FATSectorCount >> 24);
 
 #if FATFS_TRACE
             BasicConsole.WriteLine(((Framework.String)"totalSectors: ") + totalSectors +
@@ -1442,7 +1442,7 @@ namespace Kernel.FileSystems.FAT
                     new Exception(
                         (String)
                             "Failed to format properly! FATFileSystem recognised incorrect FAT type. Type recognised: " +
-                        (uint) fs.FATType));
+                        (uint)fs.FATType));
             }
 
 #if FATFS_TRACE

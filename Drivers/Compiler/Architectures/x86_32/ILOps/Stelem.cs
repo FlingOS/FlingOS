@@ -69,7 +69,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.AddExternalLabel(conversionState.GetThrowNullReferenceExceptionMethodInfo().ID);
             conversionState.AddExternalLabel(conversionState.GetThrowIndexOutOfRangeExceptionMethodInfo().ID);
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Stelem:
                 {

@@ -49,6 +49,14 @@ namespace Drivers.Framework.Collections
         private readonly List internalList;
 
         /// <summary>
+        ///     The number of elements in the stack.
+        /// </summary>
+        public int Count
+        {
+            get { return internalList.Count; }
+        }
+
+        /// <summary>
         ///     Creates a new stack with initial capacity of 5.
         /// </summary>
         [NoDebug]
@@ -65,14 +73,6 @@ namespace Drivers.Framework.Collections
         public Stack(int capacity)
         {
             internalList = new List(capacity);
-        }
-
-        /// <summary>
-        ///     The number of elements in the stack.
-        /// </summary>
-        public int Count
-        {
-            get { return internalList.Count; }
         }
 
         /// <summary>
@@ -131,6 +131,14 @@ namespace Drivers.Framework.Collections
         private readonly UInt32List internalList;
 
         /// <summary>
+        ///     The number of elements in the stack.
+        /// </summary>
+        public int Count
+        {
+            get { return internalList.Count; }
+        }
+
+        /// <summary>
         ///     Creates a new stack with initial capacity of 5.
         /// </summary>
         [NoDebug]
@@ -147,14 +155,6 @@ namespace Drivers.Framework.Collections
         public UInt32Stack(int capacity)
         {
             internalList = new UInt32List(capacity);
-        }
-
-        /// <summary>
-        ///     The number of elements in the stack.
-        /// </summary>
-        public int Count
-        {
-            get { return internalList.Count; }
         }
 
         /// <summary>

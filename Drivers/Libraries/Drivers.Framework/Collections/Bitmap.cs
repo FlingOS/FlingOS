@@ -35,28 +35,28 @@ namespace Drivers.Framework.Collections
         private readonly byte[] bitmap;
         private int setCount;
 
-        [NoDebug]
-        public Bitmap(int size)
-        {
-            bitmap = new byte[size/8];
-        }
-
         public int Count
         {
             [NoDebug] get { return setCount; }
         }
 
         [NoDebug]
+        public Bitmap(int size)
+        {
+            bitmap = new byte[size/8];
+        }
+
+        [NoDebug]
         public void Set(int entry)
         {
-            bitmap[entry/8] = (byte) (bitmap[entry/8] | (1 << (entry%8)));
+            bitmap[entry/8] = (byte)(bitmap[entry/8] | (1 << (entry%8)));
             setCount++;
         }
 
         [NoDebug]
         public void Clear(int entry)
         {
-            bitmap[entry/8] = (byte) (bitmap[entry/8] & ~(1 << (entry%8)));
+            bitmap[entry/8] = (byte)(bitmap[entry/8] & ~(1 << (entry%8)));
             setCount--;
         }
 

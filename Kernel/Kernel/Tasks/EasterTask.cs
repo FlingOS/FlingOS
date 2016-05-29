@@ -42,17 +42,17 @@ namespace Kernel.Tasks
             {
                 if (ImageMap[i] == 'H')
                 {
-                    ImageMap[i] = (char) (' ' | 0xFF00);
+                    ImageMap[i] = (char)(' ' | 0xFF00);
                 }
                 else
                 {
-                    ImageMap[i] = (char) (' ' | 0x4400);
+                    ImageMap[i] = (char)(' ' | 0x4400);
                 }
             }
 
             while (true)
             {
-                char* VidMemPtr = (char*) 0xB8000;
+                char* VidMemPtr = (char*)0xB8000;
                 for (int i = 0; i < ImageMap.Length; i++)
                 {
                     VidMemPtr[i] = ImageMap[i];

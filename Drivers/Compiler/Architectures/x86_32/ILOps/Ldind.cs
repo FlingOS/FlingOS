@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
             StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
                 case OpCodes.Ldind_I1:
@@ -69,7 +69,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
                 isGCManaged = false,
-                isValue = (OpCodes) theOp.opCode.Value != OpCodes.Ldind_Ref
+                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
 
@@ -88,7 +88,7 @@ namespace Drivers.Compiler.Architectures.x86
             StackItem addressItem = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int bytesToLoad = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldind_U1:
                 case OpCodes.Ldind_I1:
@@ -114,7 +114,7 @@ namespace Drivers.Compiler.Architectures.x86
             //Pop address
             conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
 
-            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldind_Ref)
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldind_Ref)
             {
                 conversionState.Append(new Push {Size = OperandSize.Dword, Src = "[EBX]"});
             }
@@ -148,7 +148,7 @@ namespace Drivers.Compiler.Architectures.x86
                 sizeOnStackInBytes = bytesToLoad == 8 ? 8 : 4,
                 isFloat = false,
                 isGCManaged = false,
-                isValue = (OpCodes) theOp.opCode.Value != OpCodes.Ldind_Ref
+                isValue = (OpCodes)theOp.opCode.Value != OpCodes.Ldind_Ref
             });
         }
     }

@@ -77,8 +77,8 @@ namespace Drivers.Compiler.ASM.ASMOps
         {
             if (obj is ASMGlobalLabel)
             {
-                return Label.Equals(((ASMGlobalLabel) obj).Label) &&
-                       LabelType.Equals(((ASMGlobalLabel) obj).LabelType);
+                return Label.Equals(((ASMGlobalLabel)obj).Label) &&
+                       LabelType.Equals(((ASMGlobalLabel)obj).LabelType);
             }
             return base.Equals(obj);
         }

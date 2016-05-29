@@ -53,11 +53,11 @@ namespace Kernel.Pipes.Storage
         {
             byte[] buffer = new byte[sizeof(StoragePipeDataHeader) + sizeof(StoragePipeDataDiskInfo)*DiskIds.Length];
             StoragePipeDataHeader* HdrPtr =
-                (StoragePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
+                (StoragePipeDataHeader*)((byte*)ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
             HdrPtr->Count = DiskIds.Length;
             StoragePipeDataDiskInfo* DataPtr =
                 (StoragePipeDataDiskInfo*)
-                    ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(StoragePipeDataHeader));
+                    ((byte*)ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(StoragePipeDataHeader));
             for (int i = 0; i < DiskIds.Length; i++)
             {
                 DataPtr[i].Id = DiskIds[i];

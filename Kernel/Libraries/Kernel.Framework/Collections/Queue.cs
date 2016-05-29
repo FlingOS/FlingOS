@@ -16,12 +16,6 @@
 
         private Object[] InternalArray;
 
-        public Queue(int capacity, bool canExpand)
-        {
-            InternalArray = new Object[capacity];
-            CanExpand = canExpand;
-        }
-
         public int Count
         {
             get
@@ -35,6 +29,12 @@
         }
 
         public int Capacity => InternalArray.Length;
+
+        public Queue(int capacity, bool canExpand)
+        {
+            InternalArray = new Object[capacity];
+            CanExpand = canExpand;
+        }
 
         public void Push(Object val)
         {
@@ -127,12 +127,6 @@
 
         private uint[] InternalArray;
 
-        public UInt32Queue(int capacity, bool canExpand)
-        {
-            InternalArray = new uint[capacity];
-            CanExpand = canExpand;
-        }
-
         public int Count
         {
             get
@@ -148,6 +142,12 @@
         public int Capacity
         {
             get { return InternalArray.Length; }
+        }
+
+        public UInt32Queue(int capacity, bool canExpand)
+        {
+            InternalArray = new uint[capacity];
+            CanExpand = canExpand;
         }
 
         public void Push(uint val)

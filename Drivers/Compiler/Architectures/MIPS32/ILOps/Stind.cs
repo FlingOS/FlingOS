@@ -66,7 +66,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int bytesToStore = 0;
             bool isFloat = false;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Stind_I:
                     bytesToStore = 4;

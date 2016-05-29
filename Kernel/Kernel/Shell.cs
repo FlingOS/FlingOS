@@ -54,6 +54,14 @@ namespace Kernel
         protected bool terminating = false;
 
         /// <summary>
+        ///     Whether the shell is in the process of closing (/terminating) or not.
+        /// </summary>
+        public bool Terminating
+        {
+            get { return terminating; }
+        }
+
+        /// <summary>
         ///     Initialises a new shell instances that uses the default console.
         /// </summary>
         public Shell()
@@ -66,14 +74,6 @@ namespace Kernel
         {
             console = AConsole;
             keyboard = AKeyboard;
-        }
-
-        /// <summary>
-        ///     Whether the shell is in the process of closing (/terminating) or not.
-        /// </summary>
-        public bool Terminating
-        {
-            get { return terminating; }
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace Kernel
                 console.WriteLine(Ex.Message);
                 if (Ex is PageFaultException)
                 {
-                    console.WriteLine((String) "    - Address: " + ((PageFaultException) Ex).address);
-                    console.WriteLine((String) "    - Error code: " + ((PageFaultException) Ex).errorCode);
+                    console.WriteLine((String)"    - Address: " + ((PageFaultException)Ex).address);
+                    console.WriteLine((String)"    - Error code: " + ((PageFaultException)Ex).errorCode);
                 }
                 console.DefaultColour();
             }

@@ -26,9 +26,12 @@
 
 #endregion
 
+using System;
 using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
+using Object = Kernel.Framework.Object;
+using String = Kernel.Framework.String;
 
 namespace Kernel.FileSystems.Disk
 {
@@ -53,7 +56,7 @@ namespace Kernel.FileSystems.Disk
         {
             for (int i = 0; i < VolumeDescriptors.Count; i++)
             {
-                VolumeDescriptor desciptor = (VolumeDescriptor) VolumeDescriptors[i];
+                VolumeDescriptor desciptor = (VolumeDescriptor)VolumeDescriptors[i];
                 desciptor.Print();
             }
         }
@@ -76,7 +79,7 @@ namespace Kernel.FileSystems.Disk
             public VolumeDescriptor(DiskDevice disk, uint startBlock, uint numBlocks, byte[] data)
                 : base(disk, 0, 0)
             {
-                Code = (TypeCodes) data[0];
+                Code = (TypeCodes)data[0];
                 Id = ByteConverter.GetASCIIStringFromASCII(data, 1, 5);
                 Version = data[6];
             }
@@ -86,7 +89,7 @@ namespace Kernel.FileSystems.Disk
                 byte[] data = disk.NewBlockArray(numBlocks);
                 disk.ReadBlock(startBlock, numBlocks, data);
 
-                switch ((TypeCodes) data[0])
+                switch ((TypeCodes)data[0])
                 {
                     case TypeCodes.BootRecord:
                         return new BootRecord(disk, startBlock, numBlocks, data);
@@ -102,9 +105,9 @@ namespace Kernel.FileSystems.Disk
             public virtual void Print()
             {
                 BasicConsole.WriteLine("Volume Descriptor:");
-                BasicConsole.WriteLine("    > Type Code : " + (String) (byte) Code);
+                BasicConsole.WriteLine("    > Type Code : " + (String)(byte)Code);
                 BasicConsole.WriteLine("    > Id : " + Id);
-                BasicConsole.WriteLine("    > Version : " + (String) Version);
+                BasicConsole.WriteLine("    > Version : " + (String)Version);
             }
         }
 
@@ -189,14 +192,14 @@ namespace Kernel.FileSystems.Disk
                 BasicConsole.WriteLine("    Primary Volume Descriptor:");
                 BasicConsole.WriteLine("        > SystemIdentifier : " + SystemIdentifier);
                 BasicConsole.WriteLine("        > VolumeIdentifier : " + VolumeIdentifier);
-                BasicConsole.WriteLine("        > VolumeSpaceSize : " + (String) VolumeSpaceSize);
-                BasicConsole.WriteLine("        > VolumeSetSize : " + (String) VolumeSetSize);
-                BasicConsole.WriteLine("        > VolumeSequenceNumber : " + (String) VolumeSequenceNumber);
-                BasicConsole.WriteLine("        > LogicalBlockSize : " + (String) LogicalBlockSize);
-                BasicConsole.WriteLine("        > PathTableSize : " + (String) PathTableSize);
-                BasicConsole.WriteLine("        > Location_PathTable_TypeL : " + (String) Location_PathTable_TypeL);
+                BasicConsole.WriteLine("        > VolumeSpaceSize : " + (String)VolumeSpaceSize);
+                BasicConsole.WriteLine("        > VolumeSetSize : " + (String)VolumeSetSize);
+                BasicConsole.WriteLine("        > VolumeSequenceNumber : " + (String)VolumeSequenceNumber);
+                BasicConsole.WriteLine("        > LogicalBlockSize : " + (String)LogicalBlockSize);
+                BasicConsole.WriteLine("        > PathTableSize : " + (String)PathTableSize);
+                BasicConsole.WriteLine("        > Location_PathTable_TypeL : " + (String)Location_PathTable_TypeL);
                 BasicConsole.WriteLine("        > Location_PathTable_Optional_TypeL : " +
-                                       (String) Location_PathTable_Optional_TypeL);
+                                       (String)Location_PathTable_Optional_TypeL);
                 BasicConsole.WriteLine("        > VolumeSetIdentifier : " + VolumeSetIdentifier);
                 BasicConsole.WriteLine("        > PublisherIdentifier : " + PublisherIdentifier);
                 BasicConsole.WriteLine("        > DataPreparerIdentifier : " + DataPreparerIdentifier);
@@ -211,7 +214,7 @@ namespace Kernel.FileSystems.Disk
                                        VolumeExpirationDateTime.ConvertToString());
                 BasicConsole.WriteLine("        > VolumeEffectiveDateTime : " +
                                        VolumeEffectiveDateTime.ConvertToString());
-                BasicConsole.WriteLine("        > FileStructureVersion : " + (String) FileStructureVersion);
+                BasicConsole.WriteLine("        > FileStructureVersion : " + (String)FileStructureVersion);
                 BasicConsole.WriteLine("        Root directory: ");
                 BasicConsole.WriteLine(RootDirectory.ConvertToString());
             }
@@ -264,7 +267,7 @@ namespace Kernel.FileSystems.Disk
 
         public class DirectoryRecord : Object
         {
-            [System.Flags]
+            [Flags]
             public enum FileFlags : byte
             {
                 /// <summary>
@@ -323,7 +326,7 @@ namespace Kernel.FileSystems.Disk
                 LBALocation = ByteConverter.ToUInt32(data, offset + 2);
                 DataLength = ByteConverter.ToUInt32(data, offset + 10);
                 RecordingDateTime = new DateTime(data, offset + 18);
-                TheFileFlags = (FileFlags) data[offset + 25];
+                TheFileFlags = (FileFlags)data[offset + 25];
                 FileUnitSize = data[offset + 26];
                 FileInterleaveGapSize = data[offset + 27];
                 VolumeSequenceNumber = ByteConverter.ToUInt16(data, offset + 28);
@@ -337,16 +340,16 @@ namespace Kernel.FileSystems.Disk
             {
                 String result = "Directory record: ";
 
-                result += "\r\n     > RecordLength : " + (String) RecordLength;
-                result += "\r\n     > ExtAttrRecordLength : " + (String) ExtAttrRecordLength;
-                result += "\r\n     > LBALocation : " + (String) LBALocation;
-                result += "\r\n     > DataLength : " + (String) DataLength;
+                result += "\r\n     > RecordLength : " + (String)RecordLength;
+                result += "\r\n     > ExtAttrRecordLength : " + (String)ExtAttrRecordLength;
+                result += "\r\n     > LBALocation : " + (String)LBALocation;
+                result += "\r\n     > DataLength : " + (String)DataLength;
                 result += "\r\n     > RecordingDateTime : " + RecordingDateTime.ConvertToString();
-                result += "\r\n     > TheFileFlags : " + (String) (byte) TheFileFlags;
-                result += "\r\n     > FileUnitSize : " + (String) FileUnitSize;
-                result += "\r\n     > FileInterleaveGapSize : " + (String) FileInterleaveGapSize;
-                result += "\r\n     > VolumeSequenceNumber : " + (String) VolumeSequenceNumber;
-                result += "\r\n     > FileIdentifierLength : " + (String) FileIdentifierLength;
+                result += "\r\n     > TheFileFlags : " + (String)(byte)TheFileFlags;
+                result += "\r\n     > FileUnitSize : " + (String)FileUnitSize;
+                result += "\r\n     > FileInterleaveGapSize : " + (String)FileInterleaveGapSize;
+                result += "\r\n     > VolumeSequenceNumber : " + (String)VolumeSequenceNumber;
+                result += "\r\n     > FileIdentifierLength : " + (String)FileIdentifierLength;
                 result += "\r\n     > FileIdentifier : " + FileIdentifier;
 
                 return result;
@@ -375,7 +378,7 @@ namespace Kernel.FileSystems.Disk
 
                 public String ConvertToString()
                 {
-                    return (String) Day + "/" + Month + "/" + (YearsSince1990 + 1990) + " " + Hour + ":" + Minute + ":" +
+                    return (String)Day + "/" + Month + "/" + (YearsSince1990 + 1990) + " " + Hour + ":" + Minute + ":" +
                            Second;
                 }
             }

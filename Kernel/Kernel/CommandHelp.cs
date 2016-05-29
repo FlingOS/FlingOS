@@ -275,7 +275,7 @@ Safely reboots the computer."
         {
             for (int i = 0; i < CommandDescriptions.Count; i++)
             {
-                CommandDescription cmdDesc = (CommandDescription) CommandDescriptions[i];
+                CommandDescription cmdDesc = (CommandDescription)CommandDescriptions[i];
 
                 if (cmdDesc.CommandNameLower == command)
                 {

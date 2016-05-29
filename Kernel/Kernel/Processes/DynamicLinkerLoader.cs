@@ -55,12 +55,12 @@ namespace Kernel.Processes
 
             BasicConsole.WriteLine("Mapping free page for process...");
             void* unusedPAddr;
-            byte* destMemPtr = (byte*) VirtualMemoryManager.MapFreePage(
+            byte* destMemPtr = (byte*)VirtualMemoryManager.MapFreePage(
                 UserMode ? PageFlags.None : PageFlags.KernelOnly,
                 out unusedPAddr);
-            BasicConsole.WriteLine((String) "Physical address = " +
-                                   (uint) VirtualMemoryManager.GetPhysicalAddress(destMemPtr));
-            BasicConsole.WriteLine((String) "Virtual address = " + (uint) destMemPtr);
+            BasicConsole.WriteLine((String)"Physical address = " +
+                                   (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr));
+            BasicConsole.WriteLine((String)"Virtual address = " + (uint)destMemPtr);
 
             // Add the page to the current processes memory layout
             //  So we can access the memory while we load the process. 
@@ -69,8 +69,8 @@ namespace Kernel.Processes
             //  Note: The page fault will only be hit on starting a second process because
             //      the scheduler doesn't change the context when only one process is running.
             ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-                (uint) VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
-                (uint) destMemPtr);
+                (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
+                (uint)destMemPtr);
             // We could have been "scheduler interrupted" just after the map but just before the 
             //  add data page...
             //TODO: Hardware.Processes.ProcessManager.CurrentProcess.LoadMemLayout();
@@ -80,11 +80,11 @@ namespace Kernel.Processes
             byte[] readBuffer = new byte[4096];
             bytesRead = RawExeFile.GetStream().Read(readBuffer, 0, 4096);
             //BasicConsole.WriteLine("Copying data...");
-            MemoryUtils.MemCpy_32(destMemPtr, (byte*) ObjectUtilities.GetHandle(readBuffer) + Array.FieldsBytesSize,
-                (uint) bytesRead);
+            MemoryUtils.MemCpy_32(destMemPtr, (byte*)ObjectUtilities.GetHandle(readBuffer) + Array.FieldsBytesSize,
+                (uint)bytesRead);
 
             //BasicConsole.WriteLine("Converting destMemPtr...");
-            ThreadStartPoint mainMethod = (ThreadStartPoint) ObjectUtilities.GetObject(destMemPtr);
+            ThreadStartPoint mainMethod = (ThreadStartPoint)ObjectUtilities.GetObject(destMemPtr);
 
             //BasicConsole.WriteLine("Getting process name...");
             String name = RawExeFile.Name;
@@ -95,12 +95,12 @@ namespace Kernel.Processes
                 mainMethod, name, UserMode);
             //BasicConsole.WriteLine("Adding process' code page...");
             // Add code page to new processes memory layout
-            process.TheMemoryLayout.AddCodePage((uint) VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
-                (uint) destMemPtr);
+            process.TheMemoryLayout.AddCodePage((uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
+                (uint)destMemPtr);
 
             //BasicConsole.WriteLine("Removing process' code page from current process...");
             //Remove from current processes memory layout
-            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint) destMemPtr);
+            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
 
             //if (reenable)
             //{

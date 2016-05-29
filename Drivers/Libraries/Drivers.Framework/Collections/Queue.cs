@@ -44,12 +44,6 @@ namespace Drivers.Framework.Collections
 
         private Object[] InternalArray;
 
-        public Queue(int capacity, bool canExpand)
-        {
-            InternalArray = new Object[capacity];
-            CanExpand = canExpand;
-        }
-
         public int Count
         {
             get
@@ -65,6 +59,12 @@ namespace Drivers.Framework.Collections
         public int Capacity
         {
             get { return InternalArray.Length; }
+        }
+
+        public Queue(int capacity, bool canExpand)
+        {
+            InternalArray = new Object[capacity];
+            CanExpand = canExpand;
         }
 
         public void Push(Object val)
@@ -158,12 +158,6 @@ namespace Drivers.Framework.Collections
 
         private uint[] InternalArray;
 
-        public UInt32Queue(int capacity, bool canExpand)
-        {
-            InternalArray = new uint[capacity];
-            CanExpand = canExpand;
-        }
-
         public int Count
         {
             get
@@ -179,6 +173,12 @@ namespace Drivers.Framework.Collections
         public int Capacity
         {
             get { return InternalArray.Length; }
+        }
+
+        public UInt32Queue(int capacity, bool canExpand)
+        {
+            InternalArray = new uint[capacity];
+            CanExpand = canExpand;
         }
 
         public void Push(uint val)

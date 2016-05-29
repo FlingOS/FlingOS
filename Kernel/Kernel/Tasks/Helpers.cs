@@ -33,15 +33,15 @@ namespace Kernel.Tasks
             bool result = false;
 
             StartProcessRequest* StartRequest =
-                (StartProcessRequest*) Heap.AllocZeroed((uint) sizeof(StartProcessRequest), "DeviceShell.Execute");
+                (StartProcessRequest*)Heap.AllocZeroed((uint)sizeof(StartProcessRequest), "DeviceShell.Execute");
             try
             {
                 StartRequest->Name = NewProcName.GetCharPointer();
                 StartRequest->NameLength = NewProcName.Length;
                 StartRequest->CodePagesCount = 0;
                 uint[] DataPages = VirtualMemoryManager.GetBuiltInProcessVAddrs();
-                StartRequest->DataPages = (uint*) ((byte*) ObjectUtilities.GetHandle(DataPages) + Array.FieldsBytesSize);
-                StartRequest->DataPagesCount = (uint) DataPages.Length;
+                StartRequest->DataPages = (uint*)((byte*)ObjectUtilities.GetHandle(DataPages) + Array.FieldsBytesSize);
+                StartRequest->DataPagesCount = (uint)DataPages.Length;
                 StartRequest->MainMethod = ObjectUtilities.GetHandle(MainMethod);
 
                 uint ATADriverProcessId;

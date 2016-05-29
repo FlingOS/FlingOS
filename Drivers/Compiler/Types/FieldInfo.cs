@@ -70,7 +70,7 @@ namespace Drivers.Compiler.Types
                     object[] groupAttrs = UnderlyingInfo.GetCustomAttributes(typeof(GroupAttribute), false);
                     if (groupAttrs.Length > 0)
                     {
-                        GroupAttribute priorAttr = (GroupAttribute) groupAttrs[0];
+                        GroupAttribute priorAttr = (GroupAttribute)groupAttrs[0];
                         group = priorAttr.Name;
                     }
                     else

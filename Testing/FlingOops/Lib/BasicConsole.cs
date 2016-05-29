@@ -164,18 +164,18 @@ namespace FlingOops
             //  Lo-4-bits: Foreground
 
             //Black background
-            bg_colour = (char) 0x0000;
+            bg_colour = (char)0x0000;
             //White foreground
-            default_colour = (char) 0x0F00;
+            default_colour = (char)0x0F00;
             //Yellow foreground
-            warning_colour = (char) 0x0E00;
+            warning_colour = (char)0x0E00;
             //Red foreground
-            error_colour = (char) 0x0400;
+            error_colour = (char)0x0400;
             //Green foreground
-            success_colour = (char) 0x0200;
+            success_colour = (char)0x0200;
 
             //Background | Foreground
-            colour = (char) (bg_colour | default_colour);
+            colour = (char)(bg_colour | default_colour);
 
             Initialised = true;
 
@@ -217,7 +217,7 @@ namespace FlingOops
                 UART.SetColour_Black();
             }
 #elif x86
-            colour = (char) (bg_colour | (aText_colour & 0x0F00));
+            colour = (char)(bg_colour | (aText_colour & 0x0F00));
 #endif
         }
 
@@ -230,8 +230,8 @@ namespace FlingOops
         public static void SetBgColour(char aBg_colour)
         {
             if (!Initialised) return;
-            bg_colour = (char) (aBg_colour & 0xF000);
-            colour = (char) (bg_colour | (colour & 0x0F00));
+            bg_colour = (char)(aBg_colour & 0xF000);
+            colour = (char)(bg_colour | (colour & 0x0F00));
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace FlingOops
                 char* strPtr = str.GetCharPointer();
                 while (strLength > 0)
                 {
-                    vidMemPtr[0] = (char) ((*strPtr & 0x00FF) | colour);
+                    vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
 
                     strLength--;
                     vidMemPtr++;
@@ -457,7 +457,7 @@ namespace FlingOops
             char* vidMemPtr = vidMemBasePtr;
             while (strLength > 0)
             {
-                vidMemPtr[0] = (char) ((*strPtr & 0x00FF) | colour);
+                vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
 
                 strPtr++;
                 vidMemPtr++;
@@ -552,7 +552,7 @@ namespace FlingOops
         public static void DumpMemory(void* ptr, int size)
         {
             if (!Initialised) return;
-            uint* uPtr = (uint*) ptr;
+            uint* uPtr = (uint*)ptr;
             if (size%4 != 0)
             {
                 size += 3;
@@ -654,7 +654,7 @@ namespace FlingOops
         /// <summary>
         ///     A pointer to the start of the (character-based) video memory.
         /// </summary>
-        public static char* vidMemBasePtr = (char*) 0xB8000;
+        public static char* vidMemBasePtr = (char*)0xB8000;
 #endif
     }
 }

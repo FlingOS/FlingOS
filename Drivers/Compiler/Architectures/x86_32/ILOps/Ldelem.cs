@@ -46,7 +46,7 @@ namespace Drivers.Compiler.Architectures.x86
             int sizeToPush = 4;
             bool isFloat = false;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldelem:
                 {
@@ -144,7 +144,7 @@ namespace Drivers.Compiler.Architectures.x86
             bool signExtend = true;
             bool isFloat = false;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldelem:
                 {

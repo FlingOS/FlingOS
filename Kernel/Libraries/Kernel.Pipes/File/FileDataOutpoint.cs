@@ -53,11 +53,11 @@ namespace Kernel.Pipes.File
         {
             byte[] buffer = new byte[sizeof(FilePipeDataHeader) + sizeof(FilePipeDataFSInfo)*FSPrefixes.Length];
             FilePipeDataHeader* HdrPtr =
-                (FilePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
+                (FilePipeDataHeader*)((byte*)ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
             HdrPtr->Count = FSPrefixes.Length;
             FilePipeDataFSInfo* DataPtr =
                 (FilePipeDataFSInfo*)
-                    ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(FilePipeDataHeader));
+                    ((byte*)ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(FilePipeDataHeader));
             for (int i = 0; i < FSPrefixes.Length; i++)
             {
                 if (FSPrefixes[i].Length > 10)

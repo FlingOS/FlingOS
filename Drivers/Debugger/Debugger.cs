@@ -48,11 +48,6 @@ namespace Drivers.Debugger
         private bool terminating;
         private bool WaitingForNotification;
 
-        public Debugger()
-        {
-            MsgSerial = new Serial();
-        }
-
         public bool Terminating
         {
             get { return terminating; }
@@ -67,6 +62,11 @@ namespace Drivers.Debugger
         }
 
         public bool Ready { get; private set; }
+
+        public Debugger()
+        {
+            MsgSerial = new Serial();
+        }
 
         public void Dispose()
         {
@@ -110,7 +110,7 @@ namespace Drivers.Debugger
             }
             Ready = true;
 
-            Task.Run((Action) ProcessNotifications);
+            Task.Run((Action)ProcessNotifications);
         }
 
         private void ProcessNotifications()
@@ -207,7 +207,7 @@ namespace Drivers.Debugger
                         {
                             Id = Id,
                             Name = Line.Substring(Line.IndexOf(LineParts[3])),
-                            State = (Thread.States) Enum.Parse(typeof(Thread.States), LineParts[2].Replace(" ", ""))
+                            State = (Thread.States)Enum.Parse(typeof(Thread.States), LineParts[2].Replace(" ", ""))
                         });
                     }
                 }

@@ -181,13 +181,13 @@ namespace Drivers.Compiler.ASM
                     if (anASMOp.RequiresILLabel)
                     {
                         ASMText +=
-                            ((ASMLabel) TargetArchitecture.CreateASMOp(OpCodes.Label, anASMOp.ILLabelPosition, ""))
+                            ((ASMLabel)TargetArchitecture.CreateASMOp(OpCodes.Label, anASMOp.ILLabelPosition, ""))
                                 .Convert(TheBlock) + "\r\n";
                     }
 
                     if (anASMOp is ASMLabel)
                     {
-                        ASMLabel labelOp = (ASMLabel) anASMOp;
+                        ASMLabel labelOp = (ASMLabel)anASMOp;
                         if (labelOp.IsDebugOp)
                         {
                             DebugDataWriter.AddDebugOp(TheBlock.OriginMethodInfo.ID,
@@ -230,7 +230,7 @@ namespace Drivers.Compiler.ASM
             VoidDelegate onComplete = null;
             onComplete = delegate(object state)
             {
-                int index = (int) state;
+                int index = (int)state;
                 if (index < Blocks.Count)
                 {
                     string inputPath = Blocks[index].ASMOutputFilePath;

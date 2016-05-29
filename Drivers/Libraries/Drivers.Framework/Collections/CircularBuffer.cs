@@ -40,22 +40,6 @@ namespace Drivers.Framework.Collections
         private int ReadIdx = -1;
         private int WriteIdx = -1;
 
-        public CircularBuffer(int size)
-            : this(size, true)
-        {
-        }
-
-        public CircularBuffer(int size, bool throwExceptions)
-        {
-            ThrowExceptions = throwExceptions;
-            if (ThrowExceptions && size <= 0)
-            {
-                ExceptionMethods.Throw(
-                    new ArgumentException("Size of circular buffer cannot be less than or equal to zero!"));
-            }
-            _array = new Object[size];
-        }
-
         public int Count
         {
             get
@@ -75,6 +59,22 @@ namespace Drivers.Framework.Collections
         public int Size
         {
             get { return _array.Length; }
+        }
+
+        public CircularBuffer(int size)
+            : this(size, true)
+        {
+        }
+
+        public CircularBuffer(int size, bool throwExceptions)
+        {
+            ThrowExceptions = throwExceptions;
+            if (ThrowExceptions && size <= 0)
+            {
+                ExceptionMethods.Throw(
+                    new ArgumentException("Size of circular buffer cannot be less than or equal to zero!"));
+            }
+            _array = new Object[size];
         }
 
         public bool Push(Object obj)

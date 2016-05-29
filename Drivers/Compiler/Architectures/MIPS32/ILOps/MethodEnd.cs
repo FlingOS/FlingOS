@@ -44,7 +44,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             Type retType = conversionState.Input.TheMethodInfo.IsConstructor
                 ? typeof(void)
-                : ((MethodInfo) conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
+                : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
             TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
             if (retTypeInfo.SizeOnStackInBytes != 0)
             {
@@ -68,7 +68,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Get the return type
             Type retType = conversionState.Input.TheMethodInfo.IsConstructor
                 ? typeof(void)
-                : ((MethodInfo) conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
+                : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
             TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
             //Get the size of the return type on stack
             int retSize = retTypeInfo.SizeOnStackInBytes;

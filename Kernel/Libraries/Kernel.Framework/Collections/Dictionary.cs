@@ -36,14 +36,6 @@ namespace Kernel.Framework.Collections
 
         protected KeyValuePair* list;
 
-        public UInt32Dictionary()
-        {
-            list = null;
-            iterator = new Iterator(null);
-
-            Prefill(25);
-        }
-
         public uint this[uint key]
         {
             get
@@ -79,12 +71,20 @@ namespace Kernel.Framework.Collections
             }
         }
 
+        public UInt32Dictionary()
+        {
+            list = null;
+            iterator = new Iterator(null);
+
+            Prefill(25);
+        }
+
         private void Prefill(int capacity)
         {
             while (capacity-- > 0)
             {
                 KeyValuePair* newItem =
-                    (KeyValuePair*) Heap.Alloc((uint) sizeof(KeyValuePair), "UInt32Dictionary.Prefill");
+                    (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt32Dictionary.Prefill");
                 newItem->Empty = true;
                 newItem->Key = 0;
                 newItem->Value = 0;
@@ -143,7 +143,7 @@ namespace Kernel.Framework.Collections
             }
             if (Alloc)
             {
-                newItem = (KeyValuePair*) Heap.Alloc((uint) sizeof(KeyValuePair), "UInt32Dictionary.Add");
+                newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt32Dictionary.Add");
                 newNext = null;
                 newPrev = list;
                 newListNext = newItem;
@@ -164,7 +164,7 @@ namespace Kernel.Framework.Collections
 
         public void AddRange(uint keyStart, uint keyStep, uint[] values)
         {
-            if (ContainsAnyKeyInRange(keyStart, keyStart + (uint) values.Length*keyStep))
+            if (ContainsAnyKeyInRange(keyStart, keyStart + (uint)values.Length*keyStep))
             {
                 ExceptionMethods.Throw(new Exception("Cannot add duplicate key to the dictionary!"));
             }
@@ -252,9 +252,9 @@ namespace Kernel.Framework.Collections
 
         public void RemoveRange(uint keyStart, uint keyStep, uint numKeys)
         {
-            for (int i = (int) (numKeys - 1); i >= 0; i--)
+            for (int i = (int)(numKeys - 1); i >= 0; i--)
             {
-                uint currKey = keyStart + (uint) i*keyStep;
+                uint currKey = keyStart + (uint)i*keyStep;
                 Remove(currKey);
             }
         }
@@ -395,12 +395,6 @@ namespace Kernel.Framework.Collections
 
         protected KeyValuePair* list;
 
-        public UInt64Dictionary()
-        {
-            list = null;
-            iterator = new Iterator(list);
-        }
-
         public ulong this[ulong key]
         {
             get
@@ -436,6 +430,12 @@ namespace Kernel.Framework.Collections
             }
         }
 
+        public UInt64Dictionary()
+        {
+            list = null;
+            iterator = new Iterator(list);
+        }
+
         public void Add(ulong key, ulong value, bool SkipCheck = false)
         {
             if (!SkipCheck)
@@ -446,7 +446,7 @@ namespace Kernel.Framework.Collections
                 }
             }
 
-            KeyValuePair* newItem = (KeyValuePair*) Heap.Alloc((uint) sizeof(KeyValuePair), "UInt64Dictionary.Add");
+            KeyValuePair* newItem = (KeyValuePair*)Heap.Alloc((uint)sizeof(KeyValuePair), "UInt64Dictionary.Add");
             newItem->Key = key;
             newItem->Value = value;
             newItem->Next = null;
@@ -460,7 +460,7 @@ namespace Kernel.Framework.Collections
 
         public void AddRange(ulong keyStart, ulong keyStep, ulong[] values)
         {
-            if (ContainsItemInRange(keyStart, keyStart + (uint) values.Length*keyStep))
+            if (ContainsItemInRange(keyStart, keyStart + (uint)values.Length*keyStep))
             {
                 ExceptionMethods.Throw(new Exception("Cannot add duplicate key to the dictionary!"));
             }
@@ -501,9 +501,9 @@ namespace Kernel.Framework.Collections
 
         public void RemoveRange(ulong keyStart, ulong keyStep, ulong numKeys)
         {
-            for (int i = (int) (numKeys - 1); i >= 0; i--)
+            for (int i = (int)(numKeys - 1); i >= 0; i--)
             {
-                ulong currKey = keyStart + (ulong) i*keyStep;
+                ulong currKey = keyStart + (ulong)i*keyStep;
                 Remove(currKey);
             }
         }

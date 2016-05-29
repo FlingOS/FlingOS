@@ -110,18 +110,18 @@ namespace Kernel.Multiprocessing
             BasicConsole.WriteLine("Adding data page...");
 #endif
                 // Add the page to the processes memory layout
-                uint threadStackVirtAddr = (uint) newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
-                uint kernelStackVirtAddr = (uint) newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
+                uint threadStackVirtAddr = (uint)newThread.State->ThreadStackTop - Thread.ThreadStackTopOffset;
+                uint kernelStackVirtAddr = (uint)newThread.State->KernelStackTop - Thread.KernelStackTopOffset;
                 if (ProcessManager.KernelProcess != null && this != ProcessManager.KernelProcess)
                 {
-                    TheMemoryLayout.AddDataPage((uint) threadStackPhysAddr, threadStackVirtAddr);
-                    TheMemoryLayout.AddKernelPage((uint) kernelStackPhysAddr, kernelStackVirtAddr);
-                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage((uint) kernelStackPhysAddr,
+                    TheMemoryLayout.AddDataPage((uint)threadStackPhysAddr, threadStackVirtAddr);
+                    TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
+                    ProcessManager.KernelProcess.TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr,
                         kernelStackVirtAddr);
                 }
                 else
                 {
-                    TheMemoryLayout.AddKernelPage((uint) kernelStackPhysAddr, kernelStackVirtAddr);
+                    TheMemoryLayout.AddKernelPage((uint)kernelStackPhysAddr, kernelStackVirtAddr);
                 }
 
 #if PROCESS_TRACE
@@ -160,7 +160,7 @@ namespace Kernel.Multiprocessing
         {
             for (int i = 0; i < Threads.Count; i++)
             {
-                ((Thread) Threads[i]).Suspend = true;
+                ((Thread)Threads[i]).Suspend = true;
             }
         }
 
@@ -168,7 +168,7 @@ namespace Kernel.Multiprocessing
         {
             for (int i = 0; i < Threads.Count; i++)
             {
-                ((Thread) Threads[i]).Suspend = false;
+                ((Thread)Threads[i]).Suspend = false;
             }
         }
     }

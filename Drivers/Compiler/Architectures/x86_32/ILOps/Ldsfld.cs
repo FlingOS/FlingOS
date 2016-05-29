@@ -44,7 +44,7 @@ namespace Drivers.Compiler.Architectures.x86
             int metadataToken = Utilities.ReadInt32(theOp.ValueBytes, 0);
             FieldInfo theField = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveField(metadataToken);
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldsfld:
                 {
@@ -96,7 +96,7 @@ namespace Drivers.Compiler.Architectures.x86
             conversionState.AddExternalLabel(fieldID);
 
             //Load the field or field address
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldsfld:
                 {

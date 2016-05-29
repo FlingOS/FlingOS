@@ -91,7 +91,7 @@ namespace Drivers.Compiler.Architectures.x86
                 conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
                 //Pop item A
                 conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EAX"});
-                if ((OpCodes) theOp.opCode.Value == OpCodes.Rem_Un)
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Rem_Un)
                 {
                     //Unsigned extend A to EAX:EDX
                     conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "EDX"});

@@ -247,49 +247,49 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine(" > Initialising system calls...");
                 ProcessManager.CurrentProcess.SyscallHandler = SyscallHandler;
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.RegisterISRHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.DeregisterISRHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.RegisterIRQHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.DeregisterIRQHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.RegisterSyscallHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.DeregisterSyscallHandler);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.StartProcess);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetNumProcesses);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetProcessList);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.StartThread);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.SleepThread);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.WakeThread);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.RegisterPipeOutpoint);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetNumPipeOutpoints);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetPipeOutpoints);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.WaitOnPipeCreate);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.CreatePipe);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.ReadPipe);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.WritePipe);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.SendMessage);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.ReceiveMessage);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.RequestPages);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.UnmapPages);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.SharePages);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.IsPhysicalAddressMapped);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.IsVirtualAddressMapped);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetPhysicalAddress);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetVirtualAddress);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.CreateSemaphore);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.ShareSemaphore);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.ReleaseSemaphore);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.WaitSemaphore);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.SignalSemaphore);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.RegisterDevice);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.DeregisterDevice);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetNumDevices);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetDeviceList);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.GetDeviceInfo);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.ClaimDevice);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.ReleaseDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterISRHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterISRHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterIRQHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterIRQHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterSyscallHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterSyscallHandler);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartProcess);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumProcesses);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetProcessList);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StartThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SleepThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WakeThread);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterPipeOutpoint);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumPipeOutpoints);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPipeOutpoints);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitOnPipeCreate);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreatePipe);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SendMessage);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReceiveMessage);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RequestPages);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.UnmapPages);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SharePages);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsPhysicalAddressMapped);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.IsVirtualAddressMapped);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetPhysicalAddress);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetVirtualAddress);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreateSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ShareSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WaitSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SignalSemaphore);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetNumDevices);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetDeviceList);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetDeviceInfo);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ClaimDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseDevice);
 
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.StatFS);
-                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int) SystemCallNumbers.InitFS);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StatFS);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.InitFS);
 
                 //ProcessManager.CurrentProcess.OutputMemTrace = true;
 
@@ -447,7 +447,7 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Popping queued info object...");
 #endif
-                    DeferredSyscallInfo info = (DeferredSyscallInfo) DeferredSyscallsInfo_Queued.Pop();
+                    DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Queued.Pop();
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Resuming scheduler...");
 #endif
@@ -471,7 +471,7 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Getting data...");
 #endif
-                    SystemCallNumbers SysCallNumber = (SystemCallNumbers) CallerThread.SysCallNumber;
+                    SystemCallNumbers SysCallNumber = (SystemCallNumbers)CallerThread.SysCallNumber;
                     uint Param1 = CallerThread.Param1;
                     uint Param2 = CallerThread.Param2;
                     uint Param3 = CallerThread.Param3;
@@ -540,11 +540,11 @@ namespace Kernel.Tasks
 #endif
 
                     Process NewProcess = ProcessManager.CreateProcess(Param2 == 1 || CallerProcess.UserMode,
-                        CallerProcess, (StartProcessRequest*) Param1);
+                        CallerProcess, (StartProcessRequest*)Param1);
                     ProcessManager.RegisterProcess(NewProcess, Scheduler.Priority.Normal);
 
                     Return2 = NewProcess.Id;
-                    Return3 = ((Thread) NewProcess.Threads[0]).Id;
+                    Return3 = ((Thread)NewProcess.Threads[0]).Id;
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Process - done.");
@@ -561,7 +561,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Get Num Processes");
 #endif
 
-                    Return2 = (uint) ProcessManager.Processes.Count;
+                    Return2 = (uint)ProcessManager.Processes.Count;
                     result = SystemCallResults.OK;
 
 #if DSC_TRACE
@@ -582,16 +582,16 @@ namespace Kernel.Tasks
                     // Need access to the request structure
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
-                    ProcessDescriptor* ProcessList = (ProcessDescriptor*) Param1;
-                    int MaxDescriptors = (int) Param2;
+                    ProcessDescriptor* ProcessList = (ProcessDescriptor*)Param1;
+                    int MaxDescriptors = (int)Param2;
 
                     for (int i = 0; i < MaxDescriptors && i < ProcessManager.Processes.Count; i++)
                     {
-                        Process AProcess = (Process) ProcessManager.Processes[i];
+                        Process AProcess = (Process)ProcessManager.Processes[i];
                         ProcessDescriptor* ADescriptor = ProcessList + i;
                         ADescriptor->Id = AProcess.Id;
                         ADescriptor->NumThreads = AProcess.Threads.Count;
-                        ADescriptor->Priority = (int) AProcess.Priority;
+                        ADescriptor->Priority = (int)AProcess.Priority;
                         ADescriptor->UserMode = AProcess.UserMode;
                     }
 
@@ -615,7 +615,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Start Thread");
 #endif
                     Return2 =
-                        CallerProcess.CreateThread((ThreadStartPoint) ObjectUtilities.GetObject((void*) Param1),
+                        CallerProcess.CreateThread((ThreadStartPoint)ObjectUtilities.GetObject((void*)Param1),
                             "[From sys call]").Id;
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread - done.");
@@ -634,12 +634,12 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Register Pipe Outpoint");
 #endif
                     PipeOutpoint outpoint;
-                    bool registered = PipeManager.RegisterPipeOutpoint(CallerProcess.Id, (PipeClasses) Param1,
-                        (PipeSubclasses) Param2, (int) Param3, out outpoint);
+                    bool registered = PipeManager.RegisterPipeOutpoint(CallerProcess.Id, (PipeClasses)Param1,
+                        (PipeSubclasses)Param2, (int)Param3, out outpoint);
                     if (registered)
                     {
-                        if ((PipeClasses) Param1 == PipeClasses.File &&
-                            (PipeSubclasses) Param2 == PipeSubclasses.File_Data_Out)
+                        if ((PipeClasses)Param1 == PipeClasses.File &&
+                            (PipeSubclasses)Param2 == PipeSubclasses.File_Data_Out)
                         {
                             ProcessManager.Semaphore_Signal(FilePipeAvailable_SemaphoreId, ProcessManager.KernelProcess);
                         }
@@ -667,12 +667,12 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Get Num Pipe Outpoints");
 #endif
                     int numOutpoints;
-                    bool obtained = PipeManager.GetNumPipeOutpoints((PipeClasses) Param1, (PipeSubclasses) Param2,
+                    bool obtained = PipeManager.GetNumPipeOutpoints((PipeClasses)Param1, (PipeSubclasses)Param2,
                         out numOutpoints);
                     if (obtained)
                     {
                         result = SystemCallResults.OK;
-                        Return2 = (uint) numOutpoints;
+                        Return2 = (uint)numOutpoints;
                     }
                     else
                     {
@@ -695,8 +695,8 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Get Pipe Outpoints");
 #endif
 
-                    bool obtained = PipeManager.GetPipeOutpoints(CallerProcess, (PipeClasses) Param1,
-                        (PipeSubclasses) Param2, (PipeOutpointsRequest*) Param3);
+                    bool obtained = PipeManager.GetPipeOutpoints(CallerProcess, (PipeClasses)Param1,
+                        (PipeSubclasses)Param2, (PipeOutpointsRequest*)Param3);
                     if (obtained)
                     {
                         result = SystemCallResults.OK;
@@ -723,7 +723,7 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Create Pipe");
 #endif
 
-                    bool created = PipeManager.CreatePipe(CallerProcess.Id, Param1, (CreatePipeRequest*) Param2);
+                    bool created = PipeManager.CreatePipe(CallerProcess.Id, Param1, (CreatePipeRequest*)Param2);
                     if (created)
                     {
                         result = SystemCallResults.OK;
@@ -751,7 +751,7 @@ namespace Kernel.Tasks
 #endif
 
                     bool waiting = PipeManager.WaitOnPipeCreate(CallerProcess.Id, CallerThread.Id,
-                        (WaitOnPipeCreateRequest*) Param1);
+                        (WaitOnPipeCreateRequest*)Param1);
                     if (waiting)
                     {
                         result = SystemCallResults.Deferred;
@@ -780,7 +780,7 @@ namespace Kernel.Tasks
 
                     // Need access to calling process' memory to be able to read values from request structure
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-                    ReadPipeRequest* RequestPtr = (ReadPipeRequest*) Param1;
+                    ReadPipeRequest* RequestPtr = (ReadPipeRequest*)Param1;
                     int PipeId = RequestPtr->PipeId;
                     bool Blocking = RequestPtr->Blocking;
                     ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -817,7 +817,7 @@ namespace Kernel.Tasks
 
                     // Need access to calling process' memory to be able to read values from request structure
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-                    ReadPipeRequest* RequestPtr = (ReadPipeRequest*) Param1;
+                    ReadPipeRequest* RequestPtr = (ReadPipeRequest*)Param1;
                     int PipeId = RequestPtr->PipeId;
                     bool Blocking = RequestPtr->Blocking;
                     ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -859,7 +859,7 @@ namespace Kernel.Tasks
                         uint ptr = 0xFFFFFFFF;
                         uint[] pAddrs = null;
 
-                        int count = (int) Param3;
+                        int count = (int)Param3;
 
                         // Param1: Start Phys or 0xFFFFFFFF
                         // Param2: Start Virt or 0xFFFFFFFF
@@ -876,14 +876,14 @@ namespace Kernel.Tasks
                                 void* unusedPAddr;
                                 if (CallerProcess == ProcessManager.KernelProcess)
                                 {
-                                    ptr = (uint) VirtualMemoryManager.MapFreePagesForKernel(
+                                    ptr = (uint)VirtualMemoryManager.MapFreePagesForKernel(
                                         CallerProcess.UserMode
                                             ? PageFlags.None
                                             : PageFlags.KernelOnly, count, out unusedPAddr);
                                 }
                                 else
                                 {
-                                    ptr = (uint) VirtualMemoryManager.MapFreePages(
+                                    ptr = (uint)VirtualMemoryManager.MapFreePages(
                                         CallerProcess.UserMode
                                             ? PageFlags.None
                                             : PageFlags.KernelOnly, count, out unusedPAddr);
@@ -898,13 +898,13 @@ namespace Kernel.Tasks
                                 BasicConsole.WriteLine("Request virtual address: " + (Framework.String)Param2);
                                 BasicConsole.WriteLine("Request count: " + (Framework.String)count);
 #endif
-                                if (!VirtualMemoryManager.AreAnyVirtualMapped(Param2, (uint) count))
+                                if (!VirtualMemoryManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
 #if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
                                     void* unusedPAddr;
-                                    ptr = (uint) VirtualMemoryManager.MapFreePages(
+                                    ptr = (uint)VirtualMemoryManager.MapFreePages(
                                         CallerProcess.UserMode
                                             ? PageFlags.None
                                             : PageFlags.KernelOnly, count, Param2,
@@ -927,21 +927,21 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Specific physical, Any virtual");
 #endif
-                                if (!VirtualMemoryManager.AreAnyPhysicalMapped(Param1, (uint) count))
+                                if (!VirtualMemoryManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                 {
 #if DSC_TRACE
                                     BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
                                     if (CallerProcess == ProcessManager.KernelProcess)
                                     {
-                                        ptr = (uint) VirtualMemoryManager.MapFreePhysicalPagesForKernel(
+                                        ptr = (uint)VirtualMemoryManager.MapFreePhysicalPagesForKernel(
                                             CallerProcess.UserMode
                                                 ? PageFlags.None
                                                 : PageFlags.KernelOnly, count, Param1);
                                     }
                                     else
                                     {
-                                        ptr = (uint) VirtualMemoryManager.MapFreePhysicalPages(
+                                        ptr = (uint)VirtualMemoryManager.MapFreePhysicalPages(
                                             CallerProcess.UserMode
                                                 ? PageFlags.None
                                                 : PageFlags.KernelOnly, count, Param1);
@@ -955,14 +955,14 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 BasicConsole.WriteLine("DSC: Request pages : Specific physical, Specific virtual");
 #endif
-                                if (!VirtualMemoryManager.AreAnyVirtualMapped(Param2, (uint) count))
+                                if (!VirtualMemoryManager.AreAnyVirtualMapped(Param2, (uint)count))
                                 {
-                                    if (!VirtualMemoryManager.AreAnyPhysicalMapped(Param1, (uint) count))
+                                    if (!VirtualMemoryManager.AreAnyPhysicalMapped(Param1, (uint)count))
                                     {
 #if DSC_TRACE
                                         BasicConsole.WriteLine("DSC: Request pages : Okay to map");
 #endif
-                                        ptr = (uint) VirtualMemoryManager.MapFreePages(
+                                        ptr = (uint)VirtualMemoryManager.MapFreePages(
                                             CallerProcess.UserMode
                                                 ? PageFlags.None
                                                 : PageFlags.KernelOnly, count, Param2,
@@ -1057,7 +1057,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Create semaphore");
 #endif
                     // Param1: Limit
-                    Return2 = (uint) ProcessManager.Semaphore_Allocate((int) Param1, CallerProcess);
+                    Return2 = (uint)ProcessManager.Semaphore_Allocate((int)Param1, CallerProcess);
                     result = SystemCallResults.OK;
                     break;
                 case SystemCallNumbers.ShareSemaphore:
@@ -1067,7 +1067,7 @@ namespace Kernel.Tasks
                     // Param1: Id
                     // Param2: New owner Id
                 {
-                    bool added = ProcessManager.Semaphore_AddOwner((int) Param1, Param2, CallerProcess);
+                    bool added = ProcessManager.Semaphore_AddOwner((int)Param1, Param2, CallerProcess);
                     result = added ? SystemCallResults.OK : SystemCallResults.Fail;
                 }
 
@@ -1083,10 +1083,10 @@ namespace Kernel.Tasks
 #endif
                     // Param1: Id
                 {
-                    bool removed = ProcessManager.Semaphore_RemoveOwner((int) Param1, CallerProcess.Id, CallerProcess);
+                    bool removed = ProcessManager.Semaphore_RemoveOwner((int)Param1, CallerProcess.Id, CallerProcess);
                     if (removed)
                     {
-                        ProcessManager.Semaphore_CheckForDeallocate((int) Param1);
+                        ProcessManager.Semaphore_CheckForDeallocate((int)Param1);
                     }
                     result = removed ? SystemCallResults.OK : SystemCallResults.Fail;
                 }
@@ -1103,7 +1103,7 @@ namespace Kernel.Tasks
 #endif
                     // Param1: Id
                 {
-                    int waitResult = ProcessManager.Semaphore_Wait((int) Param1, CallerProcess, CallerThread);
+                    int waitResult = ProcessManager.Semaphore_Wait((int)Param1, CallerProcess, CallerThread);
                     result = waitResult == -1
                         ? SystemCallResults.Fail
                         : (waitResult == 1 ? SystemCallResults.OK : SystemCallResults.OK_NoWake);
@@ -1122,9 +1122,9 @@ namespace Kernel.Tasks
 
                 {
                     ulong DeviceId;
-                    result = DeviceManager.RegisterDevice((DeviceDescriptor*) Param1, out DeviceId, CallerProcess);
-                    Return2 = (uint) DeviceId;
-                    Return3 = (uint) (DeviceId >> 32);
+                    result = DeviceManager.RegisterDevice((DeviceDescriptor*)Param1, out DeviceId, CallerProcess);
+                    Return2 = (uint)DeviceId;
+                    Return3 = (uint)(DeviceId >> 32);
                 }
 
 #if DSC_TRACE
@@ -1142,7 +1142,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Deregister device");
 #endif
 
-                    result = DeviceManager.DeregisterDevice(Param1 | ((ulong) Param2 << 32), CallerProcess);
+                    result = DeviceManager.DeregisterDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Deregister device - end");
@@ -1162,7 +1162,7 @@ namespace Kernel.Tasks
                 {
                     int num;
                     result = DeviceManager.GetNumDevices(out num, CallerProcess);
-                    Return2 = (uint) num;
+                    Return2 = (uint)num;
                 }
 
 #if DSC_TRACE
@@ -1180,7 +1180,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Get device list");
 #endif
 
-                    result = DeviceManager.GetDeviceList((DeviceDescriptor*) Param1, (int) Param2, CallerProcess);
+                    result = DeviceManager.GetDeviceList((DeviceDescriptor*)Param1, (int)Param2, CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Get device list - end");
@@ -1197,7 +1197,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Get device info");
 #endif
 
-                    result = DeviceManager.GetDeviceInfo(Param1 | ((ulong) Param2 << 32), (DeviceDescriptor*) Param3,
+                    result = DeviceManager.GetDeviceInfo(Param1 | ((ulong)Param2 << 32), (DeviceDescriptor*)Param3,
                         CallerProcess);
 
 #if DSC_TRACE
@@ -1215,7 +1215,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Claim device");
 #endif
 
-                    result = DeviceManager.ClaimDevice(Param1 | ((ulong) Param2 << 32), CallerProcess);
+                    result = DeviceManager.ClaimDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Claim device - end");
@@ -1232,7 +1232,7 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("DSC: Release device");
 #endif
 
-                    result = DeviceManager.ReleaseDevice(Param1 | ((ulong) Param2 << 32), CallerProcess);
+                    result = DeviceManager.ReleaseDevice(Param1 | ((ulong)Param2 << 32), CallerProcess);
 
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Release device - end");
@@ -1264,30 +1264,30 @@ namespace Kernel.Tasks
                     // Param 2 : char[][] (Mappings)
                     // Param 3 : uint[]   (Processes)
 
-                    int Count = (int) Param1;
+                    int Count = (int)Param1;
                     if (Count == 0)
                     {
                         for (int i = 0; i < FileSystemAccessors.Count; i++)
                         {
-                            FileSystemAccessor fsmi = (FileSystemAccessor) FileSystemAccessors[i];
+                            FileSystemAccessor fsmi = (FileSystemAccessor)FileSystemAccessors[i];
                             if (fsmi.MappingPrefixes != null)
                             {
                                 Count += fsmi.MappingPrefixes.Length;
                             }
                         }
-                        Return2 = (uint) Count;
+                        Return2 = (uint)Count;
                     }
                     else
                     {
-                        char* MappingsPtr = (char*) Param2;
-                        uint* ProcessesPtr = (uint*) Param3;
+                        char* MappingsPtr = (char*)Param2;
+                        uint* ProcessesPtr = (uint*)Param3;
 
                         ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
                         int ActualCount = 0;
                         for (int i = 0; i < FileSystemAccessors.Count && ActualCount < Count; i++)
                         {
-                            FileSystemAccessor fsmi = (FileSystemAccessor) FileSystemAccessors[i];
+                            FileSystemAccessor fsmi = (FileSystemAccessor)FileSystemAccessors[i];
                             if (fsmi.MappingPrefixes != null)
                             {
                                 for (int j = 0;
@@ -1306,7 +1306,7 @@ namespace Kernel.Tasks
                             }
                         }
 
-                        Return2 = (uint) ActualCount;
+                        Return2 = (uint)ActualCount;
 
                         ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
                     }
@@ -1319,7 +1319,7 @@ namespace Kernel.Tasks
                 default:
 //#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
-                    BasicConsole.WriteLine((uint) syscallNumber);
+                    BasicConsole.WriteLine((uint)syscallNumber);
 //#endif
                     break;
             }
@@ -1331,7 +1331,7 @@ namespace Kernel.Tasks
             uint Return2, uint Return3, uint Return4)
         {
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
-            CallerThread.Return1 = (uint) (result == SystemCallResults.OK_NoWake ? SystemCallResults.OK : result);
+            CallerThread.Return1 = (uint)(result == SystemCallResults.OK_NoWake ? SystemCallResults.OK : result);
             CallerThread.Return2 = Return2;
             CallerThread.Return3 = Return3;
             CallerThread.Return4 = Return4;
@@ -1365,7 +1365,7 @@ namespace Kernel.Tasks
 
                         for (int j = 0; j < FileSystemAccessors.Count; j++)
                         {
-                            FileSystemAccessor ExistingAccessor = (FileSystemAccessor) FileSystemAccessors[j];
+                            FileSystemAccessor ExistingAccessor = (FileSystemAccessor)FileSystemAccessors[j];
                             if (ExistingAccessor.RemoteProcessId == Descriptor.ProcessId)
                             {
                                 PipeExists = true;
@@ -1410,7 +1410,7 @@ namespace Kernel.Tasks
             {
                 BasicConsole.WriteLine("KT File Management > Initialising file system manager...");
 
-                FileSystemAccessor accessor = (FileSystemAccessor) FileSystemAccessors[i];
+                FileSystemAccessor accessor = (FileSystemAccessor)FileSystemAccessors[i];
                 accessor.StatFS();
             }
         }
@@ -1518,7 +1518,7 @@ namespace Kernel.Tasks
             {
                 //BasicConsole.WriteLine("Deferring syscall...");
                 //BasicConsole.WriteLine("Popping unqueued info object...");
-                DeferredSyscallInfo info = (DeferredSyscallInfo) DeferredSyscallsInfo_Unqueued.Pop();
+                DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
                 //BasicConsole.WriteLine("Setting info...");
                 info.ProcessId = callerProcessId;
                 info.ThreadId = callerThreadId;
@@ -1531,7 +1531,7 @@ namespace Kernel.Tasks
                 //BasicConsole.WriteLine("Signaled.");
             }
 
-            return (int) result;
+            return (int)result;
         }
 
         /// <summary>
@@ -1557,7 +1557,7 @@ namespace Kernel.Tasks
         {
             SystemCallResults result = SystemCallResults.Unhandled;
 
-            switch ((SystemCallNumbers) syscallNumber)
+            switch ((SystemCallNumbers)syscallNumber)
             {
                 case SystemCallNumbers.RegisterISRHandler:
 
@@ -1566,7 +1566,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register ISR Handler");
 #endif
-                    if (SysCall_RegisterISRHandler((int) param1, param2, callerProcessId))
+                    if (SysCall_RegisterISRHandler((int)param1, param2, callerProcessId))
                     {
                         result = SystemCallResults.OK;
                     }
@@ -1585,7 +1585,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister ISR Handler");
 #endif
-                    SysCall_DeregisterISRHandler((int) param1, callerProcessId);
+                    SysCall_DeregisterISRHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
 
                     #endregion
@@ -1598,7 +1598,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register IRQ Handler");
 #endif
-                    if (SysCall_RegisterIRQHandler((int) param1, param2, callerProcessId))
+                    if (SysCall_RegisterIRQHandler((int)param1, param2, callerProcessId))
                     {
                         result = SystemCallResults.OK;
                     }
@@ -1617,7 +1617,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister IRQ Handler");
 #endif
-                    SysCall_DeregisterIRQHandler((int) param1, callerProcessId);
+                    SysCall_DeregisterIRQHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
 
                     #endregion
@@ -1630,7 +1630,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Register Syscall Handler");
 #endif
-                    if (SysCall_RegisterSyscallHandler((int) param1, param2, callerProcessId))
+                    if (SysCall_RegisterSyscallHandler((int)param1, param2, callerProcessId))
                     {
                         result = SystemCallResults.OK;
                     }
@@ -1649,7 +1649,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Deregister Syscall Handler");
 #endif
-                    SysCall_DeregisterSyscallHandler((int) param1, callerProcessId);
+                    SysCall_DeregisterSyscallHandler((int)param1, callerProcessId);
                     result = SystemCallResults.OK;
 
                     #endregion
@@ -1710,7 +1710,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
     //BasicConsole.WriteLine("System call : Sleep Thread");
 #endif
-                    SysCall_Sleep((int) param1, callerProcessId, callerThreadId);
+                    SysCall_Sleep((int)param1, callerProcessId, callerThreadId);
                     result = SystemCallResults.OK;
 
                     #endregion
@@ -2005,9 +2005,9 @@ namespace Kernel.Tasks
                     if (CallerProcess.TheMemoryLayout.ContainsAllVirtualAddresses(param1, param2, 4096u))
                     {
                         Process TargetProcess = ProcessManager.GetProcessById(param3);
-                        if (!TargetProcess.TheMemoryLayout.ContainsAnyVirtualAddresses(param1, (int) param2*4096))
+                        if (!TargetProcess.TheMemoryLayout.ContainsAnyVirtualAddresses(param1, (int)param2*4096))
                         {
-                            if (TargetProcess.SyscallsToHandle.IsSet((int) SystemCallNumbers.AcceptPages) &&
+                            if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.AcceptPages) &&
                                 TargetProcess.SyscallHandler != null)
                             {
                                 uint XReturn2 = 0;
@@ -2016,11 +2016,11 @@ namespace Kernel.Tasks
                                 ProcessManager.SwitchProcess(param3, -1);
                                 SystemCallResults AcceptPagesResult =
                                     (SystemCallResults)
-                                        TargetProcess.SyscallHandler((uint) SystemCallNumbers.AcceptPages, param1,
+                                        TargetProcess.SyscallHandler((uint)SystemCallNumbers.AcceptPages, param1,
                                             param2, 0, ref XReturn2, ref XReturn3, ref XReturn4, CallerProcess.Id,
                                             0xFFFFFFFF);
                                 ProcessManager.SwitchProcess(ProcessManager.KernelProcess.Id,
-                                    (int) DeferredSyscallsThread.Id);
+                                    (int)DeferredSyscallsThread.Id);
                                 if (AcceptPagesResult == SystemCallResults.OK)
                                 {
                                     //Suspend the target process until the memory has actually been added to its layout
@@ -2093,7 +2093,7 @@ namespace Kernel.Tasks
 #endif
                     // Param1: Id
                 {
-                    bool signalResult = ProcessManager.Semaphore_Signal((int) param1,
+                    bool signalResult = ProcessManager.Semaphore_Signal((int)param1,
                         ProcessManager.GetProcessById(callerProcessId));
                     result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
                 }
@@ -2271,7 +2271,7 @@ namespace Kernel.Tasks
                 {
                     theProcess = ProcessManager.GetProcessById(callerProcessId);
 
-                    theProcess.ISRHandler = (ISRHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
+                    theProcess.ISRHandler = (ISRHanderDelegate)ObjectUtilities.GetObject((void*)handlerAddr);
                     return true;
                 }
                 return false;
@@ -2286,7 +2286,7 @@ namespace Kernel.Tasks
 
             if (handlerAddr != 0xFFFFFFFF)
             {
-                theProcess.ISRHandler = (ISRHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
+                theProcess.ISRHandler = (ISRHanderDelegate)ObjectUtilities.GetObject((void*)handlerAddr);
             }
 
             theProcess.ISRsToHandle.Set(ISRNum);
@@ -2328,7 +2328,7 @@ namespace Kernel.Tasks
                 {
                     theProcess = ProcessManager.GetProcessById(callerProcessId);
 
-                    theProcess.IRQHandler = (IRQHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
+                    theProcess.IRQHandler = (IRQHanderDelegate)ObjectUtilities.GetObject((void*)handlerAddr);
                     return true;
                 }
                 return false;
@@ -2343,12 +2343,12 @@ namespace Kernel.Tasks
 
             if (handlerAddr != 0xFFFFFFFF)
             {
-                theProcess.IRQHandler = (IRQHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
+                theProcess.IRQHandler = (IRQHanderDelegate)ObjectUtilities.GetObject((void*)handlerAddr);
             }
 
             theProcess.IRQsToHandle.Set(IRQNum);
 
-            x86Interrupts.EnableIRQ((byte) IRQNum);
+            x86Interrupts.EnableIRQ((byte)IRQNum);
 
             return true;
         }
@@ -2386,7 +2386,7 @@ namespace Kernel.Tasks
                 {
                     theProcess = ProcessManager.GetProcessById(callerProcessId);
 
-                    theProcess.SyscallHandler = (SyscallHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
+                    theProcess.SyscallHandler = (SyscallHanderDelegate)ObjectUtilities.GetObject((void*)handlerAddr);
                     return true;
                 }
                 return false;
@@ -2396,7 +2396,7 @@ namespace Kernel.Tasks
 
             if (handlerAddr != 0xFFFFFFFF)
             {
-                theProcess.SyscallHandler = (SyscallHanderDelegate) ObjectUtilities.GetObject((void*) handlerAddr);
+                theProcess.SyscallHandler = (SyscallHanderDelegate)ObjectUtilities.GetObject((void*)handlerAddr);
             }
 
             theProcess.SyscallsToHandle.Set(syscallNum);
@@ -2434,16 +2434,16 @@ namespace Kernel.Tasks
             Process CallerProcess = ProcessManager.GetProcessById(callerProcessId);
             Process TargetProcess = ProcessManager.GetProcessById(targetProcessId);
 
-            if (TargetProcess.SyscallsToHandle.IsSet((int) SystemCallNumbers.ReceiveMessage) &&
+            if (TargetProcess.SyscallsToHandle.IsSet((int)SystemCallNumbers.ReceiveMessage) &&
                 TargetProcess.SyscallHandler != null)
             {
                 uint Return2 = 0;
                 uint Return3 = 0;
                 uint Return4 = 0;
                 ProcessManager.SwitchProcess(targetProcessId, -1);
-                TargetProcess.SyscallHandler((uint) SystemCallNumbers.ReceiveMessage, message1, message2, 0, ref Return2,
+                TargetProcess.SyscallHandler((uint)SystemCallNumbers.ReceiveMessage, message1, message2, 0, ref Return2,
                     ref Return3, ref Return4, callerProcessId, 0xFFFFFFFF);
-                ProcessManager.SwitchProcess(callerProcessId, (int) callerThreadId);
+                ProcessManager.SwitchProcess(callerProcessId, (int)callerThreadId);
 
                 Result = true;
             }

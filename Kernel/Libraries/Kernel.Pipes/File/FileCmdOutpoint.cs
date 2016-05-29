@@ -50,8 +50,8 @@ namespace Kernel.Pipes.File
         {
             byte[] buffer = new byte[sizeof(FilePipeCommand)];
             FilePipeCommand* CmdPtr =
-                (FilePipeCommand*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
-            CmdPtr->Command = (int) Command;
+                (FilePipeCommand*)((byte*)ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
+            CmdPtr->Command = (int)Command;
             CmdPtr->DiskId = DiskId;
             CmdPtr->BlockNo = BlockNo;
             CmdPtr->BlockCount = BlockCount;
@@ -68,11 +68,11 @@ namespace Kernel.Pipes.File
             WriteCommand(PipeId, FileCommands.ListDir, 0, 0, 0, 0);
         }
 
-        //}
-        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
-        //{
-
         //public unsafe void Send_Read(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
+        //{
+        //    WriteCommand(PipeId, FileCommands.Read, 0, FileHandle, BlockNo, BlockCount);
+
+        //}
         //public unsafe void Send_Write(int PipeId, ulong FileHandle, ulong BlockNo, uint BlockCount)
         //{
         //    WriteCommand(PipeId, FileCommands.Write, 0, FileHandle, BlockNo, BlockCount);

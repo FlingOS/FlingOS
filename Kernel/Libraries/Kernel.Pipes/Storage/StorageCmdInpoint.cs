@@ -57,7 +57,7 @@ namespace Kernel.Pipes.Storage
             int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, true);
             if (bytesRead > 0)
             {
-                return (StoragePipeCommand*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
+                return (StoragePipeCommand*)((byte*)ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
             }
             return null;
         }

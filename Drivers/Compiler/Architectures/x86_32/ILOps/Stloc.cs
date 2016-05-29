@@ -55,10 +55,10 @@ namespace Drivers.Compiler.Architectures.x86
         public override void Convert(ILConversionState conversionState, ILOp theOp)
         {
             ushort localIndex = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Stloc:
-                    localIndex = (ushort) Utilities.ReadInt16(theOp.ValueBytes, 0);
+                    localIndex = (ushort)Utilities.ReadInt16(theOp.ValueBytes, 0);
                     break;
                 case OpCodes.Stloc_0:
                     localIndex = 0;

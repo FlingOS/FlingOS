@@ -100,7 +100,7 @@ namespace Drivers.Compiler.App
                     }
                 }
 
-                result = (int) Execute(
+                result = (int)Execute(
                     Logger_OnLogMessage,
                     Logger_OnLogWarning,
                     Logger_OnLogError);

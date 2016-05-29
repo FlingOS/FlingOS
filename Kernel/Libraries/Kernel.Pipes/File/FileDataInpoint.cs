@@ -64,12 +64,12 @@ namespace Kernel.Pipes.File
                 int Count;
                 {
                     FilePipeDataHeader* HdrPtr =
-                        (FilePipeDataHeader*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
+                        (FilePipeDataHeader*)((byte*)ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
                     Count = HdrPtr->Count;
                 }
 
                 FilePipeDataFSInfo* DataPtr =
-                    (FilePipeDataFSInfo*) ((byte*) ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
+                    (FilePipeDataFSInfo*)((byte*)ObjectUtilities.GetHandle(ReadBuffer) + Array.FieldsBytesSize);
 
                 String[] result = new String[Count];
                 for (int i = 0; i < Count; i++)
@@ -109,7 +109,7 @@ namespace Kernel.Pipes.File
             int bytesRead = Read(ReadBuffer, 0, BufferSize, blocking);
             if (bytesRead > 0)
             {
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint) bytesRead);
+                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
             }
             return null;
         }

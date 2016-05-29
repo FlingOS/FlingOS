@@ -170,7 +170,7 @@ namespace Kernel.Debug
                     BasicConsole.Write(" > Calculating process id\n");
 #endif
                     // Generate a unique identifier for the current process / thread pair.
-                    ulong ProcessThreadId = ((ulong) ProcessManager.CurrentProcess.Id << 32) |
+                    ulong ProcessThreadId = ((ulong)ProcessManager.CurrentProcess.Id << 32) |
                                             ProcessManager.CurrentThread.Id;
 
 #if DEBUGGER_INTERUPT_TRACE
@@ -274,11 +274,11 @@ namespace Kernel.Debug
             {
                 // Read in a line from the host
                 String line = "";
-                char c = (char) MsgPort.Read();
+                char c = (char)MsgPort.Read();
                 while (c != '\n' && c != '\r')
                 {
                     line += c;
-                    c = (char) MsgPort.Read();
+                    c = (char)MsgPort.Read();
                 }
 
                 BasicConsole.WriteLine("Debugger > Command received: " + line);
@@ -297,7 +297,7 @@ namespace Kernel.Debug
                     List lineParts = line.Split(' ');
                     if (lineParts.Count > 0)
                     {
-                        String cmd = (String) lineParts[0];
+                        String cmd = (String)lineParts[0];
 
                         if (cmd == "ping")
                         {
@@ -333,7 +333,7 @@ namespace Kernel.Debug
 
                             for (int i = 0; i < ProcessManager.Processes.Count; i++)
                             {
-                                Process AProcess = (Process) ProcessManager.Processes[i];
+                                Process AProcess = (Process)ProcessManager.Processes[i];
                                 MsgPort.Write(" - Process : ");
                                 MsgPort.Write(AProcess.Id);
                                 MsgPort.Write(" : ");
@@ -357,7 +357,7 @@ namespace Kernel.Debug
                                 MsgPort.Write("\n");
                                 for (int j = 0; j < AProcess.Threads.Count; j++)
                                 {
-                                    Thread AThread = (Thread) AProcess.Threads[j];
+                                    Thread AThread = (Thread)AProcess.Threads[j];
 
                                     MsgPort.Write("      - Thread : ");
                                     MsgPort.Write(AThread.Id);
@@ -405,8 +405,8 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 3)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
-                                int ThreadId = Int32.Parse_DecimalSigned((String) lineParts[2]);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
+                                int ThreadId = Int32.Parse_DecimalSigned((String)lineParts[2]);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
@@ -416,11 +416,11 @@ namespace Kernel.Debug
                                     {
                                         for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            Thread AThread = (Thread) TheProcess.Threads[i];
+                                            Thread AThread = (Thread)TheProcess.Threads[i];
 
                                             if (AThread != MainThread)
                                             {
-                                                ulong ProcessThreadId = ((ulong) ProcessId << 32) | AThread.Id;
+                                                ulong ProcessThreadId = ((ulong)ProcessId << 32) | AThread.Id;
                                                 if (ThreadsToSuspend.IndexOf(ProcessThreadId) == -1)
                                                 {
                                                     ThreadsToSuspend.Add(ProcessThreadId);
@@ -436,13 +436,13 @@ namespace Kernel.Debug
                                     }
                                     else
                                     {
-                                        ulong ProcessThreadId = ((ulong) ProcessId << 32) | (uint) ThreadId;
+                                        ulong ProcessThreadId = ((ulong)ProcessId << 32) | (uint)ThreadId;
                                         if (ThreadsToSuspend.IndexOf(ProcessThreadId) == -1)
                                         {
                                             ThreadsToSuspend.Add(ProcessThreadId);
                                         }
 
-                                        Thread TheThread = ProcessManager.GetThreadById((uint) ThreadId, TheProcess);
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
                                         if (TheThread != null)
                                         {
@@ -481,8 +481,8 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 3)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
-                                int ThreadId = Int32.Parse_DecimalSigned((String) lineParts[2]);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
+                                int ThreadId = Int32.Parse_DecimalSigned((String)lineParts[2]);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
@@ -492,9 +492,9 @@ namespace Kernel.Debug
                                     {
                                         for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            Thread AThread = (Thread) TheProcess.Threads[i];
+                                            Thread AThread = (Thread)TheProcess.Threads[i];
 
-                                            ulong ProcessThreadId = ((ulong) ProcessId << 32) | AThread.Id;
+                                            ulong ProcessThreadId = ((ulong)ProcessId << 32) | AThread.Id;
                                             ThreadsToSuspend.Remove(ProcessThreadId);
 
                                             AThread.Debug_Suspend = false;
@@ -506,10 +506,10 @@ namespace Kernel.Debug
                                     }
                                     else
                                     {
-                                        ulong ProcessThreadId = ((ulong) ProcessId << 32) | (uint) ThreadId;
+                                        ulong ProcessThreadId = ((ulong)ProcessId << 32) | (uint)ThreadId;
                                         ThreadsToSuspend.Remove(ProcessThreadId);
 
-                                        Thread TheThread = ProcessManager.GetThreadById((uint) ThreadId, TheProcess);
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
                                         if (TheThread != null)
                                         {
@@ -545,8 +545,8 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 3)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
-                                int ThreadId = Int32.Parse_DecimalSigned((String) lineParts[2]);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
+                                int ThreadId = Int32.Parse_DecimalSigned((String)lineParts[2]);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
@@ -556,7 +556,7 @@ namespace Kernel.Debug
                                     {
                                         for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            Thread AThread = (Thread) TheProcess.Threads[i];
+                                            Thread AThread = (Thread)TheProcess.Threads[i];
 
                                             if (AThread.Debug_Suspend)
                                             {
@@ -574,7 +574,7 @@ namespace Kernel.Debug
                                     }
                                     else
                                     {
-                                        Thread TheThread = ProcessManager.GetThreadById((uint) ThreadId, TheProcess);
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
                                         if (TheThread != null)
                                         {
@@ -617,8 +617,8 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 3)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
-                                int ThreadId = Int32.Parse_DecimalSigned((String) lineParts[2]);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
+                                int ThreadId = Int32.Parse_DecimalSigned((String)lineParts[2]);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
@@ -628,7 +628,7 @@ namespace Kernel.Debug
                                     {
                                         for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            Thread AThread = (Thread) TheProcess.Threads[i];
+                                            Thread AThread = (Thread)TheProcess.Threads[i];
 
                                             if (AThread.Debug_Suspend)
                                             {
@@ -658,7 +658,7 @@ namespace Kernel.Debug
                                     }
                                     else
                                     {
-                                        Thread TheThread = ProcessManager.GetThreadById((uint) ThreadId, TheProcess);
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
                                         if (TheThread != null)
                                         {
@@ -711,9 +711,9 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 4)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
-                                int ThreadId = Int32.Parse_DecimalSigned((String) lineParts[2]);
-                                uint Address = Int32.Parse_HexadecimalUnsigned((String) lineParts[3], 0);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
+                                int ThreadId = Int32.Parse_DecimalSigned((String)lineParts[2]);
+                                uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[3], 0);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
@@ -723,12 +723,12 @@ namespace Kernel.Debug
                                     {
                                         for (int i = 0; i < TheProcess.Threads.Count; i++)
                                         {
-                                            Thread AThread = (Thread) TheProcess.Threads[i];
+                                            Thread AThread = (Thread)TheProcess.Threads[i];
 
                                             if (AThread.Debug_Suspend)
                                             {
                                                 // Set trap flag (int1)
-                                                ulong ProcessThreadId = ((ulong) ProcessId << 32) | (uint) ThreadId;
+                                                ulong ProcessThreadId = ((ulong)ProcessId << 32) | (uint)ThreadId;
                                                 ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
                                                 uint OldESP = EnableAccessToThreadStack(TheProcess, AThread);
                                                 try
@@ -755,14 +755,14 @@ namespace Kernel.Debug
                                     }
                                     else
                                     {
-                                        Thread TheThread = ProcessManager.GetThreadById((uint) ThreadId, TheProcess);
+                                        Thread TheThread = ProcessManager.GetThreadById((uint)ThreadId, TheProcess);
 
                                         if (TheThread != null)
                                         {
                                             if (TheThread.Debug_Suspend)
                                             {
                                                 // Set trap flag (int1)
-                                                ulong ProcessThreadId = ((ulong) ProcessId << 32) | (uint) ThreadId;
+                                                ulong ProcessThreadId = ((ulong)ProcessId << 32) | (uint)ThreadId;
                                                 ThreadsToSuspendAtAddresses.Add(ProcessThreadId, Address);
                                                 uint OldESP = EnableAccessToThreadStack(TheProcess, TheThread);
                                                 try
@@ -812,14 +812,14 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 2)
                             {
-                                uint Address = Int32.Parse_HexadecimalUnsigned((String) lineParts[1], 0);
+                                uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[1], 0);
 
                                 MsgPort.Write(" > Breakpoint to be set at ");
                                 MsgPort.Write(Address);
                                 MsgPort.Write("\n");
 
                                 //TODO: Hmm...target process is definitely required here in future
-                                *(byte*) Address = 0xCC;
+                                *(byte*)Address = 0xCC;
                             }
                             else
                             {
@@ -836,14 +836,14 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 2)
                             {
-                                uint Address = Int32.Parse_HexadecimalUnsigned((String) lineParts[1], 0);
+                                uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[1], 0);
 
                                 MsgPort.Write(" > Breakpoint to be cleared at ");
                                 MsgPort.Write(Address);
                                 MsgPort.Write("\n");
 
                                 //TODO: Hmm...target process is definitely required here in future
-                                *(byte*) Address = 0x90;
+                                *(byte*)Address = 0x90;
                             }
                             else
                             {
@@ -860,8 +860,8 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 3)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
-                                uint ThreadId = Int32.Parse_DecimalUnsigned((String) lineParts[2], 0);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
+                                uint ThreadId = Int32.Parse_DecimalUnsigned((String)lineParts[2], 0);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
@@ -933,15 +933,15 @@ namespace Kernel.Debug
 
                             if (lineParts.Count == 5)
                             {
-                                uint ProcessId = Int32.Parse_DecimalUnsigned((String) lineParts[1], 0);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
 
                                 Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
                                 if (TheProcess != null)
                                 {
-                                    uint OldVAddr = Int32.Parse_HexadecimalUnsigned((String) lineParts[2], 0);
-                                    int FullLength = Int32.Parse_DecimalSigned((String) lineParts[3]);
-                                    int units = Int32.Parse_DecimalSigned((String) lineParts[4]);
+                                    uint OldVAddr = Int32.Parse_HexadecimalUnsigned((String)lineParts[2], 0);
+                                    int FullLength = Int32.Parse_DecimalSigned((String)lineParts[3]);
+                                    int units = Int32.Parse_DecimalSigned((String)lineParts[4]);
 
                                     MsgPort.Write(" Memory from ");
                                     MsgPort.Write(OldVAddr);
@@ -961,27 +961,27 @@ namespace Kernel.Debug
                                             uint NewVAddr =
                                                 (uint)
                                                     ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess,
-                                                        (void*) OldPAddr);
+                                                        (void*)OldPAddr);
                                             uint PageOffset = OldVAddr & 0x00000FFF;
                                             uint Address = NewVAddr + PageOffset;
 
                                             int MaxFullLength = FullLength - PartialLength;
-                                            int MaxPageLength = (int) (0x1000 - PageOffset);
+                                            int MaxPageLength = (int)(0x1000 - PageOffset);
                                             int length = MaxPageLength > MaxFullLength ? MaxFullLength : MaxPageLength;
                                             PartialLength += length;
 
                                             if (units == 1)
                                             {
-                                                byte* AddrPtr = (byte*) Address;
+                                                byte* AddrPtr = (byte*)Address;
                                                 for (int i = 0; i < length; i++)
                                                 {
-                                                    MsgPort.Write((String) AddrPtr[i]);
+                                                    MsgPort.Write((String)AddrPtr[i]);
                                                     MsgPort.Write(" ");
                                                 }
                                             }
                                             else if (units == 2)
                                             {
-                                                ushort* AddrPtr = (ushort*) Address;
+                                                ushort* AddrPtr = (ushort*)Address;
                                                 for (int i = 0; i < length; i++)
                                                 {
                                                     MsgPort.Write(AddrPtr[i]);
@@ -990,7 +990,7 @@ namespace Kernel.Debug
                                             }
                                             else if (units == 4)
                                             {
-                                                uint* AddrPtr = (uint*) Address;
+                                                uint* AddrPtr = (uint*)Address;
                                                 for (int i = 0; i < length; i++)
                                                 {
                                                     MsgPort.Write(AddrPtr[i]);
@@ -1036,7 +1036,7 @@ namespace Kernel.Debug
                     if (ExceptionMethods.CurrentException != null)
                     {
                         MsgPort.Write(ExceptionMethods.CurrentException.Message);
-                        MsgPort.Write((byte) '\n');
+                        MsgPort.Write((byte)'\n');
                     }
                 }
                 finally
@@ -1051,10 +1051,10 @@ namespace Kernel.Debug
         private static uint EnableAccessToThreadStack(Process TheProcess, Thread AThread)
         {
             uint OldESP = AThread.State->ESP;
-            uint OldThreadStackBottomVAddr = (uint) (AThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+            uint OldThreadStackBottomVAddr = (uint)(AThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
             uint OldThreadStackBottomPAddr = TheProcess.TheMemoryLayout.GetPhysicalAddress(OldThreadStackBottomVAddr);
             uint NewThreadStackBottomVAddr =
-                (uint) ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*) OldThreadStackBottomPAddr);
+                (uint)ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*)OldThreadStackBottomPAddr);
             uint NewESP = OldESP - OldThreadStackBottomVAddr + NewThreadStackBottomVAddr;
             AThread.State->ESP = NewESP;
             return OldESP;

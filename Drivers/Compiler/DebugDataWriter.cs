@@ -205,7 +205,7 @@ namespace Drivers.Compiler
 
                         Type RetType = AMethodInfo.IsConstructor
                             ? typeof(void)
-                            : ((System.Reflection.MethodInfo) AMethodInfo.UnderlyingInfo).ReturnType;
+                            : ((System.Reflection.MethodInfo)AMethodInfo.UnderlyingInfo).ReturnType;
                         Str.WriteLine("~ReturnSize:" + TypeScanner.GetSizeOnStackInBytes(RetType));
 
                         foreach (VariableInfo AnArgumentInfo in AMethodInfo.ArgumentInfos)

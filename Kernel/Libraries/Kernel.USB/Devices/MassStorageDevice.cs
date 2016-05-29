@@ -162,8 +162,8 @@ namespace Kernel.USB.Devices
         protected void Setup()
         {
             // Start with correct endpoint toggles
-            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
-            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
 
             // Reset the main MSD interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
@@ -171,7 +171,7 @@ namespace Kernel.USB.Devices
             //Check the device is responding correctly. The inquiry will also return
             //  you more information like Id string indices etc. but we just check 
             //  then discard them for now.
-            byte* inquiryBuffer = (byte*) Heap.AllocZeroed(26u, "MassStorageDevice : Setup");
+            byte* inquiryBuffer = (byte*)Heap.AllocZeroed(26u, "MassStorageDevice : Setup");
             try
             {
                 SendSCSICommand_IN(0x12 /*SCSI opcode*/, 0 /*LBA*/, 36 /*Bytes In*/, inquiryBuffer, null);
@@ -429,36 +429,36 @@ namespace Kernel.USB.Devices
                     // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x80;
                     cbw->CBWCBLength = 10;
-                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
-                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
-                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
-                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
+                    cbw->commandByte[2] = (byte)(LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte)LBA; // LBA LSB
                     break;
                 // Read (10)
                 case 0x28:
                     // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x80;
                     cbw->CBWCBLength = 10;
-                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
-                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
-                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
-                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
-                    cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
+                    cbw->commandByte[2] = (byte)(LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte)LBA; // LBA LSB
+                    cbw->commandByte[7] = (byte)((TransferLength/(uint)diskDevice.BlockSize) >> 8);
                     // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
+                    cbw->commandByte[8] = (byte)(TransferLength/(uint)diskDevice.BlockSize); // LSB
                     break;
                 // Write (10)
                 case 0x2A:
                     // Out: 0x00  In: 0x80
                     cbw->CBWFlags = 0x00;
                     cbw->CBWCBLength = 10;
-                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
-                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
-                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
-                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
-                    cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
+                    cbw->commandByte[2] = (byte)(LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte)LBA; // LBA LSB
+                    cbw->commandByte[7] = (byte)((TransferLength/(uint)diskDevice.BlockSize) >> 8);
                     // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
+                    cbw->commandByte[8] = (byte)(TransferLength/(uint)diskDevice.BlockSize); // LSB
                     break;
                 // Synchronise Cache (10)
                 case 0x35:
@@ -466,13 +466,13 @@ namespace Kernel.USB.Devices
                     cbw->CBWFlags = 0x00;
                     cbw->CBWCBLength = 10;
                     cbw->CBWDataTransferLength = 0;
-                    cbw->commandByte[2] = (byte) (LBA >> 24); // LBA MSB
-                    cbw->commandByte[3] = (byte) (LBA >> 16); //   ...
-                    cbw->commandByte[4] = (byte) (LBA >> 8); //   ...
-                    cbw->commandByte[5] = (byte) LBA; // LBA LSB
-                    cbw->commandByte[7] = (byte) ((TransferLength/(uint) diskDevice.BlockSize) >> 8);
+                    cbw->commandByte[2] = (byte)(LBA >> 24); // LBA MSB
+                    cbw->commandByte[3] = (byte)(LBA >> 16); //   ...
+                    cbw->commandByte[4] = (byte)(LBA >> 8); //   ...
+                    cbw->commandByte[5] = (byte)LBA; // LBA LSB
+                    cbw->commandByte[7] = (byte)((TransferLength/(uint)diskDevice.BlockSize) >> 8);
                     // MSB <--- blocks not byte!
-                    cbw->commandByte[8] = (byte) (TransferLength/(uint) diskDevice.BlockSize); // LSB
+                    cbw->commandByte[8] = (byte)(TransferLength/(uint)diskDevice.BlockSize); // LSB
                     break;
                 // Start Stop Unit (6)
                 case 0x1B:
@@ -495,7 +495,7 @@ namespace Kernel.USB.Devices
             int error = 0;
 
             // check signature 0x53425355 // DWORD 0 (byte 0:3)
-            uint CSWsignature = *(uint*) MSDStatus; // DWORD 0
+            uint CSWsignature = *(uint*)MSDStatus; // DWORD 0
             if (CSWsignature == MassStorageDevice_Consts.CSWMagicOK)
             {
 #if MSD_TRACE
@@ -518,10 +518,10 @@ namespace Kernel.USB.Devices
             }
 
             // check matching tag
-            uint CSWtag = *((uint*) MSDStatus + 1); // DWORD 1 (byte 4:7)
+            uint CSWtag = *((uint*)MSDStatus + 1); // DWORD 1 (byte 4:7)
 
-            if (((byte) CSWtag == SCSIOpcode) && ((byte) (CSWtag >> 8) == 0x42) && ((byte) (CSWtag >> 16) == 0x42) &&
-                ((byte) (CSWtag >> 24) == 0x42))
+            if (((byte)CSWtag == SCSIOpcode) && ((byte)(CSWtag >> 8) == 0x42) && ((byte)(CSWtag >> 16) == 0x42) &&
+                ((byte)(CSWtag >> 24) == 0x42))
             {
 #if MSD_TRACE
                 DBGMSG(((Framework.String)"CSW tag ") + (byte)(CSWtag) + " OK");
@@ -536,7 +536,7 @@ namespace Kernel.USB.Devices
             }
 
             // check CSWDataResidue
-            uint CSWDataResidue = *((uint*) MSDStatus + 2); // DWORD 2 (byte 8:11)
+            uint CSWDataResidue = *((uint*)MSDStatus + 2); // DWORD 2 (byte 8:11)
             if (CSWDataResidue == 0)
             {
 #if MSD_TRACE
@@ -551,7 +551,7 @@ namespace Kernel.USB.Devices
             }
 
             // check status byte // DWORD 3 (byte 12)
-            byte CSWstatusByte = *((byte*) MSDStatus + 12); // byte 12 (last byte of 13 bytes)
+            byte CSWstatusByte = *((byte*)MSDStatus + 12); // byte 12 (last byte of 13 bytes)
 
             switch (CSWstatusByte)
             {
@@ -616,7 +616,7 @@ namespace Kernel.USB.Devices
 #endif
             CommandBlockWrapper* cbw =
                 (CommandBlockWrapper*)
-                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_IN (1)");
+                    Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_IN (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -763,7 +763,7 @@ namespace Kernel.USB.Devices
 
             CommandBlockWrapper* cbw =
                 (CommandBlockWrapper*)
-                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_OUT (1)");
+                    Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper), "MassStorageDevice : SendSCSICommand_OUT (1)");
             bool FreeStatusBuffer = false;
             try
             {
@@ -929,13 +929,13 @@ namespace Kernel.USB.Devices
 
             CommandBlockWrapper* cbw =
                 (CommandBlockWrapper*)
-                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper),
+                    Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper),
                         "MassStorageDevice : SendSCSI_SyncCacheCommand (1)");
             bool FreeStatusBuffer = false;
             try
             {
                 SetupSCSICommand(0x35, cbw, LBA, Blocks);
-                cbw->commandByte[1] = (byte) ((SyncNV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
+                cbw->commandByte[1] = (byte)((SyncNV ? 0x4 : 0) | (ImmediateResponse ? 0x2 : 0));
 
 #if MSD_TRACE
                 DBGMSG("Setup transfer...");
@@ -1041,14 +1041,14 @@ namespace Kernel.USB.Devices
 #endif
             CommandBlockWrapper* cbw =
                 (CommandBlockWrapper*)
-                    Heap.AllocZeroed((uint) sizeof(CommandBlockWrapper),
+                    Heap.AllocZeroed((uint)sizeof(CommandBlockWrapper),
                         "MassStorageDevice : SendSCSI_StartStopUnitCommand (1)");
             bool FreeStatusBuffer = false;
             try
             {
                 SetupSCSICommand(0x1B, cbw, 0, 0);
-                cbw->commandByte[1] = (byte) (ImmediateResponse ? 0x1 : 0);
-                cbw->commandByte[4] = (byte) (((byte) PowerCondition << 4) | (LoadEject ? 0x2 : 0) | (Start ? 0x1 : 0));
+                cbw->commandByte[1] = (byte)(ImmediateResponse ? 0x1 : 0);
+                cbw->commandByte[4] = (byte)(((byte)PowerCondition << 4) | (LoadEject ? 0x2 : 0) | (Start ? 0x1 : 0));
 
 #if MSD_TRACE
                 DBGMSG("Setup transfer...");
@@ -1142,7 +1142,7 @@ namespace Kernel.USB.Devices
 #endif
 
                 bool doBreak = true;
-                byte* statusBuffer = (byte*) Heap.AllocZeroed(13u, "MassStorageDevice : TestDeviceReady (1)");
+                byte* statusBuffer = (byte*)Heap.AllocZeroed(13u, "MassStorageDevice : TestDeviceReady (1)");
                 try
                 {
                     //Get the device status by sending the Test Unit Ready command
@@ -1160,7 +1160,7 @@ namespace Kernel.USB.Devices
                     DBGMSG("SCSI: request sense");
 #endif
 
-                    byte* dataBuffer = (byte*) Heap.AllocZeroed(18u, "MassStorageDevice : TestDeviceReady (2)");
+                    byte* dataBuffer = (byte*)Heap.AllocZeroed(18u, "MassStorageDevice : TestDeviceReady (2)");
                     try
                     {
                         // Now send the Request Sense command
@@ -1335,7 +1335,7 @@ namespace Kernel.USB.Devices
 #endif
             int retries = 3;
             //Send SCSI Read (10) command
-            while (!SendSCSICommand_IN(0x28, sector, (ushort) ((uint) diskDevice.BlockSize*numSectors), buffer, null) &&
+            while (!SendSCSICommand_IN(0x28, sector, (ushort)((uint)diskDevice.BlockSize*numSectors), buffer, null) &&
                    --retries > 0)
             {
                 ;
@@ -1358,7 +1358,7 @@ namespace Kernel.USB.Devices
 #endif
 
             //Send SCSI Write (10) command
-            SendSCSICommand_OUT(0x2A, sector, (ushort) diskDevice.BlockSize, buffer, null);
+            SendSCSICommand_OUT(0x2A, sector, (ushort)diskDevice.BlockSize, buffer, null);
 
             return true;
         }
@@ -1369,8 +1369,8 @@ namespace Kernel.USB.Devices
         public void ResetRecoveryMSD()
         {
             // Start with correct endpoint toggles and reset interface
-            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
-            ((Endpoint) DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_OUTEndpointID]).Toggle = false;
+            ((Endpoint)DeviceInfo.Endpoints[DeviceInfo.MSD_INEndpointID]).Toggle = false;
             // Reset Interface
             BulkReset(DeviceInfo.MSD_InterfaceNum);
 
@@ -1481,7 +1481,7 @@ namespace Kernel.USB.Devices
                 else
                     DBGMSG("sense key not known!");
 #endif
-                return (int) SenseKey;
+                return (int)SenseKey;
             }
 
 #if MSD_TRACE
@@ -1515,11 +1515,13 @@ namespace Kernel.USB.Devices
         /// </summary>
         /// <param name="anMSD">The MSD to create an interface for.</param>
         public MassStorageDevice_DiskDevice(MassStorageDevice anMSD)
-            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true)
+            : base(
+                DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true
+                )
         {
             msd = anMSD;
 
-            uint* capacityBuffer = (uint*) Heap.AllocZeroed(8, "MassStorageDevice : MassStorageDevice_DiskDevice()");
+            uint* capacityBuffer = (uint*)Heap.AllocZeroed(8, "MassStorageDevice : MassStorageDevice_DiskDevice()");
             try
             {
                 //Send SCSI Read Capacity (10) command
@@ -1532,7 +1534,7 @@ namespace Kernel.USB.Devices
 
                 // capacityBuffer[0] = Last LBA i.e. last addressable LBA
                 //      So the count of blocks is Last LBA + 1
-                Blocks = (ulong) capacityBuffer[0] + 1;
+                Blocks = (ulong)capacityBuffer[0] + 1;
                 // capacityBuffer[1] = Block size
                 blockSize = capacityBuffer[1];
             }
@@ -1556,12 +1558,12 @@ namespace Kernel.USB.Devices
 
             msd.Activate();
 
-            byte* dataPtr = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
+            byte* dataPtr = (byte*)ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
 #if MSD_TRACE
             BasicConsole.Write(((Framework.String)"Reading block: ") + i);
 #endif
 
-            if (!msd.Read((uint) BlockNo, BlockCount, dataPtr))
+            if (!msd.Read((uint)BlockNo, BlockCount, dataPtr))
             {
                 ExceptionMethods.Throw(new Exception("Could not read from Mass Storage Device!"));
             }
@@ -1590,18 +1592,18 @@ namespace Kernel.USB.Devices
 
             if (Data == null)
             {
-                byte* dataPtr = (byte*) ObjectUtilities.GetHandle(NewBlockArray(1)) + Array.FieldsBytesSize;
+                byte* dataPtr = (byte*)ObjectUtilities.GetHandle(NewBlockArray(1)) + Array.FieldsBytesSize;
                 for (uint i = 0; i < BlockCount; i++)
                 {
-                    msd.Write((uint) (BlockNo + i), dataPtr);
+                    msd.Write((uint)(BlockNo + i), dataPtr);
                 }
             }
             else
             {
-                byte* dataPtr = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
+                byte* dataPtr = (byte*)ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
                 for (uint i = 0; i < BlockCount; i++)
                 {
-                    msd.Write((uint) (BlockNo + i), dataPtr);
+                    msd.Write((uint)(BlockNo + i), dataPtr);
                     dataPtr += BlockSize;
                 }
             }
@@ -1623,12 +1625,12 @@ namespace Kernel.USB.Devices
                 byte[] writeData = new byte[512];
                 for (int i = 0; i < writeData.Length; i++)
                 {
-                    writeData[i] = (byte) (i%255);
+                    writeData[i] = (byte)(i%255);
                 }
                 for (int i = 0; i < dataSize/512; i++)
                 {
                     BasicConsole.WriteLine("Writing data...");
-                    WriteBlock((uint) i, 1, null);
+                    WriteBlock((uint)i, 1, null);
                 }
 
                 BasicConsole.WriteLine("Syncing caches...");
@@ -1639,7 +1641,7 @@ namespace Kernel.USB.Devices
                 for (int i = 0; i < dataSize/512; i++)
                 {
                     BasicConsole.WriteLine("Reading data...");
-                    ReadBlock((uint) i, 1, readData);
+                    ReadBlock((uint)i, 1, readData);
                     BasicConsole.WriteLine("Checking data...");
 
                     for (int j = 0; j < 512; j++)

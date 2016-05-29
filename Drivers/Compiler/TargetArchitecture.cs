@@ -141,20 +141,20 @@ namespace Drivers.Compiler
                         {
                             if (aType.IsSubclassOf(typeof(MethodStart)))
                             {
-                                MethodStartOp = (MethodStart) Activator.CreateInstance(aType);
+                                MethodStartOp = (MethodStart)Activator.CreateInstance(aType);
                             }
                             else if (aType.IsSubclassOf(typeof(MethodEnd)))
                             {
-                                MethodEndOp = (MethodEnd) Activator.CreateInstance(aType);
+                                MethodEndOp = (MethodEnd)Activator.CreateInstance(aType);
                             }
                             else if (aType.IsSubclassOf(typeof(StackSwitch)))
                             {
-                                StackSwitchOp = (StackSwitch) Activator.CreateInstance(aType);
+                                StackSwitchOp = (StackSwitch)Activator.CreateInstance(aType);
                             }
                             else
                             {
                                 ILOpTargetAttribute[] targetAttrs =
-                                    (ILOpTargetAttribute[]) aType.GetCustomAttributes(typeof(ILOpTargetAttribute), true);
+                                    (ILOpTargetAttribute[])aType.GetCustomAttributes(typeof(ILOpTargetAttribute), true);
                                 if (targetAttrs == null || targetAttrs.Length == 0)
                                 {
                                     throw new Exception(
@@ -162,14 +162,14 @@ namespace Drivers.Compiler
                                 }
                                 foreach (ILOpTargetAttribute targetAttr in targetAttrs)
                                 {
-                                    TargetILOps.Add(targetAttr.Target, (ILOp) Activator.CreateInstance(aType));
+                                    TargetILOps.Add(targetAttr.Target, (ILOp)Activator.CreateInstance(aType));
                                 }
                             }
                         }
                         else if (aType.IsSubclassOf(typeof(ASMOp)))
                         {
                             ASMOpTargetAttribute[] targetAttrs =
-                                (ASMOpTargetAttribute[]) aType.GetCustomAttributes(typeof(ASMOpTargetAttribute), true);
+                                (ASMOpTargetAttribute[])aType.GetCustomAttributes(typeof(ASMOpTargetAttribute), true);
                             foreach (ASMOpTargetAttribute targetAttr in targetAttrs)
                             {
                                 TargetASMOps.Add(targetAttr.Target, aType);
@@ -177,7 +177,7 @@ namespace Drivers.Compiler
                         }
                         else if (aType.IsSubclassOf(typeof(TargetArchitectureFunctions)))
                         {
-                            TargetFunctions = (TargetArchitectureFunctions) Activator.CreateInstance(aType);
+                            TargetFunctions = (TargetArchitectureFunctions)Activator.CreateInstance(aType);
                         }
                     }
                 }
@@ -195,7 +195,7 @@ namespace Drivers.Compiler
 
         public static ASMOp CreateASMOp(OpCodes ASMOpCode, params object[] ConstructorArgs)
         {
-            return (ASMOp) Activator.CreateInstance(TargetASMOps[ASMOpCode], ConstructorArgs);
+            return (ASMOp)Activator.CreateInstance(TargetASMOps[ASMOpCode], ConstructorArgs);
         }
     }
 

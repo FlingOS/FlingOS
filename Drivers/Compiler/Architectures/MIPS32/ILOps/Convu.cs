@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             StackItem itemToConvert = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int numBytesToConvertTo = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Conv_U:
                     numBytesToConvertTo = 4;
@@ -82,7 +82,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             StackItem itemToConvert = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
             int numBytesToConvertTo = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Conv_U:
                     numBytesToConvertTo = 4;

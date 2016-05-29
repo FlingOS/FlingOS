@@ -456,7 +456,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         protected byte EECP
         {
-            get { return (byte) (HCCParams >> 8); }
+            get { return (byte)(HCCParams >> 8); }
         }
 
         #endregion
@@ -535,8 +535,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         protected EHCI_QueueHead_Struct* ASYNCLISTADDR
         {
-            get { return (EHCI_QueueHead_Struct*) *(OpRegAddr + 6); }
-            set { *(OpRegAddr + 6) = (uint) value; }
+            get { return (EHCI_QueueHead_Struct*)*(OpRegAddr + 6); }
+            set { *(OpRegAddr + 6) = (uint)value; }
         }
 
         /// <summary>
@@ -641,7 +641,7 @@ namespace Kernel.USB.HCIs
         protected uint* PORTSC
         {
             get { return OpRegAddr + 17; }
-            set { *(OpRegAddr + 17) = (uint) value; }
+            set { *(OpRegAddr + 17) = (uint)value; }
         }
 
         #endregion
@@ -758,7 +758,7 @@ namespace Kernel.USB.HCIs
             // Map in the required memory
             bool isUSBPageAlreadyMapped = false;
             SystemCallResults checkUSBPageResult =
-                SystemCalls.IsPhysicalAddressMapped((uint) usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
+                SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
             if (checkUSBPageResult != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Error! EHCI cannot check USB Base Address.");
@@ -769,25 +769,25 @@ namespace Kernel.USB.HCIs
             {
                 uint actualAddress = 0xFFFFFFFF;
                 SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(
-                    (uint) usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
+                    (uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
                 if (mapUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! EHCI cannot map USB Base Address.");
                     ExceptionMethods.Throw(new Exception("EHCI cannot map USB Base Address."));
                 }
-                usbBaseAddress = (byte*) actualAddress;
+                usbBaseAddress = (byte*)actualAddress;
             }
             else
             {
                 uint actualAddress = 0xFFFFFFFF;
-                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint) usbBaseAddress & 0xFFFFF000,
+                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000,
                     out actualAddress);
                 if (getUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! EHCI cannot get USB Base Address.");
                     ExceptionMethods.Throw(new Exception("EHCI cannot get USB Base Address."));
                 }
-                usbBaseAddress = (byte*) actualAddress;
+                usbBaseAddress = (byte*)actualAddress;
             }
 
             // Caps registers start at the beginning of the memory mapped IO registers.
@@ -813,22 +813,22 @@ namespace Kernel.USB.HCIs
             //  Most Significant Byte is major version
             //  Least Significant Byte is minor version
             //  e.g. 0x20 = Version 2.0
-            HCIVersion = *(ushort*) (CapabilitiesRegAddr + 2);
+            HCIVersion = *(ushort*)(CapabilitiesRegAddr + 2);
             // Host Controller Structural Params
             //  Section 2.2.3 of the Intel EHCI Spec
             //  This register contains various bit fields providing specific information 
             //  about the HC hardware / firmware physical design (e.g. number of root ports)
-            HCSParams = *(uint*) (CapabilitiesRegAddr + 4);
+            HCSParams = *(uint*)(CapabilitiesRegAddr + 4);
             // Host Controller Capability Params
             //  Section 2.2.4 of the Intel EHCI Spec
             //  This register contains various bit fields providing specific information 
             //  about the HC hardware / firmware capabilities (e.g. 64-bit addressing capaiblity)
-            HCCParams = *(uint*) (CapabilitiesRegAddr + 8);
+            HCCParams = *(uint*)(CapabilitiesRegAddr + 8);
 
             // Operational registers address. Calculated as stated above from:
             //      USB Base Address + Length of Capabilities registers.
             //  Section 2.3 of the Intel EHCI Spec
-            OpRegAddr = (uint*) (usbBaseAddress + CapabilitiesRegsLength);
+            OpRegAddr = (uint*)(usbBaseAddress + CapabilitiesRegsLength);
 
 #if EHCI_TRACE
             DBGMSG("CapabilitiesRegsLength: " + (Framework.String)CapabilitiesRegsLength);
@@ -840,7 +840,7 @@ namespace Kernel.USB.HCIs
 #endif
             // Number of root ports 
             //  Section 2.2.3 of Intel EHCI Spec
-            RootPortCount = (byte) (HCSParams & 0x000F);
+            RootPortCount = (byte)(HCSParams & 0x000F);
         }
 
         /// <summary>
@@ -1010,7 +1010,7 @@ namespace Kernel.USB.HCIs
             //          "Software modifications to this bit while HCHalted bit is 
             //           equal to zero results in undefined behavior."
             //  (Intel EHCI Spec, Section 2.3.1, Table 2-9, Interrupt Threshold Control
-            USBCMD |= (uint) EHCI_InterruptThresholdControls.x08;
+            USBCMD |= (uint)EHCI_InterruptThresholdControls.x08;
 
             //Set port routing to route all ports to the HC as opposed to companion HCs
             //  Section 2.3.8 of Intel EHCI Spec
@@ -1148,13 +1148,13 @@ namespace Kernel.USB.HCIs
                     {
                         break;
                     }
-                    eecp = pciDevice.ReadRegister8((byte) (eecp + 1));
+                    eecp = pciDevice.ReadRegister8((byte)(eecp + 1));
                 }
-                byte BIOSownedSemaphore = (byte) (eecp + 2);
+                byte BIOSownedSemaphore = (byte)(eecp + 2);
                 // R/W - only Bit 16 (Bit 23:17 Reserved, must be set to zero)
-                byte OSownedSemaphore = (byte) (eecp + 3);
+                byte OSownedSemaphore = (byte)(eecp + 3);
                 // R/W - only Bit 24 (Bit 31:25 Reserved, must be set to zero)
-                byte USBLEGCTLSTS = (byte) (eecp + 4);
+                byte USBLEGCTLSTS = (byte)(eecp + 4);
                 // USB Legacy Support Control/Status (DWORD, cf. EHCI 1.0 spec, 2.1.8)
 
                 // Legacy-Support-EC found? BIOS-Semaphore set?
@@ -1515,9 +1515,9 @@ namespace Kernel.USB.HCIs
 
                         // Free the port if a device had been connected as the device is no longer 
                         //  connected.
-                        if (((HCPort) RootPorts[j]).deviceInfo != null)
+                        if (((HCPort)RootPorts[j]).deviceInfo != null)
                         {
-                            ((HCPort) RootPorts[j]).deviceInfo.FreePort();
+                            ((HCPort)RootPorts[j]).deviceInfo.FreePort();
                         }
                     }
                 }
@@ -1557,7 +1557,7 @@ namespace Kernel.USB.HCIs
             //   which is the only caller of ResetPort. There are two cases:
             //      - After an HC reset, all ports are disabled. So condition is met.
             //      - After new device connection, the specific port is disabled, so condition is met.
-            byte lineStatus = (byte) ((PORTSC[portNum] >> 10) & 3); // bits 11:10
+            byte lineStatus = (byte)((PORTSC[portNum] >> 10) & 3); // bits 11:10
 
             // Switch the various possible line states.
             switch (lineStatus)
@@ -1672,7 +1672,7 @@ namespace Kernel.USB.HCIs
             //       a physical address.
             transfer.underlyingTransferData =
                 (EHCI_QueueHead_Struct*)
-                    Heap.AllocZeroedAPB((uint) sizeof(EHCI_QueueHead_Struct), 32, "EHCI : _SetupTransfer");
+                    Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 32, "EHCI : _SetupTransfer");
         }
 
         /// <summary>
@@ -1709,13 +1709,13 @@ namespace Kernel.USB.HCIs
                 // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction =
                     (EHCITransaction)
-                        ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                        ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
                 // Create a wrapper for the last transaction (qTD)
                 EHCI_qTD lastQTD = eLastTransaction.qTD;
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*) GetPhysicalAddress(eTransaction.qTD.qtd);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1759,13 +1759,13 @@ namespace Kernel.USB.HCIs
                 // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction =
                     (EHCITransaction)
-                        ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                        ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
                 // Create a wrapper for the last transaction (qTD)
                 EHCI_qTD lastQTD = eLastTransaction.qTD;
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*) GetPhysicalAddress(eTransaction.qTD.qtd);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1801,7 +1801,7 @@ namespace Kernel.USB.HCIs
                 // The transaction's output buffer has been allocated so it as aligned correctly
                 //  where as there is no guarantee the output buffer passed to us has been so we
                 //  must copy the data across.
-                MemoryUtils.MemCpy_32(theQTD.Buffer0VirtAddr, (byte*) buffer, length);
+                MemoryUtils.MemCpy_32(theQTD.Buffer0VirtAddr, (byte*)buffer, length);
 
 #if EHCI_TRACE
                 BasicConsole.WriteLine("EHCI: OUTTransaction - Buffer0:");
@@ -1816,13 +1816,13 @@ namespace Kernel.USB.HCIs
                 // Get the previous (i.e. last) transaction then the underlying transaction from it
                 EHCITransaction eLastTransaction =
                     (EHCITransaction)
-                        ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                        ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
                 // Create a wrapper for the last transaction (qTD)
                 EHCI_qTD lastQTD = eLastTransaction.qTD;
                 // Set the Next Transaction (qTD) Pointer on the previous qTD to point to the qTD
                 //  we just created. 
                 // Note: The NextqTDPointer must be the physical address of qTD data.
-                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*) GetPhysicalAddress(eTransaction.qTD.qtd);
+                lastQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(eTransaction.qTD.qtd);
                 // Mark the previous qTD's Next Transaction Pointer as valid.
                 lastQTD.NextqTDPointerTerminate = false;
             }
@@ -1854,7 +1854,7 @@ namespace Kernel.USB.HCIs
 
             // Get the last qTD of the transfer
             EHCITransaction lastTransaction =
-                (EHCITransaction) ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                (EHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
             EHCI_qTD lastQTD = lastTransaction.qTD;
             // Enable the Interrupt on Complete. This allows us to detect the end of the entire transfer 
             //  when the USB Interrupt occurs.
@@ -1907,10 +1907,10 @@ namespace Kernel.USB.HCIs
             // Get the first qTD of the transfer. This is passed to InitQH to tell it the start of the linked
             //  list of transactions.
             EHCITransaction firstTransaction =
-                (EHCITransaction) ((USBTransaction) transfer.transactions[0]).underlyingTz;
+                (EHCITransaction)((USBTransaction)transfer.transactions[0]).underlyingTz;
             // Init the Queue Head for this transfer
-            InitQH((EHCI_QueueHead_Struct*) transfer.underlyingTransferData,
-                (EHCI_QueueHead_Struct*) transfer.underlyingTransferData,
+            InitQH((EHCI_QueueHead_Struct*)transfer.underlyingTransferData,
+                (EHCI_QueueHead_Struct*)transfer.underlyingTransferData,
                 firstTransaction.qTD.qtd,
                 false,
                 transfer.device.address,
@@ -1965,7 +1965,7 @@ namespace Kernel.USB.HCIs
                     {
                         // Get the transaction to check
                         EHCITransaction transaction =
-                            (EHCITransaction) ((USBTransaction) transfer.transactions[k]).underlyingTz;
+                            (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                         // Get the transaction's status
                         byte status = transaction.qTD.Status;
                         // If the status == 0, it indicates success
@@ -2022,7 +2022,7 @@ namespace Kernel.USB.HCIs
             for (int k = 0; k < transfer.transactions.Count; k++)
             {
                 // Get the current transaction
-                EHCITransaction transaction = (EHCITransaction) ((USBTransaction) transfer.transactions[k]).underlyingTz;
+                EHCITransaction transaction = (EHCITransaction)((USBTransaction)transfer.transactions[k]).underlyingTz;
                 // Create a wrapper for the underlying qTD of the transaction
                 EHCI_qTD theQTD = transaction.qTD;
 
@@ -2039,7 +2039,7 @@ namespace Kernel.USB.HCIs
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
                     // Copy the memory
-                    MemoryUtils.MemCpy_32((byte*) transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
+                    MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
 
 #if EHCI_TRACE
     //for (int i = 0; i < transaction.inLength; i++)
@@ -2106,7 +2106,7 @@ namespace Kernel.USB.HCIs
             // Set the Async List Address to point to the idle queue head.
             // Note: Physical address of queue head is required.
             // Section 2.3.7 of Intel EHCI Spec
-            ASYNCLISTADDR = (EHCI_QueueHead_Struct*) GetPhysicalAddress(IdleQueueHead);
+            ASYNCLISTADDR = (EHCI_QueueHead_Struct*)GetPhysicalAddress(IdleQueueHead);
             // Enable the async schedule.
             EnableAsyncSchedule();
 
@@ -2187,15 +2187,15 @@ namespace Kernel.USB.HCIs
             // Save the old tail queue head (which may not be the idle queue head) (save in a wrapper)
             EHCI_QueueHead oldTailQH = new EHCI_QueueHead(TailQueueHead);
             // The new queue head will now be end of the queue
-            TailQueueHead = (EHCI_QueueHead_Struct*) transfer.underlyingTransferData;
+            TailQueueHead = (EHCI_QueueHead_Struct*)transfer.underlyingTransferData;
 
             // Create wrappers for the idle and tail queue heads.
             EHCI_QueueHead idleQH = new EHCI_QueueHead(IdleQueueHead);
             EHCI_QueueHead tailQH = new EHCI_QueueHead(TailQueueHead);
             // Create the ring. Link the new queue head with idleQH (which is always the head of the queue)
-            tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*) GetPhysicalAddress(IdleQueueHead);
+            tailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(IdleQueueHead);
             // Insert the queue head into the queue as an element behind old queue head
-            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*) GetPhysicalAddress(TailQueueHead);
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(TailQueueHead);
 
 #if EHCI_TRACE
             DBGMSG("EHCI: About to wait for transaction complete...");
@@ -2230,7 +2230,7 @@ namespace Kernel.USB.HCIs
 #endif
 
             // Restore the link of the old tail queue head to the idle queue head
-            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*) GetPhysicalAddress(IdleQueueHead);
+            oldTailQH.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(IdleQueueHead);
             // Queue head done. 
             // Because nothing else touches the async queue and this method is a synchronous method, 
             //  the idle queue head will now always be the end of the queue again.
@@ -2259,7 +2259,7 @@ namespace Kernel.USB.HCIs
             byte endpoint, ushort maxPacketSize)
         {
             EHCI_QueueHead head = new EHCI_QueueHead(headPtr);
-            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*) GetPhysicalAddress(horizPtr);
+            head.HorizontalLinkPointer = (EHCI_QueueHead_Struct*)GetPhysicalAddress(horizPtr);
             head.Type = 0x1; // Types:  00b iTD,   01b QH,   10b siTD,   11b FSTN
             head.Terminate = false;
             head.DeviceAddress = deviceAddr; // The device address
@@ -2284,7 +2284,7 @@ namespace Kernel.USB.HCIs
             }
             else
             {
-                head.NextqTDPointer = (EHCI_qTD_Struct*) GetPhysicalAddress(firstQTD);
+                head.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(firstQTD);
                 head.NextqTDPointerTerminate = false;
             }
         }
@@ -2307,11 +2307,11 @@ namespace Kernel.USB.HCIs
         {
             EHCI_qTD td = AllocAndInitQTD(next);
 
-            td.PIDCode = (byte) EHCI_qTDTypes.SETUP; // SETUP = 2
+            td.PIDCode = (byte)EHCI_qTDTypes.SETUP; // SETUP = 2
             td.TotalBytesToTransfer = tokenBytes; // dependent on transfer
             td.DataToggle = toggle; // Should be toggled every list entry
 
-            USBRequest* request = (USBRequest*) AllocQTDbuffer(td);
+            USBRequest* request = (USBRequest*)AllocQTDbuffer(td);
             request->type = type;
             request->request = req;
             request->valueHi = hiVal;
@@ -2357,7 +2357,7 @@ namespace Kernel.USB.HCIs
             if (next != null)
             {
                 newQTD.NextqTDPointerTerminate = false;
-                newQTD.NextqTDPointer = (EHCI_qTD_Struct*) GetPhysicalAddress(next);
+                newQTD.NextqTDPointer = (EHCI_qTD_Struct*)GetPhysicalAddress(next);
             }
             else
             {
@@ -2380,8 +2380,8 @@ namespace Kernel.USB.HCIs
         /// <returns>A pointer to the new buffer.</returns>
         protected static void* AllocQTDbuffer(EHCI_qTD td)
         {
-            byte* result = (byte*) Heap.AllocZeroedAPB(0x1000u, 0x1000u, "EHCI : AllocQTDBuffer");
-            td.Buffer0 = (byte*) GetPhysicalAddress(result);
+            byte* result = (byte*)Heap.AllocZeroedAPB(0x1000u, 0x1000u, "EHCI : AllocQTDBuffer");
+            td.Buffer0 = (byte*)GetPhysicalAddress(result);
             td.CurrentPage = 0;
             td.CurrentOffset = 0;
             td.Buffer0VirtAddr = result;
@@ -2397,7 +2397,7 @@ namespace Kernel.USB.HCIs
 
         private static void* GetPhysicalAddress(void* vAddr)
         {
-            return GetPhysicalAddress((uint) vAddr);
+            return GetPhysicalAddress((uint)vAddr);
         }
 
         private static void* GetPhysicalAddress(uint vAddr)
@@ -2420,7 +2420,7 @@ namespace Kernel.USB.HCIs
                 DBGMSG("Physical address is: " + ((Framework.String)address));
             }
 #endif
-            return (void*) address;
+            return (void*)address;
         }
 
 #if EHCI_TESTS
@@ -2650,29 +2650,12 @@ namespace Kernel.USB.HCIs
         public EHCI_qTD_Struct* qtd;
 
         /// <summary>
-        ///     Initializes a new qTD with new data structure.
-        /// </summary>
-        public EHCI_qTD()
-        {
-            qtd = (EHCI_qTD_Struct*) Heap.AllocZeroedAPB((uint) sizeof(EHCI_qTD_Struct), 32, "EHCI : EHCI_qtd()");
-        }
-
-        /// <summary>
-        ///     Initializes a qTD with specified underlying data structure.
-        /// </summary>
-        /// <param name="aqTD">The existing underlying data structure.</param>
-        public EHCI_qTD(EHCI_qTD_Struct* aqTD)
-        {
-            qtd = aqTD;
-        }
-
-        /// <summary>
         ///     Pointer to the next qTD in the linked list.
         /// </summary>
         public EHCI_qTD_Struct* NextqTDPointer
         {
-            [NoGC] get { return (EHCI_qTD_Struct*) (qtd->u1 & 0xFFFFFFE0u); }
-            [NoGC] set { qtd->u1 = (qtd->u1 & 0x0000001Fu) | ((uint) value & 0xFFFFFFE0u); }
+            [NoGC] get { return (EHCI_qTD_Struct*)(qtd->u1 & 0xFFFFFFE0u); }
+            [NoGC] set { qtd->u1 = (qtd->u1 & 0x0000001Fu) | ((uint)value & 0xFFFFFFE0u); }
         }
 
         /// <summary>
@@ -2720,7 +2703,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte Status
         {
-            [NoGC] get { return (byte) qtd->u3; }
+            [NoGC] get { return (byte)qtd->u3; }
             [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFFFF00u) | value; }
         }
 
@@ -2729,8 +2712,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte PIDCode
         {
-            [NoGC] get { return (byte) ((qtd->u3 & 0x000000300u) >> 8); }
-            [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFFFCFFu) | ((uint) value << 8); }
+            [NoGC] get { return (byte)((qtd->u3 & 0x000000300u) >> 8); }
+            [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFFFCFFu) | ((uint)value << 8); }
         }
 
         /// <summary>
@@ -2738,8 +2721,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte ErrorCounter
         {
-            [NoGC] get { return (byte) ((qtd->u3 & 0x00000C00u) >> 10); }
-            [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | ((uint) value << 10); }
+            [NoGC] get { return (byte)((qtd->u3 & 0x00000C00u) >> 10); }
+            [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFFF3FFu) | ((uint)value << 10); }
         }
 
         /// <summary>
@@ -2747,8 +2730,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte CurrentPage
         {
-            [NoGC] get { return (byte) ((qtd->u3 & 0x00007000) >> 12); }
-            [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | ((uint) value << 12); }
+            [NoGC] get { return (byte)((qtd->u3 & 0x00007000) >> 12); }
+            [NoGC] set { qtd->u3 = (qtd->u3 & 0xFFFF8FFF) | ((uint)value << 12); }
         }
 
         /// <summary>
@@ -2776,8 +2759,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public ushort TotalBytesToTransfer
         {
-            [NoGC] get { return (ushort) ((qtd->u3 >> 16) & 0x00007FFF); }
-            [NoGC] set { qtd->u3 = (qtd->u3 & 0x8000FFFF) | ((uint) value << 16); }
+            [NoGC] get { return (ushort)((qtd->u3 >> 16) & 0x00007FFF); }
+            [NoGC] set { qtd->u3 = (qtd->u3 & 0x8000FFFF) | ((uint)value << 16); }
         }
 
         /// <summary>
@@ -2805,7 +2788,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public ushort CurrentOffset
         {
-            [NoGC] get { return (ushort) (qtd->u4 & 0x00000FFFu); }
+            [NoGC] get { return (ushort)(qtd->u4 & 0x00000FFFu); }
             [NoGC] set { qtd->u4 = (qtd->u4 & 0xFFFFF000u) | (value & 0x00000FFFu); }
         }
 
@@ -2814,8 +2797,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte* Buffer0
         {
-            [NoGC] get { return (byte*) (qtd->u4 & 0xFFFFF000u); }
-            [NoGC] set { qtd->u4 = (qtd->u4 & 0x00000FFFu) | ((uint) value & 0xFFFFF000u); }
+            [NoGC] get { return (byte*)(qtd->u4 & 0xFFFFF000u); }
+            [NoGC] set { qtd->u4 = (qtd->u4 & 0x00000FFFu) | ((uint)value & 0xFFFFF000u); }
         }
 
         /// <summary>
@@ -2823,8 +2806,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte* Buffer1
         {
-            [NoGC] get { return (byte*) (qtd->u5 & 0xFFFFF000); }
-            [NoGC] set { qtd->u5 = (uint) value & 0xFFFFF000; }
+            [NoGC] get { return (byte*)(qtd->u5 & 0xFFFFF000); }
+            [NoGC] set { qtd->u5 = (uint)value & 0xFFFFF000; }
         }
 
         /// <summary>
@@ -2832,8 +2815,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte* Buffer2
         {
-            [NoGC] get { return (byte*) (qtd->u6 & 0xFFFFF000); }
-            [NoGC] set { qtd->u6 = (uint) value & 0xFFFFF000; }
+            [NoGC] get { return (byte*)(qtd->u6 & 0xFFFFF000); }
+            [NoGC] set { qtd->u6 = (uint)value & 0xFFFFF000; }
         }
 
         /// <summary>
@@ -2841,8 +2824,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte* Buffer3
         {
-            [NoGC] get { return (byte*) (qtd->u7 & 0xFFFFF000); }
-            [NoGC] set { qtd->u7 = (uint) value & 0xFFFFF000; }
+            [NoGC] get { return (byte*)(qtd->u7 & 0xFFFFF000); }
+            [NoGC] set { qtd->u7 = (uint)value & 0xFFFFF000; }
         }
 
         /// <summary>
@@ -2850,8 +2833,25 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte* Buffer4
         {
-            [NoGC] get { return (byte*) (qtd->u8 & 0xFFFFF000); }
-            [NoGC] set { qtd->u8 = (uint) value & 0xFFFFF000; }
+            [NoGC] get { return (byte*)(qtd->u8 & 0xFFFFF000); }
+            [NoGC] set { qtd->u8 = (uint)value & 0xFFFFF000; }
+        }
+
+        /// <summary>
+        ///     Initializes a new qTD with new data structure.
+        /// </summary>
+        public EHCI_qTD()
+        {
+            qtd = (EHCI_qTD_Struct*)Heap.AllocZeroedAPB((uint)sizeof(EHCI_qTD_Struct), 32, "EHCI : EHCI_qtd()");
+        }
+
+        /// <summary>
+        ///     Initializes a qTD with specified underlying data structure.
+        /// </summary>
+        /// <param name="aqTD">The existing underlying data structure.</param>
+        public EHCI_qTD(EHCI_qTD_Struct* aqTD)
+        {
+            qtd = aqTD;
         }
 
         /// <summary>
@@ -2881,25 +2881,6 @@ namespace Kernel.USB.HCIs
         public EHCI_QueueHead_Struct* queueHead;
 
         /// <summary>
-        ///     Initializes a new queue head with empty underlying memory structure.
-        /// </summary>
-        public EHCI_QueueHead()
-        {
-            queueHead =
-                (EHCI_QueueHead_Struct*)
-                    Heap.AllocZeroedAPB((uint) sizeof(EHCI_QueueHead_Struct), 32, "EHCI : EHCI_QueueHead()");
-        }
-
-        /// <summary>
-        ///     Initializes a new queue head with specified underlying memory structure.
-        /// </summary>
-        /// <param name="aQueueHead">The existing underlying queue head.</param>
-        public EHCI_QueueHead(EHCI_QueueHead_Struct* aQueueHead)
-        {
-            queueHead = aQueueHead;
-        }
-
-        /// <summary>
         ///     Whether the horizontal link pointer terminates (is valid) or not.
         /// </summary>
         public bool Terminate
@@ -2924,7 +2905,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte Type
         {
-            [NoGC] get { return (byte) ((queueHead->u1 >> 1) & 0x00000003u); }
+            [NoGC] get { return (byte)((queueHead->u1 >> 1) & 0x00000003u); }
             [NoGC] set { queueHead->u1 = (queueHead->u1 & 0xFFFFFFF9u) | (value & 0x00000003u) << 1; }
         }
 
@@ -2933,8 +2914,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public EHCI_QueueHead_Struct* HorizontalLinkPointer
         {
-            [NoGC] get { return (EHCI_QueueHead_Struct*) (queueHead->u1 & 0xFFFFFFE0u); }
-            [NoGC] set { queueHead->u1 = ((uint) value & 0xFFFFFFE0u) | (queueHead->u1 & 0x0000001Fu); }
+            [NoGC] get { return (EHCI_QueueHead_Struct*)(queueHead->u1 & 0xFFFFFFE0u); }
+            [NoGC] set { queueHead->u1 = ((uint)value & 0xFFFFFFE0u) | (queueHead->u1 & 0x0000001Fu); }
         }
 
         /// <summary>
@@ -2942,7 +2923,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte DeviceAddress
         {
-            [NoGC] get { return (byte) (queueHead->u2 & 0x0000007Fu); }
+            [NoGC] get { return (byte)(queueHead->u2 & 0x0000007Fu); }
             [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xFFFFFF80u) | (value & 0x0000007Fu); }
         }
 
@@ -2971,8 +2952,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte EndpointNumber
         {
-            [NoGC] get { return (byte) ((queueHead->u2 & 0x00000F00u) >> 8); }
-            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | ((uint) value << 8); }
+            [NoGC] get { return (byte)((queueHead->u2 & 0x00000F00u) >> 8); }
+            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xFFFFF0FFu) | ((uint)value << 8); }
         }
 
         /// <summary>
@@ -2980,8 +2961,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte EndpointSpeed
         {
-            [NoGC] get { return (byte) ((queueHead->u2 & 0x00003000u) >> 12); }
-            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | ((uint) value << 12); }
+            [NoGC] get { return (byte)((queueHead->u2 & 0x00003000u) >> 12); }
+            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xFFFFCFFFu) | ((uint)value << 12); }
         }
 
         /// <summary>
@@ -3029,8 +3010,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public ushort MaximumPacketLength
         {
-            [NoGC] get { return (ushort) ((queueHead->u2 & 0x07FF0000u) >> 16); }
-            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | (((uint) value << 16) & 0x07FF0000u); }
+            [NoGC] get { return (ushort)((queueHead->u2 & 0x07FF0000u) >> 16); }
+            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0xF800FFFFu) | (((uint)value << 16) & 0x07FF0000u); }
         }
 
         /// <summary>
@@ -3058,8 +3039,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte NakCountReload
         {
-            [NoGC] get { return (byte) ((queueHead->u2 & 0xF0000000u) >> 28); }
-            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | ((uint) value << 28); }
+            [NoGC] get { return (byte)((queueHead->u2 & 0xF0000000u) >> 28); }
+            [NoGC] set { queueHead->u2 = (queueHead->u2 & 0x0FFFFFFFu) | ((uint)value << 28); }
         }
 
         /// <summary>
@@ -3067,7 +3048,7 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte InterruptScheduleMask
         {
-            [NoGC] get { return (byte) queueHead->u3; }
+            [NoGC] get { return (byte)queueHead->u3; }
             [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xFFFFFF00u) | value; }
         }
 
@@ -3076,8 +3057,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte SplitCompletionMask
         {
-            [NoGC] get { return (byte) (queueHead->u3 >> 8); }
-            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | ((uint) value << 8); }
+            [NoGC] get { return (byte)(queueHead->u3 >> 8); }
+            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xFFFF00FFu) | ((uint)value << 8); }
         }
 
         /// <summary>
@@ -3085,8 +3066,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte HubAddr
         {
-            [NoGC] get { return (byte) ((queueHead->u3 & 0x007F0000u) >> 16); }
-            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | ((uint) value << 16); }
+            [NoGC] get { return (byte)((queueHead->u3 & 0x007F0000u) >> 16); }
+            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xFF80FFFFu) | ((uint)value << 16); }
         }
 
         /// <summary>
@@ -3094,8 +3075,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte PortNumber
         {
-            [NoGC] get { return (byte) ((queueHead->u3 & 0x3f800000u) >> 23); }
-            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | ((uint) value << 23); }
+            [NoGC] get { return (byte)((queueHead->u3 & 0x3f800000u) >> 23); }
+            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0xC07FFFFFu) | ((uint)value << 23); }
         }
 
         /// <summary>
@@ -3103,8 +3084,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public byte HighBandwidthPipeMultiplier
         {
-            [NoGC] get { return (byte) ((queueHead->u3 & 0xC0000000u) >> 30); }
-            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | ((uint) value << 30); }
+            [NoGC] get { return (byte)((queueHead->u3 & 0xC0000000u) >> 30); }
+            [NoGC] set { queueHead->u3 = (queueHead->u3 & 0x3FFFFFFFu) | ((uint)value << 30); }
         }
 
         /// <summary>
@@ -3112,8 +3093,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public EHCI_qTD_Struct* CurrentqTDPointer
         {
-            [NoGC] get { return (EHCI_qTD_Struct*) (queueHead->u4 & 0xFFFFFFF0u); }
-            [NoGC] set { queueHead->u4 = (queueHead->u4 & 0x0000000Fu) | ((uint) value & 0xFFFFFFF0u); }
+            [NoGC] get { return (EHCI_qTD_Struct*)(queueHead->u4 & 0xFFFFFFF0u); }
+            [NoGC] set { queueHead->u4 = (queueHead->u4 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u); }
         }
 
         /// <summary>
@@ -3121,8 +3102,8 @@ namespace Kernel.USB.HCIs
         /// </summary>
         public EHCI_qTD_Struct* NextqTDPointer
         {
-            [NoGC] get { return (EHCI_qTD_Struct*) (queueHead->u5 & 0xFFFFFFF0u); }
-            [NoGC] set { queueHead->u5 = (queueHead->u5 & 0x0000000Fu) | ((uint) value & 0xFFFFFFF0u); }
+            [NoGC] get { return (EHCI_qTD_Struct*)(queueHead->u5 & 0xFFFFFFF0u); }
+            [NoGC] set { queueHead->u5 = (queueHead->u5 & 0x0000000Fu) | ((uint)value & 0xFFFFFFF0u); }
         }
 
         /// <summary>
@@ -3163,6 +3144,25 @@ namespace Kernel.USB.HCIs
                     queueHead->u7 = queueHead->u7 & 0xFFFFFF7Fu;
                 }
             }
+        }
+
+        /// <summary>
+        ///     Initializes a new queue head with empty underlying memory structure.
+        /// </summary>
+        public EHCI_QueueHead()
+        {
+            queueHead =
+                (EHCI_QueueHead_Struct*)
+                    Heap.AllocZeroedAPB((uint)sizeof(EHCI_QueueHead_Struct), 32, "EHCI : EHCI_QueueHead()");
+        }
+
+        /// <summary>
+        ///     Initializes a new queue head with specified underlying memory structure.
+        /// </summary>
+        /// <param name="aQueueHead">The existing underlying queue head.</param>
+        public EHCI_QueueHead(EHCI_QueueHead_Struct* aQueueHead)
+        {
+            queueHead = aQueueHead;
         }
 
         /// <summary>

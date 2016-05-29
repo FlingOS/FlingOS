@@ -50,8 +50,8 @@ namespace Kernel.Pipes.Storage
         {
             byte[] buffer = new byte[sizeof(StoragePipeCommand)];
             StoragePipeCommand* CmdPtr =
-                (StoragePipeCommand*) ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
-            CmdPtr->Command = (int) Command;
+                (StoragePipeCommand*)((byte*)ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize);
+            CmdPtr->Command = (int)Command;
             CmdPtr->DiskId = DiskId;
             CmdPtr->BlockNo = BlockNo;
             CmdPtr->BlockCount = BlockCount;

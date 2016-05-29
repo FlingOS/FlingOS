@@ -41,7 +41,7 @@ namespace Kernel.Tasks.App
                             {
                                 ProcessDescriptor* ProcessList =
                                     (ProcessDescriptor*)
-                                        Heap.AllocZeroed((uint) (sizeof(ProcessDescriptor)*NumProcesses),
+                                        Heap.AllocZeroed((uint)(sizeof(ProcessDescriptor)*NumProcesses),
                                             "System Status Task : Main : ProcessList");
                                 try
                                 {
@@ -53,7 +53,7 @@ namespace Kernel.Tasks.App
                                             console.Write_AsDecimal(descriptor->Id);
                                             console.Write(":");
 
-                                            switch ((Scheduler.Priority) descriptor->Priority)
+                                            switch ((Scheduler.Priority)descriptor->Priority)
                                             {
                                                 case Scheduler.Priority.High:
                                                     console.Write("High");
@@ -104,13 +104,13 @@ namespace Kernel.Tasks.App
                                 {
                                     char* MappingsPtr =
                                         (char*)
-                                            Heap.AllocZeroed((uint) (sizeof(char)*FSCount*10),
+                                            Heap.AllocZeroed((uint)(sizeof(char)*FSCount*10),
                                                 "System Status Task : Main : Mappings");
                                     try
                                     {
                                         uint* ProcessesPtr =
                                             (uint*)
-                                                Heap.AllocZeroed((uint) (sizeof(uint)*FSCount),
+                                                Heap.AllocZeroed((uint)(sizeof(uint)*FSCount),
                                                     "System Status Task : Main : FS Processes");
                                         if (SystemCalls.StatFS(ref FSCount, MappingsPtr, ProcessesPtr) ==
                                             SystemCallResults.OK)
@@ -119,7 +119,7 @@ namespace Kernel.Tasks.App
                                             for (int i = 0; i < FSCount; i++)
                                             {
                                                 Mappings[i] = ByteConverter.GetASCIIStringFromUTF16(
-                                                    (byte*) MappingsPtr, (uint) (i*10*sizeof(char)), 10);
+                                                    (byte*)MappingsPtr, (uint)(i*10*sizeof(char)), 10);
                                                 console.Write(Mappings[i] + "@" + ProcessesPtr[i]);
                                                 if (i < FSCount - 1)
                                                 {
@@ -166,7 +166,9 @@ namespace Kernel.Tasks.App
             catch
             {
                 BasicConsole.WriteLine("System Status > Error initialising!");
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException != null ? ExceptionMethods.CurrentException.Message : "[NO EXCEPTION OBJECT]");
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException != null
+                    ? ExceptionMethods.CurrentException.Message
+                    : "[NO EXCEPTION OBJECT]");
             }
 
             BasicConsole.WriteLine("System Status > Exiting...");

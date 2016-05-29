@@ -42,6 +42,16 @@ namespace Kernel.Devices
         protected ulong blockSize = 0;
 
         /// <summary>
+        ///     The number of logical blocks in the device.
+        /// </summary>
+        public virtual ulong Blocks { get; protected set; }
+
+        /// <summary>
+        ///     The size of the logical blocks.
+        /// </summary>
+        public virtual ulong BlockSize => blockSize;
+
+        /// <summary>
         ///     Initialises a new block device with the specified information.
         /// </summary>
         /// <param name="Group">The device group of the device.</param>
@@ -55,16 +65,6 @@ namespace Kernel.Devices
             : base(Group, Class, SubClass, Name, SomeInfo, IsClaimed)
         {
         }
-
-        /// <summary>
-        ///     The number of logical blocks in the device.
-        /// </summary>
-        public virtual ulong Blocks { get; protected set; }
-
-        /// <summary>
-        ///     The size of the logical blocks.
-        /// </summary>
-        public virtual ulong BlockSize => blockSize;
 
         /// <summary>
         ///     Reads contiguous logical blocks from the device.
@@ -93,7 +93,7 @@ namespace Kernel.Devices
         public byte[] NewBlockArray(uint aBlockCount)
         {
             //TODO: Support Conv_Ovf_I_Un IL op then remove the cast below
-            return new byte[aBlockCount*(uint) BlockSize];
+            return new byte[aBlockCount*(uint)BlockSize];
         }
     }
 }

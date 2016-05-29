@@ -35,12 +35,6 @@ namespace Kernel.Processes.ELF
         protected byte* data;
         protected uint size;
 
-        public ELFStringTable(uint anAddress, uint aSize)
-        {
-            data = (byte*) anAddress;
-            size = aSize;
-        }
-
         public String this[uint offset]
         {
             get
@@ -52,6 +46,12 @@ namespace Kernel.Processes.ELF
                 }
                 return currString;
             }
+        }
+
+        public ELFStringTable(uint anAddress, uint aSize)
+        {
+            data = (byte*)anAddress;
+            size = aSize;
         }
     }
 }

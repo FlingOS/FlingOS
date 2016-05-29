@@ -30,8 +30,8 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.ATA;
-using Kernel.Devices;
 using Kernel.ATA.Exceptions;
+using Kernel.Devices;
 using Kernel.Devices.Keyboards;
 using Kernel.Devices.Timers;
 using Kernel.FileSystems;
@@ -59,6 +59,13 @@ namespace Kernel.Shells
     /// </summary>
     public class MainShell : Shell
     {
+        /// <summary>
+        ///     Delegate used by delegates test.
+        /// </summary>
+        /// <param name="data">Test data to pass in.</param>
+        /// <returns>A test value.</returns>
+        private delegate int IntDelegate(object data);
+
         /// <summary>
         ///     The current directory to prepend to relative paths.
         /// </summary>
@@ -131,7 +138,7 @@ namespace Kernel.Shells
                         if (cmdParts.Count > 0)
                         {
                             //Get the command to run - first part of the command
-                            String cmd = (String) cmdParts[0];
+                            String cmd = (String)cmdParts[0];
                             //Determine which command we are to run
                             if (cmd == "halt")
                             {
@@ -190,7 +197,7 @@ namespace Kernel.Shells
                                 //  list.
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 //If the user gave us an option
@@ -232,7 +239,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -266,12 +273,12 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
-                                    int diskNum = (int) Int32.Parse_DecimalUnsigned(opt1, 0);
+                                    int diskNum = (int)Int32.Parse_DecimalUnsigned(opt1, 0);
 
                                     //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     //{
@@ -302,12 +309,12 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
                                 {
-                                    int diskNum = (int) Int32.Parse_DecimalUnsigned(opt1, 0);
+                                    int diskNum = (int)Int32.Parse_DecimalUnsigned(opt1, 0);
 
                                     //if (Hardware.DeviceManager.Devices[diskNum] is Hardware.Devices.DiskDevice)
                                     //{
@@ -347,7 +354,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -377,7 +384,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -391,7 +398,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -401,7 +408,7 @@ namespace Kernel.Shells
                                                 String opt3 = null;
                                                 if (cmdParts.Count > 3)
                                                 {
-                                                    opt3 = (String) cmdParts[3];
+                                                    opt3 = (String)cmdParts[3];
                                                 }
                                                 if (opt3 != null)
                                                 {
@@ -447,7 +454,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -457,7 +464,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -479,7 +486,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -509,7 +516,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -531,7 +538,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -553,7 +560,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -566,7 +573,7 @@ namespace Kernel.Shells
                                             String opt3 = null;
                                             if (cmdParts.Count > 3)
                                             {
-                                                opt3 = (String) cmdParts[3];
+                                                opt3 = (String)cmdParts[3];
                                             }
 
                                             if (opt3 != null)
@@ -615,7 +622,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -625,7 +632,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -647,7 +654,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -669,7 +676,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -682,7 +689,7 @@ namespace Kernel.Shells
                                             String opt3 = null;
                                             if (cmdParts.Count > 3)
                                             {
-                                                opt3 = (String) cmdParts[3];
+                                                opt3 = (String)cmdParts[3];
                                             }
 
                                             if (opt3 != null)
@@ -727,7 +734,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -851,7 +858,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
 
                                 if (opt1 != null)
@@ -867,7 +874,7 @@ namespace Kernel.Shells
                                         String opt2 = null;
                                         if (cmdParts.Count > 2)
                                         {
-                                            opt2 = (String) cmdParts[2];
+                                            opt2 = (String)cmdParts[2];
                                         }
 
                                         if (opt2 != null)
@@ -877,7 +884,7 @@ namespace Kernel.Shells
                                                 String opt3 = null;
                                                 if (cmdParts.Count > 3)
                                                 {
-                                                    opt3 = (String) cmdParts[3];
+                                                    opt3 = (String)cmdParts[3];
                                                 }
 
                                                 if (opt3 != null)
@@ -913,7 +920,7 @@ namespace Kernel.Shells
                                                 String opt3 = null;
                                                 if (cmdParts.Count > 3)
                                                 {
-                                                    opt3 = (String) cmdParts[3];
+                                                    opt3 = (String)cmdParts[3];
                                                 }
 
                                                 if (opt3 != null)
@@ -976,7 +983,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
                                 ShowLicense(opt1);
 
@@ -989,7 +996,7 @@ namespace Kernel.Shells
                                 String opt1 = null;
                                 if (cmdParts.Count > 1)
                                 {
-                                    opt1 = (String) cmdParts[1];
+                                    opt1 = (String)cmdParts[1];
                                 }
                                 ShowHelp(opt1);
 
@@ -1067,7 +1074,7 @@ namespace Kernel.Shells
                 else if (c.Key == KeyboardKey.Escape)
                 {
                     //Clear output line
-                    console.Write(((String) "").PadLeft(result.Length, '\b'));
+                    console.Write(((String)"").PadLeft(result.Length, '\b'));
 
                     //Clear out the result
                     result = "";
@@ -1108,7 +1115,7 @@ namespace Kernel.Shells
         /// <param name="state">The state object. Should be null.</param>
         private void TriggerPeriodicReboot(object state)
         {
-            ((MainShell) state).Reboot();
+            ((MainShell)state).Reboot();
         }
 
         /// <summary>
@@ -1154,7 +1161,7 @@ namespace Kernel.Shells
                 console.WriteLine("Possible commands are: ");
                 for (int i = 0; i < CommandHelp.CommandDescriptions.Count; i++)
                 {
-                    CommandDescription cmdDesc = (CommandDescription) CommandHelp.CommandDescriptions[i];
+                    CommandDescription cmdDesc = (CommandDescription)CommandHelp.CommandDescriptions[i];
                     console.WriteLine(cmdDesc.CommandName);
                 }
             }
@@ -1230,7 +1237,7 @@ which should have been provided with the executable.");
                 {
                     //Add the part (including the space which was removed by split)
                     //  to the currently constructing part
-                    currPart += " " + (String) parts[i];
+                    currPart += " " + (String)parts[i];
 
                     //If the part ends with a quote, then we have found our closing quote
                     //  which terminates the group part
@@ -1247,7 +1254,7 @@ which should have been provided with the executable.");
                 else
                 {
                     //Set the current part
-                    currPart = (String) parts[i];
+                    currPart = (String)parts[i];
 
                     //If it starts with a quote, it is the start of a group part
                     if (currPart.StartsWith("\""))
@@ -1417,7 +1424,7 @@ which should have been provided with the executable.");
 
             //Temporary storage. Note: If the file is to big, this will just fail 
             //  as there won't be enough heap memory available
-            byte[] data = new byte[(uint) srcFile.TheFileSystem.ThePartition.BlockSize];
+            byte[] data = new byte[(uint)srcFile.TheFileSystem.ThePartition.BlockSize];
 
             //Force stream positions
             srcStr.Position = 0;
@@ -1425,9 +1432,9 @@ which should have been provided with the executable.");
 
             console.Write("[");
 
-            int percentile = (int) (uint) Math.Divide(srcFile.Size, 78u);
+            int percentile = (int)(uint)Math.Divide(srcFile.Size, 78u);
             int dist = 0;
-            while ((ulong) srcStr.Position < srcFile.Size)
+            while ((ulong)srcStr.Position < srcFile.Size)
             {
                 //Read in source data.
                 srcStr.Read(data, 0, data.Length);
@@ -1522,17 +1529,17 @@ which should have been provided with the executable.");
             List listings = srcDir.GetListings();
             for (int i = 0; i < listings.Count; i++)
             {
-                Base listing = (Base) listings[i];
+                Base listing = (Base)listings[i];
                 if (listing.IsDirectory)
                 {
                     if (listing.Name != "." && listing.Name != "..")
                     {
-                        CopyDirectory((Directory) listing, dst + listing.Name + FileSystemManager.PathDelimiter);
+                        CopyDirectory((Directory)listing, dst + listing.Name + FileSystemManager.PathDelimiter);
                     }
                 }
                 else
                 {
-                    CopyFile((File) listing, dst + listing.Name);
+                    CopyFile((File)listing, dst + listing.Name);
                 }
             }
         }
@@ -1648,7 +1655,7 @@ which should have been provided with the executable.");
             Partition thePart = null;
             for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                Partition aPart = (Partition) PartitionManager.Partitions[i];
+                Partition aPart = (Partition)PartitionManager.Partitions[i];
                 if (aPart.TheDiskDevice == disk)
                 {
                     thePart = aPart;
@@ -1718,13 +1725,13 @@ which should have been provided with the executable.");
                     //Tasks.SystemStatusTask.MainConsole.Write("[");
                     ulong percentile = Math.Divide(aFile.Size, 53u);
                     ulong pos = 0;
-                    while ((ulong) fileStream.Position < aFile.Size)
+                    while ((ulong)fileStream.Position < aFile.Size)
                     {
                         int actuallyRead = fileStream.Read(DataBuffer, 0, DataBuffer.Length);
-                        String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint) actuallyRead);
+                        String xText = ByteConverter.GetASCIIStringFromASCII(DataBuffer, 0u, (uint)actuallyRead);
                         console.Write(xText);
 
-                        pos += (ulong) actuallyRead;
+                        pos += (ulong)actuallyRead;
                         if (pos >= percentile)
                         {
                             pos -= percentile;
@@ -1767,15 +1774,15 @@ which should have been provided with the executable.");
                 {
                     for (int j = 0; j < Listings.Count; j++)
                     {
-                        Base xItem = (Base) Listings[j];
+                        Base xItem = (Base)Listings[j];
 
                         if (xItem.IsDirectory)
                         {
-                            console.WriteLine("<DIR> '" + ((Directory) Listings[j]).Name + "'");
+                            console.WriteLine("<DIR> '" + ((Directory)Listings[j]).Name + "'");
                         }
                         else
                         {
-                            File file = (File) Listings[j];
+                            File file = (File)Listings[j];
                             console.WriteLine("<FILE> '" + file.Name + "' (" + file.Size + ")");
                         }
                     }
@@ -1814,14 +1821,14 @@ which should have been provided with the executable.");
         /// </summary>
         private void OutputFS()
         {
-            console.WriteLine((String) "Num partitions: " + PartitionManager.Partitions.Count);
+            console.WriteLine((String)"Num partitions: " + PartitionManager.Partitions.Count);
 
             for (int i = 0; i < FileSystemManager.FileSystemMappings.Count; i++)
             {
-                FileSystemMapping fsMapping = (FileSystemMapping) FileSystemManager.FileSystemMappings[i];
+                FileSystemMapping fsMapping = (FileSystemMapping)FileSystemManager.FileSystemMappings[i];
                 if (fsMapping.TheFileSystem is FATFileSystem)
                 {
-                    FATFileSystem fs = (FATFileSystem) fsMapping.TheFileSystem;
+                    FATFileSystem fs = (FATFileSystem)fsMapping.TheFileSystem;
 
                     console.WriteLine("FAT file system detected. Volume ID: " + fs.ThePartition.VolumeID);
                 }
@@ -1849,7 +1856,7 @@ which should have been provided with the executable.");
 
         private static void DeviceManager_DeviceAdded(Object state, Device device)
         {
-            ((MainShell) state)._DeviceManager_DeviceAdded(device);
+            ((MainShell)state)._DeviceManager_DeviceAdded(device);
         }
 
         private void _DeviceManager_DeviceAdded(Device device)
@@ -1910,7 +1917,7 @@ which should have been provided with the executable.");
                 uint allocSize = 16;
                 while (Heap.GetTotalFreeMem() > 0x100000)
                 {
-                    byte* val = (byte*) Heap.Alloc(allocSize, "MainShell : HeapTest");
+                    byte* val = (byte*)Heap.Alloc(allocSize, "MainShell : HeapTest");
                     if (val == null)
                     {
                         break;
@@ -1943,7 +1950,7 @@ which should have been provided with the executable.");
                 console.WriteLine("Testing GC...");
                 while (Heap.GetTotalFreeMem() - 0x10000 > 0)
                 {
-                    GC.NewObj((Type) typeof(Object));
+                    GC.NewObj((Type)typeof(Object));
                 }
                 console.WriteLine("Complete without error.");
             }
@@ -1992,7 +1999,7 @@ which should have been provided with the executable.");
         {
             for (uint i = 17; i < 256; i++)
             {
-                console.WriteLine((String) "Attempting to invoke interrupt: " + i);
+                console.WriteLine((String)"Attempting to invoke interrupt: " + i);
                 x86Interrupts.InvokeInterrupt(i);
             }
         }
@@ -2043,7 +2050,7 @@ which should have been provided with the executable.");
                 FileSystemMapping A_FSMapping = FileSystemManager.GetMapping("A:/");
                 if (A_FSMapping != null)
                 {
-                    FATFileSystem A_FS = (FATFileSystem) A_FSMapping.TheFileSystem;
+                    FATFileSystem A_FS = (FATFileSystem)A_FSMapping.TheFileSystem;
 
                     Directory P1D2Dir = Directory.Find("A:/P1D2");
                     if (P1D2Dir == null)
@@ -2101,7 +2108,7 @@ which should have been provided with the executable.");
                         fileStream.Position = 0;
                         byte[] readBytes = new byte[size];
                         fileStream.Read(readBytes, 0, readBytes.Length);
-                        String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint) readBytes.Length);
+                        String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
                         console.WriteLine("\"" + readStr + "\"");
 
                         OutputDivider();
@@ -2121,7 +2128,7 @@ which should have been provided with the executable.");
 
                         console.WriteLine("Writing data...");
                         fileStream.Position = 0;
-                        uint size = (uint) shortNameTestFile.Size;
+                        uint size = (uint)shortNameTestFile.Size;
                         //for (int i = 0; i < 20; i++)
                         {
                             //fileStream.Write(testStrBytes, 0, testStrBytes.Length);
@@ -2132,7 +2139,7 @@ which should have been provided with the executable.");
                         fileStream.Position = 0;
                         byte[] readBytes = new byte[size];
                         fileStream.Read(readBytes, 0, readBytes.Length);
-                        String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint) readBytes.Length);
+                        String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
                         console.WriteLine("\"" + readStr + "\"");
 
                         OutputDivider();
@@ -2166,10 +2173,10 @@ which should have been provided with the executable.");
                                 console.WriteLine("Copying data...");
 
                                 FromFileStream.Position = 0;
-                                byte[] readBytes = new byte[(uint) FileToCopy.Size];
+                                byte[] readBytes = new byte[(uint)FileToCopy.Size];
                                 FromFileStream.Read(readBytes, 0, readBytes.Length);
                                 String readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u,
-                                    (uint) readBytes.Length);
+                                    (uint)readBytes.Length);
                                 console.WriteLine("\"" + readStr + "\"");
 
                                 ToFileStream.Position = 0;
@@ -2179,9 +2186,9 @@ which should have been provided with the executable.");
                                 console.WriteLine("Reading back data from target file...");
 
                                 ToFileStream.Position = 0;
-                                readBytes = new byte[(uint) FileToCopy.Size];
+                                readBytes = new byte[(uint)FileToCopy.Size];
                                 ToFileStream.Read(readBytes, 0, readBytes.Length);
-                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint) readBytes.Length);
+                                readStr = ByteConverter.GetASCIIStringFromASCII(readBytes, 0u, (uint)readBytes.Length);
                                 console.WriteLine("\"" + readStr + "\"");
                             }
                             else
@@ -2274,7 +2281,7 @@ which should have been provided with the executable.");
             c = a*b;
             bool test6OK = c == 0x0UL;
 
-            console.WriteLine((String) "Tests OK: " + test1OK + ", " + test2OK +
+            console.WriteLine((String)"Tests OK: " + test1OK + ", " + test2OK +
                               ", " + test3OK + ", " + test4OK +
                               ", " + test5OK + ", " + test6OK);
             Timer.Default.Wait(1000*10);
@@ -2631,7 +2638,7 @@ which should have been provided with the executable.");
 
             try
             {
-                Type theType = (Type) typeof(Type);
+                Type theType = (Type)typeof(Type);
                 if (theType == null)
                 {
                     console.WriteLine("The type object is null!!");
@@ -2653,7 +2660,7 @@ which should have been provided with the executable.");
                     FieldInfo* fieldInfoPtr = theType.FieldTablePtr;
                     while (fieldInfoPtr->Size != 0)
                     {
-                        Type fieldType = (Type) ObjectUtilities.GetObject(fieldInfoPtr->FieldType);
+                        Type fieldType = (Type)ObjectUtilities.GetObject(fieldInfoPtr->FieldType);
 
                         try
                         {
@@ -2695,7 +2702,7 @@ which should have been provided with the executable.");
 
             try
             {
-                Object anStr = (String) "test";
+                Object anStr = (String)"test";
                 if (anStr is String)
                 {
                     console.WriteLine("Is a String.");
@@ -3566,13 +3573,6 @@ which should have been provided with the executable.");
 
             console.WriteLine("Ended Thread Sleep test.");
         }
-
-        /// <summary>
-        ///     Delegate used by delegates test.
-        /// </summary>
-        /// <param name="data">Test data to pass in.</param>
-        /// <returns>A test value.</returns>
-        private delegate int IntDelegate(object data);
     }
 
     /// <summary>

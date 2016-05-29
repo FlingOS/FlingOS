@@ -40,13 +40,18 @@ namespace Kernel.USB.Devices
     public class USBDevice : Device
     {
         /// <summary>
+        ///     The device info that specifies the physical device to communicate with.
+        /// </summary>
+        public USBDeviceInfo DeviceInfo { get; protected set; }
+
+        /// <summary>
         ///     Initialises a new USB device with specified USB device info. Includes adding it to Devices lists in
         ///     device manager and USB manager.
         /// </summary>
         /// <param name="aDeviceInfo">The device info of the physical device.</param>
-        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup @group, DeviceClass @class, DeviceSubClass subClass,
+        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup group, DeviceClass @class, DeviceSubClass subClass,
             String name, bool IsClaimed)
-            : base(@group, @class, subClass, name, new uint[5], IsClaimed)
+            : base(group, @class, subClass, name, new uint[5], IsClaimed)
         {
             DeviceInfo = aDeviceInfo;
 
@@ -56,11 +61,6 @@ namespace Kernel.USB.Devices
             Info[3] = aDeviceInfo.portNum;
             Info[4] = aDeviceInfo.address;
         }
-
-        /// <summary>
-        ///     The device info that specifies the physical device to communicate with.
-        /// </summary>
-        public USBDeviceInfo DeviceInfo { get; protected set; }
 
         /// <summary>
         ///     Destroys the USB device including removing it from Devices lists in device manager and USB manager.

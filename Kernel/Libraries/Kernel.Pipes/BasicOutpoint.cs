@@ -41,6 +41,16 @@ namespace Kernel.Pipes
     public abstract unsafe class BasicOutpoint : Object
     {
         /// <summary>
+        ///     The class of pipe allowed to connect to the outpoint.
+        /// </summary>
+        public PipeClasses Class { get; protected set; }
+
+        /// <summary>
+        ///     The subclass of pipe allowed to connect to the outpoint.
+        /// </summary>
+        public PipeSubclasses Subclass { get; protected set; }
+
+        /// <summary>
         ///     Creates and registers a new outpoint of the specified class and subclass.
         /// </summary>
         /// <param name="aClass">The class of pipe allowed to connect to the outpoint.</param>
@@ -79,16 +89,6 @@ namespace Kernel.Pipes
         }
 
         /// <summary>
-        ///     The class of pipe allowed to connect to the outpoint.
-        /// </summary>
-        public PipeClasses Class { get; protected set; }
-
-        /// <summary>
-        ///     The subclass of pipe allowed to connect to the outpoint.
-        /// </summary>
-        public PipeSubclasses Subclass { get; protected set; }
-
-        /// <summary>
         ///     Waits for a pipe to connect to the outpoint.
         /// </summary>
         /// <returns>The Id of the newly connected pipe.</returns>
@@ -99,7 +99,7 @@ namespace Kernel.Pipes
 
             WaitOnPipeCreateRequest* request =
                 (WaitOnPipeCreateRequest*)
-                    Heap.AllocZeroed((uint) sizeof(WaitOnPipeCreateRequest), "BasicOutPipe : WaitForConnect");
+                    Heap.AllocZeroed((uint)sizeof(WaitOnPipeCreateRequest), "BasicOutPipe : WaitForConnect");
             try
             {
                 request->Class = Class;
@@ -163,7 +163,7 @@ namespace Kernel.Pipes
         {
             WritePipeRequest* WritePipeRequestPtr =
                 (WritePipeRequest*)
-                    Heap.AllocZeroed((uint) sizeof(WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
+                    Heap.AllocZeroed((uint)sizeof(WritePipeRequest), "BasicOutPipe : Alloc WritePipeRequest");
             try
             {
                 if (WritePipeRequestPtr != null)
@@ -171,7 +171,7 @@ namespace Kernel.Pipes
                     WritePipeRequestPtr->Offset = Offset;
                     WritePipeRequestPtr->PipeId = PipeId;
                     WritePipeRequestPtr->Length = Math.Min(Data.Length - Offset, Length);
-                    WritePipeRequestPtr->InBuffer = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
+                    WritePipeRequestPtr->InBuffer = (byte*)ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
                     WritePipeRequestPtr->Blocking = Blocking;
 
                     SystemCallResults SysCallResult = SystemCalls.WritePipe(WritePipeRequestPtr);
@@ -266,7 +266,7 @@ namespace Kernel.Pipes
 
             PipeOutpointsRequest* RequestPtr =
                 (PipeOutpointsRequest*)
-                    Heap.AllocZeroed((uint) sizeof(PipeOutpointsRequest),
+                    Heap.AllocZeroed((uint)sizeof(PipeOutpointsRequest),
                         "BasicServerHelpers : Alloc PipeOutpointsRequest");
             if (RequestPtr != null)
             {
@@ -275,7 +275,7 @@ namespace Kernel.Pipes
                     RequestPtr->MaxDescriptors = numOutpoints;
                     RequestPtr->Outpoints =
                         (PipeOutpointDescriptor*)
-                            ((byte*) ObjectUtilities.GetHandle(OutpointDescriptors) + Array.FieldsBytesSize);
+                            ((byte*)ObjectUtilities.GetHandle(OutpointDescriptors) + Array.FieldsBytesSize);
                     if (RequestPtr->Outpoints != null)
                     {
                         SysCallResult = SystemCalls.GetPipeOutpoints(Class, Subclass, RequestPtr);

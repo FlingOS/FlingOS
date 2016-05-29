@@ -63,17 +63,17 @@ namespace FlingOops
             [NoGC]
             get
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
-                return ((char*) thisPtr)[index];
+                return ((char*)thisPtr)[index];
             }
             [NoDebug]
             [NoGC]
             set
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
-                ((char*) thisPtr)[index] = value;
+                ((char*)thisPtr)[index] = value;
             }
         }
 
@@ -88,17 +88,17 @@ namespace FlingOops
             [NoGC]
             get
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
-                return ((char*) thisPtr)[index];
+                return ((char*)thisPtr)[index];
             }
             [NoDebug]
             [NoGC]
             set
             {
-                byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
+                byte* thisPtr = (byte*)ObjectUtilities.GetHandle(this);
                 thisPtr += 8; /*For fields inc. inherited*/
-                ((char*) thisPtr)[index] = value;
+                ((char*)thisPtr)[index] = value;
             }
         }
 
@@ -122,7 +122,7 @@ namespace FlingOops
                 ExceptionMethods.Throw(
                     new Exception("Parameter \"length\" cannot be less than 0 in FlingOops.String.New(int length)."));
             }
-            String result = (String) ObjectUtilities.GetObject(GC.NewString(length));
+            String result = (String)ObjectUtilities.GetObject(GC.NewString(length));
             if (result == null)
             {
                 BasicConsole.WriteLine("NullReferenceException! String.New, result is null.");
@@ -158,7 +158,7 @@ namespace FlingOops
         [NoGC]
         public unsafe char* GetCharPointer()
         {
-            return (char*) ((byte*) ObjectUtilities.GetHandle(this) + FieldsBytesSize);
+            return (char*)((byte*)ObjectUtilities.GetHandle(this) + FieldsBytesSize);
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace FlingOops
         [NoGC]
         public static implicit operator String(string x)
         {
-            return (String) (object) x;
+            return (String)(object)x;
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace FlingOops
         [NoGC]
         public static explicit operator string(String x)
         {
-            return (string) (object) x;
+            return (string)(object)x;
         }
 
         /// <summary>
@@ -477,7 +477,7 @@ namespace FlingOops
         [NoGC]
         public static implicit operator String(short x)
         {
-            return (ushort) x;
+            return (ushort)x;
         }
 
         /// <summary>
@@ -559,7 +559,7 @@ namespace FlingOops
         [NoGC]
         public static implicit operator String(int x)
         {
-            return (uint) x;
+            return (uint)x;
         }
 
         /// <summary>
@@ -571,9 +571,9 @@ namespace FlingOops
         [NoGC]
         public static implicit operator String(ulong x)
         {
-            uint part1 = (uint) x;
-            uint part2 = (uint) (x >> 16 >> 16);
-            return (String) part2 + " " + part1;
+            uint part1 = (uint)x;
+            uint part2 = (uint)(x >> 16 >> 16);
+            return (String)part2 + " " + part1;
         }
 
         /// <summary>
@@ -585,7 +585,7 @@ namespace FlingOops
         [NoGC]
         public static implicit operator String(long x)
         {
-            return (ulong) x;
+            return (ulong)x;
         }
     }
 }

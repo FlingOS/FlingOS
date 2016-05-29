@@ -265,49 +265,6 @@ namespace Kernel.PCI
         public uint slot;
 
         /// <summary>
-        ///     Initialises a new, generic PCI device.
-        /// </summary>
-        /// <param name="bus">The PCI bus number.</param>
-        /// <param name="slot">The PCI slot number.</param>
-        /// <param name="function">The PCI function number.</param>
-        [NoDebug]
-        public PCIDevice(uint bus, uint slot, uint function, String name)
-            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3], false)
-        {
-            Info[0] = this.bus = bus;
-            Info[1] = this.slot = slot;
-            Info[2] = this.function = function;
-
-#if PCI_TRACE || COMPILER_TRACE
-            ushort vendorID = ReadRegister16(0x00);
-            VendorID = ReadRegister16(0x00);
-            BasicConsole.WriteLine(((Framework.String)"New PCI device. bus(arg)=") + bus + ", bus(fld)=" + this.bus);
-            BasicConsole.WriteLine(((Framework.String)"                slot(arg)=") + slot + ", slot(fld)=" + this.slot);
-            BasicConsole.WriteLine(((Framework.String)"                func(arg)=") + function + ", func(fld)=" + this.function);
-            BasicConsole.WriteLine(((Framework.String)"                vendorID(loc)=") + vendorID + ", vendorID(fld)=" + this.VendorID);
-            BasicConsole.DelayOutput(4);
-#else
-            VendorID = ReadRegister16(0x00);
-#endif
-            DeviceID = ReadRegister16(0x02);
-
-            RevisionID = ReadRegister8(0x08);
-            ProgIF = ReadRegister8(0x09);
-            Subclass = ReadRegister8(0x0A);
-            ClassCode = ReadRegister8(0x0B);
-
-            CacheLineSize = ReadRegister8(0x0C);
-            LatencyTimer = ReadRegister8(0x0D);
-            HeaderType = (PCIHeaderType) ReadRegister8(0x0E);
-            BIST = (PCIBISTs) ReadRegister8(0x0F);
-
-            InterruptLine = ReadRegister8(0x3C);
-            InterruptPIN = (PCIInterruptPIN) ReadRegister8(0x3D);
-
-            DeviceExists = (uint) VendorID != 0xFFFF && (uint) DeviceID != 0xFFFF;
-        }
-
-        /// <summary>
         ///     The device's VendorID.
         /// </summary>
         public ushort VendorID { get; }
@@ -322,8 +279,8 @@ namespace Kernel.PCI
         /// </summary>
         public PCICommand Command
         {
-            get { return (PCICommand) ReadRegister16(0x04); }
-            set { WriteRegister16(0x04, (ushort) value); }
+            get { return (PCICommand)ReadRegister16(0x04); }
+            set { WriteRegister16(0x04, (ushort)value); }
         }
 
         /// <summary>
@@ -331,8 +288,8 @@ namespace Kernel.PCI
         /// </summary>
         public PCIStatus Status
         {
-            get { return (PCIStatus) ReadRegister16(0x06); }
-            set { WriteRegister16(0x06, (ushort) value); }
+            get { return (PCIStatus)ReadRegister16(0x06); }
+            set { WriteRegister16(0x06, (ushort)value); }
         }
 
         /// <summary>
@@ -391,6 +348,49 @@ namespace Kernel.PCI
         public bool DeviceExists { get; private set; }
 
         /// <summary>
+        ///     Initialises a new, generic PCI device.
+        /// </summary>
+        /// <param name="bus">The PCI bus number.</param>
+        /// <param name="slot">The PCI slot number.</param>
+        /// <param name="function">The PCI function number.</param>
+        [NoDebug]
+        public PCIDevice(uint bus, uint slot, uint function, String name)
+            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3], false)
+        {
+            Info[0] = this.bus = bus;
+            Info[1] = this.slot = slot;
+            Info[2] = this.function = function;
+
+#if PCI_TRACE || COMPILER_TRACE
+            ushort vendorID = ReadRegister16(0x00);
+            VendorID = ReadRegister16(0x00);
+            BasicConsole.WriteLine(((Framework.String)"New PCI device. bus(arg)=") + bus + ", bus(fld)=" + this.bus);
+            BasicConsole.WriteLine(((Framework.String)"                slot(arg)=") + slot + ", slot(fld)=" + this.slot);
+            BasicConsole.WriteLine(((Framework.String)"                func(arg)=") + function + ", func(fld)=" + this.function);
+            BasicConsole.WriteLine(((Framework.String)"                vendorID(loc)=") + vendorID + ", vendorID(fld)=" + this.VendorID);
+            BasicConsole.DelayOutput(4);
+#else
+            VendorID = ReadRegister16(0x00);
+#endif
+            DeviceID = ReadRegister16(0x02);
+
+            RevisionID = ReadRegister8(0x08);
+            ProgIF = ReadRegister8(0x09);
+            Subclass = ReadRegister8(0x0A);
+            ClassCode = ReadRegister8(0x0B);
+
+            CacheLineSize = ReadRegister8(0x0C);
+            LatencyTimer = ReadRegister8(0x0D);
+            HeaderType = (PCIHeaderType)ReadRegister8(0x0E);
+            BIST = (PCIBISTs)ReadRegister8(0x0F);
+
+            InterruptLine = ReadRegister8(0x3C);
+            InterruptPIN = (PCIInterruptPIN)ReadRegister8(0x3D);
+
+            DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
+        }
+
+        /// <summary>
         ///     Calculates the base address for a PCI device.
         /// </summary>
         /// <param name="aBus">PCI bus number.</param>
@@ -417,16 +417,16 @@ namespace Kernel.PCI
         /// <param name="enable">Whether to enable memory or not.</param>
         public void EnableMemory(bool enable)
         {
-            ushort command = (ushort) Command;
+            ushort command = (ushort)Command;
 
             ushort flags = 0x0007;
 
             if (enable)
                 command |= flags;
             else
-                command &= (ushort) ~flags;
+                command &= (ushort)~flags;
 
-            Command = (PCICommand) command;
+            Command = (PCICommand)command;
         }
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace Kernel.PCI
         protected uint GetSize(byte bar)
         {
             //Calculate register number for specified BAR number
-            byte regNum = (byte) (0x10 + bar*4);
+            byte regNum = (byte)(0x10 + bar*4);
             //Read BAR address into a temp store so we can restore it later
             uint baseAddr = ReadRegister32(regNum);
             //As per spec:
@@ -686,9 +686,9 @@ namespace Kernel.PCI
         [NoDebug]
         public byte ReadRegister8(byte aRegister)
         {
-            uint xAddr = GetAddressBase(bus, slot, function) | (uint) (aRegister & 0xFC);
+            uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            return (byte) ((PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8)) & 0xFF);
+            return (byte)((PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8)) & 0xFF);
         }
 
         /// <summary>
@@ -699,9 +699,9 @@ namespace Kernel.PCI
         [NoDebug]
         public void WriteRegister8(byte aRegister, byte value)
         {
-            uint xAddr = GetAddressBase(bus, slot, function) | (uint) (aRegister & 0xFC);
+            uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            IOPort.doWrite_Byte((ushort) (PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
+            IOPort.doWrite_Byte((ushort)(PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
         }
 
         /// <summary>
@@ -712,9 +712,9 @@ namespace Kernel.PCI
         [NoDebug]
         public ushort ReadRegister16(byte aRegister)
         {
-            uint xAddr = GetAddressBase(bus, slot, function) | (uint) (aRegister & 0xFC);
+            uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            return (ushort) ((PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8)) & 0xFFFF);
+            return (ushort)((PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8)) & 0xFFFF);
         }
 
         /// <summary>
@@ -725,7 +725,7 @@ namespace Kernel.PCI
         [NoDebug]
         public void WriteRegister16(byte aRegister, ushort value)
         {
-            uint xAddr = GetAddressBase(bus, slot, function) | (uint) (aRegister & 0xFC);
+            uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
             PCI_IO.ConfigDataPort.Write_UInt16(value);
         }
@@ -738,7 +738,7 @@ namespace Kernel.PCI
         [NoDebug]
         public uint ReadRegister32(byte aRegister)
         {
-            uint xAddr = GetAddressBase(bus, slot, function) | (uint) (aRegister & 0xFC);
+            uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
             return PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8);
         }
@@ -751,7 +751,7 @@ namespace Kernel.PCI
         [NoDebug]
         public void WriteRegister32(byte aRegister, uint value)
         {
-            uint xAddr = GetAddressBase(bus, slot, function) | (uint) (aRegister & 0xFC);
+            uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
             PCI_IO.ConfigDataPort.Write_UInt32(value);
         }

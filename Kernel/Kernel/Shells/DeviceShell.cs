@@ -102,14 +102,14 @@ namespace Kernel.Shells
                 {
                     for (int i = 0; i < DeviceList.Count; i++)
                     {
-                        Device ADevice = (Device) DeviceList[i];
-                        console.WriteLine("Id: " + (String) ADevice.Id);
+                        Device ADevice = (Device)DeviceList[i];
+                        console.WriteLine("Id: " + (String)ADevice.Id);
                         console.Write("Group: ");
-                        console.WriteLine_AsDecimal((int) ADevice.Group);
+                        console.WriteLine_AsDecimal((int)ADevice.Group);
                         console.Write("Class: ");
-                        console.WriteLine_AsDecimal((int) ADevice.Class);
+                        console.WriteLine_AsDecimal((int)ADevice.Class);
                         console.Write("Subclass: ");
-                        console.WriteLine_AsDecimal((int) ADevice.SubClass);
+                        console.WriteLine_AsDecimal((int)ADevice.SubClass);
                         console.Write("Name: ");
                         console.WriteLine(ADevice.Name);
                         console.Write("Info: ");

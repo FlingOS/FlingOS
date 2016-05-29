@@ -51,38 +51,38 @@ namespace Kernel.USB.HCIs
         public static byte PORTSC1 = 0x10;
         public static byte PORTSC2 = 0x12;
 
-        public static ushort CMD_MAXP = (ushort) Utils.BIT(7);
-        public static ushort CMD_CF = (ushort) Utils.BIT(6);
-        public static ushort CMD_SWDBG = (ushort) Utils.BIT(5);
-        public static ushort CMD_FGR = (ushort) Utils.BIT(4);
-        public static ushort CMD_EGSM = (ushort) Utils.BIT(3);
-        public static ushort CMD_GRESET = (ushort) Utils.BIT(2);
-        public static ushort CMD_HCRESET = (ushort) Utils.BIT(1);
-        public static ushort CMD_RS = (ushort) Utils.BIT(0);
+        public static ushort CMD_MAXP = (ushort)Utils.BIT(7);
+        public static ushort CMD_CF = (ushort)Utils.BIT(6);
+        public static ushort CMD_SWDBG = (ushort)Utils.BIT(5);
+        public static ushort CMD_FGR = (ushort)Utils.BIT(4);
+        public static ushort CMD_EGSM = (ushort)Utils.BIT(3);
+        public static ushort CMD_GRESET = (ushort)Utils.BIT(2);
+        public static ushort CMD_HCRESET = (ushort)Utils.BIT(1);
+        public static ushort CMD_RS = (ushort)Utils.BIT(0);
 
-        public static ushort STS_HCHALTED = (ushort) Utils.BIT(5);
-        public static ushort STS_HC_PROCESS_ERROR = (ushort) Utils.BIT(4);
-        public static ushort STS_HOST_SYSTEM_ERROR = (ushort) Utils.BIT(3);
-        public static ushort STS_RESUME_DETECT = (ushort) Utils.BIT(2);
-        public static ushort STS_USB_ERROR = (ushort) Utils.BIT(1);
-        public static ushort STS_USBINT = (ushort) Utils.BIT(0);
+        public static ushort STS_HCHALTED = (ushort)Utils.BIT(5);
+        public static ushort STS_HC_PROCESS_ERROR = (ushort)Utils.BIT(4);
+        public static ushort STS_HOST_SYSTEM_ERROR = (ushort)Utils.BIT(3);
+        public static ushort STS_RESUME_DETECT = (ushort)Utils.BIT(2);
+        public static ushort STS_USB_ERROR = (ushort)Utils.BIT(1);
+        public static ushort STS_USBINT = (ushort)Utils.BIT(0);
         public static ushort STS_MASK = 0x3F;
 
-        public static ushort INT_SHORT_PACKET_ENABLE = (ushort) Utils.BIT(3);
-        public static ushort INT_IOC_ENABLE = (ushort) Utils.BIT(2);
-        public static ushort INT_RESUME_ENABLE = (ushort) Utils.BIT(1);
-        public static ushort INT_TIMEOUT_ENABLE = (ushort) Utils.BIT(0);
+        public static ushort INT_SHORT_PACKET_ENABLE = (ushort)Utils.BIT(3);
+        public static ushort INT_IOC_ENABLE = (ushort)Utils.BIT(2);
+        public static ushort INT_RESUME_ENABLE = (ushort)Utils.BIT(1);
+        public static ushort INT_TIMEOUT_ENABLE = (ushort)Utils.BIT(0);
         public static ushort INT_MASK = 0xF;
 
-        public static ushort SUSPEND = (ushort) Utils.BIT(12);
-        public static ushort PORT_RESET = (ushort) Utils.BIT(9);
-        public static ushort PORT_LOWSPEED_DEVICE = (ushort) Utils.BIT(8);
-        public static ushort PORT_VALID = (ushort) Utils.BIT(7); // reserved an readonly; always read as 1
-        public static ushort PORT_RESUME_DETECT = (ushort) Utils.BIT(6);
-        public static ushort PORT_ENABLE_CHANGE = (ushort) Utils.BIT(3);
-        public static ushort PORT_ENABLE = (ushort) Utils.BIT(2);
-        public static ushort PORT_CS_CHANGE = (ushort) Utils.BIT(1);
-        public static ushort PORT_CS = (ushort) Utils.BIT(0);
+        public static ushort SUSPEND = (ushort)Utils.BIT(12);
+        public static ushort PORT_RESET = (ushort)Utils.BIT(9);
+        public static ushort PORT_LOWSPEED_DEVICE = (ushort)Utils.BIT(8);
+        public static ushort PORT_VALID = (ushort)Utils.BIT(7); // reserved an readonly; always read as 1
+        public static ushort PORT_RESUME_DETECT = (ushort)Utils.BIT(6);
+        public static ushort PORT_ENABLE_CHANGE = (ushort)Utils.BIT(3);
+        public static ushort PORT_ENABLE = (ushort)Utils.BIT(2);
+        public static ushort PORT_CS_CHANGE = (ushort)Utils.BIT(1);
+        public static ushort PORT_CS = (ushort)Utils.BIT(0);
 
         /*
         Packet Identification (PID). This field contains the Packet ID to be used for this transaction. Only
@@ -154,7 +154,7 @@ namespace Kernel.USB.HCIs
 
             bool isUSBPageAlreadyMapped = false;
             SystemCallResults checkUSBPageResult =
-                SystemCalls.IsPhysicalAddressMapped((uint) usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
+                SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
             if (checkUSBPageResult != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Error! UHCI cannot check USB Base Address.");
@@ -165,25 +165,25 @@ namespace Kernel.USB.HCIs
             {
                 uint actualAddress = 0xFFFFFFFF;
                 SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(
-                    (uint) usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
+                    (uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
                 if (mapUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot map USB Base Address.");
                     ExceptionMethods.Throw(new Exception("UHCI cannot map USB Base Address."));
                 }
-                usbBaseAddress = (byte*) actualAddress;
+                usbBaseAddress = (byte*)actualAddress;
             }
             else
             {
                 uint actualAddress = 0xFFFFFFFF;
-                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint) usbBaseAddress & 0xFFFFF000,
+                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000,
                     out actualAddress);
                 if (getUSBPageResult != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("Error! UHCI cannot get USB Base Address.");
                     ExceptionMethods.Throw(new Exception("UHCI cannot get USB Base Address."));
                 }
-                usbBaseAddress = (byte*) actualAddress;
+                usbBaseAddress = (byte*)actualAddress;
             }
 
             RootPortCount = UHCI_Consts.PORTMAX;
@@ -206,16 +206,16 @@ namespace Kernel.USB.HCIs
                     BasicConsole.WriteLine("Error! UHCI cannot map page for Frame List.");
                     ExceptionMethods.Throw(new Exception("UHCI cannot map page for Frame List."));
                 }
-                FrameList = (uint*) actualAddress;
+                FrameList = (uint*)actualAddress;
             }
         }
 
         protected ushort MapPort(uint portOffset)
         {
-            uint portAddr = (uint) (usbBaseAddress + portOffset);
+            uint portAddr = (uint)(usbBaseAddress + portOffset);
 
             if ((portAddr & 0xFFFFF000) !=
-                ((uint) usbBaseAddress & 0xFFFFF000))
+                ((uint)usbBaseAddress & 0xFFFFF000))
             {
                 bool isUSBPageAlreadyMapped = false;
                 SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped(
@@ -252,7 +252,7 @@ namespace Kernel.USB.HCIs
                 }
             }
 
-            return (ushort) portAddr;
+            return (ushort)portAddr;
         }
 
         internal override void Start()
@@ -306,14 +306,14 @@ namespace Kernel.USB.HCIs
             SystemCalls.SleepThread(50);
             USBCMD.Write_UInt16(0);
 
-            RootPortCount = (byte) (pciDevice.BaseAddresses[4].Size()/2);
+            RootPortCount = (byte)(pciDevice.BaseAddresses[4].Size()/2);
 #if UHCI_TRACE
             BasicConsole.WriteLine(((Framework.String)"UHCI: RootPortCount=") + RootPortCount);
 #endif
             for (byte i = 2; i < RootPortCount; i++)
             {
-                if ((PORTSC1.Read_UInt16((ushort) (i*2)) & UHCI_Consts.PORT_VALID) == 0 ||
-                    (PORTSC1.Read_UInt16((ushort) (i*2)) == 0xFFFF))
+                if ((PORTSC1.Read_UInt16((ushort)(i*2)) & UHCI_Consts.PORT_VALID) == 0 ||
+                    (PORTSC1.Read_UInt16((ushort)(i*2)) == 0xFFFF))
                 {
                     RootPortCount = i;
                     break;
@@ -398,7 +398,7 @@ namespace Kernel.USB.HCIs
 
                 for (byte i = 0; i < RootPortCount; i++) // switch off the valid root ports
                 {
-                    PORTSC1.Write_UInt16(0, (ushort) (i*2));
+                    PORTSC1.Write_UInt16(0, (ushort)(i*2));
                 }
             }
 
@@ -410,9 +410,9 @@ namespace Kernel.USB.HCIs
 #endif
 
             UHCI_QueueHead_Struct* qh =
-                (UHCI_QueueHead_Struct*) Heap.AllocZeroedAPB((uint) sizeof(UHCI_QueueHead_Struct), 32, "UHCI : ResetHC");
-            qh->next = (UHCI_QueueHead_Struct*) UHCI_Consts.BIT_T;
-            qh->transfer = (UHCI_qTD_Struct*) UHCI_Consts.BIT_T;
+                (UHCI_QueueHead_Struct*)Heap.AllocZeroedAPB((uint)sizeof(UHCI_QueueHead_Struct), 32, "UHCI : ResetHC");
+            qh->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T;
+            qh->transfer = (UHCI_qTD_Struct*)UHCI_Consts.BIT_T;
             qh->q_first = null;
             qh->q_last = null;
             qhPointer = qh;
@@ -441,7 +441,7 @@ namespace Kernel.USB.HCIs
             BasicConsole.DelayOutput(1);
 #endif
 
-            FRBASEADD.Write_UInt32((uint) GetPhysicalAddress(FrameList));
+            FRBASEADD.Write_UInt32((uint)GetPhysicalAddress(FrameList));
             FRNUM.Write_UInt16(0);
 
 #if UHCI_TRACE
@@ -460,7 +460,7 @@ namespace Kernel.USB.HCIs
             // start host controller and mark it configured with a 64-byte max packet
             USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
             USBINTR.Write_UInt16(UHCI_Consts.INT_MASK); // switch on all interrupts
-            USBCMD.Write_UInt16((ushort) (UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
+            USBCMD.Write_UInt16((ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
 
 #if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Reset CSC ports...");
@@ -469,7 +469,7 @@ namespace Kernel.USB.HCIs
 
             for (byte i = 0; i < RootPortCount; i++) // reset the CSC of the valid root ports
             {
-                PORTSC1.Write_UInt16(UHCI_Consts.PORT_CS_CHANGE, (ushort) (i*2));
+                PORTSC1.Write_UInt16(UHCI_Consts.PORT_CS_CHANGE, (ushort)(i*2));
             }
 
 #if UHCI_TRACE
@@ -482,12 +482,12 @@ namespace Kernel.USB.HCIs
             BasicConsole.WriteLine("     - STS MASK set");
 #endif
             USBCMD.Write_UInt16(
-                (ushort) (UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP | UHCI_Consts.CMD_FGR));
+                (ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP | UHCI_Consts.CMD_FGR));
 #if UHCI_TRACE
             BasicConsole.WriteLine("     - FGR issued");
 #endif
             SystemCalls.SleepThread(20);
-            USBCMD.Write_UInt16((ushort) (UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
+            USBCMD.Write_UInt16((ushort)(UHCI_Consts.CMD_RS | UHCI_Consts.CMD_CF | UHCI_Consts.CMD_MAXP));
 #if UHCI_TRACE
             BasicConsole.WriteLine("     - FGR cleared");            
             BasicConsole.DelayOutput(1);
@@ -541,7 +541,7 @@ namespace Kernel.USB.HCIs
             {
                 ResetPort(j);
 
-                ushort val = PORTSC1.Read_UInt16((ushort) (2*j));
+                ushort val = PORTSC1.Read_UInt16((ushort)(2*j));
 #if UHCI_TRACE
                 BasicConsole.WriteLine(((Framework.String)"UHCI: Port ") + j + " : " + val);
 #endif
@@ -558,13 +558,13 @@ namespace Kernel.USB.HCIs
 
             //Processes.Scheduler.Disable();
 
-            ushort portOffset = (ushort) (port*2);
+            ushort portOffset = (ushort)(port*2);
 
-            PORTSC1.Write_UInt16((ushort) (UHCI_Consts.PORT_CS_CHANGE | UHCI_Consts.PORT_ENABLE_CHANGE), portOffset);
+            PORTSC1.Write_UInt16((ushort)(UHCI_Consts.PORT_CS_CHANGE | UHCI_Consts.PORT_ENABLE_CHANGE), portOffset);
 
             PORTSC1.Write_UInt16(UHCI_Consts.PORT_RESET, portOffset);
             SystemCalls.SleepThread(60); // do not delete this wait
-            PORTSC1.Write_UInt16((ushort) (PORTSC1.Read_UInt16(portOffset) & ~UHCI_Consts.PORT_RESET), portOffset);
+            PORTSC1.Write_UInt16((ushort)(PORTSC1.Read_UInt16(portOffset) & ~UHCI_Consts.PORT_RESET), portOffset);
             // clear reset bit
             SystemCalls.SleepThread(20);
 
@@ -585,7 +585,7 @@ namespace Kernel.USB.HCIs
 
                 if ((val & (UHCI_Consts.PORT_ENABLE_CHANGE | UHCI_Consts.PORT_CS_CHANGE)) != 0)
                 {
-                    PORTSC1.Write_UInt16((ushort) (UHCI_Consts.PORT_ENABLE_CHANGE | UHCI_Consts.PORT_CS_CHANGE),
+                    PORTSC1.Write_UInt16((ushort)(UHCI_Consts.PORT_ENABLE_CHANGE | UHCI_Consts.PORT_CS_CHANGE),
                         portOffset);
                 }
 
@@ -829,7 +829,7 @@ namespace Kernel.USB.HCIs
             uT.inBuffer = null;
             uT.inLength = 0;
 
-            uT.qTD = CreateQTD_SETUP((UHCI_QueueHead_Struct*) transfer.underlyingTransferData, (uint*) 1, toggle,
+            uT.qTD = CreateQTD_SETUP((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint*)1, toggle,
                 tokenBytes, type, req, hiVal, loVal, index, length, transfer.device.address, transfer.endpoint,
                 transfer.packetSize);
             uT.qTDBuffer = uT.qTD->virtBuffer;
@@ -838,8 +838,8 @@ namespace Kernel.USB.HCIs
             {
                 UHCITransaction uLastTransaction =
                     (UHCITransaction)
-                        ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-                uLastTransaction.qTD->next = ((uint) GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                        ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
                 // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
@@ -858,7 +858,7 @@ namespace Kernel.USB.HCIs
             uT.inBuffer = buffer;
             uT.inLength = length;
 
-            uT.qTD = CreateQTD_IO((UHCI_QueueHead_Struct*) transfer.underlyingTransferData, (uint*) 1, UHCI_Consts.TD_IN,
+            uT.qTD = CreateQTD_IO((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint*)1, UHCI_Consts.TD_IN,
                 toggle, length, transfer.device.address, transfer.endpoint, transfer.packetSize);
             uT.qTDBuffer = uT.qTD->virtBuffer;
 
@@ -866,8 +866,8 @@ namespace Kernel.USB.HCIs
             {
                 UHCITransaction uLastTransaction =
                     (UHCITransaction)
-                        ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-                uLastTransaction.qTD->next = ((uint) GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                        ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
                 // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
@@ -886,21 +886,21 @@ namespace Kernel.USB.HCIs
             uT.inBuffer = null;
             uT.inLength = 0;
 
-            uT.qTD = CreateQTD_IO((UHCI_QueueHead_Struct*) transfer.underlyingTransferData, (uint*) 1,
+            uT.qTD = CreateQTD_IO((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint*)1,
                 UHCI_Consts.TD_OUT, toggle, length, transfer.device.address, transfer.endpoint, transfer.packetSize);
             uT.qTDBuffer = uT.qTD->virtBuffer;
 
             if (buffer != null && length != 0)
             {
-                MemoryUtils.MemCpy_32((byte*) uT.qTDBuffer, (byte*) buffer, length);
+                MemoryUtils.MemCpy_32((byte*)uT.qTDBuffer, (byte*)buffer, length);
             }
 
             if (transfer.transactions.Count > 0)
             {
                 UHCITransaction uLastTransaction =
                     (UHCITransaction)
-                        ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-                uLastTransaction.qTD->next = ((uint) GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                        ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
                 // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
@@ -924,11 +924,11 @@ namespace Kernel.USB.HCIs
 #endif
 
             UHCITransaction firstTransaction =
-                (UHCITransaction) ((USBTransaction) transfer.transactions[0]).underlyingTz;
+                (UHCITransaction)((USBTransaction)transfer.transactions[0]).underlyingTz;
             UHCITransaction lastTransaction =
-                (UHCITransaction) ((USBTransaction) transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
+                (UHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
             UHCI_qTD.SetIntOnComplete(lastTransaction.qTD, true); // We want an interrupt after complete transfer
-            CreateQH((UHCI_QueueHead_Struct*) transfer.underlyingTransferData, (uint) transfer.underlyingTransferData,
+            CreateQH((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint)transfer.underlyingTransferData,
                 firstTransaction.qTD);
 
 #if UHCI_TRACE
@@ -957,28 +957,28 @@ namespace Kernel.USB.HCIs
                 TransactionsCompleted = 0;
                 for (int j = 0; j < transfer.transactions.Count; j++)
                 {
-                    USBTransaction elem = (USBTransaction) transfer.transactions[j];
-                    UHCITransaction uT = (UHCITransaction) elem.underlyingTz;
+                    USBTransaction elem = (USBTransaction)transfer.transactions[j];
+                    UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
                     uT.qTD->u1 = uT.qTD->u1 & 0xFF00FFFF;
                     UHCI_qTD.SetActive(uT.qTD, true);
                 }
 
                 // stop scheduler
                 USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
-                USBCMD.Write_UInt16((ushort) (USBCMD.Read_UInt16() & ~UHCI_Consts.CMD_RS));
+                USBCMD.Write_UInt16((ushort)(USBCMD.Read_UInt16() & ~UHCI_Consts.CMD_RS));
                 while ((USBSTS.Read_UInt16() & UHCI_Consts.STS_HCHALTED) == 0)
                 {
                     SystemCalls.SleepThread(10);
                 }
 
                 // update scheduler
-                uint qhPhysAddr = (uint) GetPhysicalAddress(transfer.underlyingTransferData) | UHCI_Consts.BIT_QH;
+                uint qhPhysAddr = (uint)GetPhysicalAddress(transfer.underlyingTransferData) | UHCI_Consts.BIT_QH;
                 FrameList[0] = qhPhysAddr;
-                FRBASEADD.Write_UInt32((uint) GetPhysicalAddress(FrameList));
+                FRBASEADD.Write_UInt32((uint)GetPhysicalAddress(FrameList));
                 FRNUM.Write_UInt16(0);
                 // start scheduler
                 USBSTS.Write_UInt16(UHCI_Consts.STS_MASK);
-                USBCMD.Write_UInt16((ushort) (USBCMD.Read_UInt16() | UHCI_Consts.CMD_RS));
+                USBCMD.Write_UInt16((ushort)(USBCMD.Read_UInt16() | UHCI_Consts.CMD_RS));
                 while ((USBSTS.Read_UInt16() & UHCI_Consts.STS_HCHALTED) != 0)
                 {
                     SystemCalls.SleepThread(10);
@@ -996,8 +996,8 @@ namespace Kernel.USB.HCIs
                     active = false;
                     for (int j = 0; j < transfer.transactions.Count; j++)
                     {
-                        USBTransaction elem = (USBTransaction) transfer.transactions[j];
-                        UHCITransaction uT = (UHCITransaction) elem.underlyingTz;
+                        USBTransaction elem = (USBTransaction)transfer.transactions[j];
+                        UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
                         active = active || ((uT.qTD->u1 & 0x00FF0000) == 0x00800000);
                     }
 
@@ -1034,8 +1034,8 @@ namespace Kernel.USB.HCIs
                     bool completeDespiteNoInterrupt = true;
                     for (int j = 0; j < transfer.transactions.Count; j++)
                     {
-                        USBTransaction elem = (USBTransaction) transfer.transactions[j];
-                        UHCITransaction uT = (UHCITransaction) elem.underlyingTz;
+                        USBTransaction elem = (USBTransaction)transfer.transactions[j];
+                        UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
 
 #if UHCI_TRACE
                         BasicConsole.WriteLine(((Framework.String)"u1=") + uT.qTD->u1 + ", u2=" + uT.qTD->u2);
@@ -1064,13 +1064,13 @@ namespace Kernel.USB.HCIs
                     // check conditions and save data
                     for (int j = 0; j < transfer.transactions.Count; j++)
                     {
-                        USBTransaction elem = (USBTransaction) transfer.transactions[j];
-                        UHCITransaction uT = (UHCITransaction) elem.underlyingTz;
+                        USBTransaction elem = (USBTransaction)transfer.transactions[j];
+                        UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
                         transfer.success = transfer.success && isTransactionSuccessful(uT); // executed w/o error
 
                         if (uT.inBuffer != null && uT.inLength != 0)
                         {
-                            MemoryUtils.MemCpy_32((byte*) uT.inBuffer, (byte*) uT.qTDBuffer, uT.inLength);
+                            MemoryUtils.MemCpy_32((byte*)uT.inBuffer, (byte*)uT.qTDBuffer, uT.inLength);
                         }
                     }
                 }
@@ -1100,12 +1100,12 @@ namespace Kernel.USB.HCIs
 #endif
 
             UHCI_qTD_Struct* td =
-                (UHCI_qTD_Struct*) Heap.AllocZeroedAPB((uint) sizeof(UHCI_qTD_Struct), 32, "UHCI : AllocQTD");
+                (UHCI_qTD_Struct*)Heap.AllocZeroedAPB((uint)sizeof(UHCI_qTD_Struct), 32, "UHCI : AllocQTD");
 
-            if ((uint) next != Utils.BIT(0))
+            if ((uint)next != Utils.BIT(0))
             {
-                td->next = ((uint) GetPhysicalAddress(next) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
-                td->q_next = (UHCI_qTD_Struct*) next;
+                td->next = ((uint)GetPhysicalAddress(next) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                td->q_next = (UHCI_qTD_Struct*)next;
             }
             else
             {
@@ -1127,7 +1127,7 @@ namespace Kernel.USB.HCIs
 #endif
 
             td->virtBuffer = Heap.AllocZeroedAPB(0x1000, 0x1000, "UHCI : AllocQTDBuffer");
-            td->buffer = (uint*) GetPhysicalAddress(td->virtBuffer);
+            td->buffer = (uint*)GetPhysicalAddress(td->virtBuffer);
 
             return td->virtBuffer;
         }
@@ -1147,12 +1147,12 @@ namespace Kernel.USB.HCIs
             UHCI_qTD.SetDataToggle(td, toggle);
             UHCI_qTD.SetDeviceAddress(td, device);
             UHCI_qTD.SetEndpoint(td, endpoint);
-            UHCI_qTD.SetMaxLength(td, (ushort) (tokenBytes - 1));
+            UHCI_qTD.SetMaxLength(td, (ushort)(tokenBytes - 1));
             UHCI_qTD.SetC_ERR(td, 0x3);
 
             //TODO: The following todo makes no sense anymore...
             //T O D O: *buffer = 
-            USBRequest* request = (USBRequest*) AllocQTDbuffer(td);
+            USBRequest* request = (USBRequest*)AllocQTDbuffer(td);
             request->type = type;
             request->request = req;
             request->valueHi = hiVal;
@@ -1178,7 +1178,7 @@ namespace Kernel.USB.HCIs
 
             if (tokenBytes != 0)
             {
-                UHCI_qTD.SetMaxLength(td, (ushort) ((tokenBytes - 1u) & 0x7FFu));
+                UHCI_qTD.SetMaxLength(td, (ushort)((tokenBytes - 1u) & 0x7FFu));
             }
             else
             {
@@ -1203,16 +1203,16 @@ namespace Kernel.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            head->next = (UHCI_QueueHead_Struct*) UHCI_Consts.BIT_T;
+            head->next = (UHCI_QueueHead_Struct*)UHCI_Consts.BIT_T;
             // (paging_getPhysAddr((void*)horizPtr) & 0xFFFFFFF0) | BIT_QH;
 
             if (firstTD == null)
             {
-                head->transfer = (UHCI_qTD_Struct*) UHCI_Consts.BIT_T;
+                head->transfer = (UHCI_qTD_Struct*)UHCI_Consts.BIT_T;
             }
             else
             {
-                head->transfer = (UHCI_qTD_Struct*) ((uint) GetPhysicalAddress(firstTD) & 0xFFFFFFF0);
+                head->transfer = (UHCI_qTD_Struct*)((uint)GetPhysicalAddress(firstTD) & 0xFFFFFFF0);
                 head->q_first = firstTD;
             }
         }
@@ -1226,14 +1226,14 @@ namespace Kernel.USB.HCIs
 
             for (byte j = 0; j < RootPortCount; j++)
             {
-                ushort val = PORTSC1.Read_UInt16((ushort) (2*j));
+                ushort val = PORTSC1.Read_UInt16((ushort)(2*j));
 
                 if ((val & UHCI_Consts.PORT_CS_CHANGE) != 0)
                 {
 #if UHCI_TRACE
                     BasicConsole.WriteLine(((Framework.String)"UHCI: Port ") + j + " changed.");
 #endif
-                    PORTSC1.Write_UInt16(UHCI_Consts.PORT_CS_CHANGE, (ushort) (2*j));
+                    PORTSC1.Write_UInt16(UHCI_Consts.PORT_CS_CHANGE, (ushort)(2*j));
                     AnalysePortStatus(j, val);
                 }
             }
@@ -1241,13 +1241,13 @@ namespace Kernel.USB.HCIs
 
         private static void* GetPhysicalAddress(void* vAddr)
         {
-            return GetPhysicalAddress((uint) vAddr);
+            return GetPhysicalAddress((uint)vAddr);
         }
 
         private static void* GetPhysicalAddress(uint vAddr)
         {
             uint address = 0xFFFFFFFF;
-            BasicConsole.WriteLine("Getting physical address of: " + (String) vAddr);
+            BasicConsole.WriteLine("Getting physical address of: " + (String)vAddr);
             SystemCallResults result = SystemCalls.GetPhysicalAddress(vAddr, out address);
             if (result != SystemCallResults.OK)
             {
@@ -1256,9 +1256,9 @@ namespace Kernel.USB.HCIs
             }
             else
             {
-                BasicConsole.WriteLine("Physical address is: " + (String) address);
+                BasicConsole.WriteLine("Physical address is: " + (String)address);
             }
-            return (void*) address;
+            return (void*)address;
         }
     }
 
@@ -1372,18 +1372,18 @@ namespace Kernel.USB.HCIs
 
         public static byte GetC_ERR(UHCI_qTD_Struct* qTD)
         {
-            return (byte) ((qTD->u1 & 0x18000000) >> 27);
+            return (byte)((qTD->u1 & 0x18000000) >> 27);
         }
 
         public static void SetC_ERR(UHCI_qTD_Struct* qTD, byte val)
         {
-            qTD->u1 = (qTD->u1 & 0xE7FFFFFF) | ((uint) (val & 0x03) << 27);
+            qTD->u1 = (qTD->u1 & 0xE7FFFFFF) | ((uint)(val & 0x03) << 27);
         }
 
         //u2
         public static byte GetPacketID(UHCI_qTD_Struct* qTD)
         {
-            return (byte) qTD->u2;
+            return (byte)qTD->u2;
         }
 
         public static void SetPacketID(UHCI_qTD_Struct* qTD, byte val)
@@ -1393,22 +1393,22 @@ namespace Kernel.USB.HCIs
 
         public static byte GetDeviceAddress(UHCI_qTD_Struct* qTD)
         {
-            return (byte) ((qTD->u2 & 0x00007F00) >> 8);
+            return (byte)((qTD->u2 & 0x00007F00) >> 8);
         }
 
         public static void SetDeviceAddress(UHCI_qTD_Struct* qTD, byte val)
         {
-            qTD->u2 = (qTD->u2 & 0xFFFF80FF) | ((uint) (val & 0x7F) << 8);
+            qTD->u2 = (qTD->u2 & 0xFFFF80FF) | ((uint)(val & 0x7F) << 8);
         }
 
         public static byte GetEndpoint(UHCI_qTD_Struct* qTD)
         {
-            return (byte) ((qTD->u2 & 0x00078000) >> 15);
+            return (byte)((qTD->u2 & 0x00078000) >> 15);
         }
 
         public static void SetEndpoint(UHCI_qTD_Struct* qTD, byte val)
         {
-            qTD->u2 = (qTD->u2 & 0xFFF87FFF) | ((uint) (val & 0x0F) << 15);
+            qTD->u2 = (qTD->u2 & 0xFFF87FFF) | ((uint)(val & 0x0F) << 15);
         }
 
         public static bool GetDataToggle(UHCI_qTD_Struct* qTD)
@@ -1430,12 +1430,12 @@ namespace Kernel.USB.HCIs
 
         public static ushort GetMaxLength(UHCI_qTD_Struct* qTD)
         {
-            return (ushort) ((qTD->u2 & 0xFFE00000) >> 21);
+            return (ushort)((qTD->u2 & 0xFFE00000) >> 21);
         }
 
         public static void SetMaxLength(UHCI_qTD_Struct* qTD, ushort val)
         {
-            qTD->u2 = (qTD->u2 & 0x001FFFFF) | ((uint) val << 21);
+            qTD->u2 = (qTD->u2 & 0x001FFFFF) | ((uint)val << 21);
         }
     }
 

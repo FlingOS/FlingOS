@@ -73,11 +73,11 @@ namespace Kernel.Processes.ELF
         {
             NameIndex = ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            SectionType = (ElfSectionTypes) ByteConverter.ToUInt32(header, offset);
+            SectionType = (ElfSectionTypes)ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            Flags = (ELFSectionFlags) ByteConverter.ToUInt32(header, offset);
+            Flags = (ELFSectionFlags)ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            LoadAddress = (byte*) ByteConverter.ToUInt32(header, offset);
+            LoadAddress = (byte*)ByteConverter.ToUInt32(header, offset);
             offset += 4;
             SectionFileOffset = ByteConverter.ToUInt32(header, offset);
             offset += 4;
@@ -99,14 +99,14 @@ namespace Kernel.Processes.ELF
         protected byte[] data;
         protected ELFSectionHeader header;
 
-        protected ELFSection(ELFSectionHeader aHeader)
-        {
-            header = aHeader;
-        }
-
         public ELFSectionHeader Header
         {
             get { return header; }
+        }
+
+        protected ELFSection(ELFSectionHeader aHeader)
+        {
+            header = aHeader;
         }
 
         public virtual int Read(FileStream stream)
@@ -154,11 +154,6 @@ namespace Kernel.Processes.ELF
 
     public class ELFStringTableSection : ELFSection
     {
-        public ELFStringTableSection(ELFSectionHeader header)
-            : base(header)
-        {
-        }
-
         public String this[uint offset]
         {
             get
@@ -166,10 +161,15 @@ namespace Kernel.Processes.ELF
                 String currString = "";
                 if (offset < data.Length)
                 {
-                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint) (data.Length - offset));
+                    currString = ByteConverter.GetASCIIStringFromASCII(data, offset, (uint)(data.Length - offset));
                 }
                 return currString;
             }
+        }
+
+        public ELFStringTableSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
 
         public bool IsMatch(uint offset, String value)
@@ -213,11 +213,6 @@ namespace Kernel.Processes.ELF
 
         protected List symbols = new List();
 
-        public ELFSymbolTableSection(ELFSectionHeader header)
-            : base(header)
-        {
-        }
-
         public List Symbols
         {
             get { return symbols; }
@@ -225,12 +220,17 @@ namespace Kernel.Processes.ELF
 
         public int StringsSectionIndex
         {
-            get { return (int) header.Link; }
+            get { return (int)header.Link; }
         }
 
         public Symbol this[uint index]
         {
-            get { return (Symbol) symbols[(int) index]; }
+            get { return (Symbol)symbols[(int)index]; }
+        }
+
+        public ELFSymbolTableSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
 
         public override int Read(FileStream stream)
@@ -245,7 +245,7 @@ namespace Kernel.Processes.ELF
                 currSymbol = new Symbol();
 
                 currSymbol.NameIdx = ByteConverter.ToUInt32(data, offset + 0);
-                currSymbol.Value = (byte*) ByteConverter.ToUInt32(data, offset + 4);
+                currSymbol.Value = (byte*)ByteConverter.ToUInt32(data, offset + 4);
                 currSymbol.Size = ByteConverter.ToUInt32(data, offset + 8);
                 currSymbol.Info = data[offset + 12];
                 currSymbol.Other = data[offset + 13];
@@ -271,12 +271,12 @@ namespace Kernel.Processes.ELF
             //Interpreted from Info field
             public SymbolBinding Binding
             {
-                get { return (SymbolBinding) (Info >> 4); }
+                get { return (SymbolBinding)(Info >> 4); }
             }
 
             public SymbolType Type
             {
-                get { return (SymbolType) (Info & 0xF); }
+                get { return (SymbolType)(Info & 0xF); }
             }
         }
     }
@@ -314,11 +314,6 @@ namespace Kernel.Processes.ELF
 
         protected List relocations = new List();
 
-        public ELFRelocationTableSection(ELFSectionHeader header)
-            : base(header)
-        {
-        }
-
         public List Relocations
         {
             get { return relocations; }
@@ -326,17 +321,22 @@ namespace Kernel.Processes.ELF
 
         public int SymbolTableSectionIndex
         {
-            get { return (int) header.Link; }
+            get { return (int)header.Link; }
         }
 
         public int SectionToRelocateIndex
         {
-            get { return (int) header.Info; }
+            get { return (int)header.Info; }
         }
 
         public Relocation this[uint index]
         {
-            get { return (Relocation) Relocations[(int) index]; }
+            get { return (Relocation)Relocations[(int)index]; }
+        }
+
+        public ELFRelocationTableSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
 
         public override int Read(FileStream stream)
@@ -350,7 +350,7 @@ namespace Kernel.Processes.ELF
             {
                 currRelocation = new Relocation();
 
-                currRelocation.Offset = (byte*) ByteConverter.ToUInt32(data, offset + 0);
+                currRelocation.Offset = (byte*)ByteConverter.ToUInt32(data, offset + 0);
                 currRelocation.Info = ByteConverter.ToUInt32(data, offset + 4);
 
                 relocations.Add(currRelocation);
@@ -397,7 +397,7 @@ namespace Kernel.Processes.ELF
 
             public RelocationType Type
             {
-                get { return (RelocationType) (Info & 0xFF); }
+                get { return (RelocationType)(Info & 0xFF); }
             }
         }
     }
@@ -406,11 +406,6 @@ namespace Kernel.Processes.ELF
     {
         protected List relocations = new List();
 
-        public ELFRelocationAddendTableSection(ELFSectionHeader header)
-            : base(header)
-        {
-        }
-
         public List Relocations
         {
             get { return relocations; }
@@ -418,17 +413,22 @@ namespace Kernel.Processes.ELF
 
         public int SymbolTableSectionIndex
         {
-            get { return (int) header.Link; }
+            get { return (int)header.Link; }
         }
 
         public int SectionToRelocateIndex
         {
-            get { return (int) header.Info; }
+            get { return (int)header.Info; }
         }
 
         public RelocationAddend this[uint index]
         {
-            get { return (RelocationAddend) Relocations[(int) index]; }
+            get { return (RelocationAddend)Relocations[(int)index]; }
+        }
+
+        public ELFRelocationAddendTableSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
 
         public override int Read(FileStream stream)
@@ -442,9 +442,9 @@ namespace Kernel.Processes.ELF
             {
                 currRelocation = new RelocationAddend();
 
-                currRelocation.Offset = (byte*) ByteConverter.ToUInt32(data, offset + 0);
+                currRelocation.Offset = (byte*)ByteConverter.ToUInt32(data, offset + 0);
                 currRelocation.Info = ByteConverter.ToUInt32(data, offset + 4);
-                currRelocation.Addend = (short) ByteConverter.ToUInt16(data, offset + 8);
+                currRelocation.Addend = (short)ByteConverter.ToUInt16(data, offset + 8);
 
                 relocations.Add(currRelocation);
 
@@ -499,7 +499,7 @@ namespace Kernel.Processes.ELF
 
             public ELFRelocationTableSection.RelocationType Type
             {
-                get { return (ELFRelocationTableSection.RelocationType) (Info & 0xFF); }
+                get { return (ELFRelocationTableSection.RelocationType)(Info & 0xFF); }
             }
         }
     }
@@ -544,11 +544,6 @@ namespace Kernel.Processes.ELF
 
         protected List dynamics = new List();
 
-        public ELFDynamicSection(ELFSectionHeader header)
-            : base(header)
-        {
-        }
-
         public List Dynamics
         {
             get { return dynamics; }
@@ -560,7 +555,7 @@ namespace Kernel.Processes.ELF
             {
                 for (int i = 0; i < dynamics.Count; i++)
                 {
-                    Dynamic theDyn = (Dynamic) dynamics[i];
+                    Dynamic theDyn = (Dynamic)dynamics[i];
                     if (theDyn.Tag == DynamicTag.StrTab)
                     {
                         return theDyn;
@@ -576,7 +571,7 @@ namespace Kernel.Processes.ELF
             {
                 for (int i = 0; i < dynamics.Count; i++)
                 {
-                    Dynamic theDyn = (Dynamic) dynamics[i];
+                    Dynamic theDyn = (Dynamic)dynamics[i];
                     if (theDyn.Tag == DynamicTag.StrSZ)
                     {
                         return theDyn;
@@ -588,7 +583,12 @@ namespace Kernel.Processes.ELF
 
         public Dynamic this[uint index]
         {
-            get { return (Dynamic) dynamics[(int) index]; }
+            get { return (Dynamic)dynamics[(int)index]; }
+        }
+
+        public ELFDynamicSection(ELFSectionHeader header)
+            : base(header)
+        {
         }
 
         public override int Read(FileStream stream)
@@ -602,7 +602,7 @@ namespace Kernel.Processes.ELF
             {
                 currDynamic = new Dynamic();
 
-                currDynamic.Tag = (DynamicTag) ByteConverter.ToUInt32(data, offset + 0);
+                currDynamic.Tag = (DynamicTag)ByteConverter.ToUInt32(data, offset + 0);
                 currDynamic.Val_Ptr = ByteConverter.ToUInt32(data, offset + 4);
 
                 dynamics.Add(currDynamic);

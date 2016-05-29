@@ -41,7 +41,7 @@ namespace Drivers.Compiler.Architectures.x86
         public override void PerformStackOperations(ILPreprocessState conversionState, ILOp theOp)
         {
             short index = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldarg:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
@@ -69,8 +69,8 @@ namespace Drivers.Compiler.Architectures.x86
                     break;
             }
 
-            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldarga ||
-                (OpCodes) theOp.opCode.Value == OpCodes.Ldarga_S)
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
+                (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
@@ -119,7 +119,7 @@ namespace Drivers.Compiler.Architectures.x86
         {
             //Get the index of the argument to load
             short index = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldarg:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
@@ -157,8 +157,8 @@ namespace Drivers.Compiler.Architectures.x86
             //Used to store the number of bytes to add to EBP to get to the arg
             int BytesOffsetFromEBP = argInfo.Offset;
 
-            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldarga ||
-                (OpCodes) theOp.opCode.Value == OpCodes.Ldarga_S)
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldarga ||
+                (OpCodes)theOp.opCode.Value == OpCodes.Ldarga_S)
             {
                 //Push the address of the argument onto the stack
 

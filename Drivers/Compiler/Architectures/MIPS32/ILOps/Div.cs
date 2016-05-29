@@ -92,7 +92,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t1"});
                 //Pop item A
                 conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t0"});
-                if ((OpCodes) theOp.opCode.Value == OpCodes.Div_Un)
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Div_Un)
                 {
                     //Do the division
                     conversionState.Append(new ASMOps.Div {Arg1 = "$t0", Arg2 = "$t1", Signed = false});

@@ -90,18 +90,6 @@ namespace Drivers.Compiler
         };
 
         /// <summary>
-        ///     Initialises default options.
-        /// </summary>
-        static Options()
-        {
-            // Assume 32-bit architecture
-            AddressSizeInBytes = 4;
-            BaseAddress = 0;
-            LoadOffset = 0;
-            ShortenDependencyNames = true;
-        }
-
-        /// <summary>
         ///     Path to the IL library to compile (the .dll or .exe file).
         /// </summary>
         /// <value>
@@ -173,6 +161,18 @@ namespace Drivers.Compiler
         {
             get { return ignoreAssemblies; }
             set { ignoreAssemblies = value; }
+        }
+
+        /// <summary>
+        ///     Initialises default options.
+        /// </summary>
+        static Options()
+        {
+            // Assume 32-bit architecture
+            AddressSizeInBytes = 4;
+            BaseAddress = 0;
+            LoadOffset = 0;
+            ShortenDependencyNames = true;
         }
 
         /// <summary>

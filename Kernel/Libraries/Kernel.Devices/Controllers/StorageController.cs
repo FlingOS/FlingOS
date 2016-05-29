@@ -9,6 +9,15 @@ namespace Kernel.Devices.Controllers
 {
     public static class StorageController
     {
+        private enum DiskCommands
+        {
+            Invalid = -1,
+            None = 0,
+            Read,
+            Write,
+            CleanCaches
+        }
+
         private static List DiskList;
         private static int DiskListSemaphoreId;
         private static bool Initialised;
@@ -96,7 +105,7 @@ namespace Kernel.Devices.Controllers
             ClientInfo TheClient = null;
             if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
             {
-                TheClient = (ClientInfo) Clients[Clients.Count - 1];
+                TheClient = (ClientInfo)Clients[Clients.Count - 1];
 
                 if (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
                 {
@@ -125,7 +134,7 @@ namespace Kernel.Devices.Controllers
                                     StoragePipeCommand* CommandPtr = CmdInpoint.Read();
                                     //BasicConsole.WriteLine("Storage Controller > Command received from client: " + (String)CommandPtr->Command);
 
-                                    switch ((StorageCommands) CommandPtr->Command)
+                                    switch ((StorageCommands)CommandPtr->Command)
                                     {
                                         case StorageCommands.DiskList:
                                         {
@@ -135,7 +144,7 @@ namespace Kernel.Devices.Controllers
 
                                                 for (int i = 0; i < DiskList.Count; i++)
                                                 {
-                                                    DiskIds[i] = ((DiskInfo) DiskList[i]).TheDevice.Id;
+                                                    DiskIds[i] = ((DiskInfo)DiskList[i]).TheDevice.Id;
                                                 }
 
                                                 SystemCalls.SignalSemaphore(DiskListSemaphoreId);
@@ -154,7 +163,7 @@ namespace Kernel.Devices.Controllers
 
                                                 for (int i = 0; i < DiskList.Count; i++)
                                                 {
-                                                    DiskInfo ADiskInfo = (DiskInfo) DiskList[i];
+                                                    DiskInfo ADiskInfo = (DiskInfo)DiskList[i];
                                                     if (ADiskInfo.TheDevice.Id == CommandPtr->DiskId)
                                                     {
                                                         TheDiskInfo = ADiskInfo;
@@ -211,7 +220,7 @@ namespace Kernel.Devices.Controllers
 
                                                 for (int i = 0; i < DiskList.Count; i++)
                                                 {
-                                                    DiskInfo ADiskInfo = (DiskInfo) DiskList[i];
+                                                    DiskInfo ADiskInfo = (DiskInfo)DiskList[i];
                                                     if (ADiskInfo.TheDevice.Id == CommandPtr->DiskId)
                                                     {
                                                         TheDiskInfo = ADiskInfo;
@@ -268,7 +277,7 @@ namespace Kernel.Devices.Controllers
 
                                                 for (int i = 0; i < DiskList.Count; i++)
                                                 {
-                                                    DiskInfo ADiskInfo = (DiskInfo) DiskList[i];
+                                                    DiskInfo ADiskInfo = (DiskInfo)DiskList[i];
                                                     if (ADiskInfo.TheDevice.Id == CommandPtr->DiskId)
                                                     {
                                                         TheDiskInfo = ADiskInfo;
@@ -282,14 +291,14 @@ namespace Kernel.Devices.Controllers
                                                 {
                                                     byte[] data = new byte[8];
                                                     ulong BlockSize = TheDiskInfo.TheDevice.BlockSize;
-                                                    data[0] = (byte) (BlockSize >> 0);
-                                                    data[1] = (byte) (BlockSize >> 8);
-                                                    data[2] = (byte) (BlockSize >> 16);
-                                                    data[3] = (byte) (BlockSize >> 24);
-                                                    data[4] = (byte) (BlockSize >> 32);
-                                                    data[5] = (byte) (BlockSize >> 40);
-                                                    data[6] = (byte) (BlockSize >> 48);
-                                                    data[7] = (byte) (BlockSize >> 56);
+                                                    data[0] = (byte)(BlockSize >> 0);
+                                                    data[1] = (byte)(BlockSize >> 8);
+                                                    data[2] = (byte)(BlockSize >> 16);
+                                                    data[3] = (byte)(BlockSize >> 24);
+                                                    data[4] = (byte)(BlockSize >> 32);
+                                                    data[5] = (byte)(BlockSize >> 40);
+                                                    data[6] = (byte)(BlockSize >> 48);
+                                                    data[7] = (byte)(BlockSize >> 56);
                                                     DataOutpoint.Write(TheClient.DataOutPipeId, data, 0, 8, true);
                                                 }
                                             }
@@ -303,7 +312,7 @@ namespace Kernel.Devices.Controllers
 
                                                 for (int i = 0; i < DiskList.Count; i++)
                                                 {
-                                                    DiskInfo ADiskInfo = (DiskInfo) DiskList[i];
+                                                    DiskInfo ADiskInfo = (DiskInfo)DiskList[i];
                                                     if (ADiskInfo.TheDevice.Id == CommandPtr->DiskId)
                                                     {
                                                         TheDiskInfo = ADiskInfo;
@@ -352,7 +361,7 @@ namespace Kernel.Devices.Controllers
                                         default:
                                             if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
                                             {
-                                                DiskInfo TheInfo = (DiskInfo) DiskList[0];
+                                                DiskInfo TheInfo = (DiskInfo)DiskList[0];
 
                                                 SystemCalls.SignalSemaphore(DiskListSemaphoreId);
 
@@ -462,7 +471,7 @@ namespace Kernel.Devices.Controllers
         {
             if (SystemCalls.WaitSemaphore(DiskListSemaphoreId) == SystemCallResults.OK)
             {
-                DiskInfo TheInfo = (DiskInfo) DiskList[DiskList.Count - 1];
+                DiskInfo TheInfo = (DiskInfo)DiskList[DiskList.Count - 1];
 
                 if (SystemCalls.SignalSemaphore(DiskListSemaphoreId) != SystemCallResults.OK)
                 {
@@ -480,7 +489,7 @@ namespace Kernel.Devices.Controllers
                             DiskCommand ACommand = null;
                             if (SystemCalls.WaitSemaphore(TheInfo.CommandQueueAccessSemaphoreId) == SystemCallResults.OK)
                             {
-                                ACommand = (DiskCommand) TheInfo.CommandQueue.Pop();
+                                ACommand = (DiskCommand)TheInfo.CommandQueue.Pop();
                                 SystemCalls.SignalSemaphore(TheInfo.CommandQueueAccessSemaphoreId);
 
                                 //BasicConsole.WriteLine("Storage controller > Disk command received: " + (String)(uint)ACommand.Command);
@@ -506,12 +515,12 @@ namespace Kernel.Devices.Controllers
                                     case DiskCommands.Write:
                                     {
                                         BasicConsole.WriteLine("Storage controller > Writing " +
-                                                               (String) ACommand.BlockCount + " blocks from " +
+                                                               (String)ACommand.BlockCount + " blocks from " +
                                                                ACommand.BlockNo + " blocks offset.");
                                         byte[] data = TheInfo.TheDevice.NewBlockArray(ACommand.BlockCount);
                                         int BytesRead = ACommand.DataInPipe.Read(data, 0, data.Length, true);
                                         int DesiredBytesRead =
-                                            (int) (ACommand.BlockCount*(uint) TheInfo.TheDevice.BlockSize);
+                                            (int)(ACommand.BlockCount*(uint)TheInfo.TheDevice.BlockSize);
                                         if (BytesRead < DesiredBytesRead)
                                         {
                                             BasicConsole.WriteLine(
@@ -561,15 +570,6 @@ namespace Kernel.Devices.Controllers
             public int CommandQueuedSemaphoreId;
             public uint ManagementThreadId;
             public DiskDevice TheDevice;
-        }
-
-        private enum DiskCommands
-        {
-            Invalid = -1,
-            None = 0,
-            Read,
-            Write,
-            CleanCaches
         }
 
         private class DiskCommand : Object

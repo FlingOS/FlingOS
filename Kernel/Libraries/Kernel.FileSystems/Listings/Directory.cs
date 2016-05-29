@@ -71,10 +71,10 @@ namespace Kernel.FileSystems
             }
             if (baseListing is Directory)
             {
-                return (Directory) baseListing;
+                return (Directory)baseListing;
             }
 
-            return ((File) baseListing).Parent;
+            return ((File)baseListing).Parent;
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < listings.Count; i++)
             {
-                if (((Base) listings[i]).Name == name)
+                if (((Base)listings[i]).Name == name)
                 {
                     return true;
                 }

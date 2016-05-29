@@ -42,7 +42,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             bool isFloat = false;
             int numBytes = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldc_I4:
                     numBytes = 4;
@@ -123,7 +123,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             int numBytes = 0;
 
             //Load the constant and type of constant
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Ldc_I4:
                     iValue = Utilities.ReadInt32(theOp.ValueBytes, 0);
@@ -170,7 +170,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I4_S:
-                    iValue = (sbyte) theOp.ValueBytes[0];
+                    iValue = (sbyte)theOp.ValueBytes[0];
                     numBytes = 4;
                     break;
                 case OpCodes.Ldc_I8:

@@ -62,12 +62,6 @@ namespace Drivers
 
         public static PageFaultHandler ThePageFaultHandler = null;
 
-        [NoGC]
-        [NoDebug]
-        static ExceptionMethods()
-        {
-        }
-
         public static Exception CurrentException
         {
             [NoGC]
@@ -77,7 +71,7 @@ namespace Drivers
                 if (State != null &&
                     State->CurrentHandlerPtr != null)
                 {
-                    return (Exception) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                    return (Exception)ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
                 }
                 return null;
             }
@@ -93,6 +87,12 @@ namespace Drivers
         {
             [PluggedMethod(ASMFilePath = @"ASM\Exceptions\BasePointer")] get { return null; }
             [PluggedMethod(ASMFilePath = null)] set { }
+        }
+
+        [NoGC]
+        [NoDebug]
+        static ExceptionMethods()
+        {
         }
 
         /// <summary>
@@ -130,26 +130,26 @@ namespace Drivers
             //    BasicConsole.WriteLine("Enter try-finally block");
             //}
 
-            AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*) BasePointer;
+            AddExceptionHandlerInfo_EntryStackState* BasePtr = (AddExceptionHandlerInfo_EntryStackState*)BasePointer;
 
-            uint LocalsSize = (uint) BasePtr - (uint) StackPointer;
+            uint LocalsSize = (uint)BasePtr - (uint)StackPointer;
 
             // Create space for setting up handler info
             StackPointer -= sizeof(ExceptionHandlerInfo);
 
             // Setup handler info
-            ExceptionHandlerInfo* ExHndlrPtr = (ExceptionHandlerInfo*) StackPointer;
+            ExceptionHandlerInfo* ExHndlrPtr = (ExceptionHandlerInfo*)StackPointer;
             ExHndlrPtr->EBP = BasePtr->EBP;
             //                  EBP + 8 (for ret addr, ebp) + 8 (for args) - sizeof(ExceptionHandlerInfo)
-            ExHndlrPtr->ESP = (uint) BasePtr + 8 + 8 - (uint) sizeof(ExceptionHandlerInfo);
-            ExHndlrPtr->FilterAddress = (byte*) filterPtr;
-            ExHndlrPtr->HandlerAddress = (byte*) handlerPtr;
+            ExHndlrPtr->ESP = (uint)BasePtr + 8 + 8 - (uint)sizeof(ExceptionHandlerInfo);
+            ExHndlrPtr->FilterAddress = (byte*)filterPtr;
+            ExHndlrPtr->HandlerAddress = (byte*)handlerPtr;
             ExHndlrPtr->PrevHandlerPtr = State->CurrentHandlerPtr;
             ExHndlrPtr->InHandler = 0;
             ExHndlrPtr->ExPending = 0;
             ExHndlrPtr->Ex = null;
 
-            State->CurrentHandlerPtr = (ExceptionHandlerInfo*) ((byte*) ExHndlrPtr + (LocalsSize + 12));
+            State->CurrentHandlerPtr = (ExceptionHandlerInfo*)((byte*)ExHndlrPtr + (LocalsSize + 12));
 
             StackPointer -= 8; // For duplicate (empty) args
             StackPointer -= 8; // For duplicate ebp, ret addr
@@ -157,11 +157,11 @@ namespace Drivers
             // Setup the duplicate stack data
             //  - Nothing to do for args - duplicate values don't matter
             //  - Copy over ebp and return address
-            uint* DuplicateValsStackPointer = (uint*) StackPointer;
+            uint* DuplicateValsStackPointer = (uint*)StackPointer;
             *DuplicateValsStackPointer = BasePtr->EBP;
             *(DuplicateValsStackPointer + 1) = BasePtr->RetAddr;
 
-            ShiftStack((byte*) ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
+            ShiftStack((byte*)ExHndlrPtr + sizeof(ExceptionHandlerInfo) - 4, LocalsSize + 12);
 
             // Shift stack pointer to correct position - eliminates "empty space" of duplicates
             StackPointer += 16;
@@ -193,11 +193,11 @@ namespace Drivers
                 //GC ref count remains consistent because the Ex pointer below is going to be replaced but
                 //  same pointer stored in InnerException.
                 // Result is ref count goes: +1 here, -1 below
-                ex.InnerException = (Exception) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
+                ex.InnerException = (Exception)ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex);
             }
             if (ex.InstructionAddress == 0)
             {
-                ex.InstructionAddress = *((uint*) BasePointer + 1);
+                ex.InstructionAddress = *((uint*)BasePointer + 1);
             }
             State->CurrentHandlerPtr->Ex = ObjectUtilities.GetHandle(ex);
             State->CurrentHandlerPtr->ExPending = 1;
@@ -208,7 +208,7 @@ namespace Drivers
             HaltReason = "HandleException returned!";
             BasicConsole.WriteLine(HaltReason);
             // Try to cause fault
-            *(byte*) 0x800000000 = 0;
+            *(byte*)0x800000000 = 0;
         }
 
         /// <summary>
@@ -222,8 +222,8 @@ namespace Drivers
         [NoGC]
         public static void ThrowFromPtr(uint* exPtr)
         {
-            Exception ex = (Exception) ObjectUtilities.GetObject(exPtr);
-            ex.InstructionAddress = *((uint*) BasePointer + 1);
+            Exception ex = (Exception)ObjectUtilities.GetObject(exPtr);
+            ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
         }
 
@@ -251,7 +251,7 @@ namespace Drivers
                         }
                         State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
                         State->depth--;
-                        State->history[State->history_pos++] = (uint) State->CurrentHandlerPtr->HandlerAddress;
+                        State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
                         if (State->history_pos > 31)
                         {
                             State->history_pos = 0;
@@ -262,9 +262,9 @@ namespace Drivers
                 ExceptionHandlerInfo* CurrHandlerPtr = State->CurrentHandlerPtr;
                 if (CurrHandlerPtr != null)
                 {
-                    if ((uint) CurrHandlerPtr->HandlerAddress != 0x00000000u)
+                    if ((uint)CurrHandlerPtr->HandlerAddress != 0x00000000u)
                     {
-                        if ((uint) CurrHandlerPtr->FilterAddress != 0x00000000u)
+                        if ((uint)CurrHandlerPtr->FilterAddress != 0x00000000u)
                         {
                             //Catch handler
                             CurrHandlerPtr->ExPending = 0;
@@ -281,7 +281,7 @@ namespace Drivers
             HaltReason = "Unhandled / improperly handled exception!";
             BasicConsole.WriteLine(HaltReason);
             // Try to cause fault
-            *(byte*) 0x800000000 = 0;
+            *(byte*)0x800000000 = 0;
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace Drivers
                 }
 
 
-                uint y = *(uint*) (BasePointer + 4);
+                uint y = *(uint*)(BasePointer + 4);
                 int offset = 48;
 
                 #region Address
@@ -411,7 +411,7 @@ namespace Drivers
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
-                *(byte*) 0x800000000 = 0;
+                *(byte*)0x800000000 = 0;
             }
 
             // Leaving a critical section cleanly
@@ -419,14 +419,14 @@ namespace Drivers
             // Case 1 : Leaving "try" or "catch" of a try-catch
             // Case 2 : Leaving the "try" of a try-finally
 
-            if ((uint) State->CurrentHandlerPtr->FilterAddress != 0x0u)
+            if ((uint)State->CurrentHandlerPtr->FilterAddress != 0x0u)
             {
                 // Case 1 : Leaving "try" or "catch" of a try-catch
                 //BasicConsole.WriteLine("Leave try or catch of try-catch");
 
                 if (State->CurrentHandlerPtr->Ex != null)
                 {
-                    GC.DecrementRefCount((Object) ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
+                    GC.DecrementRefCount((Object)ObjectUtilities.GetObject(State->CurrentHandlerPtr->Ex));
                     State->CurrentHandlerPtr->Ex = null;
                 }
 
@@ -437,13 +437,13 @@ namespace Drivers
 
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
                 State->depth--;
-                State->history[State->history_pos++] = (uint) State->CurrentHandlerPtr->HandlerAddress;
+                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
                 if (State->history_pos > 31)
                 {
                     State->history_pos = 0;
                 }
 
-                ArbitaryReturn(EBP, ESP + (uint) sizeof(ExceptionHandlerInfo), (byte*) continuePtr);
+                ArbitaryReturn(EBP, ESP + (uint)sizeof(ExceptionHandlerInfo), (byte*)continuePtr);
             }
             else
             {
@@ -459,7 +459,7 @@ namespace Drivers
                 //BasicConsole.Write("Continue ptr: ");
                 //BasicConsole.WriteLine((uint)continuePtr);
 
-                State->CurrentHandlerPtr->HandlerAddress = (byte*) continuePtr;
+                State->CurrentHandlerPtr->HandlerAddress = (byte*)continuePtr;
 
                 ArbitaryReturn(State->CurrentHandlerPtr->EBP,
                     State->CurrentHandlerPtr->ESP,
@@ -496,7 +496,7 @@ namespace Drivers
                 BasicConsole.DelayOutput(5);
 
                 // Try to cause fault
-                *(byte*) 0x800000000 = 0;
+                *(byte*)0x800000000 = 0;
             }
 
             // Leaving a "finally" critical section cleanly
@@ -529,14 +529,14 @@ namespace Drivers
 
                 State->CurrentHandlerPtr = State->CurrentHandlerPtr->PrevHandlerPtr;
                 State->depth--;
-                State->history[State->history_pos++] = (uint) State->CurrentHandlerPtr->HandlerAddress;
+                State->history[State->history_pos++] = (uint)State->CurrentHandlerPtr->HandlerAddress;
                 if (State->history_pos > 31)
                 {
                     State->history_pos = 0;
                 }
 
                 ArbitaryReturn(EBP,
-                    ESP + (uint) sizeof(ExceptionHandlerInfo),
+                    ESP + (uint)sizeof(ExceptionHandlerInfo),
                     retAddr);
             }
         }
@@ -1058,7 +1058,7 @@ namespace Drivers
         {
             HaltReason = "Index out of range exception.";
             Exception ex = new IndexOutOfRangeException(0, 0);
-            ex.InstructionAddress = *((uint*) BasePointer + 1);
+            ex.InstructionAddress = *((uint*)BasePointer + 1);
             Throw(ex);
         }
 
@@ -1071,8 +1071,8 @@ namespace Drivers
         [NoDebug]
         public static void PrintStackTrace()
         {
-            uint* EBP = (uint*) BasePointer;
-            while ((uint) EBP%4096 != 0)
+            uint* EBP = (uint*)BasePointer;
+            while ((uint)EBP%4096 != 0)
             {
                 String msg = "EBP: 0x        , Return Address: 0x        , Prev EBP: 0x        ";
                 //EBP: 14
@@ -1081,12 +1081,12 @@ namespace Drivers
 
                 uint ReturnAddress = *(EBP + 1);
                 uint PrevEBP = *EBP;
-                FillString((uint) EBP, 14, msg);
+                FillString((uint)EBP, 14, msg);
                 FillString(ReturnAddress, 42, msg);
                 FillString(PrevEBP, 64, msg);
                 BasicConsole.WriteLine(msg);
 
-                EBP = (uint*) PrevEBP;
+                EBP = (uint*)PrevEBP;
             }
         }
 

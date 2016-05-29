@@ -50,28 +50,28 @@ namespace Kernel.Framework
         public DateTime(ulong utc)
         {
             //TODO: Decode UTC time from 64-bit value (when 64-bit division and modulo are supported)
-            uint castUTC = (uint) utc;
+            uint castUTC = (uint)utc;
             Year = castUTC/31556926u + 1970u;
 
             castUTC -= (Year - 1970)*31556926u;
-            Month = (byte) (castUTC/2629743u);
+            Month = (byte)(castUTC/2629743u);
 
             castUTC -= Month*2629743u;
-            Day = (byte) (castUTC/86400u);
+            Day = (byte)(castUTC/86400u);
 
             castUTC -= Day*86400u;
-            Hour = (byte) (castUTC/3600u);
+            Hour = (byte)(castUTC/3600u);
 
             castUTC -= Hour*3600u;
-            Minute = (byte) (castUTC/60u);
+            Minute = (byte)(castUTC/60u);
 
             castUTC -= Minute*60u;
-            Second = (byte) castUTC;
+            Second = (byte)castUTC;
         }
 
         public String ToString()
         {
-            return Int32.ToDecimalString((int) Year) + "-" +
+            return Int32.ToDecimalString((int)Year) + "-" +
                    Int32.ToDecimalString(Month).PadLeft(2, '0') + "-" +
                    Int32.ToDecimalString(Day).PadLeft(2, '0') + " " +
                    Int32.ToDecimalString(Hour).PadLeft(2, '0') + ":" +

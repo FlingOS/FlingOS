@@ -93,7 +93,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.RegisterISRHandler, ISRNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterISRHandler, ISRNum, (uint) ObjectUtilities.GetHandle(handler), 0, ref Return1,
+            Call(SystemCallNumbers.RegisterISRHandler, ISRNum, (uint)ObjectUtilities.GetHandle(handler), 0, ref Return1,
                 ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.DeregisterISRHandler, ISRNum, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, 0xFFFFFFFF, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -161,9 +161,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, (uint) ObjectUtilities.GetHandle(handler), 0, ref Return1,
+            Call(SystemCallNumbers.RegisterIRQHandler, IRQNum, (uint)ObjectUtilities.GetHandle(handler), 0, ref Return1,
                 ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.DeregisterIRQHandler, IRQNum, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -195,9 +195,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterSyscallHandler, (uint) syscall, 0xFFFFFFFF, 0, ref Return1, ref Return2,
+            Call(SystemCallNumbers.RegisterSyscallHandler, (uint)syscall, 0xFFFFFFFF, 0, ref Return1, ref Return2,
                 ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -213,9 +213,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterSyscallHandler, (uint) syscall, (uint) ObjectUtilities.GetHandle(handler), 0,
+            Call(SystemCallNumbers.RegisterSyscallHandler, (uint)syscall, (uint)ObjectUtilities.GetHandle(handler), 0,
                 ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -230,9 +230,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.DeregisterSyscallHandler, (uint) syscall, 0, 0, ref Return1, ref Return2, ref Return3,
+            Call(SystemCallNumbers.DeregisterSyscallHandler, (uint)syscall, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         #endregion
@@ -267,10 +267,10 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.StartThread, (uint) ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1,
+            Call(SystemCallNumbers.StartThread, (uint)ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1,
                 ref Return2, ref Return3, ref Return4);
             NewThreadId = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -291,8 +291,8 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.SleepThread, (uint) ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            Call(SystemCallNumbers.SleepThread, (uint)ms, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace Drivers.Framework.Processes
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.WakeThread, ThreadId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         #endregion
@@ -332,9 +332,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.RegisterPipeOutpoint, (uint) Class, (uint) Subclass, (uint) MaxConnections,
+            Call(SystemCallNumbers.RegisterPipeOutpoint, (uint)Class, (uint)Subclass, (uint)MaxConnections,
                 ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -352,10 +352,10 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.GetNumPipeOutpoints, (uint) Class, (uint) Subclass, 0, ref Return1, ref Return2,
+            Call(SystemCallNumbers.GetNumPipeOutpoints, (uint)Class, (uint)Subclass, 0, ref Return1, ref Return2,
                 ref Return3, ref Return4);
-            NumOutpoints = (int) Return2;
-            return (SystemCallResults) Return1;
+            NumOutpoints = (int)Return2;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -373,9 +373,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.GetPipeOutpoints, (uint) Class, (uint) Subclass, (uint) RequestPtr, ref Return1,
+            Call(SystemCallNumbers.GetPipeOutpoints, (uint)Class, (uint)Subclass, (uint)RequestPtr, ref Return1,
                 ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -391,9 +391,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.CreatePipe, OutProcessId, (uint) RequestPtr, 0, ref Return1, ref Return2, ref Return3,
+            Call(SystemCallNumbers.CreatePipe, OutProcessId, (uint)RequestPtr, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -410,10 +410,10 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.WaitOnPipeCreate, (uint) Class, (uint) Subclass, 0, ref Return1, ref Return2,
+            Call(SystemCallNumbers.WaitOnPipeCreate, (uint)Class, (uint)Subclass, 0, ref Return1, ref Return2,
                 ref Return3, ref Return4);
-            NewPipeId = (int) Return2;
-            return (SystemCallResults) Return1;
+            NewPipeId = (int)Return2;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -429,9 +429,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.ReadPipe, (uint) Request, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            BytesRead = (int) Return2;
-            return (SystemCallResults) Return1;
+            Call(SystemCallNumbers.ReadPipe, (uint)Request, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            BytesRead = (int)Return2;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -446,8 +446,8 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.WritePipe, (uint) Request, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            Call(SystemCallNumbers.WritePipe, (uint)Request, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
         }
 
         #endregion
@@ -468,7 +468,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.SendMessage, TargetProcessId, message1, message2, ref Return1, ref Return2,
                 ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         #endregion
@@ -492,7 +492,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.RequestPages, 0xFFFFFFFF, StartVirt, Count, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             StartAddress = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -513,7 +513,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.RequestPages, StartPhys, StartVirt, Count, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             StartAddress = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -532,7 +532,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.RequestPages, 0xFFFFFFFF, 0xFFFFFFFF, Count, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             StartAddress = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.RequestPages, StartPhys, 0xFFFFFFFF, Count, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             StartAddress = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -564,7 +564,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.UnmapPages, StartVirtualAddress, Count, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -576,7 +576,7 @@ namespace Drivers.Framework.Processes
             uint Return4 = 0;
             Call(SystemCallNumbers.SharePages, StartVirtualAddress, Count, TargetProcessId, ref Return1, ref Return2,
                 ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -589,7 +589,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.IsPhysicalAddressMapped, PhysicalAddress, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             IsMapped = Return2 != 0;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -602,7 +602,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.IsVirtualAddressMapped, VirtualAddress, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             IsMapped = Return2 != 0;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -615,7 +615,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.GetPhysicalAddress, VirtualAddress, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             PhysicalAddress = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -628,7 +628,7 @@ namespace Drivers.Framework.Processes
             Call(SystemCallNumbers.GetVirtualAddress, PhysicalAddress, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
             VirtualAddress = Return2;
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         #endregion
@@ -642,10 +642,10 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.CreateSemaphore, (uint) Limit, 0, 0, ref Return1, ref Return2, ref Return3,
+            Call(SystemCallNumbers.CreateSemaphore, (uint)Limit, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            SemaphoreId = (int) Return2;
-            return (SystemCallResults) Return1;
+            SemaphoreId = (int)Return2;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -655,9 +655,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.ShareSemaphore, (uint) SemaphoreId, TargetProcessId, 0, ref Return1, ref Return2,
+            Call(SystemCallNumbers.ShareSemaphore, (uint)SemaphoreId, TargetProcessId, 0, ref Return1, ref Return2,
                 ref Return3, ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -667,9 +667,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.ReleaseSemaphore, (uint) SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3,
+            Call(SystemCallNumbers.ReleaseSemaphore, (uint)SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -679,9 +679,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.WaitSemaphore, (uint) SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3,
+            Call(SystemCallNumbers.WaitSemaphore, (uint)SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -691,9 +691,9 @@ namespace Drivers.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.SignalSemaphore, (uint) SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3,
+            Call(SystemCallNumbers.SignalSemaphore, (uint)SemaphoreId, 0, 0, ref Return1, ref Return2, ref Return3,
                 ref Return4);
-            return (SystemCallResults) Return1;
+            return (SystemCallResults)Return1;
         }
 
         #endregion
@@ -710,8 +710,8 @@ namespace Drivers.Framework.Processes
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.GetTime, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            UTCTime = ((ulong) Return3 << 32) | Return2;
-            return (SystemCallResults) Return1;
+            UTCTime = ((ulong)Return3 << 32) | Return2;
+            return (SystemCallResults)Return1;
         }
 
         [NoGC]
@@ -722,8 +722,8 @@ namespace Drivers.Framework.Processes
             uint Return3 = 0;
             uint Return4 = 0;
             Call(SystemCallNumbers.GetUpTime, 0, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
-            UpTime = ((long) Return3 << 32) | Return2;
-            return (SystemCallResults) Return1;
+            UpTime = ((long)Return3 << 32) | Return2;
+            return (SystemCallResults)Return1;
         }
 
         #endregion

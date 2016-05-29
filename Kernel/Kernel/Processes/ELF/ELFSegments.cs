@@ -26,8 +26,11 @@
 
 #endregion
 
+using System;
 using Kernel.FileSystems.Streams;
 using Kernel.Framework;
+using Exception = Kernel.Framework.Exception;
+using Object = Kernel.Framework.Object;
 
 namespace Kernel.Processes.ELF
 {
@@ -42,7 +45,7 @@ namespace Kernel.Processes.ELF
         PHDR = 6
     }
 
-    [System.Flags]
+    [Flags]
     public enum ELFFlags : uint
     {
         Executable = 1,
@@ -64,19 +67,19 @@ namespace Kernel.Processes.ELF
 
         public ELFSegmentHeader(byte[] header, ref uint offset)
         {
-            Type = (ELFSegmentType) ByteConverter.ToUInt32(header, offset);
+            Type = (ELFSegmentType)ByteConverter.ToUInt32(header, offset);
             offset += 4;
             FileOffset = ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            VAddr = (byte*) ByteConverter.ToUInt32(header, offset);
+            VAddr = (byte*)ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            PAddr = (byte*) ByteConverter.ToUInt32(header, offset);
+            PAddr = (byte*)ByteConverter.ToUInt32(header, offset);
             offset += 4;
             FileSize = ByteConverter.ToUInt32(header, offset);
             offset += 4;
             MemSize = ByteConverter.ToUInt32(header, offset);
             offset += 4;
-            Flags = (ELFFlags) ByteConverter.ToUInt32(header, offset);
+            Flags = (ELFFlags)ByteConverter.ToUInt32(header, offset);
             offset += 4;
             Align = ByteConverter.ToUInt32(header, offset);
             offset += 4;
@@ -88,11 +91,6 @@ namespace Kernel.Processes.ELF
         protected byte[] data;
         protected ELFSegmentHeader header;
 
-        protected ELFSegment(ELFSegmentHeader aHeader)
-        {
-            header = aHeader;
-        }
-
         public ELFSegmentHeader Header
         {
             get { return header; }
@@ -101,6 +99,11 @@ namespace Kernel.Processes.ELF
         public byte[] Data
         {
             get { return data; }
+        }
+
+        protected ELFSegment(ELFSegmentHeader aHeader)
+        {
+            header = aHeader;
         }
 
         public virtual int Read(FileStream stream)

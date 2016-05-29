@@ -64,7 +64,7 @@ namespace Kernel.Pipes.Standard
             int bytesRead = base.Read(ReadBuffer, 0, ReadBuffer.Length, blocking);
             if (bytesRead > 0)
             {
-                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint) bytesRead);
+                return ByteConverter.GetASCIIStringFromASCII(ReadBuffer, 0, (uint)bytesRead);
             }
             return "";
         }

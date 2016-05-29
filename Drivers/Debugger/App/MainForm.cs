@@ -76,11 +76,6 @@ namespace Drivers.Debugger.App
         private KeyValuePair<string, string> SelectedDebugPointFullLabel;
         private Debugger TheDebugger;
 
-        public MainForm()
-        {
-            InitializeComponent();
-        }
-
         private bool PerformingAction
         {
             get { return performingAction; }
@@ -91,6 +86,11 @@ namespace Drivers.Debugger.App
             }
         }
 
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             UpdateEnableStates();
@@ -99,7 +99,7 @@ namespace Drivers.Debugger.App
         private void ConnectButton_Click(object sender, EventArgs e)
         {
             ConnectButton.Enabled = false;
-            Task.Run((Action) Connect);
+            Task.Run((Action)Connect);
         }
 
         private void DestroyButton_Click(object sender, EventArgs e)
@@ -126,31 +126,31 @@ namespace Drivers.Debugger.App
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) RefreshThreads);
+            Task.Run((Action)RefreshThreads);
         }
 
         private void DebugButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) SuspendThread);
+            Task.Run((Action)SuspendThread);
         }
 
         private void ResumeButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) ResumeThread);
+            Task.Run((Action)ResumeThread);
         }
 
         private void StepButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) StepThread);
+            Task.Run((Action)StepThread);
         }
 
         private void SingleStepButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) SingleStepThread);
+            Task.Run((Action)SingleStepThread);
         }
 
         private void StepThreadToLabelButton_Click(object sender, EventArgs e)
@@ -169,13 +169,13 @@ namespace Drivers.Debugger.App
                 }
             }
 
-            Task.Run((Action) StepThreadToLabel);
+            Task.Run((Action)StepThreadToLabel);
         }
 
         private void ProcessesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) RefreshRegisters);
+            Task.Run((Action)RefreshRegisters);
         }
 
         private void FilterBox_TextChanged(object sender, EventArgs e)
@@ -218,19 +218,19 @@ namespace Drivers.Debugger.App
         private void ClearBreakpointButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) ClearBreakpoint);
+            Task.Run((Action)ClearBreakpoint);
         }
 
         private void SetBreakpointButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) SetBreakpoint);
+            Task.Run((Action)SetBreakpoint);
         }
 
         private void LoadLayerButton_Click(object sender, EventArgs e)
         {
             PerformingAction = true;
-            Task.Run((Action) LoadNextStackDataLayer);
+            Task.Run((Action)LoadNextStackDataLayer);
         }
 
         private void SetFromFileListButton_Click(object sender, EventArgs e)
@@ -243,7 +243,7 @@ namespace Drivers.Debugger.App
                 FileToLoadBreakpointsFrom = TheOpenFileDialog.FileName;
 
                 PerformingAction = true;
-                Task.Run((Action) SetBreakpointsFromFile);
+                Task.Run((Action)SetBreakpointsFromFile);
             }
         }
 
@@ -461,7 +461,7 @@ namespace Drivers.Debugger.App
         {
             if (IsSelectionDebugging())
             {
-                Registers = TheDebugger.GetRegisters(GetSelectedProcessId(), (uint) GetSelectedThreadId());
+                Registers = TheDebugger.GetRegisters(GetSelectedProcessId(), (uint)GetSelectedThreadId());
             }
             else
             {
@@ -537,7 +537,7 @@ namespace Drivers.Debugger.App
                                 TypeInfo ArgType = TheDebugger.GetTypeInfo(AnArgInfo.TypeID);
                                 VariableData NewVarData = new VariableData
                                 {
-                                    Address = (uint) (EBP + AnArgInfo.Offset),
+                                    Address = (uint)(EBP + AnArgInfo.Offset),
                                     OffsetFromParent = AnArgInfo.Offset,
                                     Info = ArgType,
                                     Value = new byte[ArgType.SizeOnStackInBytes]
@@ -577,7 +577,7 @@ namespace Drivers.Debugger.App
                                 : TheDebugger.GetTypeInfo(MaxTypeID);
 
                             uint ESP = Registers["ESP"];
-                            int NumLocalBytes = (int) (EBP - ESP);
+                            int NumLocalBytes = (int)(EBP - ESP);
                             string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes, 1);
                             byte[] LocalValuesArr =
                                 LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -592,7 +592,7 @@ namespace Drivers.Debugger.App
                                 {
                                     VariableData NewVarData = new VariableData
                                     {
-                                        Address = (uint) (ESP + i),
+                                        Address = (uint)(ESP + i),
                                         Temporary = true,
                                         Value = new byte[4],
                                         OffsetFromParent = i
@@ -627,7 +627,7 @@ namespace Drivers.Debugger.App
                                                    (-ALocInfo.Offset + LocType.SizeOnStackInBytes);
                                     VariableData NewVarData = new VariableData
                                     {
-                                        Address = (uint) (EBP + ALocInfo.Offset),
+                                        Address = (uint)(EBP + ALocInfo.Offset),
                                         OffsetFromParent = position,
                                         Info = LocType,
                                         Value = new byte[LocType.SizeOnStackInBytes]
@@ -659,7 +659,7 @@ namespace Drivers.Debugger.App
                         try
                         {
                             uint ESP = Registers["ESP"];
-                            int NumLocalBytes = (int) (EBP - ESP);
+                            int NumLocalBytes = (int)(EBP - ESP);
                             string LocalValuesStr = TheDebugger.GetMemoryValues(ProcessId, ESP, NumLocalBytes/4, 4);
                             uint[] LocalValuesArr =
                                 LocalValuesStr.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
@@ -729,7 +729,7 @@ namespace Drivers.Debugger.App
         {
             if (InvokeRequired)
             {
-                return (bool) Invoke(new BoolDelegate(IsSelectionDebugging));
+                return (bool)Invoke(new BoolDelegate(IsSelectionDebugging));
             }
             bool NodeSuspended = false;
             if (ProcessesTreeView.SelectedNode != null)
@@ -737,7 +737,7 @@ namespace Drivers.Debugger.App
                 uint SelectedProcessId = GetSelectedProcessId();
                 int SelectedThreadId = GetSelectedThreadId();
                 NodeSuspended = SelectedThreadId != -1 &&
-                                Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
+                                Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State ==
                                 Thread.States.Debugging;
             }
             return NodeSuspended;
@@ -747,7 +747,7 @@ namespace Drivers.Debugger.App
         {
             if (InvokeRequired)
             {
-                return (bool) Invoke(new BoolDelegate(IsSelectionSuspended));
+                return (bool)Invoke(new BoolDelegate(IsSelectionSuspended));
             }
             bool NodeSuspended = false;
             if (ProcessesTreeView.SelectedNode != null)
@@ -755,7 +755,7 @@ namespace Drivers.Debugger.App
                 uint SelectedProcessId = GetSelectedProcessId();
                 int SelectedThreadId = GetSelectedThreadId();
                 NodeSuspended = SelectedThreadId != -1 &&
-                                Processes[SelectedProcessId].Threads[(uint) SelectedThreadId].State ==
+                                Processes[SelectedProcessId].Threads[(uint)SelectedThreadId].State ==
                                 Thread.States.Suspended;
             }
             return NodeSuspended;
@@ -1122,7 +1122,7 @@ namespace Drivers.Debugger.App
         {
             if (InvokeRequired)
             {
-                return (uint) Invoke(new UIntDelegate(GetSelectedProcessId));
+                return (uint)Invoke(new UIntDelegate(GetSelectedProcessId));
             }
             TreeNode ProcessNode = ProcessesTreeView.SelectedNode;
             if (ProcessNode.Parent != null)
@@ -1136,7 +1136,7 @@ namespace Drivers.Debugger.App
         {
             if (InvokeRequired)
             {
-                return (int) Invoke(new IntDelegate(GetSelectedThreadId));
+                return (int)Invoke(new IntDelegate(GetSelectedThreadId));
             }
             TreeNode ThreadNode = ProcessesTreeView.SelectedNode;
             if (ThreadNode.Parent == null)
@@ -1239,7 +1239,7 @@ namespace Drivers.Debugger.App
             {
                 if (!AFieldInfo.IsStatic)
                 {
-                    uint FieldAddress = (uint) (BaseAddress + AFieldInfo.OffsetInBytes);
+                    uint FieldAddress = (uint)(BaseAddress + AFieldInfo.OffsetInBytes);
                     TypeInfo FieldTypeInfo = TheDebugger.GetTypeInfo(AFieldInfo.TypeID);
 
                     if (FieldTypeInfo.SizeOnHeapInBytes > 0)

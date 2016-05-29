@@ -60,7 +60,7 @@ namespace Kernel.IO
         [NoDebug]
         public IOPort(ushort aBase, ushort anOffset)
         {
-            Port = (ushort) (aBase + anOffset);
+            Port = (ushort)(aBase + anOffset);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Kernel.IO
         [NoGC]
         public ushort Read_Byte(ushort offset)
         {
-            return doRead_Byte((ushort) (Port + offset));
+            return doRead_Byte((ushort)(Port + offset));
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Kernel.IO
         [NoGC]
         public ushort Read_UInt16(ushort offset)
         {
-            return doRead_UInt16((ushort) (Port + offset));
+            return doRead_UInt16((ushort)(Port + offset));
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Kernel.IO
         [NoGC]
         public uint Read_UInt32(ushort offset)
         {
-            return doRead_UInt32((ushort) (Port + offset));
+            return doRead_UInt32((ushort)(Port + offset));
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Kernel.IO
         [NoGC]
         public ulong Read_UInt64(ushort offset)
         {
-            return doRead_UInt64((ushort) (Port + offset));
+            return doRead_UInt64((ushort)(Port + offset));
         }
 
 
@@ -288,7 +288,7 @@ namespace Kernel.IO
         [NoGC]
         public virtual void Write_Byte(byte aVal, ushort offset)
         {
-            doWrite_Byte((ushort) (Port + offset), aVal);
+            doWrite_Byte((ushort)(Port + offset), aVal);
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Kernel.IO
         [NoGC]
         public virtual void Write_UInt16(ushort aVal, ushort offset)
         {
-            doWrite_UInt16((ushort) (Port + offset), aVal);
+            doWrite_UInt16((ushort)(Port + offset), aVal);
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace Kernel.IO
         [NoGC]
         public virtual void Write_UInt32(uint aVal, ushort offset)
         {
-            doWrite_UInt32((ushort) (Port + offset), aVal);
+            doWrite_UInt32((ushort)(Port + offset), aVal);
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace Kernel.IO
         [NoGC]
         public virtual void Write_UInt64(ulong aVal, ushort offset)
         {
-            doWrite_UInt64((ushort) (Port + offset), aVal);
+            doWrite_UInt64((ushort)(Port + offset), aVal);
         }
 
         /// <summary>
@@ -336,8 +336,8 @@ namespace Kernel.IO
             for (int i = 0; i < aData.Length/2; i++)
             {
                 xValue = Read_UInt16();
-                aData[i*2] = (byte) xValue;
-                aData[i*2 + 1] = (byte) (xValue >> 8);
+                aData[i*2] = (byte)xValue;
+                aData[i*2 + 1] = (byte)(xValue >> 8);
             }
         }
 
@@ -379,7 +379,7 @@ namespace Kernel.IO
         {
             for (int i = 0; i < aData.Length; i += 2)
             {
-                Write_UInt16((ushort) (aData[i] | (aData[i + 1] << 8)));
+                Write_UInt16((ushort)(aData[i] | (aData[i + 1] << 8)));
             }
         }
 

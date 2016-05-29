@@ -69,8 +69,8 @@ namespace Kernel.Multiprocessing
             uint Return3 = 0;
             uint Return4 = 0;
 
-            if (syscallNumber != (uint) SystemCallNumbers.ReceiveMessage &&
-                syscallNumber != (uint) SystemCallNumbers.AcceptPages)
+            if (syscallNumber != (uint)SystemCallNumbers.ReceiveMessage &&
+                syscallNumber != (uint)SystemCallNumbers.AcceptPages)
             {
                 Process handlerProcess = null;
 
@@ -81,8 +81,8 @@ namespace Kernel.Multiprocessing
                 bool PermitActionResulted = false;
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    handlerProcess = (Process) ProcessManager.Processes[i];
-                    if (handlerProcess.SyscallsToHandle.IsSet((int) syscallNumber))
+                    handlerProcess = (Process)ProcessManager.Processes[i];
+                    if (handlerProcess.SyscallsToHandle.IsSet((int)syscallNumber))
                     {
                         ProcessManager.SwitchProcess(handlerProcess.Id, ProcessManager.THREAD_DONT_CARE);
                         switched = true;
@@ -103,7 +103,7 @@ namespace Kernel.Multiprocessing
                         uint TempReturn2 = 0;
                         uint TempReturn3 = 0;
                         uint TempReturn4 = 0;
-                        SystemCallResults tempResult = (SystemCallResults) handlerProcess.SyscallHandler(syscallNumber,
+                        SystemCallResults tempResult = (SystemCallResults)handlerProcess.SyscallHandler(syscallNumber,
                             param1, param2, param3,
                             ref TempReturn2, ref TempReturn3, ref TempReturn4,
                             currProcess.Id, currThread.Id);
@@ -121,7 +121,7 @@ namespace Kernel.Multiprocessing
 #if SYSCALLS_TRACE
                             BasicConsole.WriteLine("System calls : Performing action - signal semaphore");
 #endif
-                            ProcessManager.Semaphore_Signal((int) TempReturn2, handlerProcess);
+                            ProcessManager.Semaphore_Signal((int)TempReturn2, handlerProcess);
                             tempResult = SystemCallResults.Unhandled;
                         }
 
@@ -159,7 +159,7 @@ namespace Kernel.Multiprocessing
                     BasicConsole.WriteLine("Switching back...");
 #endif
 
-                    ProcessManager.SwitchProcess(currProcess.Id, (int) currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
                 }
             }
 
@@ -176,7 +176,7 @@ namespace Kernel.Multiprocessing
             }
             else
             {
-                currThread.Return1 = (uint) result;
+                currThread.Return1 = (uint)result;
                 currThread.Return2 = Return2;
                 currThread.Return3 = Return3;
                 currThread.Return4 = Return4;

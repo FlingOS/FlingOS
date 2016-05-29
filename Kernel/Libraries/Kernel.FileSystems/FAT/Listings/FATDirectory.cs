@@ -56,6 +56,14 @@ namespace Kernel.FileSystems.FAT
         private FATFileStream _fileStream;
 
         /// <summary>
+        ///     The first cluster number of the directory.
+        /// </summary>
+        public uint FirstClusterNum
+        {
+            get { return _theFile.FirstClusterNum; }
+        }
+
+        /// <summary>
         ///     Initializes a new FAT directory.
         /// </summary>
         /// <param name="aFileSystem">The FAT file system to which the directory belongs.</param>
@@ -66,14 +74,6 @@ namespace Kernel.FileSystems.FAT
             : base(aFileSystem, parent, aName)
         {
             _theFile = new FATFile(aFileSystem, parent, Name, 0, aFirstCluster) {IsDirectoryFile = true};
-        }
-
-        /// <summary>
-        ///     The first cluster number of the directory.
-        /// </summary>
-        public uint FirstClusterNum
-        {
-            get { return _theFile.FirstClusterNum; }
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Kernel.FileSystems.FAT
                 BasicConsole.WriteLine(((Framework.String)"actualSize: ") + actualSize);
                 BasicConsole.WriteLine("Creating data array...");
 #endif
-                byte[] xData = new byte[(uint) actualSize];
+                byte[] xData = new byte[(uint)actualSize];
 #if FATDIR_TRACE
                 BasicConsole.WriteLine("Created data array.");
 #endif
@@ -109,7 +109,7 @@ namespace Kernel.FileSystems.FAT
 #if FATDIR_TRACE
                 BasicConsole.WriteLine("Read data. Parsing table...");
 #endif
-                _cachedlistings = ((FATFileSystem) TheFileSystem).ParseDirectoryTable(xData, actuallyRead, this);
+                _cachedlistings = ((FATFileSystem)TheFileSystem).ParseDirectoryTable(xData, actuallyRead, this);
 #if FATDIR_TRACE
                 BasicConsole.WriteLine("Parsed table.");
 #endif
@@ -135,7 +135,7 @@ namespace Kernel.FileSystems.FAT
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Encoding listings...");
 #endif
-            byte[] listingsBytes = ((FATFileSystem) TheFileSystem).EncodeDirectoryTable(_cachedlistings,
+            byte[] listingsBytes = ((FATFileSystem)TheFileSystem).EncodeDirectoryTable(_cachedlistings,
                 Name == "ROOT" && Parent == null, _fileStream.GetActualSize());
 #if FATDIR_TRACE
             BasicConsole.WriteLine("Encoded listings. Getting file stream...");
@@ -158,7 +158,7 @@ namespace Kernel.FileSystems.FAT
         {
             if (_fileStream == null)
             {
-                _fileStream = (FATFileStream) _theFile.GetStream();
+                _fileStream = (FATFileStream)_theFile.GetStream();
                 _fileStream.IgnoreFileSize = true;
             }
         }
@@ -207,7 +207,7 @@ namespace Kernel.FileSystems.FAT
         /// <returns>The full path.</returns>
         public override String GetFullPath()
         {
-            if (this == ((FATFileSystem) TheFileSystem).RootDirectory_FAT32)
+            if (this == ((FATFileSystem)TheFileSystem).RootDirectory_FAT32)
             {
                 return TheFileSystem.TheMapping.Prefix;
             }
@@ -226,7 +226,7 @@ namespace Kernel.FileSystems.FAT
             //Backwards search as items will be removed from the list.
             for (int i = _cachedlistings.Count - 1; i > -1; i--)
             {
-                OK = OK && ((Base) _cachedlistings[i]).Delete();
+                OK = OK && ((Base)_cachedlistings[i]).Delete();
             }
 
             //Delete the directory file

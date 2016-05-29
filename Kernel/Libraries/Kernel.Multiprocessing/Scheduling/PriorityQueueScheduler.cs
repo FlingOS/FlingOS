@@ -75,7 +75,7 @@ namespace Kernel.Multiprocessing.Scheduling
 
             for (int i = 0; i < process.Threads.Count; i++)
             {
-                Thread t = (Thread) process.Threads[i];
+                Thread t = (Thread)process.Threads[i];
 
                 InitThread(process, t);
             }
@@ -85,7 +85,7 @@ namespace Kernel.Multiprocessing.Scheduling
 
         public void InitThread(Process process, Thread t)
         {
-            t.TimeToRunReload = (int) process.Priority;
+            t.TimeToRunReload = (int)process.Priority;
             t.TimeToRun = t.TimeToRunReload;
 
             UpdateList(t, false);
@@ -107,11 +107,11 @@ namespace Kernel.Multiprocessing.Scheduling
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current process...");
 #endif
-            ProcessManager.CurrentProcess = (Process) ProcessManager.Processes[0];
+            ProcessManager.CurrentProcess = (Process)ProcessManager.Processes[0];
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current thread...");
 #endif
-            ProcessManager.CurrentThread = (Thread) ProcessManager.CurrentProcess.Threads[0];
+            ProcessManager.CurrentThread = (Thread)ProcessManager.CurrentProcess.Threads[0];
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting current thread state...");
 #endif
@@ -125,7 +125,7 @@ namespace Kernel.Multiprocessing.Scheduling
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting esp0...");
 #endif
-            tss->esp0 = (uint) ProcessManager.CurrentThread_State->KernelStackTop;
+            tss->esp0 = (uint)ProcessManager.CurrentThread_State->KernelStackTop;
 #if SCHEDULER_TRACE
             BasicConsole.WriteLine(" > Setting ss0...");
 #endif
@@ -290,7 +290,7 @@ namespace Kernel.Multiprocessing.Scheduling
             //    BasicConsole.WriteLine("Debug Point 3");
             //}
 
-            if (!((PriorityQueueScheduler) state).Enabled || !((PriorityQueueScheduler) state).Started)
+            if (!((PriorityQueueScheduler)state).Enabled || !((PriorityQueueScheduler)state).Started)
             {
                 //BasicConsole.Write("D");
                 return;
@@ -313,7 +313,7 @@ namespace Kernel.Multiprocessing.Scheduling
             //    BasicConsole.WriteLine("Debug Point 4");
             //}
 
-            ((PriorityQueueScheduler) state).UpdateCurrentState();
+            ((PriorityQueueScheduler)state).UpdateCurrentState();
             //}
         }
 
@@ -367,7 +367,7 @@ namespace Kernel.Multiprocessing.Scheduling
             //    BasicConsole.WriteLine("Debug Point 8");
             //}
 
-            Thread nextThread = (Thread) ActiveQueue.PeekMin();
+            Thread nextThread = (Thread)ActiveQueue.PeekMin();
 #if SCHEDULER_HANDLER_TRACE || SCHEDULER_HANDLER_MIN_TRACE
             BasicConsole.Write("Active: ");
             BasicConsole.Write(nextThread.Owner.Name);
@@ -379,7 +379,7 @@ namespace Kernel.Multiprocessing.Scheduling
             //    BasicConsole.WriteLine("Debug Point 9");
             //}
 
-            ProcessManager.SwitchProcess(nextThread.Owner.Id, (int) nextThread.Id);
+            ProcessManager.SwitchProcess(nextThread.Owner.Id, (int)nextThread.Id);
 
             //if (Processes.Scheduler.OutputMessages)
             //{
@@ -452,7 +452,7 @@ namespace Kernel.Multiprocessing.Scheduling
 
             BasicConsole.WriteLine("Scheduler > Peeking min active thread...");
 #endif
-            Thread minThread = (Thread) ActiveQueue.PeekMin();
+            Thread minThread = (Thread)ActiveQueue.PeekMin();
             if (minThread != null &&
                 minThread.Key == 0)
             {
@@ -497,7 +497,7 @@ namespace Kernel.Multiprocessing.Scheduling
 #if SCHEDULER_HANDLER_TRACE
             BasicConsole.WriteLine("Scheduler > Peeking min inactive thread...");
 #endif
-            Thread cThread = (Thread) InactiveQueue.PeekMin();
+            Thread cThread = (Thread)InactiveQueue.PeekMin();
             while (cThread != null && cThread.ActiveState != Thread.ActiveStates.Inactive)
             {
 #if SCHEDULER_HANDLER_TRACE
@@ -513,7 +513,7 @@ namespace Kernel.Multiprocessing.Scheduling
 #if SCHEDULER_HANDLER_TRACE
                 BasicConsole.WriteLine("Scheduler > Moving to next min inactive thread...");
 #endif
-                cThread = (Thread) InactiveQueue.PeekMin();
+                cThread = (Thread)InactiveQueue.PeekMin();
             }
 
 #if SCHEDULER_HANDLER_TRACE
@@ -541,12 +541,12 @@ namespace Kernel.Multiprocessing.Scheduling
 #endif
             // Selectors for user-mode must be or'ed with 3 to set privilege level
 
-            uint* stackPtr = (uint*) ProcessManager.CurrentThread_State->ThreadStackTop;
+            uint* stackPtr = (uint*)ProcessManager.CurrentThread_State->ThreadStackTop;
             // Process terminate CS selector
             //      Process terminate should always be jumping into kernel-mode code (for now)
             *stackPtr-- = 8u;
             // Process terminate return pointer
-            *stackPtr-- = (uint) ObjectUtilities.GetHandle((TerminateMethod) ThreadTerminated);
+            *stackPtr-- = (uint)ObjectUtilities.GetHandle((TerminateMethod)ThreadTerminated);
             if (ProcessManager.CurrentProcess.UserMode)
             {
 #if SCHEDULER_TRACE
@@ -556,7 +556,7 @@ namespace Kernel.Multiprocessing.Scheduling
                 }
 #endif
 
-                uint WantedStackPtr = (uint) stackPtr;
+                uint WantedStackPtr = (uint)stackPtr;
                 *stackPtr-- = 0x23; //64 - SS after switch to UM
                 *stackPtr-- = WantedStackPtr; // 60 - ESP after switch to UM
                 *stackPtr-- = 0x0202u; // - 56 - Reserved=1, Interrupt Enable=1, IOPL=0
@@ -595,7 +595,7 @@ namespace Kernel.Multiprocessing.Scheduling
                 *stackPtr-- = 0; //edx
                 *stackPtr-- = 0; //ebx
                 *stackPtr-- = 0xDEADBEEF; //esp - This is actually ignored by Popad instruction
-                *stackPtr-- = (uint) ProcessManager.CurrentThread_State->ThreadStackTop; //ebp
+                *stackPtr-- = (uint)ProcessManager.CurrentThread_State->ThreadStackTop; //ebp
                 *stackPtr-- = 0; //esi
                 *stackPtr-- = 0; //edi 
 
@@ -611,7 +611,7 @@ namespace Kernel.Multiprocessing.Scheduling
                 BasicConsole.WriteLine("Updating thread stack...");
             }
 #endif
-            ProcessManager.CurrentThread_State->ESP = (uint) stackPtr;
+            ProcessManager.CurrentThread_State->ESP = (uint)stackPtr;
 
 #if SCHEDULER_TRACE
             if (print)

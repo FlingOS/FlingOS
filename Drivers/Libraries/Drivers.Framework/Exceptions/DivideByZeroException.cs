@@ -47,7 +47,7 @@ namespace Drivers.Framework.Exceptions
         /// </summary>
         /// <param name="address">The address of the instruction which caused the exception.</param>
         public DivideByZeroException(uint address)
-            : base((String) "Attempt to divide by zero invalid. Address: " + address)
+            : base((String)"Attempt to divide by zero invalid. Address: " + address)
         {
         }
     }

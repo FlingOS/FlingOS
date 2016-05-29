@@ -111,7 +111,7 @@ namespace Kernel.Devices.Keyboards
             #region Digits
 
             AddKey(0x29, '`', KeyboardKey.NoName);
-            AddKey(0x290000, (char) 170u, KeyboardKey.NoName);
+            AddKey(0x290000, (char)170u, KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);
             AddKey(0x20000, '!', KeyboardKey.D1);
             AddKey(0x3, '2', KeyboardKey.D2);

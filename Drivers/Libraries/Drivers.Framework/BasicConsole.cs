@@ -144,7 +144,7 @@ namespace Drivers
         /// <summary>
         ///     A pointer to the start of the (character-based) video memory.
         /// </summary>
-        public static char* vidMemBasePtr = (char*) 0xB8000;
+        public static char* vidMemBasePtr = (char*)0xB8000;
 
         /// <summary>
         ///     Numbers of rows in the video memory.
@@ -187,6 +187,16 @@ namespace Drivers
         public static bool DisableDelayOutput = false;
 
         /// <summary>
+        ///     The offset from the start of the memory (in characters) to write the next character to.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        public static int Offset
+        {
+            get { return offset; }
+        }
+
+        /// <summary>
         ///     Static constructor for the Basic Console.
         /// </summary>
         /// <remarks>
@@ -196,16 +206,6 @@ namespace Drivers
         /// </remarks>
         static BasicConsole()
         {
-        }
-
-        /// <summary>
-        ///     The offset from the start of the memory (in characters) to write the next character to.
-        /// </summary>
-        /// <remarks>
-        /// </remarks>
-        public static int Offset
-        {
-            get { return offset; }
         }
 
         /// <summary>
@@ -220,16 +220,16 @@ namespace Drivers
             //  Lo-4-bits: Foreground
 
             //Black background
-            bg_colour = (char) 0x0000;
+            bg_colour = (char)0x0000;
             //White foreground
-            default_colour = (char) 0x0F00;
+            default_colour = (char)0x0F00;
             //Yellow foreground
-            warning_colour = (char) 0x0E00;
+            warning_colour = (char)0x0E00;
             //Red foreground
-            error_colour = (char) 0x0400;
+            error_colour = (char)0x0400;
 
             //Background | Foreground
-            colour = (char) (bg_colour | default_colour);
+            colour = (char)(bg_colour | default_colour);
 
             Initialised = true;
         }
@@ -243,7 +243,7 @@ namespace Drivers
         public static void SetTextColour(char aText_colour)
         {
             if (!Initialised) return;
-            colour = (char) (bg_colour | (aText_colour & 0x0F00));
+            colour = (char)(bg_colour | (aText_colour & 0x0F00));
         }
 
         /// <summary>
@@ -255,8 +255,8 @@ namespace Drivers
         public static void SetBgColour(char aBg_colour)
         {
             if (!Initialised) return;
-            bg_colour = (char) (aBg_colour & 0xF000);
-            colour = (char) (bg_colour | (colour & 0x0F00));
+            bg_colour = (char)(aBg_colour & 0xF000);
+            colour = (char)(bg_colour | (colour & 0x0F00));
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace Drivers
                 char* strPtr = str.GetCharPointer();
                 while (strLength > 0)
                 {
-                    vidMemPtr[0] = (char) ((*strPtr & 0x00FF) | colour);
+                    vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
 
                     strLength--;
                     vidMemPtr++;
@@ -450,7 +450,7 @@ namespace Drivers
             char* vidMemPtr = vidMemBasePtr;
             while (strLength > 0)
             {
-                vidMemPtr[0] = (char) ((*strPtr & 0x00FF) | colour);
+                vidMemPtr[0] = (char)((*strPtr & 0x00FF) | colour);
 
                 strPtr++;
                 vidMemPtr++;
@@ -518,7 +518,7 @@ namespace Drivers
         public static void DumpMemory(void* ptr, int size)
         {
             if (!Initialised) return;
-            uint* uPtr = (uint*) ptr;
+            uint* uPtr = (uint*)ptr;
             if (size%4 != 0)
             {
                 size += 3;

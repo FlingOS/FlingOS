@@ -58,38 +58,6 @@ namespace Drivers.Framework.Collections
         protected int nextIndex;
 
         /// <summary>
-        ///     Creates a new list with initial capacity of 5.
-        /// </summary>
-        [NoDebug]
-        public UInt32List()
-            : this(5)
-        {
-        }
-
-        /// <summary>
-        ///     Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        [NoDebug]
-        public UInt32List(int capacity)
-            : this(capacity, 5)
-        {
-        }
-
-        /// <summary>
-        ///     Creates a new list with specified initial capacity. Use this to optimise memory usage.
-        /// </summary>
-        /// <param name="capacity">The initial capacity of the list.</param>
-        /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
-        [NoDebug]
-        public UInt32List(int capacity, int expandAmount)
-        {
-            //Create the internal array with specified capacity.
-            _array = new uint[capacity];
-            ExpandAmount = expandAmount;
-        }
-
-        /// <summary>
         ///     The number of elements in the list.
         /// </summary>
         public int Count
@@ -150,6 +118,38 @@ namespace Drivers.Framework.Collections
 
                 _array[index] = value;
             }
+        }
+
+        /// <summary>
+        ///     Creates a new list with initial capacity of 5.
+        /// </summary>
+        [NoDebug]
+        public UInt32List()
+            : this(5)
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new list with specified initial capacity. Use this to optimise memory usage.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the list.</param>
+        [NoDebug]
+        public UInt32List(int capacity)
+            : this(capacity, 5)
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new list with specified initial capacity. Use this to optimise memory usage.
+        /// </summary>
+        /// <param name="capacity">The initial capacity of the list.</param>
+        /// <param name="expandAmount">The amount to expand the list capacity by each time the capacity must be increased.</param>
+        [NoDebug]
+        public UInt32List(int capacity, int expandAmount)
+        {
+            //Create the internal array with specified capacity.
+            _array = new uint[capacity];
+            ExpandAmount = expandAmount;
         }
 
         /// <summary>

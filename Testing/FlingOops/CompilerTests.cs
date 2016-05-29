@@ -586,7 +586,7 @@ namespace FlingOops
             Log.WriteLine("Concatenate to ATestString:");
             Log.WriteLine(ATestString);
             Log.WriteLine(" ");
-            ATestString += " We can even append numbers: " + (String) a;
+            ATestString += " We can even append numbers: " + (String)a;
             Log.WriteLine("Concatenate value stored in variable to ATestString:");
             Log.WriteLine(ATestString);
         }
@@ -603,7 +603,7 @@ namespace FlingOops
         [NoGC]
         public static unsafe void Test_Heap()
         {
-            AStruct* HeapInst = (AStruct*) Heap.AllocZeroed((uint) sizeof(AStruct), "FlingOops:Test_Heap");
+            AStruct* HeapInst = (AStruct*)Heap.AllocZeroed((uint)sizeof(AStruct), "FlingOops:Test_Heap");
             if (HeapInst == null)
             {
                 Log.WriteError("HeapInst null.");

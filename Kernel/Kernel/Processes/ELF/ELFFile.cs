@@ -51,42 +51,6 @@ namespace Kernel.Processes.ELF
         public List Sections = new List();
         public List Segments = new List();
 
-        public ELFFile(File file)
-        {
-            theFile = file;
-            if (theFile == null)
-            {
-                Console.Default.ErrorColour();
-                Console.Default.Write("Error constructing ELF file! theFile is null");
-                BasicConsole.Write("Error constructing ELF file! theFile is null");
-                if (file == null)
-                {
-                    Console.Default.Write(" and file is null");
-                    BasicConsole.Write(" and file is null");
-                }
-                else
-                {
-                    Console.Default.Write(" and file is NOT null");
-                    BasicConsole.Write(" and file is NOT null");
-                }
-                Console.Default.WriteLine(".");
-                BasicConsole.WriteLine(".");
-                Console.Default.DefaultColour();
-                ExceptionMethods.Throw(new Exception("Error loading ELF file! Supplied file is null."));
-            }
-            else
-            {
-                theStream = new CachedFileStream(theFile.GetStream());
-                ReadHeader();
-
-                if (IsValidFile())
-                {
-                    ReadSectionHeaders();
-                    ReadSegmentHeaders();
-                }
-            }
-        }
-
         public File TheFile
         {
             get { return theFile; }
@@ -120,17 +84,53 @@ namespace Kernel.Processes.ELF
                     baseAddress = UInt32.MaxValue;
                     for (int i = 0; i < Segments.Count; i++)
                     {
-                        ELFSegment segment = (ELFSegment) Segments[i];
+                        ELFSegment segment = (ELFSegment)Segments[i];
                         if (segment.Header.Type == ELFSegmentType.Load)
                         {
-                            if ((uint) segment.Header.VAddr < baseAddress)
+                            if ((uint)segment.Header.VAddr < baseAddress)
                             {
-                                baseAddress = (uint) segment.Header.VAddr;
+                                baseAddress = (uint)segment.Header.VAddr;
                             }
                         }
                     }
                 }
                 return baseAddress;
+            }
+        }
+
+        public ELFFile(File file)
+        {
+            theFile = file;
+            if (theFile == null)
+            {
+                Console.Default.ErrorColour();
+                Console.Default.Write("Error constructing ELF file! theFile is null");
+                BasicConsole.Write("Error constructing ELF file! theFile is null");
+                if (file == null)
+                {
+                    Console.Default.Write(" and file is null");
+                    BasicConsole.Write(" and file is null");
+                }
+                else
+                {
+                    Console.Default.Write(" and file is NOT null");
+                    BasicConsole.Write(" and file is NOT null");
+                }
+                Console.Default.WriteLine(".");
+                BasicConsole.WriteLine(".");
+                Console.Default.DefaultColour();
+                ExceptionMethods.Throw(new Exception("Error loading ELF file! Supplied file is null."));
+            }
+            else
+            {
+                theStream = new CachedFileStream(theFile.GetStream());
+                ReadHeader();
+
+                if (IsValidFile())
+                {
+                    ReadSectionHeaders();
+                    ReadSegmentHeaders();
+                }
             }
         }
 
@@ -171,18 +171,18 @@ namespace Kernel.Processes.ELF
                             ExceptionMethods.Throw(
                                 new Exception("Expected Strings Table section was not a strings table section!"));
                         }
-                        NamesTable = (ELFStringTableSection) newSection;
+                        NamesTable = (ELFStringTableSection)newSection;
                     }
 
                     newSection.Read(theStream);
 
                     if (newSection is ELFDynamicSection)
                     {
-                        DynamicSection = (ELFDynamicSection) newSection;
+                        DynamicSection = (ELFDynamicSection)newSection;
                     }
                     else if (newSection is ELFDynamicSymbolTableSection)
                     {
-                        DynamicSymbolsSection = (ELFDynamicSymbolTableSection) newSection;
+                        DynamicSymbolsSection = (ELFDynamicSymbolTableSection)newSection;
                     }
 
                     Sections.Add(newSection);

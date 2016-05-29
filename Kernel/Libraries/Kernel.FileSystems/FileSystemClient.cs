@@ -52,7 +52,7 @@ namespace Kernel.FileSystems
                 {
                     FilePipeCommand* CommandPtr = CmdInPipe.Read();
 
-                    switch ((FileCommands) CommandPtr->Command)
+                    switch ((FileCommands)CommandPtr->Command)
                     {
                         case FileCommands.StatFS:
                             StatFS();
@@ -91,7 +91,7 @@ namespace Kernel.FileSystems
                     Prefixes = new String[FileSystemManager.FileSystemMappings.Count];
                     for (int i = 0; i < Prefixes.Length; i++)
                     {
-                        Prefixes[i] = ((FileSystemMapping) FileSystemManager.FileSystemMappings[i]).Prefix;
+                        Prefixes[i] = ((FileSystemMapping)FileSystemManager.FileSystemMappings[i]).Prefix;
                     }
                 }
                 finally
@@ -120,7 +120,7 @@ namespace Kernel.FileSystems
                 String Output = "";
                 for (int i = 0; i < Listings.Count; i++)
                 {
-                    Base AListing = (Base) Listings[i];
+                    Base AListing = (Base)Listings[i];
                     if (AListing.IsDirectory)
                     {
                         Output += AListing.Name + FileSystemManager.PathDelimiter;

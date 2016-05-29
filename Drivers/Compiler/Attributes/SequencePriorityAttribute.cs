@@ -87,6 +87,15 @@ namespace Drivers.Compiler.Attributes
     public class SequencePriorityAttribute : Attribute
     {
         /// <summary>
+        ///     The priority of the targeted method.
+        /// </summary>
+        /// <remarks>
+        ///     Please see class remarks.
+        /// </remarks>
+        /// <value>Gets/sets an implicitly defined field.</value>
+        public long Priority { get; set; }
+
+        /// <summary>
         ///     Initialises a new SequencePriorityAttribute with priority 0.
         /// </summary>
         /// <remarks>
@@ -96,14 +105,5 @@ namespace Drivers.Compiler.Attributes
         {
             Priority = 0;
         }
-
-        /// <summary>
-        ///     The priority of the targeted method.
-        /// </summary>
-        /// <remarks>
-        ///     Please see class remarks.
-        /// </remarks>
-        /// <value>Gets/sets an implicitly defined field.</value>
-        public long Priority { get; set; }
     }
 }

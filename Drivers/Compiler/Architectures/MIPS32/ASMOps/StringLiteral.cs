@@ -64,10 +64,10 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                 LiteralASM.Append("\n.align 0\n.hword ");
                 for (int i = 0; i < Characters.Length - 1; i++)
                 {
-                    LiteralASM.Append((uint) Characters[i]);
+                    LiteralASM.Append((uint)Characters[i]);
                     LiteralASM.Append(", ");
                 }
-                LiteralASM.Append((uint) Characters.Last());
+                LiteralASM.Append((uint)Characters.Last());
             }
 
             LiteralASM.AppendLine();

@@ -154,7 +154,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < aISO9660.VolumeDescriptors.Count; i++)
             {
-                Disk.ISO9660.VolumeDescriptor volDescrip = (Disk.ISO9660.VolumeDescriptor) aISO9660.VolumeDescriptors[i];
+                Disk.ISO9660.VolumeDescriptor volDescrip = (Disk.ISO9660.VolumeDescriptor)aISO9660.VolumeDescriptors[i];
                 if (volDescrip is Disk.ISO9660.PrimaryVolumeDescriptor)
                 {
                     AddPartition(volDescrip);
@@ -171,7 +171,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < aGPT.Partitions.Count; i++)
             {
-                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo) aGPT.Partitions[i];
+                GPT.PartitionInfo aPartInfo = (GPT.PartitionInfo)aGPT.Partitions[i];
                 AddPartition(new Partition(TheDisk, aPartInfo.FirstLBA, aPartInfo.LastLBA - aPartInfo.FirstLBA));
             }
         }
@@ -241,7 +241,7 @@ namespace Kernel.FileSystems
             FileSystem newFS = null;
             if (aPartition is Disk.ISO9660.PrimaryVolumeDescriptor)
             {
-                newFS = new ISO9660FileSystem((Disk.ISO9660.PrimaryVolumeDescriptor) aPartition);
+                newFS = new ISO9660FileSystem((Disk.ISO9660.PrimaryVolumeDescriptor)aPartition);
             }
             else
             {

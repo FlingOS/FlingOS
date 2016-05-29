@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 
         public override string Convert(ASMBlock TheBlock)
         {
-            int numBytes = (int) Size;
+            int numBytes = (int)Size;
             string loadOp = "";
             switch (Size)
             {

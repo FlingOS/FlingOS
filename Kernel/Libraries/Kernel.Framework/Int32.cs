@@ -58,7 +58,7 @@ namespace Kernel.Framework
                     break;
                 }
                 result *= 10;
-                result += (uint) (c - '0');
+                result += (uint)(c - '0');
             }
             return result;
         }
@@ -71,7 +71,7 @@ namespace Kernel.Framework
         public static int Parse_DecimalSigned(String str)
         {
             bool neg = str.StartsWith("-");
-            int result = (int) Parse_DecimalUnsigned(str, neg ? 1 : 0);
+            int result = (int)Parse_DecimalUnsigned(str, neg ? 1 : 0);
             if (neg)
             {
                 result *= -1;
@@ -108,11 +108,11 @@ namespace Kernel.Framework
                 result *= 16;
                 if (c >= '0' && c <= '9')
                 {
-                    result += (uint) (c - '0');
+                    result += (uint)(c - '0');
                 }
                 else
                 {
-                    result += (uint) (c - 'a') + 10;
+                    result += (uint)(c - 'a') + 10;
                 }
             }
             return result;

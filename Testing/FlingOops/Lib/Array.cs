@@ -65,7 +65,7 @@ namespace FlingOops
         [NoDebug]
         public static implicit operator Array(object[] x)
         {
-            return (Array) (object) x;
+            return (Array)(object)x;
         }
 
         /// <summary>

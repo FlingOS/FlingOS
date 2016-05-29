@@ -190,6 +190,16 @@ namespace Kernel.IO.Serial
         protected IOPort Scratch;
         protected StopBits stopBits;
 
+        protected bool TransmitReady
+        {
+            [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte)LineStatusFlags.THREmpty) != 0; }
+        }
+
+        protected bool ReceiveReady
+        {
+            [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte)LineStatusFlags.DataAvailable) != 0; }
+        }
+
         public Serial(COMPorts port, DataBits dataBits, ParityBits parityBits, StopBits stopBits, BaudRates baudRate,
             Interrupts interrupts)
         {
@@ -203,41 +213,31 @@ namespace Kernel.IO.Serial
             Init();
         }
 
-        protected bool TransmitReady
-        {
-            [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte) LineStatusFlags.THREmpty) != 0; }
-        }
-
-        protected bool ReceiveReady
-        {
-            [NoGC] [NoDebug] get { return (LineStatus.Read_Byte() & (byte) LineStatusFlags.DataAvailable) != 0; }
-        }
-
         protected void Init()
         {
-            Data = new IOPort((ushort) (port + 0));
-            InterruptEnable = new IOPort((ushort) (port + 1));
-            BaudLSB = new IOPort((ushort) (port + 0));
-            BaudMSB = new IOPort((ushort) (port + 1));
-            FIFOControl = new IOPort((ushort) (port + 2));
-            LineControl = new IOPort((ushort) (port + 3));
-            ModemControl = new IOPort((ushort) (port + 4));
-            LineStatus = new IOPort((ushort) (port + 5));
-            ModemStatus = new IOPort((ushort) (port + 6));
-            Scratch = new IOPort((ushort) (port + 7));
+            Data = new IOPort((ushort)(port + 0));
+            InterruptEnable = new IOPort((ushort)(port + 1));
+            BaudLSB = new IOPort((ushort)(port + 0));
+            BaudMSB = new IOPort((ushort)(port + 1));
+            FIFOControl = new IOPort((ushort)(port + 2));
+            LineControl = new IOPort((ushort)(port + 3));
+            ModemControl = new IOPort((ushort)(port + 4));
+            LineStatus = new IOPort((ushort)(port + 5));
+            ModemStatus = new IOPort((ushort)(port + 6));
+            Scratch = new IOPort((ushort)(port + 7));
 
-            InterruptEnable.Write_Byte((byte) interrupts);
+            InterruptEnable.Write_Byte((byte)interrupts);
 
-            LineControl.Write_Byte((byte) LineControlFlags.DivisorLatchAccessBit);
-            BaudLSB.Write_Byte((byte) ((byte) baudRate & 0x00FF));
-            BaudMSB.Write_Byte((byte) ((byte) baudRate & 0xFF00));
+            LineControl.Write_Byte((byte)LineControlFlags.DivisorLatchAccessBit);
+            BaudLSB.Write_Byte((byte)((byte)baudRate & 0x00FF));
+            BaudMSB.Write_Byte((byte)((byte)baudRate & 0xFF00));
 
             // This also clears the DLAB flag
-            LineControl.Write_Byte((byte) ((byte) dataBits | (byte) stopBits | (byte) parityBits));
-            FIFOControl.Write_Byte((byte) (FIFOControlFlags.Enable |
-                                           FIFOControlFlags.ClearReceive | FIFOControlFlags.ClearTransmit |
-                                           FIFOTriggerLevel));
-            ModemControl.Write_Byte((byte) (ModemControlFlags.DTR | ModemControlFlags.RTS));
+            LineControl.Write_Byte((byte)((byte)dataBits | (byte)stopBits | (byte)parityBits));
+            FIFOControl.Write_Byte((byte)(FIFOControlFlags.Enable |
+                                          FIFOControlFlags.ClearReceive | FIFOControlFlags.ClearTransmit |
+                                          FIFOTriggerLevel));
+            ModemControl.Write_Byte((byte)(ModemControlFlags.DTR | ModemControlFlags.RTS));
         }
 
         [NoGC]
@@ -270,7 +270,7 @@ namespace Kernel.IO.Serial
         {
             for (int i = 0; i < str.Length; i++)
             {
-                Write((byte) str[i]);
+                Write((byte)str[i]);
             }
         }
 

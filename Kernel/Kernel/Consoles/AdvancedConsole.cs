@@ -53,7 +53,7 @@ namespace Kernel.Consoles
         /// </summary>
         protected char* vidMemBasePtr
         {
-            get { return (char*) 0xB8000 + ScreenStartLine*ScreenLineWidth + ScreenStartLineOffset; }
+            get { return (char*)0xB8000 + ScreenStartLine*ScreenLineWidth + ScreenStartLineOffset; }
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Kernel.Consoles
                 //Get a pointer to the start of the current line
                 //  We could index into the string each time, but using a pointer
                 //  is much faster.
-                char* cLinePtr = ((String) Buffer[i]).GetCharPointer();
+                char* cLinePtr = ((String)Buffer[i]).GetCharPointer();
                 //Loop through the entire length of the line. All lines will be of
                 //  LineLength even if nothing is written in them because blank
                 //  lines are created as a LineLength of spaces.
@@ -89,14 +89,14 @@ namespace Kernel.Consoles
             {
                 for (int j = 0; j < LineLength; j++)
                 {
-                    vidMemPtr[j] = (char) (' ' | CurrentAttr);
+                    vidMemPtr[j] = (char)(' ' | CurrentAttr);
                 }
                 vidMemPtr -= ScreenLineWidth;
             }
 
             //Update the cursor position
-            SetCursorPosition((ushort) (CurrentChar - GetDisplayOffset_Char()),
-                (ushort) (CurrentLine - GetDisplayOffset_Line()));
+            SetCursorPosition((ushort)(CurrentChar - GetDisplayOffset_Char()),
+                (ushort)(CurrentLine - GetDisplayOffset_Line()));
         }
 
         /// <summary>
@@ -138,13 +138,13 @@ namespace Kernel.Consoles
             {
                 //Offset is in number of characters from start of video memory 
                 //  (not number of bytes).
-                ushort offset = (ushort) (line*ScreenLineWidth + character);
+                ushort offset = (ushort)(line*ScreenLineWidth + character);
                 //Output the high-byte
                 CursorCmdPort.Write_Byte(14);
-                CursorDataPort.Write_Byte((byte) (offset >> 8));
+                CursorDataPort.Write_Byte((byte)(offset >> 8));
                 //Output the low-byte
                 CursorCmdPort.Write_Byte(15);
-                CursorDataPort.Write_Byte((byte) offset);
+                CursorDataPort.Write_Byte((byte)offset);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Kernel.Consoles
             char* vidMemPtr = vidMemBasePtr + ScreenHeight*ScreenLineWidth;
             for (int j = 0; j < LineLength; j++)
             {
-                vidMemPtr[j] = (char) ('-' | CurrentAttr);
+                vidMemPtr[j] = (char)('-' | CurrentAttr);
             }
         }
 
@@ -168,10 +168,10 @@ namespace Kernel.Consoles
             char* vidMemPtr = vidMemBasePtr - 1;
             for (int j = 0; j < ScreenHeight; j++)
             {
-                *vidMemPtr = (char) ('|' | CurrentAttr);
+                *vidMemPtr = (char)('|' | CurrentAttr);
                 vidMemPtr += ScreenLineWidth;
             }
-            *vidMemPtr = (char) ('-' | CurrentAttr);
+            *vidMemPtr = (char)('-' | CurrentAttr);
         }
     }
 }

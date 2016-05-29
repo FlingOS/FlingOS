@@ -62,6 +62,22 @@ namespace Kernel.FileSystems.Disk
         public PartitionInfo[] Partitions = new PartitionInfo[4];
 
         /// <summary>
+        ///     The number of partitions set in the Partitions array.
+        /// </summary>
+        public uint NumPartitions
+        {
+            get { return numPartitions; }
+        }
+
+        /// <summary>
+        ///     The actual capacity (length) of the partitions array.
+        /// </summary>
+        protected int PartitionsCapacity
+        {
+            get { return Partitions.Length; }
+        }
+
+        /// <summary>
         ///     Initializes a new, empty MBR and marks it as valid.
         /// </summary>
         public MBR()
@@ -133,22 +149,6 @@ namespace Kernel.FileSystems.Disk
                 //Non-empty, valid partition so add it
                 AddPartitionToList(partInfo);
             }
-        }
-
-        /// <summary>
-        ///     The number of partitions set in the Partitions array.
-        /// </summary>
-        public uint NumPartitions
-        {
-            get { return numPartitions; }
-        }
-
-        /// <summary>
-        ///     The actual capacity (length) of the partitions array.
-        /// </summary>
-        protected int PartitionsCapacity
-        {
-            get { return Partitions.Length; }
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace Kernel.FileSystems.Disk
             //Can't remember why but we have to start at 3rd logical block
             //  - First sector (sector 0) is for the MBR
             //  - Why do we leave a second sector empty after it?
-            return new PartitionInfo(bootable, 0xC, 2U, (uint) (aDisk.Blocks - 2));
+            return new PartitionInfo(bootable, 0xC, 2U, (uint)(aDisk.Blocks - 2));
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace Kernel.FileSystems.Disk
             uint part1Offset = 0x1BE;
             for (uint i = 0; i < partitionInfos.Count; i++)
             {
-                PartitionInfo partInfo = (PartitionInfo) partitionInfos[(int) i];
+                PartitionInfo partInfo = (PartitionInfo)partitionInfos[(int)i];
                 uint partOffset = part1Offset + 0x10*i;
 #if MBR_TRACE
                 BasicConsole.WriteLine(((Framework.String)"Partition ") + i + " @ " + partOffset);
@@ -309,19 +309,19 @@ namespace Kernel.FileSystems.Disk
 #endif
 
                 //Bootable / active
-                newMBRData[partOffset + 0] = (byte) (partInfo.Bootable ? 0x81 : 0x00);
+                newMBRData[partOffset + 0] = (byte)(partInfo.Bootable ? 0x81 : 0x00);
                 //System ID
                 newMBRData[partOffset + 4] = partInfo.SystemID;
                 //Start sector
-                newMBRData[partOffset + 8] = (byte) partInfo.StartSector;
-                newMBRData[partOffset + 9] = (byte) (partInfo.StartSector >> 8);
-                newMBRData[partOffset + 10] = (byte) (partInfo.StartSector >> 16);
-                newMBRData[partOffset + 11] = (byte) (partInfo.StartSector >> 24);
+                newMBRData[partOffset + 8] = (byte)partInfo.StartSector;
+                newMBRData[partOffset + 9] = (byte)(partInfo.StartSector >> 8);
+                newMBRData[partOffset + 10] = (byte)(partInfo.StartSector >> 16);
+                newMBRData[partOffset + 11] = (byte)(partInfo.StartSector >> 24);
                 //Sector count
-                newMBRData[partOffset + 12] = (byte) partInfo.SectorCount;
-                newMBRData[partOffset + 13] = (byte) (partInfo.SectorCount >> 8);
-                newMBRData[partOffset + 14] = (byte) (partInfo.SectorCount >> 16);
-                newMBRData[partOffset + 15] = (byte) (partInfo.SectorCount >> 24);
+                newMBRData[partOffset + 12] = (byte)partInfo.SectorCount;
+                newMBRData[partOffset + 13] = (byte)(partInfo.SectorCount >> 8);
+                newMBRData[partOffset + 14] = (byte)(partInfo.SectorCount >> 16);
+                newMBRData[partOffset + 15] = (byte)(partInfo.SectorCount >> 24);
 
 #if MBR_TRACE
                 BasicConsole.WriteLine("Reading back data...");

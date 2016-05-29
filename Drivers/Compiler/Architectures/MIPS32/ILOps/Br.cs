@@ -43,7 +43,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             BranchOp branchOp = BranchOp.Branch;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
                 case OpCodes.Br_S:
@@ -145,7 +145,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //to the IL op to jump to.
             int ILOffset = 0;
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -153,7 +153,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -161,7 +161,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brfalse:
                     //See above
@@ -169,7 +169,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Beq:
@@ -178,7 +178,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bne_Un:
@@ -187,7 +187,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bge:
@@ -196,7 +196,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bge_Un:
                     //See above : This is unsigned variant
@@ -204,7 +204,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Ble:
@@ -213,7 +213,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Ble_Un:
                     //See above : This is unsigned variant
@@ -221,7 +221,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Blt:
@@ -230,7 +230,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Blt_Un:
                     //See above : This is unsigned variant
@@ -238,7 +238,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
 
                 case OpCodes.Bgt:
@@ -247,7 +247,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Bgt_Un:
                     //See above : This is unsigned variant
@@ -255,7 +255,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
             }
 
@@ -298,7 +298,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //The value for the branch op to test against - currently always "0" since on jnz and jz ops are used.
             string testVal = "0";
 
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Br:
                     //Load the IL offset as signed Int 32 from the value bytes.
@@ -306,7 +306,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Br_S:
                     //Load the IL offset as signed Int 8 from the value bytes.
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     break;
                 case OpCodes.Brtrue:
                     //See above.
@@ -318,7 +318,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brtrue_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchNotZero;
                     break;
@@ -332,7 +332,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Brfalse_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchZero;
                     break;
@@ -348,7 +348,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Beq_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchEqual;
                     inverseBranchOp = BranchOp.BranchNotEqual;
@@ -365,7 +365,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bne_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchNotEqual;
                     isNegativeTest = true;
@@ -383,7 +383,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchGreaterThanEqual;
                     inverseBranchOp = BranchOp.BranchLessThan;
@@ -398,7 +398,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bge_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchGreaterThanEqual;
@@ -417,7 +417,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchLessThanEqual;
                     inverseBranchOp = BranchOp.BranchGreaterThan;
@@ -432,7 +432,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Ble_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchLessThanEqual;
@@ -451,7 +451,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchLessThan;
                     isNegativeTest = true;
@@ -466,7 +466,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Blt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchLessThan;
@@ -485,7 +485,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     //See above
                     branchOp = BranchOp.BranchGreaterThan;
                     isNegativeTest = true;
@@ -500,7 +500,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                     break;
                 case OpCodes.Bgt_Un_S:
                     //See above
-                    ILOffset = (sbyte) theOp.ValueBytes[0];
+                    ILOffset = (sbyte)theOp.ValueBytes[0];
                     UnsignedTest = true;
                     //See above
                     branchOp = BranchOp.BranchGreaterThan;

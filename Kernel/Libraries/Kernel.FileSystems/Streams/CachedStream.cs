@@ -36,24 +36,24 @@ namespace Kernel.FileSystems.Streams
         private byte[] CachedData;
         protected FileStream UnderlyingStream;
 
-        public CachedFileStream(FileStream AnUnderlyingStream)
-            : base(AnUnderlyingStream.TheFile)
-        {
-            UnderlyingStream = AnUnderlyingStream;
-
-            CachedData = new byte[(uint) TheFile.Size];
-            UnderlyingStream.Read(CachedData, 0, CachedData.Length);
-        }
-
         public override long Position
         {
             get { return UnderlyingStream.Position; }
             set { UnderlyingStream.Position = value; }
         }
 
+        public CachedFileStream(FileStream AnUnderlyingStream)
+            : base(AnUnderlyingStream.TheFile)
+        {
+            UnderlyingStream = AnUnderlyingStream;
+
+            CachedData = new byte[(uint)TheFile.Size];
+            UnderlyingStream.Read(CachedData, 0, CachedData.Length);
+        }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
-            int maxToRead = Math.Min(count, CachedData.Length - (int) Position);
+            int maxToRead = Math.Min(count, CachedData.Length - (int)Position);
 
             if (count < 0)
             {
@@ -72,7 +72,7 @@ namespace Kernel.FileSystems.Streams
                 ExceptionMethods.Throw(new ArgumentException("CachedFileStream.Read: Invalid offset / length values!"));
             }
 
-            Array.Copy(CachedData, (int) Position, buffer, offset, maxToRead);
+            Array.Copy(CachedData, (int)Position, buffer, offset, maxToRead);
 
             return maxToRead;
         }
@@ -97,14 +97,14 @@ namespace Kernel.FileSystems.Streams
             }
 
 
-            if (CachedData.Length < (int) Position + count)
+            if (CachedData.Length < (int)Position + count)
             {
                 byte[] NewCachedData = new byte[offset + count];
                 Array.Copy(CachedData, 0, NewCachedData, 0, CachedData.Length);
                 CachedData = NewCachedData;
             }
 
-            Array.Copy(buffer, offset, CachedData, (int) Position, count);
+            Array.Copy(buffer, offset, CachedData, (int)Position, count);
 
             UnderlyingStream.Write(buffer, offset, count);
         }

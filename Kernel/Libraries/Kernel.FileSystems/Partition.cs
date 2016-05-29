@@ -54,6 +54,13 @@ namespace Kernel.FileSystems
         /// </summary>
         public String VolumeID = "[NO ID]";
 
+        public override ulong Blocks => TheDiskDevice.Blocks;
+
+        public override ulong BlockSize
+        {
+            get { return TheDiskDevice.BlockSize; }
+        }
+
         /// <summary>
         ///     Initializes a new partition.
         /// </summary>
@@ -65,13 +72,6 @@ namespace Kernel.FileSystems
         {
             TheDiskDevice = aDiskDevice;
             StartingSector = aStartingSector;
-        }
-
-        public override ulong Blocks => TheDiskDevice.Blocks;
-
-        public override ulong BlockSize
-        {
-            get { return TheDiskDevice.BlockSize; }
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                Partition part = (Partition) PartitionManager.Partitions[i];
+                Partition part = (Partition)PartitionManager.Partitions[i];
                 if (part.TheDiskDevice == disk)
                 {
                     return true;
@@ -125,7 +125,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < PartitionManager.Partitions.Count; i++)
             {
-                Partition part = (Partition) PartitionManager.Partitions[i];
+                Partition part = (Partition)PartitionManager.Partitions[i];
                 if (part.TheDiskDevice == disk)
                 {
                     return part;

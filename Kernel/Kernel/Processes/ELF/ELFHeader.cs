@@ -84,6 +84,33 @@ namespace Kernel.Processes.ELF
         public uint SecHeaderTableOffset;
         public uint Version;
 
+        public bool SignatureOK
+        {
+            get
+            {
+                bool OK = ident[0] == 0x7F;
+                OK = OK && ident[1] == 'E';
+                OK = OK && ident[2] == 'L';
+                OK = OK && ident[3] == 'F';
+                return OK;
+            }
+        }
+
+        public ELFFileClass FileClass
+        {
+            get { return (ELFFileClass)ident[4]; }
+        }
+
+        public ELFDataEncoding DataEncoding
+        {
+            get { return (ELFDataEncoding)ident[5]; }
+        }
+
+        public byte HeaderVersion
+        {
+            get { return ident[6]; }
+        }
+
         public ELFHeader(byte[] data)
         {
             ident = new byte[16];
@@ -104,10 +131,10 @@ namespace Kernel.Processes.ELF
             ident[14] = data[14];
             ident[15] = data[15];
 
-            FileType = (ELFFileType) ByteConverter.ToUInt16(data, 16);
-            Machine = (ELFMachines) ByteConverter.ToUInt16(data, 18);
+            FileType = (ELFFileType)ByteConverter.ToUInt16(data, 16);
+            Machine = (ELFMachines)ByteConverter.ToUInt16(data, 18);
             Version = ByteConverter.ToUInt32(data, 20);
-            EntryPoint = (byte*) ByteConverter.ToUInt32(data, 24);
+            EntryPoint = (byte*)ByteConverter.ToUInt32(data, 24);
             ProgHeaderTableOffset = ByteConverter.ToUInt32(data, 28);
             SecHeaderTableOffset = ByteConverter.ToUInt32(data, 32);
             flags = ByteConverter.ToUInt32(data, 36);
@@ -117,33 +144,6 @@ namespace Kernel.Processes.ELF
             SecHeaderEntrySize = ByteConverter.ToUInt16(data, 46);
             SecHeaderNumEntries = ByteConverter.ToUInt16(data, 48);
             SecHeaderIdxForSecNameStrings = ByteConverter.ToUInt16(data, 50);
-        }
-
-        public bool SignatureOK
-        {
-            get
-            {
-                bool OK = ident[0] == 0x7F;
-                OK = OK && ident[1] == 'E';
-                OK = OK && ident[2] == 'L';
-                OK = OK && ident[3] == 'F';
-                return OK;
-            }
-        }
-
-        public ELFFileClass FileClass
-        {
-            get { return (ELFFileClass) ident[4]; }
-        }
-
-        public ELFDataEncoding DataEncoding
-        {
-            get { return (ELFDataEncoding) ident[5]; }
-        }
-
-        public byte HeaderVersion
-        {
-            get { return ident[6]; }
         }
     }
 }

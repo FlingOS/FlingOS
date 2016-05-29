@@ -34,47 +34,6 @@ namespace Kernel.PCI
     public class PCIDeviceBridge : PCIDevice
     {
         /// <summary>
-        ///     Initialises a new PCIDeviceBridge instance.
-        /// </summary>
-        /// <param name="bus">The PCI device's Bus number.</param>
-        /// <param name="slot">The PCI device's Slot number.</param>
-        /// <param name="function">The PCI device's Function number.</param>
-        public PCIDeviceBridge(uint bus, uint slot, uint function)
-            : base(bus, slot, function, "PCI Device Bridge")
-        {
-            BaseAddresses = new PCIBaseAddress[2];
-            BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));
-            BaseAddresses[1] = new PCIBaseAddress(ReadRegister32(0x14), GetSize(1));
-
-            PrimaryBusNumber = ReadRegister8(0x18);
-            SecondaryBusNumber = ReadRegister8(0x19);
-            SubordinateBusNumber = ReadRegister8(0x1A);
-            SecondaryLatencyTimer = ReadRegister8(0x1B);
-
-            IOBase = ReadRegister8(0x1C);
-            IOLimit = ReadRegister8(0x1D);
-            SecondaryStatus = ReadRegister16(0x1E);
-
-            MemoryBase = ReadRegister16(0x20);
-            MemoryLimit = ReadRegister16(0x22);
-
-            PrefatchableMemoryBase = ReadRegister16(0x24);
-            PrefatchableMemoryLimit = ReadRegister16(0x26);
-
-            PrefatchableBaseUpper32 = ReadRegister32(0x28);
-            PrefatchableLimitUpper32 = ReadRegister32(0x2C);
-
-            IOBaseUpper16 = ReadRegister16(0x30);
-            IOLimitUpper16 = ReadRegister16(0x32);
-
-            CapabilityPointer = ReadRegister8(0x34);
-
-            ExpansionROMBaseAddress = ReadRegister32(0x38);
-
-            BridgeControl = ReadRegister16(0x3E);
-        }
-
-        /// <summary>
         ///     The device's BaseAddresses.
         /// </summary>
         public PCIBaseAddress[] BaseAddresses { get; }
@@ -168,5 +127,46 @@ namespace Kernel.PCI
         ///     The device's BridgeControl.
         /// </summary>
         public ushort BridgeControl { get; private set; }
+
+        /// <summary>
+        ///     Initialises a new PCIDeviceBridge instance.
+        /// </summary>
+        /// <param name="bus">The PCI device's Bus number.</param>
+        /// <param name="slot">The PCI device's Slot number.</param>
+        /// <param name="function">The PCI device's Function number.</param>
+        public PCIDeviceBridge(uint bus, uint slot, uint function)
+            : base(bus, slot, function, "PCI Device Bridge")
+        {
+            BaseAddresses = new PCIBaseAddress[2];
+            BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));
+            BaseAddresses[1] = new PCIBaseAddress(ReadRegister32(0x14), GetSize(1));
+
+            PrimaryBusNumber = ReadRegister8(0x18);
+            SecondaryBusNumber = ReadRegister8(0x19);
+            SubordinateBusNumber = ReadRegister8(0x1A);
+            SecondaryLatencyTimer = ReadRegister8(0x1B);
+
+            IOBase = ReadRegister8(0x1C);
+            IOLimit = ReadRegister8(0x1D);
+            SecondaryStatus = ReadRegister16(0x1E);
+
+            MemoryBase = ReadRegister16(0x20);
+            MemoryLimit = ReadRegister16(0x22);
+
+            PrefatchableMemoryBase = ReadRegister16(0x24);
+            PrefatchableMemoryLimit = ReadRegister16(0x26);
+
+            PrefatchableBaseUpper32 = ReadRegister32(0x28);
+            PrefatchableLimitUpper32 = ReadRegister32(0x2C);
+
+            IOBaseUpper16 = ReadRegister16(0x30);
+            IOLimitUpper16 = ReadRegister16(0x32);
+
+            CapabilityPointer = ReadRegister8(0x34);
+
+            ExpansionROMBaseAddress = ReadRegister32(0x38);
+
+            BridgeControl = ReadRegister16(0x3E);
+        }
     }
 }

@@ -202,7 +202,7 @@ namespace Drivers.Compiler.Types
                     object[] priorAttrs = UnderlyingInfo.GetCustomAttributes(typeof(SequencePriorityAttribute), false);
                     if (priorAttrs.Length > 0)
                     {
-                        SequencePriorityAttribute priorAttr = (SequencePriorityAttribute) priorAttrs[0];
+                        SequencePriorityAttribute priorAttr = (SequencePriorityAttribute)priorAttrs[0];
                         priority = priorAttr.Priority;
                     }
                     else
@@ -255,7 +255,7 @@ namespace Drivers.Compiler.Types
             }
             else
             {
-                returnType = ((System.Reflection.MethodInfo) aMethod).ReturnType.FullName;
+                returnType = ((System.Reflection.MethodInfo)aMethod).ReturnType.FullName;
                 declaringType = aMethod.DeclaringType.FullName;
                 methodName = aMethod.Name;
             }

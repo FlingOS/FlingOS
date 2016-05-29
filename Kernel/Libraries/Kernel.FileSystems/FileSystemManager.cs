@@ -96,7 +96,7 @@ namespace Kernel.FileSystems
             //TODO: Don't use the count to generate the drive letter
             //  Because if we allowed detach/removal/eject in future, it could cause naming conflicts
             String mappingPrefix = String.New(3);
-            mappingPrefix[0] = (char) ('A' + FileSystemMappings.Count);
+            mappingPrefix[0] = (char)('A' + FileSystemMappings.Count);
             mappingPrefix[1] = ':';
             mappingPrefix[2] = PathDelimiter;
             newFS.TheMapping = new FileSystemMapping(mappingPrefix, newFS);
@@ -123,7 +123,7 @@ namespace Kernel.FileSystems
             {
                 for (int i = 0; i < FileSystemMappings.Count; i++)
                 {
-                    FileSystemMapping aMapping = (FileSystemMapping) FileSystemMappings[i];
+                    FileSystemMapping aMapping = (FileSystemMapping)FileSystemMappings[i];
                     if (aMapping.PathMatchesMapping(aPath))
                     {
                         result = aMapping;
@@ -148,7 +148,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < FileSystemMappings.Count; i++)
             {
-                FileSystemMapping mapping = (FileSystemMapping) FileSystemMappings[i];
+                FileSystemMapping mapping = (FileSystemMapping)FileSystemMappings[i];
                 if (mapping.TheFileSystem.ThePartition == part)
                 {
                     return true;
@@ -216,7 +216,7 @@ namespace Kernel.FileSystems
             FileSystemClient TheClient = null;
             if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
             {
-                TheClient = (FileSystemClient) Clients[Clients.Count - 1];
+                TheClient = (FileSystemClient)Clients[Clients.Count - 1];
 
                 if (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
                 {

@@ -127,7 +127,7 @@ namespace Kernel.USB
             List HCIPCIDevices = new List();
             for (int i = 0; i < AllDevices.Count; i++)
             {
-                Device aDevice = (Device) AllDevices[i];
+                Device aDevice = (Device)AllDevices[i];
                 if (!aDevice.Claimed)
                 {
                     if (aDevice.Class == DeviceClass.Generic && aDevice.SubClass == DeviceSubClass.PCI)
@@ -178,7 +178,7 @@ namespace Kernel.USB
 
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice) HCIPCIDevices[i];
+                PCIDevice aDevice = (PCIDevice)HCIPCIDevices[i];
                 //xHCI = 0x30
                 if (aDevice.ProgIF == 0x30)
                 {
@@ -196,7 +196,7 @@ namespace Kernel.USB
             }
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice) HCIPCIDevices[i];
+                PCIDevice aDevice = (PCIDevice)HCIPCIDevices[i];
                 //EHCI = 0x20
                 if (aDevice.ProgIF == 0x20)
                 {
@@ -206,7 +206,7 @@ namespace Kernel.USB
 #endif
                     NumEHCIDevices++;
 
-                    PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal) aDevice;
+                    PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
                     EHCI_PCIDevice.Claimed = true;
 
                     //BasicConsole.SetTextColour(BasicConsole.warning_colour);
@@ -221,7 +221,7 @@ namespace Kernel.USB
             }
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice) HCIPCIDevices[i];
+                PCIDevice aDevice = (PCIDevice)HCIPCIDevices[i];
                 //UHCI = 0x00
                 if (aDevice.ProgIF == 0x00)
                 {
@@ -231,7 +231,7 @@ namespace Kernel.USB
 #endif
                     NumUHCIDevices++;
 
-                    PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal) aDevice;
+                    PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
                     UHCI_PCIDevice.Claimed = true;
 
                     UHCI newUHCI = new UHCI(UHCI_PCIDevice);
@@ -275,7 +275,7 @@ namespace Kernel.USB
             UpdateRequired = false;
             for (int i = 0; i < HCIDevices.Count; i++)
             {
-                ((HCI) HCIDevices[i]).Update();
+                ((HCI)HCIDevices[i]).Update();
             }
         }
 
@@ -295,9 +295,9 @@ namespace Kernel.USB
             deviceInf.Interfaces = new List(1);
             deviceInf.Endpoints = new List(1);
             deviceInf.Endpoints.Add(new Endpoint());
-            ((Endpoint) deviceInf.Endpoints[0]).MPS = 64;
-            ((Endpoint) deviceInf.Endpoints[0]).Type = Endpoint.Types.BIDIR;
-            ((Endpoint) deviceInf.Endpoints[0]).Toggle = false;
+            ((Endpoint)deviceInf.Endpoints[0]).MPS = 64;
+            ((Endpoint)deviceInf.Endpoints[0]).Type = Endpoint.Types.BIDIR;
+            ((Endpoint)deviceInf.Endpoints[0]).Toggle = false;
 #if USB_TRACE
             DBGMSG("Created device.");
 #endif
@@ -566,13 +566,13 @@ namespace Kernel.USB
 
             DeviceDescriptor* descriptor =
                 (DeviceDescriptor*)
-                    Heap.AllocZeroed((uint) sizeof(DeviceDescriptor), "USBManager : GetDeviceDescriptor");
+                    Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "USBManager : GetDeviceDescriptor");
             USBTransfer transfer = new USBTransfer();
             try
             {
                 device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
-                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, first8BytesOnly ? (ushort) 8u : (ushort) 18u);
-                device.hc.INTransaction(transfer, false, descriptor, first8BytesOnly ? (ushort) 8u : (ushort) 18u);
+                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 1, 0, 0, first8BytesOnly ? (ushort)8u : (ushort)18u);
+                device.hc.INTransaction(transfer, false, descriptor, first8BytesOnly ? (ushort)8u : (ushort)18u);
                 device.hc.OUTTransaction(transfer, true, null, 0);
                 device.hc.IssueTransfer(transfer);
 
@@ -618,7 +618,7 @@ namespace Kernel.USB
             usbDev.productStringID = d->product;
             usbDev.serialNumberStringID = d->serialNumber;
             usbDev.numConfigurations = d->numConfigurations;
-            ((Endpoint) usbDev.Endpoints[0]).MPS = d->MaxPacketSize;
+            ((Endpoint)usbDev.Endpoints[0]).MPS = d->MaxPacketSize;
 
             usbDev.ManufacturerString = GetUnicodeStringDescriptor(usbDev, usbDev.manufacturerStringID);
             usbDev.ProductString = GetUnicodeStringDescriptor(usbDev, usbDev.productStringID);
@@ -638,7 +638,7 @@ namespace Kernel.USB
 
             //64 byte buffer
             ushort bufferSize = 64;
-            byte* buffer = (byte*) Heap.AllocZeroed(bufferSize, "USBManager: GetConfigDescriptor");
+            byte* buffer = (byte*)Heap.AllocZeroed(bufferSize, "USBManager: GetConfigDescriptor");
 
             bool success = false;
 
@@ -673,10 +673,10 @@ namespace Kernel.USB
 
                         if (length == 9 && type == 2)
                         {
-                            ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*) addr;
+                            ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*)addr;
 
                             Configuration config = new Configuration();
-                            config.Attribs = (Configuration.Attributes) descriptor->attributes;
+                            config.Attribs = (Configuration.Attributes)descriptor->attributes;
                             config.Selector = descriptor->configurationValue;
                             config.MaxPower = descriptor->maxPower;
                             config.NumInterfaces = descriptor->numInterfaces;
@@ -701,7 +701,7 @@ namespace Kernel.USB
                         }
                         else if (length == 9 && type == 4)
                         {
-                            InterfaceDescriptor* descriptor = (InterfaceDescriptor*) addr;
+                            InterfaceDescriptor* descriptor = (InterfaceDescriptor*)addr;
 
                             Interface interf = new Interface();
                             interf.InterfaceNumber = descriptor->interfaceNumber;
@@ -761,20 +761,20 @@ namespace Kernel.USB
 
                         if (length == 7 && type == 5)
                         {
-                            EndpointDescriptor* descriptor = (EndpointDescriptor*) addr;
+                            EndpointDescriptor* descriptor = (EndpointDescriptor*)addr;
 
-                            byte ep_id = (byte) (descriptor->endpointAddress & 0xF);
+                            byte ep_id = (byte)(descriptor->endpointAddress & 0xF);
 #if USB_TRACE
                             if (ep_id >= numEndpoints)
                             {
                                 DBGMSG("ep_id >= numEndpoints!!");
                             }
 #endif
-                            Endpoint endpoint = (Endpoint) device.Endpoints[ep_id];
+                            Endpoint endpoint = (Endpoint)device.Endpoints[ep_id];
 
                             endpoint.MPS = descriptor->maxPacketSize;
                             endpoint.Type = Endpoint.Types.BIDIR; // Can be overwritten below
-                            endpoint.Address = (byte) (descriptor->endpointAddress & 0xF);
+                            endpoint.Address = (byte)(descriptor->endpointAddress & 0xF);
                             endpoint.Attributes = descriptor->attributes;
                             endpoint.Interval = descriptor->interval;
 
@@ -832,11 +832,11 @@ namespace Kernel.USB
             StringInfo result = null;
             StringDescriptor* descriptor =
                 (StringDescriptor*)
-                    Heap.AllocZeroed((uint) sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
+                    Heap.AllocZeroed((uint)sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
 
             try
             {
-                ushort size = (ushort) sizeof(StringDescriptor);
+                ushort size = (ushort)sizeof(StringDescriptor);
                 USBTransfer transfer = new USBTransfer();
                 device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
                 device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, 0, 0, size);
@@ -922,7 +922,7 @@ namespace Kernel.USB
             //64 byte buffer
             ushort bufferSize = 64;
             StringDescriptorUnicode* buffer =
-                (StringDescriptorUnicode*) Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor");
+                (StringDescriptorUnicode*)Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor");
 
             try
             {
@@ -977,7 +977,7 @@ namespace Kernel.USB
             device.hc.OUTTransaction(transfer, true, null, 0);
             device.hc.IssueTransfer(transfer);
 
-            return (byte) configuration;
+            return (byte)configuration;
         }
 
         /// <summary>
@@ -1080,7 +1080,7 @@ namespace Kernel.USB
             {
                 for (int i = 0; i < HCIDevices.Count; i++)
                 {
-                    ((HCI) HCIDevices[i]).IRQHandler();
+                    ((HCI)HCIDevices[i]).IRQHandler();
                 }
             }
         }

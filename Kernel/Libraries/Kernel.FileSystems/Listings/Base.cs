@@ -61,6 +61,15 @@ namespace Kernel.FileSystems
         public Directory Parent;
 
         /// <summary>
+        ///     The size of the listing. 0 for directories.
+        /// </summary>
+        public virtual ulong Size
+        {
+            get { return mSize; }
+            internal set { mSize = value; }
+        }
+
+        /// <summary>
         ///     Initializes a new base listing.
         /// </summary>
         /// <param name="aFileSystem">The file system to which the listing belongs.</param>
@@ -73,15 +82,6 @@ namespace Kernel.FileSystems
             Name = aName;
             IsDirectory = isDirectory;
             Parent = parent;
-        }
-
-        /// <summary>
-        ///     The size of the listing. 0 for directories.
-        /// </summary>
-        public virtual ulong Size
-        {
-            get { return mSize; }
-            internal set { mSize = value; }
         }
 
         /// <summary>

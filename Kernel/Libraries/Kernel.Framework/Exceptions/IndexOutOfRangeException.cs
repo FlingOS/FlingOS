@@ -37,7 +37,7 @@ namespace Kernel.Framework.Exceptions
         ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(int index, int range)
-            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String)index + ", Range: " + range)
         {
         }
 
@@ -45,7 +45,7 @@ namespace Kernel.Framework.Exceptions
         ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(uint index, uint range)
-            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String)index + ", Range: " + range)
         {
         }
 
@@ -53,7 +53,7 @@ namespace Kernel.Framework.Exceptions
         ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(long index, long range)
-            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String)index + ", Range: " + range)
         {
         }
 
@@ -61,7 +61,7 @@ namespace Kernel.Framework.Exceptions
         ///     Sets the message to "Index out of range exception. Index: 0xXXXXXXXX, Range: 0xXXXXXXXX"
         /// </summary>
         public IndexOutOfRangeException(ulong index, ulong range)
-            : base("Index out of range exception. Index: " + (String) index + ", Range: " + range)
+            : base("Index out of range exception. Index: " + (String)index + ", Range: " + range)
         {
         }
     }

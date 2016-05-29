@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
@@ -113,7 +113,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 // Address = ESP + Offset to field
 
-                if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
                 {
                     //Error - How can we load the address of a field which is no longer on the stack??
                     throw new NotSupportedException(
@@ -237,7 +237,7 @@ namespace Drivers.Compiler.Architectures.x86
             {
                 //Pop object pointer
                 conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "ECX"});
-                if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
                 {
                     conversionState.Append(new ASMOps.Add {Src = offset.ToString(), Dest = "ECX"});
                     conversionState.Append(new Push {Size = OperandSize.Dword, Src = "ECX"});

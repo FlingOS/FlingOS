@@ -134,7 +134,7 @@ namespace Kernel
             //  colour otherwise they wouldn't show at all.
             for (int i = 0; i < str.Length; i++)
             {
-                str[i] |= (char) CurrentAttr;
+                str[i] |= (char)CurrentAttr;
             }
 
             //Return the new blank line.
@@ -208,7 +208,7 @@ namespace Kernel
                     if (CurrentLine > -1)
                     {
                         //Always delete a visible character
-                        ((String) Buffer[CurrentLine])[--CurrentChar] = (char) ((' ' & 0xFF) | CurrentAttr);
+                        ((String)Buffer[CurrentLine])[--CurrentChar] = (char)((' ' & 0xFF) | CurrentAttr);
                     }
                 }
                 //Else if upwards arrow character is found
@@ -239,7 +239,7 @@ namespace Kernel
                         //Strings in the core kernel are stored as 2-byte unicode but we output only ASCII
                         //  so the character must be and'ed with 0xFF to clear the top byte else it would
                         //  interfere with the attribute (colour).
-                        ((String) Buffer[CurrentLine])[CurrentChar++] = (char) ((str[i] & 0xFF) | CurrentAttr);
+                        ((String)Buffer[CurrentLine])[CurrentChar++] = (char)((str[i] & 0xFF) | CurrentAttr);
                     }
                 }
             }
@@ -279,7 +279,7 @@ namespace Kernel
                 // Remove the first line (oldest line - appears at the top
                 //   of the screen if the user scrolls all the way to the top) 
                 //   to create space.
-                line = (String) Buffer[0];
+                line = (String)Buffer[0];
                 Buffer.RemoveAt(0);
 
                 // And make it into a new blank line
@@ -408,15 +408,15 @@ namespace Kernel
         /// <param name="col">The colour to set as the text colour.</param>
         public virtual void Colour(byte col)
         {
-            CurrentAttr = (ushort) ((CurrentAttr & 0x00FF) | (col << 8));
+            CurrentAttr = (ushort)((CurrentAttr & 0x00FF) | (col << 8));
 
-            String str = (String) Buffer[CurrentLine];
+            String str = (String)Buffer[CurrentLine];
 
             //Set the attr of all characters in the rest of the line to
             //  the current colour.
             for (int i = CurrentChar; i < str.Length; i++)
             {
-                str[i] = (char) ((str[i] & 0x00FF) | CurrentAttr);
+                str[i] = (char)((str[i] & 0x00FF) | CurrentAttr);
             }
         }
 

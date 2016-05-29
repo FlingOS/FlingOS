@@ -94,12 +94,6 @@ namespace Kernel.Interrupts
         /// </summary>
         [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] public static ExceptionState* InterruptsExState;
 
-        static Interrupts()
-        {
-            InterruptsExState =
-                (ExceptionState*) Heap.AllocZeroed((uint) sizeof(ExceptionState), "Interrupts : Interrupts()");
-        }
-
         public static bool InsideCriticalHandler
         {
             [NoDebug] [NoGC] get { return insideCriticalHandler; }
@@ -133,6 +127,12 @@ namespace Kernel.Interrupts
                     insideCriticalHandler = false;
                 }
             }
+        }
+
+        static Interrupts()
+        {
+            InterruptsExState =
+                (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "Interrupts : Interrupts()");
         }
 
         [PluggedMethod(ASMFilePath = null)]
@@ -169,7 +169,7 @@ namespace Kernel.Interrupts
                 //Bit mask - set bit indicates IRQ disabled.
                 // We want to enable, so we must clear the corresponding bit.
                 byte mask = IOPort.doRead_Byte(0xA1);
-                byte bitMask = (byte) ~(1u << num);
+                byte bitMask = (byte)~(1u << num);
                 mask &= bitMask;
                 //Port 0xA1 for slave PIC
                 IOPort.doWrite_Byte(0xA1, mask);
@@ -179,7 +179,7 @@ namespace Kernel.Interrupts
             {
                 //See above.
                 byte mask = IOPort.doRead_Byte(0x21);
-                byte bitMask = (byte) ~(1u << num);
+                byte bitMask = (byte)~(1u << num);
                 mask &= bitMask;
                 //Port 0x21 for master PIC
                 IOPort.doWrite_Byte(0x21, mask);
@@ -199,14 +199,14 @@ namespace Kernel.Interrupts
                 num -= 8;
 
                 byte mask = IOPort.doRead_Byte(0xA1);
-                byte bitMask = (byte) (1u << num);
+                byte bitMask = (byte)(1u << num);
                 mask |= bitMask;
                 IOPort.doWrite_Byte(0xA1, mask);
             }
             else
             {
                 byte mask = IOPort.doRead_Byte(0x21);
-                byte bitMask = (byte) (1u << num);
+                byte bitMask = (byte)(1u << num);
                 mask |= bitMask;
                 IOPort.doWrite_Byte(0x21, mask);
             }
@@ -258,8 +258,8 @@ namespace Kernel.Interrupts
                 Process handlerProcess = null;
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    handlerProcess = (Process) ProcessManager.Processes[i];
-                    if (handlerProcess.ISRsToHandle.IsSet((int) ISRNum))
+                    handlerProcess = (Process)ProcessManager.Processes[i];
+                    if (handlerProcess.ISRsToHandle.IsSet((int)ISRNum))
                     {
                         if (handlerProcess.SwitchProcessForISRs && EnableProcessSwitching)
                         {
@@ -282,7 +282,7 @@ namespace Kernel.Interrupts
             {
                 if (switched)
                 {
-                    ProcessManager.SwitchProcess(currProcess.Id, (int) currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
                 }
             }
         }
@@ -300,8 +300,8 @@ namespace Kernel.Interrupts
                 Process handlerProcess = null;
                 for (int i = 0; i < ProcessManager.Processes.Count; i++)
                 {
-                    handlerProcess = (Process) ProcessManager.Processes[i];
-                    if (handlerProcess.IRQsToHandle.IsSet((int) IRQNum))
+                    handlerProcess = (Process)ProcessManager.Processes[i];
+                    if (handlerProcess.IRQsToHandle.IsSet((int)IRQNum))
                     {
                         if (handlerProcess.SwitchProcessForIRQs && EnableProcessSwitching)
                         {
@@ -325,7 +325,7 @@ namespace Kernel.Interrupts
             {
                 if (switched)
                 {
-                    ProcessManager.SwitchProcess(currProcess.Id, (int) currThread.Id);
+                    ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
                 }
 
                 EndIRQ(IRQNum > 7);

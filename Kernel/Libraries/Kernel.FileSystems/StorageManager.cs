@@ -114,7 +114,7 @@ namespace Kernel.FileSystems
                 uint InProcessId;
                 int PipeId = Strg_CmdOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("Storage Manager > Storage command output connected.");
-                Strg_CmdOutPipes.Add((uint) PipeId);
+                Strg_CmdOutPipes.Add((uint)PipeId);
                 SystemCalls.SignalSemaphore(Strg_CmdOutPipesSemaphoreId);
             }
         }
@@ -126,7 +126,7 @@ namespace Kernel.FileSystems
                 uint InProcessId;
                 int PipeId = Strg_DataOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("Storage Manager > Storage data output connected.");
-                Strg_DataOutPipes.Add((uint) PipeId);
+                Strg_DataOutPipes.Add((uint)PipeId);
                 SystemCalls.SignalSemaphore(Strg_DataOutPipesSemaphoreId);
             }
         }
@@ -153,7 +153,7 @@ namespace Kernel.FileSystems
 
                         for (int j = 0; j < Strg_DataInpoints.Count; j++)
                         {
-                            StorageDataInpoint ExistingPipeInfo = (StorageDataInpoint) Strg_DataInpoints[j];
+                            StorageDataInpoint ExistingPipeInfo = (StorageDataInpoint)Strg_DataInpoints[j];
                             if (ExistingPipeInfo.OutProcessId == Descriptor.ProcessId)
                             {
                                 PipeExists = true;
@@ -168,7 +168,7 @@ namespace Kernel.FileSystems
                                 if (SystemCalls.WaitSemaphore(Strg_ConnectSemaphoreId) == SystemCallResults.OK)
                                 {
                                     BasicConsole.WriteLine("Storage Manager > Connecting to: " +
-                                                           (String) Descriptor.ProcessId);
+                                                           (String)Descriptor.ProcessId);
                                     StorageDataInpoint DataIn = new StorageDataInpoint(Descriptor.ProcessId, true);
                                     Strg_DataInpoints.Add(DataIn);
 
@@ -181,7 +181,7 @@ namespace Kernel.FileSystems
                                         if (SystemCalls.WaitSemaphore(Strg_CmdOutPipesSemaphoreId) ==
                                             SystemCallResults.OK)
                                         {
-                                            int CmdPipeId = (int) Strg_CmdOutPipes[Strg_CmdOutPipes.Count - 1];
+                                            int CmdPipeId = (int)Strg_CmdOutPipes[Strg_CmdOutPipes.Count - 1];
 
                                             BasicConsole.WriteLine("Storage Manager > Got command output pipe id.");
 
@@ -189,7 +189,7 @@ namespace Kernel.FileSystems
                                             if (SystemCalls.WaitSemaphore(Strg_DataOutPipesSemaphoreId) ==
                                                 SystemCallResults.OK)
                                             {
-                                                int DataPipeId = (int) Strg_DataOutPipes[Strg_DataOutPipes.Count - 1];
+                                                int DataPipeId = (int)Strg_DataOutPipes[Strg_DataOutPipes.Count - 1];
 
                                                 BasicConsole.WriteLine("Storage Manager > Got data output pipe id.");
 
@@ -239,7 +239,7 @@ namespace Kernel.FileSystems
         {
             for (int i = 0; i < StorageControllers.Count; i++)
             {
-                StorageControllerInfo st = (StorageControllerInfo) StorageControllers[i];
+                StorageControllerInfo st = (StorageControllerInfo)StorageControllers[i];
 
                 Strg_CmdOutpoint.Send_DiskList(st.CmdPipeId);
                 ulong[] DiskIds = st.DataInPipe.ReadDiskInfos(true);
@@ -254,7 +254,7 @@ namespace Kernel.FileSystems
                         if (!DiskIdsBeingManaged.ContainsItemInRange(DiskIds[j], DiskIds[j] + 1))
                         {
                             BasicConsole.WriteLine("Storage Manager > Storage controller is managing disk device: " +
-                                                   (String) DiskIds[j]);
+                                                   (String)DiskIds[j]);
 
                             try
                             {

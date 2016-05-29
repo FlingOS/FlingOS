@@ -686,7 +686,7 @@ namespace Kernel.USB
                 case 0x465:
                     return "Divehi";
                 default:
-                    return "Language code: " + (String) languageId;
+                    return "Language code: " + (String)languageId;
             }
         }
     }

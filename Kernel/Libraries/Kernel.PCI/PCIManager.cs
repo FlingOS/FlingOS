@@ -88,7 +88,7 @@ namespace Kernel.PCI
                 PCIDevice zeroFuncDevice = new PCIDevice(bus, device, 0x00, "Generic PCI Device");
                 if (zeroFuncDevice.DeviceExists)
                 {
-                    uint max = ((uint) zeroFuncDevice.HeaderType & 0x80) != 0 ? 8u : 1u;
+                    uint max = ((uint)zeroFuncDevice.HeaderType & 0x80) != 0 ? 8u : 1u;
 
                     for (uint function = 0; function < max; function++)
                     {
@@ -131,7 +131,7 @@ namespace Kernel.PCI
                 BasicConsole.DelayOutput(5);
 #endif
 
-                EnumerateBus(((PCIDeviceBridge) device).SecondaryBusNumber, step + 1);
+                EnumerateBus(((PCIDeviceBridge)device).SecondaryBusNumber, step + 1);
             }
         }
     }

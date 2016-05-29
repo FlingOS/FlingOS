@@ -57,7 +57,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 4)
             {
-                if ((OpCodes) theOp.opCode.Value == OpCodes.Shr_Un)
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Shr_Un)
                 {
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
@@ -81,7 +81,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             else if (itemA.sizeOnStackInBytes == 8 &&
                      itemB.sizeOnStackInBytes == 8)
             {
-                if ((OpCodes) theOp.opCode.Value == OpCodes.Shr_Un)
+                if ((OpCodes)theOp.opCode.Value == OpCodes.Shr_Un)
                 {
                     conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                     {
@@ -136,7 +136,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
                 //SUPPORT - floats
                 throw new NotSupportedException("Shift right on floats is unsupported!");
             }
-            bool SignedShift = (OpCodes) theOp.opCode.Value != OpCodes.Shr_Un;
+            bool SignedShift = (OpCodes)theOp.opCode.Value != OpCodes.Shr_Un;
 
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)

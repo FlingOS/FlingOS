@@ -48,7 +48,7 @@ namespace Kernel.FileSystems
         {
             RemoteProcessId = ARemoteProcessId;
 
-            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String) RemoteProcessId);
+            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String)RemoteProcessId);
             DataInPipe = new FileDataInpoint(RemoteProcessId, true);
 
             BasicConsole.WriteLine("FileSystemAccessor > Connected.");
@@ -63,12 +63,12 @@ namespace Kernel.FileSystems
                     if (SystemCalls.WaitSemaphore(CmdOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
                         ulong IdPair = CmdOutPipes[position];
-                        if ((uint) (IdPair >> 32) == RemoteProcessId)
+                        if ((uint)(IdPair >> 32) == RemoteProcessId)
                         {
-                            CmdPipeId = (int) (IdPair & 0xFFFFFFFF);
+                            CmdPipeId = (int)(IdPair & 0xFFFFFFFF);
                             Found = true;
                             BasicConsole.WriteLine("FileSystemAccessor > Got command output pipe id. " +
-                                                   (String) CmdPipeId);
+                                                   (String)CmdPipeId);
                         }
                         position++;
                     }
@@ -81,12 +81,12 @@ namespace Kernel.FileSystems
                     if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
                         ulong IdPair = DataOutPipes[position];
-                        if ((uint) (IdPair >> 32) == RemoteProcessId)
+                        if ((uint)(IdPair >> 32) == RemoteProcessId)
                         {
-                            DataOutPipeId = (int) (IdPair & 0xFFFFFFFF);
+                            DataOutPipeId = (int)(IdPair & 0xFFFFFFFF);
                             Found = true;
                             BasicConsole.WriteLine("FileSystemAccessor > Got data output pipe id. " +
-                                                   (String) DataOutPipeId);
+                                                   (String)DataOutPipeId);
                         }
                         position++;
                     }
@@ -103,7 +103,7 @@ namespace Kernel.FileSystems
         {
             RemoteProcessId = ARemoteProcessId;
 
-            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String) RemoteProcessId);
+            BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String)RemoteProcessId);
             DataInPipe = new FileDataInpoint(RemoteProcessId, true);
 
             BasicConsole.WriteLine("FileSystemAccessor > Connected.");
@@ -118,9 +118,9 @@ namespace Kernel.FileSystems
                     if (SystemCalls.WaitSemaphore(CmdOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
                         ulong IdPair = CmdOutPipes[position];
-                        if ((uint) (IdPair >> 32) == RemoteProcessId)
+                        if ((uint)(IdPair >> 32) == RemoteProcessId)
                         {
-                            CmdPipeId = (int) (IdPair & 0xFFFFFFFF);
+                            CmdPipeId = (int)(IdPair & 0xFFFFFFFF);
                         }
                         position++;
 
@@ -133,9 +133,9 @@ namespace Kernel.FileSystems
                 if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
                 {
                     ulong IdPair = DataOutPipes[position];
-                    if ((uint) (IdPair >> 32) == RemoteProcessId)
+                    if ((uint)(IdPair >> 32) == RemoteProcessId)
                     {
-                        DataOutPipeId = (int) (IdPair & 0xFFFFFFFF);
+                        DataOutPipeId = (int)(IdPair & 0xFFFFFFFF);
                     }
                     position++;
 
@@ -180,7 +180,7 @@ namespace Kernel.FileSystems
             List Listings = ListDir(Path);
             for (int k = 0; k < Listings.Count; k++)
             {
-                String Name = (String) Listings[k];
+                String Name = (String)Listings[k];
                 BasicConsole.Write(Name);
                 if (k < Listings.Count - 1)
                 {
@@ -244,7 +244,7 @@ namespace Kernel.FileSystems
                 uint InProcessId;
                 int PipeId = CmdOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("FileSystemAccessor > Storage command output connected.");
-                CmdOutPipes.Add(((ulong) InProcessId << 32) | (uint) PipeId);
+                CmdOutPipes.Add(((ulong)InProcessId << 32) | (uint)PipeId);
                 SystemCalls.SignalSemaphore(CmdOutPipesSemaphoreId);
             }
         }
@@ -256,7 +256,7 @@ namespace Kernel.FileSystems
                 uint InProcessId;
                 int PipeId = DataOutpoint.WaitForConnect(out InProcessId);
                 BasicConsole.WriteLine("FileSystemAccessor > Storage data output connected.");
-                DataOutPipes.Add(((ulong) InProcessId << 32) | (uint) PipeId);
+                DataOutPipes.Add(((ulong)InProcessId << 32) | (uint)PipeId);
                 SystemCalls.SignalSemaphore(DataOutPipesSemaphoreId);
             }
         }

@@ -69,7 +69,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
         {
             //Get the index of the argument to load
             short index = 0;
-            switch ((OpCodes) theOp.opCode.Value)
+            switch ((OpCodes)theOp.opCode.Value)
             {
                 case OpCodes.Starg:
                     index = Utilities.ReadInt16(theOp.ValueBytes, 0);
@@ -108,7 +108,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
             //Get the return type
             Type retType = conversionState.Input.TheMethodInfo.IsConstructor
                 ? typeof(void)
-                : ((MethodInfo) conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
+                : ((MethodInfo)conversionState.Input.TheMethodInfo.UnderlyingInfo).ReturnType;
             //Get the size of the return type
             int retSize = conversionState.TheILLibrary.GetTypeInfo(retType).SizeOnStackInBytes;
             //Add it to $fp offset

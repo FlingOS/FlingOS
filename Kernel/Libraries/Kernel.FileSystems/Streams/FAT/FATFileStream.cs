@@ -69,6 +69,38 @@ namespace Kernel.FileSystems.Streams.FAT
         private uint ReadClusterSize;
 
         /// <summary>
+        ///     The FAT file system to which the file the stream is for belongs.
+        /// </summary>
+        public FATFileSystem TheFATFileSystem
+        {
+            get { return (FATFileSystem)TheFile.TheFileSystem; }
+        }
+
+        /// <summary>
+        ///     The FAT file the stream is for.
+        /// </summary>
+        public FATFile TheFATFile
+        {
+            get { return (FATFile)TheFile; }
+        }
+
+        /// <summary>
+        ///     Gets or sets the position (as an offset from the start of the file) of the stream in the file.
+        /// </summary>
+        public override long Position
+        {
+            get { return (long)position; }
+            set
+            {
+                if (value < 0L)
+                {
+                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Position value must be > 0!"));
+                }
+                position = (ulong)value;
+            }
+        }
+
+        /// <summary>
         ///     Initializes a new FAT file stream for the specified file.
         /// </summary>
         /// <param name="aFile">The file to create a stream to.</param>
@@ -84,38 +116,6 @@ namespace Kernel.FileSystems.Streams.FAT
             }
 
             GetClusterNums();
-        }
-
-        /// <summary>
-        ///     The FAT file system to which the file the stream is for belongs.
-        /// </summary>
-        public FATFileSystem TheFATFileSystem
-        {
-            get { return (FATFileSystem) TheFile.TheFileSystem; }
-        }
-
-        /// <summary>
-        ///     The FAT file the stream is for.
-        /// </summary>
-        public FATFile TheFATFile
-        {
-            get { return (FATFile) TheFile; }
-        }
-
-        /// <summary>
-        ///     Gets or sets the position (as an offset from the start of the file) of the stream in the file.
-        /// </summary>
-        public override long Position
-        {
-            get { return (long) position; }
-            set
-            {
-                if (value < 0L)
-                {
-                    ExceptionMethods.Throw(new ArgumentException("FATFileStream.Position value must be > 0!"));
-                }
-                position = (ulong) value;
-            }
         }
 
         /// <summary>
@@ -139,13 +139,14 @@ namespace Kernel.FileSystems.Streams.FAT
 
                 if (ClusterNums == null)
                 {
-                    ExceptionMethods.Throw(new NullReferenceException("ClusterNums still null! GetClusterNums must have failed."));
+                    ExceptionMethods.Throw(
+                        new NullReferenceException("ClusterNums still null! GetClusterNums must have failed."));
                 }
                 else
                 {
                     //We have assumed at this point that GetClusterNums worked. If it didn't,
                     //  then ClusterNums will be null and we will have a serious problem! :)
-                    return (uint) ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
+                    return (uint)ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
                 }
             }
             return TheFile.Size;
@@ -192,7 +193,7 @@ namespace Kernel.FileSystems.Streams.FAT
                     }
                 }
 
-                FATFileSystem TheFS = (FATFileSystem) TheFile.TheFileSystem;
+                FATFileSystem TheFS = (FATFileSystem)TheFile.TheFileSystem;
 
 #if FATFileStream_TRACE
                 BasicConsole.WriteLine("Checking params...");
@@ -234,14 +235,14 @@ namespace Kernel.FileSystems.Streams.FAT
                 ulong FileSize = 0;
                 if (IgnoreFileSize)
                 {
-                    FileSize = (ulong) ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
+                    FileSize = (ulong)ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
                 }
                 else
                 {
                     FileSize = TheFile.Size;
                 }
                 ulong MaxReadableBytes = FileSize - position;
-                ulong ActualCount = (ulong) count;
+                ulong ActualCount = (ulong)count;
                 if (ActualCount > MaxReadableBytes)
                 {
                     ActualCount = MaxReadableBytes;
@@ -263,14 +264,14 @@ namespace Kernel.FileSystems.Streams.FAT
 
                 while (ActualCount > 0)
                 {
-                    uint NumClustersToRead = (uint) ActualCount/ReadClusterSize;
-                    if ((uint) ActualCount%ReadClusterSize != 0)
+                    uint NumClustersToRead = (uint)ActualCount/ReadClusterSize;
+                    if ((uint)ActualCount%ReadClusterSize != 0)
                     {
                         NumClustersToRead++;
                     }
 
-                    uint StartPosition = (uint) position;
-                    int StartClusterIdx = (int) (StartPosition/ReadClusterSize);
+                    uint StartPosition = (uint)position;
+                    int StartClusterIdx = (int)(StartPosition/ReadClusterSize);
                     uint StartClusterNum = ClusterNums[StartClusterIdx];
 
                     uint ContiguousClusters = 1;
@@ -299,14 +300,14 @@ namespace Kernel.FileSystems.Streams.FAT
                     }
                     if (ReadSize > ActualCount)
                     {
-                        ReadSize = (uint) ActualCount;
+                        ReadSize = (uint)ActualCount;
                     }
-                    Array.Copy(ReadClusterBuffer, (int) StartClusterOffset, buffer, offset, (int) ReadSize);
+                    Array.Copy(ReadClusterBuffer, (int)StartClusterOffset, buffer, offset, (int)ReadSize);
 
                     position += ReadSize;
-                    offset += (int) ReadSize;
+                    offset += (int)ReadSize;
                     ActualCount -= ReadSize;
-                    read += (int) ReadSize;
+                    read += (int)ReadSize;
                 }
 
                 return read;
@@ -341,7 +342,7 @@ namespace Kernel.FileSystems.Streams.FAT
 
             //BasicConsole.WriteLine("Checks passed.");
 
-            FATFileSystem mFS = (FATFileSystem) TheFile.TheFileSystem;
+            FATFileSystem mFS = (FATFileSystem)TheFile.TheFileSystem;
             FATFile mFile = TheFATFile;
 
             if (ClusterNums == null)
@@ -367,8 +368,8 @@ namespace Kernel.FileSystems.Streams.FAT
 
             while (count > 0)
             {
-                uint clusterIdx = (uint) position/xClusterSize;
-                uint posInCluster = (uint) position%xClusterSize;
+                uint clusterIdx = (uint)position/xClusterSize;
+                uint posInCluster = (uint)position%xClusterSize;
 
                 bool newCluster = false;
                 while (clusterIdx >= ClusterNums.Count)
@@ -396,7 +397,7 @@ namespace Kernel.FileSystems.Streams.FAT
                 {
                     //BasicConsole.WriteLine("Reading existing data...");
 
-                    mFS.ReadClusters(ClusterNums[(int) clusterIdx], 1, writeBuffer);
+                    mFS.ReadClusters(ClusterNums[(int)clusterIdx], 1, writeBuffer);
 
                     //BasicConsole.WriteLine("Read existing data.");
                 }
@@ -404,18 +405,18 @@ namespace Kernel.FileSystems.Streams.FAT
                 //BasicConsole.WriteLine("Calculating write size...");
                 int writeSize = count < xClusterSize - posInCluster
                     ? count
-                    : (int) (xClusterSize - posInCluster);
+                    : (int)(xClusterSize - posInCluster);
                 //BasicConsole.WriteLine("Calculated write size. Copying data to write...");
-                Array.Copy(buffer, offset, writeBuffer, (int) posInCluster, writeSize);
+                Array.Copy(buffer, offset, writeBuffer, (int)posInCluster, writeSize);
                 //BasicConsole.WriteLine("Data copied. Writing data to disk...");
 
-                mFS.WriteCluster(ClusterNums[(int) clusterIdx], writeBuffer);
+                mFS.WriteCluster(ClusterNums[(int)clusterIdx], writeBuffer);
 
                 //BasicConsole.WriteLine("Written data.");
 
                 count -= writeSize;
                 offset += writeSize;
-                position += (uint) writeSize;
+                position += (uint)writeSize;
             }
 
             mFS.CleanDiskCaches();

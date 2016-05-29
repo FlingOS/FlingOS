@@ -50,7 +50,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             StackItem objPointer = conversionState.CurrentStackFrame.GetStack(theOp).Pop();
 
-            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
             {
                 conversionState.CurrentStackFrame.GetStack(theOp).Push(new StackItem
                 {
@@ -111,7 +111,7 @@ namespace Drivers.Compiler.Architectures.MIPS32
 
             //Pop object pointer
             conversionState.Append(new ASMOps.Pop {Size = OperandSize.Word, Dest = "$t2"});
-            if ((OpCodes) theOp.opCode.Value == OpCodes.Ldflda)
+            if ((OpCodes)theOp.opCode.Value == OpCodes.Ldflda)
             {
                 conversionState.Append(new ASMOps.Add {Src1 = "$t2", Src2 = offset.ToString(), Dest = "$t2"});
                 conversionState.Append(new Push {Size = OperandSize.Word, Src = "$t2"});

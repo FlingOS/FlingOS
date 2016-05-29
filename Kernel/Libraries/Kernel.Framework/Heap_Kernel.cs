@@ -77,7 +77,7 @@ namespace Kernel.Framework
             {
                 Heap.InitForKernel();
 
-                HeapBlock* heapPtr = (HeapBlock*) GetFixedHeapPtr();
+                HeapBlock* heapPtr = (HeapBlock*)GetFixedHeapPtr();
                 Heap.InitBlock(heapPtr, GetFixedHeapSize(), 32);
                 Heap.AddBlock(heapPtr);
 

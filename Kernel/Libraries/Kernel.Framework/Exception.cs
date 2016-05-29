@@ -39,22 +39,6 @@ namespace Kernel.Framework
         protected String message;
 
         /// <summary>
-        ///     Creates a new, empty exception.
-        /// </summary>
-        public Exception()
-        {
-        }
-
-        /// <summary>
-        ///     Creates a new exception with specified message.
-        /// </summary>
-        /// <param name="aMessage">The exception message.</param>
-        public Exception(String aMessage)
-        {
-            Message = aMessage;
-        }
-
-        /// <summary>
         ///     The exception message.
         /// </summary>
         public String Message
@@ -69,6 +53,22 @@ namespace Kernel.Framework
                 return message + "\nInstruction address: " + InstructionAddress;
             }
             set { message = value; }
+        }
+
+        /// <summary>
+        ///     Creates a new, empty exception.
+        /// </summary>
+        public Exception()
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new exception with specified message.
+        /// </summary>
+        /// <param name="aMessage">The exception message.</param>
+        public Exception(String aMessage)
+        {
+            Message = aMessage;
         }
     }
 }

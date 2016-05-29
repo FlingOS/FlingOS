@@ -47,10 +47,10 @@ namespace Kernel.USB
             OutputMessage("USBTests : Test_LongRead", "Searching for USB device...");
             for (int i = 0; i < USBManager.Devices.Count; i++)
             {
-                Device ADevice = (Device) USBManager.Devices[i];
+                Device ADevice = (Device)USBManager.Devices[i];
                 if (ADevice is MassStorageDevice_DiskDevice)
                 {
-                    TestDevice = (MassStorageDevice_DiskDevice) ADevice;
+                    TestDevice = (MassStorageDevice_DiskDevice)ADevice;
                     break;
                 }
             }
@@ -65,7 +65,7 @@ namespace Kernel.USB
 
             // Create a buffer for storing up to 16 blocks of data
             OutputMessage("USBTests : Test_LongRead", "Creating data buffer...");
-            byte[] buffer = new byte[32*(int) (uint) TestDevice.BlockSize];
+            byte[] buffer = new byte[32*(int)(uint)TestDevice.BlockSize];
             OutputMessage("USBTests : Test_LongRead", "done.");
 
             try

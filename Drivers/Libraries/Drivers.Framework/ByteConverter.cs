@@ -46,7 +46,7 @@ namespace Drivers.Framework
         [NoGC]
         public static ushort ToUInt16(byte[] n, uint aPos)
         {
-            return (ushort) (n[aPos + 1] << 8 | n[aPos]);
+            return (ushort)(n[aPos + 1] << 8 | n[aPos]);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Drivers.Framework
         [NoGC]
         public static uint ToUInt32(byte[] n, uint aPos)
         {
-            return (uint) n[aPos + 3] << 24 | (uint) n[aPos + 2] << 16 |
-                   (uint) n[aPos + 1] << 8 | n[aPos];
+            return (uint)n[aPos + 3] << 24 | (uint)n[aPos + 2] << 16 |
+                   (uint)n[aPos + 1] << 8 | n[aPos];
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace Drivers.Framework
         [NoGC]
         public static ulong ToUInt64(byte[] n, uint aPos)
         {
-            return (ulong) n[aPos + 7] << 54 | (ulong) n[aPos + 6] << 48 |
-                   (ulong) n[aPos + 5] << 40 | (ulong) n[aPos + 4] << 32 |
-                   (ulong) n[aPos + 3] << 24 | (ulong) n[aPos + 2] << 16 |
-                   (ulong) n[aPos + 1] << 8 | n[aPos];
+            return (ulong)n[aPos + 7] << 54 | (ulong)n[aPos + 6] << 48 |
+                   (ulong)n[aPos + 5] << 40 | (ulong)n[aPos + 4] << 32 |
+                   (ulong)n[aPos + 3] << 24 | (ulong)n[aPos + 2] << 16 |
+                   (ulong)n[aPos + 1] << 8 | n[aPos];
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Drivers.Framework
             byte[] result = new byte[asciiString.length];
             for (int i = 0; i < asciiString.length; i++)
             {
-                result[i] = (byte) asciiString[i];
+                result[i] = (byte)asciiString[i];
             }
             return result;
         }
@@ -122,8 +122,8 @@ namespace Drivers.Framework
             }
             for (int i = offset, j = 0; i < endIndex; i++, j += 2)
             {
-                result[j] = (byte) asciiString[i];
-                result[j + 1] = (byte) (asciiString[i] >> 8);
+                result[j] = (byte)asciiString[i];
+                result[j + 1] = (byte)(asciiString[i] >> 8);
             }
             return result;
         }
@@ -151,7 +151,7 @@ namespace Drivers.Framework
                 aCharCount = i - aStart;
             }
 
-            String result = String.New((int) aCharCount);
+            String result = String.New((int)aCharCount);
 
             if (result == null)
             {
@@ -161,13 +161,13 @@ namespace Drivers.Framework
             {
                 for (int i = 0; i < aCharCount && i + aStart < n.Length; i++)
                 {
-                    uint pos = (uint) (aStart + i);
+                    uint pos = (uint)(aStart + i);
                     ushort aChar = n[pos];
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char) aChar;
+                    result[i] = (char)aChar;
                 }
             }
 
@@ -197,7 +197,7 @@ namespace Drivers.Framework
                 aCharCount = i - aStart;
             }
 
-            String result = String.New((int) aCharCount);
+            String result = String.New((int)aCharCount);
 
             if (result == null)
             {
@@ -207,13 +207,13 @@ namespace Drivers.Framework
             {
                 for (int i = 0; i < aCharCount; i++)
                 {
-                    uint pos = (uint) (aStart + i);
+                    uint pos = (uint)(aStart + i);
                     ushort aChar = n[pos];
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char) aChar;
+                    result[i] = (char)aChar;
                 }
             }
 
@@ -248,7 +248,7 @@ namespace Drivers.Framework
                 aCharCount = (i - aStart)/2;
             }
 
-            String result = String.New((int) aCharCount);
+            String result = String.New((int)aCharCount);
 
             if (result == null)
             {
@@ -258,13 +258,13 @@ namespace Drivers.Framework
             {
                 for (int i = 0; i < aCharCount && i*2 + aStart + 1 < n.Length; i++)
                 {
-                    uint pos = (uint) (aStart + i*2);
-                    ushort aChar = (ushort) (n[pos + 1] << 8 | n[pos]);
+                    uint pos = (uint)(aStart + i*2);
+                    ushort aChar = (ushort)(n[pos + 1] << 8 | n[pos]);
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char) aChar;
+                    result[i] = (char)aChar;
                 }
             }
             return result;
@@ -297,7 +297,7 @@ namespace Drivers.Framework
                 aCharCount = (i - aStart)/2;
             }
 
-            String result = String.New((int) aCharCount);
+            String result = String.New((int)aCharCount);
 
             if (result == null)
             {
@@ -307,13 +307,13 @@ namespace Drivers.Framework
             {
                 for (int i = 0; i < aCharCount; i++)
                 {
-                    uint pos = (uint) (aStart + i*2);
-                    ushort aChar = (ushort) (n[pos + 1] << 8 | n[pos]);
+                    uint pos = (uint)(aStart + i*2);
+                    ushort aChar = (ushort)(n[pos + 1] << 8 | n[pos]);
                     if (aChar == 0)
                     {
                         return result.Substring(0, i);
                     }
-                    result[i] = (char) aChar;
+                    result[i] = (char)aChar;
                 }
             }
 

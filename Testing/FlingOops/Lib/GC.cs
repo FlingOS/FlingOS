@@ -54,28 +54,6 @@ namespace FlingOops
         private static GCState state;
         private static GCState kernel_state;
 
-        /// <summary>
-        ///     Initialises the GC.
-        /// </summary>
-        [NoDebug]
-        [NoGC]
-        static GC()
-        {
-            Heap.InitFixedHeap();
-
-            ExceptionMethods.state =
-                ExceptionMethods.kernel_state =
-                    (ExceptionState*) Heap.AllocZeroed((uint) sizeof(ExceptionState), "GC()");
-
-            Enabled = true;
-
-            GCState newState1 = new GCState();
-            kernel_state = newState1;
-
-            GCState newState2 = new GCState();
-            state = newState2;
-        }
-
         public static GCState State
         {
             [NoDebug]
@@ -284,6 +262,28 @@ namespace FlingOops
             }
         }
 
+        /// <summary>
+        ///     Initialises the GC.
+        /// </summary>
+        [NoDebug]
+        [NoGC]
+        static GC()
+        {
+            Heap.InitFixedHeap();
+
+            ExceptionMethods.state =
+                ExceptionMethods.kernel_state =
+                    (ExceptionState*)Heap.AllocZeroed((uint)sizeof(ExceptionState), "GC()");
+
+            Enabled = true;
+
+            GCState newState1 = new GCState();
+            kernel_state = newState1;
+
+            GCState newState2 = new GCState();
+            state = newState2;
+        }
+
         [NoDebug]
         [NoGC]
         public static void Enable(String caller)
@@ -343,11 +343,11 @@ namespace FlingOops
             //Alloc space for new object
 
             uint totalSize = theType.Size;
-            totalSize += (uint) sizeof(GCHeader);
+            totalSize += (uint)sizeof(GCHeader);
 
-            GCHeader* newObjPtr = (GCHeader*) Heap.AllocZeroed(totalSize, "GC : NewObject");
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewObject");
 
-            if ((uint) newObjPtr == 0)
+            if ((uint)newObjPtr == 0)
             {
                 InsideGC = false;
 
@@ -364,13 +364,13 @@ namespace FlingOops
             newObjPtr->RefCount = 1;
 
             //Initialise the object _Type field
-            Object newObj = (Object) ObjectUtilities.GetObject(newObjPtr + 1);
+            Object newObj = (Object)ObjectUtilities.GetObject(newObjPtr + 1);
             newObj._type = theType;
 
             NumObjs++;
 
             //Move past GCHeader
-            byte* newObjBytePtr = (byte*) (newObjPtr + 1);
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
 
             InsideGC = false;
 
@@ -428,20 +428,20 @@ namespace FlingOops
             //Alloc space for new array object
             //Alloc space for new array elems
 
-            uint totalSize = ((Type) typeof(Array)).Size;
+            uint totalSize = ((Type)typeof(Array)).Size;
             if (elemType.IsValueType)
             {
-                totalSize += elemType.Size*(uint) length;
+                totalSize += elemType.Size*(uint)length;
             }
             else
             {
-                totalSize += elemType.StackSize*(uint) length;
+                totalSize += elemType.StackSize*(uint)length;
             }
-            totalSize += (uint) sizeof(GCHeader);
+            totalSize += (uint)sizeof(GCHeader);
 
-            GCHeader* newObjPtr = (GCHeader*) Heap.AllocZeroed(totalSize, "GC : NewArray");
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewArray");
 
-            if ((uint) newObjPtr == 0)
+            if ((uint)newObjPtr == 0)
             {
                 InsideGC = false;
 
@@ -459,13 +459,13 @@ namespace FlingOops
             SetSignature(newObjPtr);
             newObjPtr->RefCount = 1;
 
-            Array newArr = (Array) ObjectUtilities.GetObject(newObjPtr + 1);
-            newArr._type = (Type) typeof(Array);
+            Array newArr = (Array)ObjectUtilities.GetObject(newObjPtr + 1);
+            newArr._type = (Type)typeof(Array);
             newArr.length = length;
             newArr.elemType = elemType;
 
             //Move past GCHeader
-            byte* newObjBytePtr = (byte*) (newObjPtr + 1);
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
 
             InsideGC = false;
 
@@ -518,13 +518,13 @@ namespace FlingOops
             //Alloc space for new string object
             //Alloc space for new string chars
 
-            uint totalSize = ((Type) typeof(String)).Size;
-            totalSize += /*char size in bytes*/ 2*(uint) length;
-            totalSize += (uint) sizeof(GCHeader);
+            uint totalSize = ((Type)typeof(String)).Size;
+            totalSize += /*char size in bytes*/ 2*(uint)length;
+            totalSize += (uint)sizeof(GCHeader);
 
-            GCHeader* newObjPtr = (GCHeader*) Heap.AllocZeroed(totalSize, "GC : NewString");
+            GCHeader* newObjPtr = (GCHeader*)Heap.AllocZeroed(totalSize, "GC : NewString");
 
-            if ((uint) newObjPtr == 0)
+            if ((uint)newObjPtr == 0)
             {
                 InsideGC = false;
 
@@ -551,12 +551,12 @@ namespace FlingOops
 
             newObjPtr->RefCount = 0;
 
-            String newStr = (String) ObjectUtilities.GetObject(newObjPtr + 1);
-            newStr._type = (Type) typeof(String);
+            String newStr = (String)ObjectUtilities.GetObject(newObjPtr + 1);
+            newStr._type = (Type)typeof(String);
             newStr.length = length;
 
             //Move past GCHeader
-            byte* newObjBytePtr = (byte*) (newObjPtr + 1);
+            byte* newObjBytePtr = (byte*)(newObjPtr + 1);
 
             InsideGC = false;
 
@@ -582,7 +582,7 @@ namespace FlingOops
 
             InsideGC = true;
 
-            byte* objPtr = (byte*) ObjectUtilities.GetHandle(anObj);
+            byte* objPtr = (byte*)ObjectUtilities.GetHandle(anObj);
             _IncrementRefCount(objPtr);
 
             InsideGC = false;
@@ -600,18 +600,18 @@ namespace FlingOops
         [NoGC]
         public static void _IncrementRefCount(byte* objPtr)
         {
-            if ((uint) objPtr < (uint) sizeof(GCHeader))
+            if ((uint)objPtr < (uint)sizeof(GCHeader))
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't increment ref count of an object in low memory.");
 
-                uint* basePtr = (uint*) ExceptionMethods.BasePointer;
+                uint* basePtr = (uint*)ExceptionMethods.BasePointer;
                 // Go up the linked-list of stack frames to (hopefully) the outermost caller
-                basePtr = (uint*) *basePtr; // Frame of IncrementRefCount(x)
+                basePtr = (uint*)*basePtr; // Frame of IncrementRefCount(x)
                 uint retAddr = *(basePtr + 1); // Caller of IncrementRefCount(x)
-                basePtr = (uint*) *basePtr; // Frame of caller of IncrementRefCount(x)
+                basePtr = (uint*)*basePtr; // Frame of caller of IncrementRefCount(x)
                 uint ret2Addr = *(basePtr + 1); // Caller of caller of IncrementRefCount(x)
-                uint objAddr = (uint) objPtr;
+                uint objAddr = (uint)objPtr;
                 String msgStr = "Caller: 0x        , Object: 0x        , PCaller: 0x        ";
                 // Object: 37
                 // Caller: 17
@@ -626,13 +626,13 @@ namespace FlingOops
             }
 
             objPtr -= sizeof(GCHeader);
-            GCHeader* gcHeaderPtr = (GCHeader*) objPtr;
+            GCHeader* gcHeaderPtr = (GCHeader*)objPtr;
             if (CheckSignature(gcHeaderPtr))
             {
                 if (gcHeaderPtr->CleanedUp)
                 {
                     BasicConsole.WriteLine("Oops...Incrementing ref count of cleaned up object!");
-                    BasicConsole.WriteLine(((Object) ObjectUtilities.GetObject(gcHeaderPtr + 1))._Type.Signature);
+                    BasicConsole.WriteLine(((Object)ObjectUtilities.GetObject(gcHeaderPtr + 1))._Type.Signature);
                 }
 
                 gcHeaderPtr->RefCount++;
@@ -683,7 +683,7 @@ namespace FlingOops
                 InsideGC = true;
             }
 
-            byte* objPtr = (byte*) ObjectUtilities.GetHandle(anObj);
+            byte* objPtr = (byte*)ObjectUtilities.GetHandle(anObj);
             _DecrementRefCount(objPtr);
 
             if (!overrideInside)
@@ -704,17 +704,17 @@ namespace FlingOops
         [NoGC]
         public static void _DecrementRefCount(byte* objPtr)
         {
-            if ((uint) objPtr < (uint) sizeof(GCHeader))
+            if ((uint)objPtr < (uint)sizeof(GCHeader))
             {
                 BasicConsole.SetTextColour(BasicConsole.error_colour);
                 BasicConsole.WriteLine("Error! GC can't decrement ref count of an object in low memory.");
 
-                uint* basePtr = (uint*) ExceptionMethods.BasePointer;
+                uint* basePtr = (uint*)ExceptionMethods.BasePointer;
                 // Go up the linked-list of stack frames to (hopefully) the outermost caller
-                basePtr = (uint*) *basePtr; // DecrementRefCount(x, y)
-                basePtr = (uint*) *basePtr; // DecrementRefCount(x)
+                basePtr = (uint*)*basePtr; // DecrementRefCount(x, y)
+                basePtr = (uint*)*basePtr; // DecrementRefCount(x)
                 uint retAddr = *(basePtr + 1);
-                uint objAddr = (uint) objPtr;
+                uint objAddr = (uint)objPtr;
                 String msgStr = "Caller: 0x        , Object: 0x        ";
                 // Object: 37
                 // Caller: 17
@@ -730,7 +730,7 @@ namespace FlingOops
             {
                 BasicConsole.WriteLine("GC-DP: 1");
             }
-            GCHeader* gcHeaderPtr = (GCHeader*) (objPtr - sizeof(GCHeader));
+            GCHeader* gcHeaderPtr = (GCHeader*)(objPtr - sizeof(GCHeader));
             if (OutputTrace)
             {
                 BasicConsole.WriteLine("GC-DP: 2");
@@ -755,14 +755,14 @@ namespace FlingOops
                         BasicConsole.WriteLine("Object ref count hit zero.");
                     }
 #endif
-                    Object obj = (Object) ObjectUtilities.GetObject(objPtr);
+                    Object obj = (Object)ObjectUtilities.GetObject(objPtr);
                     if (obj is Array)
                     {
                         //Decrement ref count of elements
-                        Array arr = (Array) obj;
+                        Array arr = (Array)obj;
                         if (!arr.elemType.IsValueType)
                         {
-                            Object[] objArr = (Object[]) ObjectUtilities.GetObject(objPtr);
+                            Object[] objArr = (Object[])ObjectUtilities.GetObject(objPtr);
                             for (int i = 0; i < arr.length; i++)
                             {
                                 DecrementRefCount(objArr[i], true);
@@ -777,12 +777,12 @@ namespace FlingOops
                     {
                         if (FieldInfoPtr->Size > 0)
                         {
-                            Type fieldType = (Type) ObjectUtilities.GetObject(FieldInfoPtr->FieldType);
+                            Type fieldType = (Type)ObjectUtilities.GetObject(FieldInfoPtr->FieldType);
                             if (!fieldType.IsValueType &&
                                 !fieldType.IsPointer)
                             {
                                 byte* fieldPtr = objPtr + FieldInfoPtr->Offset;
-                                Object theFieldObj = (Object) ObjectUtilities.GetObject(fieldPtr);
+                                Object theFieldObj = (Object)ObjectUtilities.GetObject(fieldPtr);
 
                                 DecrementRefCount(theFieldObj, true);
 
@@ -799,7 +799,7 @@ namespace FlingOops
 
                         if (FieldInfoPtr->Size == 0)
                         {
-                            FieldInfoPtr = (FieldInfo*) FieldInfoPtr->FieldType;
+                            FieldInfoPtr = (FieldInfo*)FieldInfoPtr->FieldType;
                         }
                     }
 
@@ -886,8 +886,8 @@ namespace FlingOops
 
                     String str1 = " > Item: 0x        ";
                     String str2 = " > Prev: 0x        ";
-                    ExceptionMethods.FillString((uint) currObjToCleanupPtr, 18, str1);
-                    ExceptionMethods.FillString((uint) currObjToCleanupPtr->prevPtr, 18, str2);
+                    ExceptionMethods.FillString((uint)currObjToCleanupPtr, 18, str1);
+                    ExceptionMethods.FillString((uint)currObjToCleanupPtr->prevPtr, 18, str2);
                     BasicConsole.WriteLine(str1);
                     BasicConsole.WriteLine(str2);
                 }
@@ -909,7 +909,7 @@ namespace FlingOops
                         BasicConsole.WriteLine("   > Ref count zero or lower.");
                     }
 
-                    Object obj = (Object) ObjectUtilities.GetObject(objPtr);
+                    Object obj = (Object)ObjectUtilities.GetObject(objPtr);
 
                     if (OutputTrace)
                     {
@@ -921,7 +921,7 @@ namespace FlingOops
                         if (OutputTrace)
                         {
                             BasicConsole.WriteLine("   > (It's a string).");
-                            BasicConsole.WriteLine((String) obj);
+                            BasicConsole.WriteLine((String)obj);
                         }
 
                         NumStrings--;
@@ -997,9 +997,9 @@ namespace FlingOops
             int numObjsFreed = startNumObjs - NumObjs;
             int numStringsFreed = startNumStrings - NumStrings;
             BasicConsole.SetTextColour(BasicConsole.warning_colour);
-            BasicConsole.WriteLine((String) "Freed objects: " + numObjsFreed);
-            BasicConsole.WriteLine((String) "Freed strings: " + numStringsFreed);
-            BasicConsole.WriteLine((String) "Used memory  : " + Heap.FBlock->used*Heap.FBlock->bsize + " / " +
+            BasicConsole.WriteLine((String)"Freed objects: " + numObjsFreed);
+            BasicConsole.WriteLine((String)"Freed strings: " + numStringsFreed);
+            BasicConsole.WriteLine((String)"Used memory  : " + Heap.FBlock->used*Heap.FBlock->bsize + " / " +
                                    Heap.FBlock->size);
             BasicConsole.DelayOutput(2);
             BasicConsole.SetTextColour(BasicConsole.default_colour);
@@ -1017,7 +1017,7 @@ namespace FlingOops
             objHeaderPtr->OnCleanupList = true;
 
             ObjectToCleanup* newObjToCleanupPtr =
-                (ObjectToCleanup*) Heap.AllocZeroed((uint) sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
+                (ObjectToCleanup*)Heap.AllocZeroed((uint)sizeof(ObjectToCleanup), "GC : AddObjectToCleanup");
             newObjToCleanupPtr->objHeaderPtr = objHeaderPtr;
             newObjToCleanupPtr->objPtr = objPtr;
 

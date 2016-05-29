@@ -46,20 +46,20 @@ namespace Kernel.FileSystems.Streams
         protected File theFile;
 
         /// <summary>
+        ///     The file which the stream reads/writes from/to.
+        /// </summary>
+        public File TheFile
+        {
+            get { return theFile; }
+        }
+
+        /// <summary>
         ///     Initializes a new file stream for the specified file.
         /// </summary>
         /// <param name="aFile">The file which the file stream is reading from.</param>
         public FileStream(File aFile)
         {
             theFile = aFile;
-        }
-
-        /// <summary>
-        ///     The file which the stream reads/writes from/to.
-        /// </summary>
-        public File TheFile
-        {
-            get { return theFile; }
         }
 
         /// <summary>
@@ -74,11 +74,11 @@ namespace Kernel.FileSystems.Streams
             //TODO: Change this to a factory pattern or something
             if (aFile is FATFile)
             {
-                return new FATFileStream((FATFile) aFile, false);
+                return new FATFileStream((FATFile)aFile, false);
             }
             if (aFile is ISO9660File)
             {
-                return new ISO9660FileStream((ISO9660File) aFile);
+                return new ISO9660FileStream((ISO9660File)aFile);
             }
             return null;
         }

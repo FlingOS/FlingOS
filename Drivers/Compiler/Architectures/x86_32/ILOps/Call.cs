@@ -49,7 +49,7 @@ namespace Drivers.Compiler.Architectures.x86
 
             if (methodToCall is System.Reflection.MethodInfo)
             {
-                Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                Type retType = ((System.Reflection.MethodInfo)methodToCall).ReturnType;
                 TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                 StackItem returnItem = new StackItem
                 {
@@ -61,7 +61,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                 int bytesToAdd = 0;
                 List<Type> allParams =
-                    ((System.Reflection.MethodInfo) methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    ((System.Reflection.MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
                 if (!methodToCall.IsStatic)
                 {
                     allParams.Insert(0, methodToCall.DeclaringType);
@@ -86,7 +86,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else if (methodToCall is ConstructorInfo)
             {
-                ConstructorInfo aConstructor = (ConstructorInfo) methodToCall;
+                ConstructorInfo aConstructor = (ConstructorInfo)methodToCall;
                 if (aConstructor.IsStatic)
                 {
                     //Static constructors do not have parameters or return values
@@ -124,7 +124,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (methodToCall is System.Reflection.MethodInfo)
             {
                 //Allocate space on the stack for the return value as necessary
-                Type retType = ((System.Reflection.MethodInfo) methodToCall).ReturnType;
+                Type retType = ((System.Reflection.MethodInfo)methodToCall).ReturnType;
                 TypeInfo retTypeInfo = conversionState.TheILLibrary.GetTypeInfo(retType);
                 StackItem returnItem = new StackItem
                 {
@@ -169,7 +169,7 @@ namespace Drivers.Compiler.Architectures.x86
                 int bytesToAdd = 0;
                 //All the parameters for the method that was called
                 List<Type> allParams =
-                    ((System.Reflection.MethodInfo) methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
+                    ((System.Reflection.MethodInfo)methodToCall).GetParameters().Select(x => x.ParameterType).ToList();
                 //Go through each one
                 if (!methodToCall.IsStatic)
                 {
@@ -240,7 +240,7 @@ namespace Drivers.Compiler.Architectures.x86
             }
             else if (methodToCall is ConstructorInfo)
             {
-                ConstructorInfo aConstructor = (ConstructorInfo) methodToCall;
+                ConstructorInfo aConstructor = (ConstructorInfo)methodToCall;
                 if (aConstructor.IsStatic)
                 {
                     //Static constructors do not have parameters or return values

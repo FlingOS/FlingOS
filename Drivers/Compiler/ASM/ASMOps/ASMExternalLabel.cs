@@ -66,7 +66,7 @@ namespace Drivers.Compiler.ASM.ASMOps
         {
             if (obj is ASMExternalLabel)
             {
-                return Label.Equals(((ASMExternalLabel) obj).Label);
+                return Label.Equals(((ASMExternalLabel)obj).Label);
             }
             return base.Equals(obj);
         }

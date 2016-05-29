@@ -46,11 +46,6 @@ namespace Kernel.Processes.ELF
         protected ELFFile theFile;
         protected Process theProcess;
 
-        public ELFProcess(ELFFile anELFFile)
-        {
-            theFile = anELFFile;
-        }
-
         public Process TheProcess
         {
             get { return theProcess; }
@@ -61,6 +56,11 @@ namespace Kernel.Processes.ELF
             get { return theFile; }
         }
 
+        public ELFProcess(ELFFile anELFFile)
+        {
+            theFile = anELFFile;
+        }
+
         public void Load(bool UserMode)
         {
             bool OK = true;
@@ -69,11 +69,11 @@ namespace Kernel.Processes.ELF
             {
                 bool DynamicLinkingRequired = false;
 
-                ThreadStartPoint mainMethod = (ThreadStartPoint) ObjectUtilities.GetObject(theFile.Header.EntryPoint);
+                ThreadStartPoint mainMethod = (ThreadStartPoint)ObjectUtilities.GetObject(theFile.Header.EntryPoint);
                 theProcess = ProcessManager.CreateProcess(
                     mainMethod, theFile.TheFile.Name, UserMode);
 
-                uint threadStackVirtAddr = (uint) ((Thread) theProcess.Threads[0]).State->ThreadStackTop -
+                uint threadStackVirtAddr = (uint)((Thread)theProcess.Threads[0]).State->ThreadStackTop -
                                            Thread.ThreadStackTopOffset;
                 uint threadStackPhysAddr = VirtualMemoryManager.GetPhysicalAddress(threadStackVirtAddr);
                 ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(threadStackPhysAddr, threadStackVirtAddr);
@@ -119,8 +119,8 @@ namespace Kernel.Processes.ELF
                             Console.Default.WriteLine(libFullPath);
                             BasicConsole.WriteLine(libFullPath);
 
-                            String libFileName = (String) libFullPath.Split('\\').Last();
-                            libFileName = (String) libFileName.Split('/').Last();
+                            String libFileName = (String)libFullPath.Split('\\').Last();
+                            libFileName = (String)libFileName.Split('/').Last();
                             String libTestPath = theFile.TheFile.Parent.GetFullPath() + libFileName;
                             File sharedObjectFile = File.Open(libTestPath);
                             if (sharedObjectFile == null)
@@ -152,7 +152,7 @@ namespace Kernel.Processes.ELF
                     // Perform relocation / dynamic linking of all libraries
                     for (int i = 0; i < SharedObjectDependencies.Count; i++)
                     {
-                        ELFSharedObject SO = (ELFSharedObject) SharedObjectDependencies[i];
+                        ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[i];
 
                         //BasicConsole.WriteLine("Shared Object base address : " + (Framework.String)SO.BaseAddress);
                         //BasicConsole.WriteLine("Shared Object file base address : " + (Framework.String)SO.TheFile.BaseAddress);
@@ -160,17 +160,17 @@ namespace Kernel.Processes.ELF
                         List SOSections = SO.TheFile.Sections;
                         for (int j = 0; j < SOSections.Count; j++)
                         {
-                            ELFSection SOSection = (ELFSection) SOSections[j];
+                            ELFSection SOSection = (ELFSection)SOSections[j];
                             if (SOSection is ELFRelocationTableSection)
                             {
                                 //BasicConsole.WriteLine(" - Normal Relocation");
 
-                                ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection) SOSection;
+                                ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection)SOSection;
                                 ELFSymbolTableSection symbolTable =
                                     (ELFSymbolTableSection)
                                         SO.TheFile.Sections[relocTableSection.SymbolTableSectionIndex];
                                 ELFStringTableSection symbolNamesTable =
-                                    (ELFStringTableSection) SO.TheFile.Sections[symbolTable.StringsSectionIndex];
+                                    (ELFStringTableSection)SO.TheFile.Sections[symbolTable.StringsSectionIndex];
 
                                 List Relocations = relocTableSection.Relocations;
                                 for (int k = 0; k < Relocations.Count; k++)
@@ -178,14 +178,14 @@ namespace Kernel.Processes.ELF
                                     // Reference: http://docs.oracle.com/cd/E19683-01/817-3677/chapter6-26/index.html
 
                                     ELFRelocationTableSection.Relocation relocation =
-                                        (ELFRelocationTableSection.Relocation) Relocations[k];
+                                        (ELFRelocationTableSection.Relocation)Relocations[k];
                                     if (relocation.Type == ELFRelocationTableSection.RelocationType.R_386_NONE)
                                     {
                                         continue;
                                     }
 
                                     uint* resolvedRelLocation =
-                                        (uint*) (SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
+                                        (uint*)(SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
                                     ELFSymbolTableSection.Symbol symbol =
                                         symbolTable[relocation.Symbol];
                                     String symbolName = symbolNamesTable[symbol.NameIdx];
@@ -207,7 +207,7 @@ namespace Kernel.Processes.ELF
                                             break;
                                         case ELFRelocationTableSection.RelocationType.R_386_PC32:
                                             newValue = GetSymbolAddress(symbol, symbolName) + *resolvedRelLocation -
-                                                       (uint) resolvedRelLocation;
+                                                       (uint)resolvedRelLocation;
                                             break;
                                         case ELFRelocationTableSection.RelocationType.R_386_RELATIVE:
                                             newValue = SO.BaseAddress + *resolvedRelLocation;
@@ -216,12 +216,12 @@ namespace Kernel.Processes.ELF
                                         default:
                                             Console.Default.WarningColour();
                                             Console.Default.Write("WARNING: Unrecognised relocation type! (");
-                                            Console.Default.Write_AsDecimal((uint) relocation.Type);
+                                            Console.Default.Write_AsDecimal((uint)relocation.Type);
                                             Console.Default.WriteLine(")");
                                             Console.Default.DefaultColour();
 
                                             BasicConsole.Write("WARNING: Unrecognised relocation type! (");
-                                            BasicConsole.Write((uint) relocation.Type);
+                                            BasicConsole.Write((uint)relocation.Type);
                                             BasicConsole.WriteLine(")");
                                             break;
                                     }
@@ -237,18 +237,18 @@ namespace Kernel.Processes.ELF
                                 //BasicConsole.WriteLine(" - Addend Relocation");
 
                                 ELFRelocationAddendTableSection relocTableSection =
-                                    (ELFRelocationAddendTableSection) SOSection;
+                                    (ELFRelocationAddendTableSection)SOSection;
                                 ELFSymbolTableSection symbolTable =
                                     (ELFSymbolTableSection)
                                         SO.TheFile.Sections[relocTableSection.SymbolTableSectionIndex];
                                 ELFStringTableSection symbolNamesTable =
-                                    (ELFStringTableSection) SO.TheFile.Sections[symbolTable.StringsSectionIndex];
+                                    (ELFStringTableSection)SO.TheFile.Sections[symbolTable.StringsSectionIndex];
 
                                 List Relocations = relocTableSection.Relocations;
                                 for (int k = 0; k < Relocations.Count; k++)
                                 {
                                     ELFRelocationAddendTableSection.RelocationAddend relocation =
-                                        (ELFRelocationAddendTableSection.RelocationAddend) Relocations[k];
+                                        (ELFRelocationAddendTableSection.RelocationAddend)Relocations[k];
                                     if (relocation.Type == ELFRelocationTableSection.RelocationType.R_386_NONE)
                                     {
                                         continue;
@@ -258,7 +258,7 @@ namespace Kernel.Processes.ELF
                                         symbolTable[relocation.Symbol];
                                     String symbolName = symbolNamesTable[symbol.NameIdx];
                                     uint* resolvedRelLocation =
-                                        (uint*) (SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
+                                        (uint*)(SO.BaseAddress + (relocation.Offset - SO.TheFile.BaseAddress));
 
                                     //BasicConsole.WriteLine("Relocation:");
                                     ////BasicConsole.WriteLine("    > Symbol index : " + (Framework.String)relocation.Symbol);
@@ -276,12 +276,12 @@ namespace Kernel.Processes.ELF
                                         default:
                                             Console.Default.WarningColour();
                                             Console.Default.Write("WARNING: Unrecognised relocation type! (");
-                                            Console.Default.Write_AsDecimal((uint) relocation.Type);
+                                            Console.Default.Write_AsDecimal((uint)relocation.Type);
                                             Console.Default.WriteLine(")");
                                             Console.Default.DefaultColour();
 
                                             BasicConsole.Write("WARNING: Unrecognised relocation type! (");
-                                            BasicConsole.Write((uint) relocation.Type);
+                                            BasicConsole.Write((uint)relocation.Type);
                                             BasicConsole.WriteLine(")");
                                             break;
                                     }
@@ -305,29 +305,29 @@ namespace Kernel.Processes.ELF
                     List ExeSections = theFile.Sections;
                     for (int j = 0; j < ExeSections.Count; j++)
                     {
-                        ELFSection ExeSection = (ELFSection) ExeSections[j];
+                        ELFSection ExeSection = (ELFSection)ExeSections[j];
                         if (ExeSection is ELFRelocationTableSection)
                         {
                             //BasicConsole.WriteLine(" - Normal Relocations");
 
-                            ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection) ExeSection;
+                            ELFRelocationTableSection relocTableSection = (ELFRelocationTableSection)ExeSection;
                             ELFSymbolTableSection symbolTable =
-                                (ELFSymbolTableSection) theFile.Sections[relocTableSection.SymbolTableSectionIndex];
+                                (ELFSymbolTableSection)theFile.Sections[relocTableSection.SymbolTableSectionIndex];
                             ELFStringTableSection symbolNamesTable =
-                                (ELFStringTableSection) theFile.Sections[symbolTable.StringsSectionIndex];
+                                (ELFStringTableSection)theFile.Sections[symbolTable.StringsSectionIndex];
 
                             List Relocations = relocTableSection.Relocations;
                             for (int k = 0; k < Relocations.Count; k++)
                             {
                                 ELFRelocationTableSection.Relocation relocation =
-                                    (ELFRelocationTableSection.Relocation) Relocations[k];
+                                    (ELFRelocationTableSection.Relocation)Relocations[k];
                                 if (relocation.Type == ELFRelocationTableSection.RelocationType.R_386_NONE)
                                 {
                                     continue;
                                 }
 
                                 uint* resolvedRelLocation =
-                                    (uint*) (BaseAddress + (relocation.Offset - theFile.BaseAddress));
+                                    (uint*)(BaseAddress + (relocation.Offset - theFile.BaseAddress));
                                 ELFSymbolTableSection.Symbol symbol =
                                     symbolTable[relocation.Symbol];
                                 String symbolName = symbolNamesTable[symbol.NameIdx];
@@ -365,7 +365,7 @@ namespace Kernel.Processes.ELF
                                         if (GetSymbolAddressAndSize(symbol, symbolName, ref symbolAddress,
                                             ref symbolSize))
                                         {
-                                            byte* symbolValuePtr = (byte*) symbolAddress;
+                                            byte* symbolValuePtr = (byte*)symbolAddress;
 
                                             //BasicConsole.Write("    > Symbol size : ");
                                             //BasicConsole.WriteLine(symbolSize);
@@ -384,12 +384,12 @@ namespace Kernel.Processes.ELF
                                     default:
                                         Console.Default.WarningColour();
                                         Console.Default.Write("WARNING: Unrecognised relocation type! (");
-                                        Console.Default.Write_AsDecimal((uint) relocation.Type);
+                                        Console.Default.Write_AsDecimal((uint)relocation.Type);
                                         Console.Default.WriteLine(")");
                                         Console.Default.DefaultColour();
 
                                         BasicConsole.Write("WARNING: Unrecognised relocation type! (");
-                                        BasicConsole.Write((uint) relocation.Type);
+                                        BasicConsole.Write((uint)relocation.Type);
                                         BasicConsole.WriteLine(")");
                                         break;
                                 }
@@ -406,24 +406,24 @@ namespace Kernel.Processes.ELF
                             //BasicConsole.WriteLine(" - Addend Relocations");
 
                             ELFRelocationAddendTableSection relocTableSection =
-                                (ELFRelocationAddendTableSection) ExeSection;
+                                (ELFRelocationAddendTableSection)ExeSection;
                             ELFSymbolTableSection symbolTable =
-                                (ELFSymbolTableSection) theFile.Sections[relocTableSection.SymbolTableSectionIndex];
+                                (ELFSymbolTableSection)theFile.Sections[relocTableSection.SymbolTableSectionIndex];
                             ELFStringTableSection symbolNamesTable =
-                                (ELFStringTableSection) theFile.Sections[symbolTable.StringsSectionIndex];
+                                (ELFStringTableSection)theFile.Sections[symbolTable.StringsSectionIndex];
 
                             List Relocations = relocTableSection.Relocations;
                             for (int k = 0; k < Relocations.Count; k++)
                             {
                                 ELFRelocationAddendTableSection.RelocationAddend relocation =
-                                    (ELFRelocationAddendTableSection.RelocationAddend) Relocations[k];
+                                    (ELFRelocationAddendTableSection.RelocationAddend)Relocations[k];
                                 if (relocation.Type == ELFRelocationTableSection.RelocationType.R_386_NONE)
                                 {
                                     continue;
                                 }
 
                                 uint* resolvedRelLocation =
-                                    (uint*) (BaseAddress + (relocation.Offset - theFile.BaseAddress));
+                                    (uint*)(BaseAddress + (relocation.Offset - theFile.BaseAddress));
                                 ELFSymbolTableSection.Symbol symbol =
                                     symbolTable[relocation.Symbol];
                                 String symbolName = symbolNamesTable[symbol.NameIdx];
@@ -444,12 +444,12 @@ namespace Kernel.Processes.ELF
                                     default:
                                         Console.Default.WarningColour();
                                         Console.Default.Write("WARNING: Unrecognised relocation type! (");
-                                        Console.Default.Write_AsDecimal((uint) relocation.Type);
+                                        Console.Default.Write_AsDecimal((uint)relocation.Type);
                                         Console.Default.WriteLine(")");
                                         Console.Default.DefaultColour();
 
                                         BasicConsole.Write("WARNING: Unrecognised relocation type! (");
-                                        BasicConsole.Write((uint) relocation.Type);
+                                        BasicConsole.Write((uint)relocation.Type);
                                         BasicConsole.WriteLine(")");
                                         break;
                                 }
@@ -466,16 +466,16 @@ namespace Kernel.Processes.ELF
                 // Unmap processes' memory from current processes' memory
                 for (int i = 0; i < SharedObjectDependencies.Count; i++)
                 {
-                    ELFSharedObject SO = (ELFSharedObject) SharedObjectDependencies[i];
+                    ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[i];
                     uint FileBaseAddress = SO.TheFile.BaseAddress;
                     uint MemBaseAddress = SO.BaseAddress;
 
                     List SOSegments = SO.TheFile.Segments;
                     for (int j = 0; j < SOSegments.Count; j++)
                     {
-                        ELFSegment SOSegment = (ELFSegment) SOSegments[j];
+                        ELFSegment SOSegment = (ELFSegment)SOSegments[j];
                         ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
-                            (MemBaseAddress + ((uint) SOSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
+                            (MemBaseAddress + ((uint)SOSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
                     }
                 }
                 {
@@ -485,9 +485,9 @@ namespace Kernel.Processes.ELF
                     List ExeSegments = theFile.Segments;
                     for (int j = 0; j < ExeSegments.Count; j++)
                     {
-                        ELFSegment ExeSegment = (ELFSegment) ExeSegments[j];
+                        ELFSegment ExeSegment = (ELFSegment)ExeSegments[j];
                         ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage(
-                            (MemBaseAddress + ((uint) ExeSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
+                            (MemBaseAddress + ((uint)ExeSegment.Header.VAddr - FileBaseAddress)) & 0xFFFFF000);
                     }
                 }
 
@@ -512,7 +512,7 @@ namespace Kernel.Processes.ELF
 
             for (int i = 0; i < Segments.Count; i++)
             {
-                ELFSegment segment = (ELFSegment) Segments[i];
+                ELFSegment segment = (ELFSegment)Segments[i];
 
                 if (segment.Header.Type == ELFSegmentType.Interp ||
                     segment.Header.Type == ELFSegmentType.Dynamic)
@@ -530,20 +530,20 @@ namespace Kernel.Processes.ELF
                     }
 
                     byte* destMemPtr = segment.Header.VAddr - fileBaseAddress + memBaseAddress;
-                    byte* pageAlignedDestMemPtr = (byte*) ((uint) destMemPtr & 0xFFFFF000);
+                    byte* pageAlignedDestMemPtr = (byte*)((uint)destMemPtr & 0xFFFFF000);
 
                     Console.Default.Write(" Loading segment from ");
-                    Console.Default.Write_AsDecimal((uint) segment.Header.VAddr);
+                    Console.Default.Write_AsDecimal((uint)segment.Header.VAddr);
                     Console.Default.Write(" to ");
-                    Console.Default.WriteLine_AsDecimal((uint) destMemPtr);
+                    Console.Default.WriteLine_AsDecimal((uint)destMemPtr);
 
                     BasicConsole.Write(" Loading segment from ");
-                    BasicConsole.Write((uint) segment.Header.VAddr);
+                    BasicConsole.Write((uint)segment.Header.VAddr);
                     BasicConsole.Write(" to ");
-                    BasicConsole.WriteLine((uint) destMemPtr);
+                    BasicConsole.WriteLine((uint)destMemPtr);
                     SystemCalls.SleepThread(1000);
 
-                    uint copyOffset = (uint) (destMemPtr - pageAlignedDestMemPtr);
+                    uint copyOffset = (uint)(destMemPtr - pageAlignedDestMemPtr);
                     uint copyFromOffset = 0;
 
                     bool executable = (segment.Header.Flags & ELFFlags.Executable) != 0;
@@ -614,16 +614,16 @@ namespace Kernel.Processes.ELF
             //BasicConsole.WriteLine("     Searching executable's symbols...");
             for (int i = 0; i < theFile.Sections.Count; i++)
             {
-                ELFSection aSection = (ELFSection) theFile.Sections[i];
+                ELFSection aSection = (ELFSection)theFile.Sections[i];
                 if (aSection is ELFSymbolTableSection)
                 {
-                    ELFSymbolTableSection symTabSection = (ELFSymbolTableSection) aSection;
+                    ELFSymbolTableSection symTabSection = (ELFSymbolTableSection)aSection;
                     ELFStringTableSection strTabSection =
-                        (ELFStringTableSection) theFile.Sections[symTabSection.StringsSectionIndex];
+                        (ELFStringTableSection)theFile.Sections[symTabSection.StringsSectionIndex];
 
                     for (int j = 0; j < symTabSection.Symbols.Count; j++)
                     {
-                        ELFSymbolTableSection.Symbol aSymbol = (ELFSymbolTableSection.Symbol) symTabSection.Symbols[j];
+                        ELFSymbolTableSection.Symbol aSymbol = (ELFSymbolTableSection.Symbol)symTabSection.Symbols[j];
 
                         if (aSymbol.Type == theSymbol.Type &&
                             aSymbol.Binding == ELFSymbolTableSection.SymbolBinding.Global &&
@@ -633,7 +633,7 @@ namespace Kernel.Processes.ELF
                             {
                                 //BasicConsole.WriteLine("     Found symbol.");
                                 //BasicConsole.Write("     aSymbol Address : ");
-                                uint result = (uint) aSymbol.Value - theFile.BaseAddress + BaseAddress;
+                                uint result = (uint)aSymbol.Value - theFile.BaseAddress + BaseAddress;
                                 //BasicConsole.WriteLine(result);
 
                                 address = result;
@@ -648,19 +648,19 @@ namespace Kernel.Processes.ELF
             {
                 //BasicConsole.WriteLine("     Searching shared object's symbols...");
 
-                ELFSharedObject SO = (ELFSharedObject) SharedObjectDependencies[k];
+                ELFSharedObject SO = (ELFSharedObject)SharedObjectDependencies[k];
                 for (int i = 0; i < SO.TheFile.Sections.Count; i++)
                 {
-                    ELFSection aSection = (ELFSection) SO.TheFile.Sections[i];
+                    ELFSection aSection = (ELFSection)SO.TheFile.Sections[i];
                     if (aSection is ELFSymbolTableSection)
                     {
-                        ELFSymbolTableSection symTabSection = (ELFSymbolTableSection) aSection;
+                        ELFSymbolTableSection symTabSection = (ELFSymbolTableSection)aSection;
                         ELFStringTableSection strTabSection =
-                            (ELFStringTableSection) SO.TheFile.Sections[symTabSection.StringsSectionIndex];
+                            (ELFStringTableSection)SO.TheFile.Sections[symTabSection.StringsSectionIndex];
                         for (int j = 0; j < symTabSection.Symbols.Count; j++)
                         {
                             ELFSymbolTableSection.Symbol aSymbol =
-                                (ELFSymbolTableSection.Symbol) symTabSection.Symbols[j];
+                                (ELFSymbolTableSection.Symbol)symTabSection.Symbols[j];
                             if (aSymbol.Type == theSymbol.Type &&
                                 aSymbol.Binding == ELFSymbolTableSection.SymbolBinding.Global &&
                                 aSymbol.SectionIndex > 0)
@@ -669,7 +669,7 @@ namespace Kernel.Processes.ELF
                                 {
                                     //BasicConsole.WriteLine("     Found symbol.");
                                     //BasicConsole.Write("     aSymbol Address : ");
-                                    uint result = (uint) aSymbol.Value - SO.TheFile.BaseAddress + SO.BaseAddress;
+                                    uint result = (uint)aSymbol.Value - SO.TheFile.BaseAddress + SO.BaseAddress;
                                     //BasicConsole.WriteLine(result);
 
                                     address = result;

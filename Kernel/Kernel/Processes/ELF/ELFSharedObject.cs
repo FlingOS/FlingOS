@@ -37,12 +37,6 @@ namespace Kernel.Processes.ELF
 
         protected ELFProcess theProcess;
 
-        public ELFSharedObject(ELFFile anELFFile, ELFProcess aProcess)
-        {
-            theFile = anELFFile;
-            theProcess = aProcess;
-        }
-
         public ELFFile TheFile
         {
             get { return theFile; }
@@ -51,6 +45,12 @@ namespace Kernel.Processes.ELF
         public ELFProcess TheProcess
         {
             get { return theProcess; }
+        }
+
+        public ELFSharedObject(ELFFile anELFFile, ELFProcess aProcess)
+        {
+            theFile = anELFFile;
+            theProcess = aProcess;
         }
 
         public void Load()
