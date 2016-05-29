@@ -53,8 +53,8 @@ namespace Kernel.Devices.Tasks
         static PlayNotesTask()
         {
             DeadNoteRequests = new CircularBuffer(256, false);
-            LiveNoteRequests = new CircularBuffer(DeadNoteRequests.Size, false);
-            for (int i = 0; i < DeadNoteRequests.Size; i++)
+            LiveNoteRequests = new CircularBuffer(DeadNoteRequests.Blocks, false);
+            for (int i = 0; i < DeadNoteRequests.Blocks; i++)
             {
                 DeadNoteRequests.Push(new NoteRequest());
             }

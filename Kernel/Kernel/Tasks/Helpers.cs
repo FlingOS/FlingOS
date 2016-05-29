@@ -37,7 +37,7 @@ namespace Kernel.Tasks
             try
             {
                 StartRequest->Name = NewProcName.GetCharPointer();
-                StartRequest->NameLength = NewProcName.length;
+                StartRequest->NameLength = NewProcName.Length;
                 StartRequest->CodePagesCount = 0;
                 uint[] DataPages = VirtualMemoryManager.GetBuiltInProcessVAddrs();
                 StartRequest->DataPages = (uint*) ((byte*) ObjectUtilities.GetHandle(DataPages) + Array.FieldsBytesSize);

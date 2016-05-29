@@ -268,7 +268,7 @@ namespace Kernel.IO.Serial
         [NoDebug]
         public void Write(String str)
         {
-            for (int i = 0; i < str.length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 Write((byte) str[i]);
             }

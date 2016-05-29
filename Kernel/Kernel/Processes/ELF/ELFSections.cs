@@ -174,7 +174,7 @@ namespace Kernel.Processes.ELF
 
         public bool IsMatch(uint offset, String value)
         {
-            if (value == null || (offset == data.Length && value.length != 0))
+            if (value == null || (offset == data.Length && value.Length != 0))
             {
                 return false;
             }
@@ -182,12 +182,12 @@ namespace Kernel.Processes.ELF
             bool result = true;
 
             uint i = 0;
-            for (; i < value.length && i + offset < data.Length && data[i + offset] != 0; i++)
+            for (; i < value.Length && i + offset < data.Length && data[i + offset] != 0; i++)
             {
                 result &= value[i] == data[i + offset];
             }
 
-            result &= i == value.length;
+            result &= i == value.Length;
 
             return result;
         }

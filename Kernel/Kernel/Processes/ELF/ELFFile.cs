@@ -234,8 +234,8 @@ namespace Kernel.Processes.ELF
                 //            BasicConsole.WriteLine(theSym.SectionIndex);
                 //            BasicConsole.Write("         - Value : ");
                 //            BasicConsole.WriteLine((uint)theSym.Value);
-                //            BasicConsole.Write("         - Size : ");
-                //            BasicConsole.WriteLine(theSym.Size);
+                //            BasicConsole.Write("         - Blocks : ");
+                //            BasicConsole.WriteLine(theSym.Blocks);
                 //        }
 
                 //        #endregion

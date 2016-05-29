@@ -65,7 +65,7 @@ namespace Kernel.FileSystems.FAT
         /// <param name="aSize">The size of the file.</param>
         /// <param name="aFirstCluster">The first cluster number of the file.</param>
         /// <remarks>
-        ///     Size is UInt32 because FAT doesn't support bigger. Don't change to UInt64.
+        ///     Blocks is UInt32 because FAT doesn't support bigger. Don't change to UInt64.
         /// </remarks>
         public FATFile(FATFileSystem aFileSystem, FATDirectory parent, String aName, uint aSize, uint aFirstCluster)
             : base(aFileSystem, parent, aName, aSize)

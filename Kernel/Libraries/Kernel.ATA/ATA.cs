@@ -34,7 +34,7 @@ namespace Kernel.ATA
 {
     /// <summary>
     ///     Represents any ATA device. This class provides the most
-    ///     basic subset of information that every ATA device will 
+    ///     basic subset of information that every ATA device will
     ///     have.
     /// </summary>
     public abstract class ATA : DiskDevice
@@ -84,6 +84,7 @@ namespace Kernel.ATA
         /// <summary>
         ///     Initialises a new ATA device with block size 512.
         /// </summary>
+        /// <param name="Name">The human-readable name of the device.</param>
         internal ATA(String Name)
             : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, Name, new uint[2], true)
         {

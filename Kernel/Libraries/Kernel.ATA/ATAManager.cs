@@ -63,8 +63,8 @@ namespace Kernel.ATA
             ATAIO1 = new ATAIOPorts(false);
             ATAIO2 = new ATAIOPorts(true);
 
-            Exception ex = null;
-            int exCount = 0;
+            Exception Ex = null;
+            int ExCount = 0;
 
             //Try to initialise primary IDE:PATA/PATAPI drives.
             try
@@ -73,18 +73,18 @@ namespace Kernel.ATA
             }
             catch
             {
-                exCount++;
-                if (exCount == 1)
+                ExCount++;
+                if (ExCount == 1)
                 {
-                    ex = ExceptionMethods.CurrentException;
+                    Ex = ExceptionMethods.CurrentException;
                 }
                 else
                 {
-                    Exception newEx =
+                    Exception NewEx =
                         new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
-                                      (String) exCount);
-                    newEx.InnerException = ex;
-                    ex = newEx;
+                                      // ReSharper disable once ExpressionIsAlwaysNull
+                                      (String)ExCount) {InnerException = Ex};
+                    Ex = NewEx;
                 }
             }
             try
@@ -93,18 +93,17 @@ namespace Kernel.ATA
             }
             catch
             {
-                exCount++;
-                if (exCount == 1)
+                ExCount++;
+                if (ExCount == 1)
                 {
-                    ex = ExceptionMethods.CurrentException;
+                    Ex = ExceptionMethods.CurrentException;
                 }
                 else
                 {
-                    Exception newEx =
+                    Exception NewEx =
                         new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
-                                      (String) exCount);
-                    newEx.InnerException = ex;
-                    ex = newEx;
+                                      (String)ExCount) {InnerException = Ex};
+                    Ex = NewEx;
                 }
             }
             try
@@ -113,18 +112,17 @@ namespace Kernel.ATA
             }
             catch
             {
-                exCount++;
-                if (exCount == 1)
+                ExCount++;
+                if (ExCount == 1)
                 {
-                    ex = ExceptionMethods.CurrentException;
+                    Ex = ExceptionMethods.CurrentException;
                 }
                 else
                 {
-                    Exception newEx =
+                    Exception NewEx =
                         new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
-                                      (String) exCount);
-                    newEx.InnerException = ex;
-                    ex = newEx;
+                                      (String)ExCount) {InnerException = Ex};
+                    Ex = NewEx;
                 }
             }
             try
@@ -133,24 +131,23 @@ namespace Kernel.ATA
             }
             catch
             {
-                exCount++;
-                if (exCount == 1)
+                ExCount++;
+                if (ExCount == 1)
                 {
-                    ex = ExceptionMethods.CurrentException;
+                    Ex = ExceptionMethods.CurrentException;
                 }
                 else
                 {
-                    Exception newEx =
+                    Exception NewEx =
                         new Exception("Multiple errors occurred while initialising the ATA stack. Count=" +
-                                      (String) exCount);
-                    newEx.InnerException = ex;
-                    ex = newEx;
+                                      (String)ExCount) {InnerException = Ex};
+                    Ex = NewEx;
                 }
             }
 
-            if (exCount > 0)
+            if (ExCount > 0)
             {
-                ExceptionMethods.Throw(ex);
+                ExceptionMethods.Throw(Ex);
             }
 
             //TODO: Init SATA/SATAPI devices by enumerating PCI devices.
@@ -159,16 +156,16 @@ namespace Kernel.ATA
         /// <summary>
         ///     Initialises a particular drive on the ATA bus.
         /// </summary>
-        /// <param name="ctrlIds>The controller ID of the device.</param>
-        /// <param name="busPos">The bus position of the device.</param>
-        public static void InitDrive(ATA.ControllerIds ctrlIds, ATA.BusPositions busPos)
+        /// <param name="TheControllerIds">The controller ID of the device.</param>
+        /// <param name="TheBusPositions">The bus position of the device.</param>
+        private static void InitDrive(ATA.ControllerIds TheControllerIds, ATA.BusPositions TheBusPositions)
         {
             //Get the IO ports for the correct bus
-            ATAIOPorts theIO = ctrlIds == ATA.ControllerIds.Primary ? ATAIO1 : ATAIO2;
+            ATAIOPorts TheIO = TheControllerIds == ATA.ControllerIds.Primary ? ATAIO1 : ATAIO2;
             //Create / init the device on the bus
             try
             {
-                PATABase ThePATABase = new PATABase(theIO, ctrlIds, busPos);
+                PATABase ThePATABase = new PATABase(TheIO, TheControllerIds, TheBusPositions);
                 //If the device was detected as present:
                 if (ThePATABase.DriveType != PATABase.SpecLevel.Null)
                 {
@@ -178,13 +175,13 @@ namespace Kernel.ATA
                         //Add it to the list of devices.
                         try
                         {
-                            PATA device = new PATA(ThePATABase);
-                            Devices.Add(device);
-                            DeviceManager.RegisterDevice(device);
+                            PATA TheDevice = new PATA(ThePATABase);
+                            Devices.Add(TheDevice);
+                            DeviceManager.RegisterDevice(TheDevice);
 
                             // Initialise a thread to control the interface to the disk
                             StorageController.Init();
-                            StorageController.AddDisk(device);
+                            StorageController.AddDisk(TheDevice);
                         }
                         catch
                         {
@@ -196,13 +193,13 @@ namespace Kernel.ATA
                         // Add a PATAPI device
                         try
                         {
-                            PATAPI device = new PATAPI(ThePATABase);
-                            Devices.Add(device);
-                            DeviceManager.RegisterDevice(device);
+                            PATAPI TheDevice = new PATAPI(ThePATABase);
+                            Devices.Add(TheDevice);
+                            DeviceManager.RegisterDevice(TheDevice);
 
                             // Initialise a thread to control the interface to the disk
                             StorageController.Init();
-                            StorageController.AddDisk(device);
+                            StorageController.AddDisk(TheDevice);
                         }
                         catch
                         {
@@ -216,9 +213,9 @@ namespace Kernel.ATA
                         // Add a SATA device
                         try
                         {
-                            SATA device = new SATA();
-                            Devices.Add(device);
-                            DeviceManager.RegisterDevice(device);
+                            SATA TheDevice = new SATA();
+                            Devices.Add(TheDevice);
+                            DeviceManager.RegisterDevice(TheDevice);
 
                             // TODO: Initialise a thread to control the interface to the disk (SATA)
                             //Controllers.StorageController.Init();
@@ -234,9 +231,9 @@ namespace Kernel.ATA
                         // Add a SATAPI device
                         try
                         {
-                            SATAPI device = new SATAPI();
-                            Devices.Add(device);
-                            DeviceManager.RegisterDevice(device);
+                            SATAPI TheDevice = new SATAPI();
+                            Devices.Add(TheDevice);
+                            DeviceManager.RegisterDevice(TheDevice);
 
                             // TODO: Initialise a thread to control the interface to the disk (SATAPI)
                             //Controllers.StorageController.Init();
@@ -251,10 +248,12 @@ namespace Kernel.ATA
             }
             catch
             {
-                ExceptionMethods.Throw(new Exception((String) "Error initialising PATA Base device. Controller ID: " +
-                                                     (ctrlIds == ATA.ControllerIds.Primary ? "Primary" : "Secondary") +
+                ExceptionMethods.Throw(new Exception((String)"Error initialising PATA Base device. Controller ID: " +
+                                                     (TheControllerIds == ATA.ControllerIds.Primary
+                                                         ? "Primary"
+                                                         : "Secondary") +
                                                      " , Position: " +
-                                                     (busPos == ATA.BusPositions.Master ? "Master" : "Slave")));
+                                                     (TheBusPositions == ATA.BusPositions.Master ? "Master" : "Slave")));
             }
         }
     }

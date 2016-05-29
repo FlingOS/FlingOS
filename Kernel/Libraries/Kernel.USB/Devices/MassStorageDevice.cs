@@ -1515,9 +1515,7 @@ namespace Kernel.USB.Devices
         /// </summary>
         /// <param name="anMSD">The MSD to create an interface for.</param>
         public MassStorageDevice_DiskDevice(MassStorageDevice anMSD)
-            : base(
-                DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true
-                )
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.USB, "USB Mass Storage Disk", new uint[0], true)
         {
             msd = anMSD;
 
@@ -1534,7 +1532,7 @@ namespace Kernel.USB.Devices
 
                 // capacityBuffer[0] = Last LBA i.e. last addressable LBA
                 //      So the count of blocks is Last LBA + 1
-                blockCount = (ulong) capacityBuffer[0] + 1;
+                Blocks = (ulong) capacityBuffer[0] + 1;
                 // capacityBuffer[1] = Block size
                 blockSize = capacityBuffer[1];
             }
@@ -1547,10 +1545,10 @@ namespace Kernel.USB.Devices
         /// <summary>
         ///     See base class.
         /// </summary>
-        /// <param name="aBlockNo">See base class.</param>
-        /// <param name="aBlockCount">See base class.</param>
-        /// <param name="aData">See base class.</param>
-        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        /// <param name="BlockNo">See base class.</param>
+        /// <param name="BlockCount">See base class.</param>
+        /// <param name="Data">See base class.</param>
+        public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
 #if MSD_TRACE
             BasicConsole.WriteLine("Beginning reading...");
@@ -1558,12 +1556,12 @@ namespace Kernel.USB.Devices
 
             msd.Activate();
 
-            byte* dataPtr = (byte*) ObjectUtilities.GetHandle(aData) + Array.FieldsBytesSize;
+            byte* dataPtr = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
 #if MSD_TRACE
             BasicConsole.Write(((Framework.String)"Reading block: ") + i);
 #endif
 
-            if (!msd.Read((uint) aBlockNo, aBlockCount, dataPtr))
+            if (!msd.Read((uint) BlockNo, BlockCount, dataPtr))
             {
                 ExceptionMethods.Throw(new Exception("Could not read from Mass Storage Device!"));
             }
@@ -1583,27 +1581,27 @@ namespace Kernel.USB.Devices
         /// <summary>
         ///     See base class.
         /// </summary>
-        /// <param name="aBlockNo">See base class.</param>
-        /// <param name="aBlockCount">See base class.</param>
-        /// <param name="aData">See base class.</param>
-        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        /// <param name="BlockNo">See base class.</param>
+        /// <param name="BlockCount">See base class.</param>
+        /// <param name="Data">See base class.</param>
+        public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
             msd.Activate();
 
-            if (aData == null)
+            if (Data == null)
             {
                 byte* dataPtr = (byte*) ObjectUtilities.GetHandle(NewBlockArray(1)) + Array.FieldsBytesSize;
-                for (uint i = 0; i < aBlockCount; i++)
+                for (uint i = 0; i < BlockCount; i++)
                 {
-                    msd.Write((uint) (aBlockNo + i), dataPtr);
+                    msd.Write((uint) (BlockNo + i), dataPtr);
                 }
             }
             else
             {
-                byte* dataPtr = (byte*) ObjectUtilities.GetHandle(aData) + Array.FieldsBytesSize;
-                for (uint i = 0; i < aBlockCount; i++)
+                byte* dataPtr = (byte*) ObjectUtilities.GetHandle(Data) + Array.FieldsBytesSize;
+                for (uint i = 0; i < BlockCount; i++)
                 {
-                    msd.Write((uint) (aBlockNo + i), dataPtr);
+                    msd.Write((uint) (BlockNo + i), dataPtr);
                     dataPtr += BlockSize;
                 }
             }

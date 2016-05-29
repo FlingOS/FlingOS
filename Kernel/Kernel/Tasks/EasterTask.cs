@@ -38,7 +38,7 @@ namespace Kernel.Tasks
 
         public static void Main()
         {
-            for (int i = 0; i < ImageMap.length; i++)
+            for (int i = 0; i < ImageMap.Length; i++)
             {
                 if (ImageMap[i] == 'H')
                 {
@@ -53,7 +53,7 @@ namespace Kernel.Tasks
             while (true)
             {
                 char* VidMemPtr = (char*) 0xB8000;
-                for (int i = 0; i < ImageMap.length; i++)
+                for (int i = 0; i < ImageMap.Length; i++)
                 {
                     VidMemPtr[i] = ImageMap[i];
                 }

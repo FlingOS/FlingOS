@@ -1298,7 +1298,7 @@ namespace Kernel.Tasks
                                     String mapping = fsmi.MappingPrefixes[j];
                                     for (int k = 0; k < 10; k++)
                                     {
-                                        MappingResultPtr[k] = k < mapping.length ? mapping[k] : '\0';
+                                        MappingResultPtr[k] = k < mapping.Length ? mapping[k] : '\0';
                                     }
 
                                     ProcessesPtr[ActualCount] = fsmi.RemoteProcessId;

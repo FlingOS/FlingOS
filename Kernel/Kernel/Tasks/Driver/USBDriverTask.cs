@@ -158,8 +158,8 @@ namespace Kernel.Tasks.Driver
                         console.Write("Disk device num: ");
                         console.WriteLine_AsDecimal(USBManager.Devices.IndexOf(theMSDDisk));
                         console.WriteLine((String) "Block Size: " + theMSDDisk.BlockSize + " bytes");
-                        console.WriteLine((String) "Block Count: " + theMSDDisk.BlockCount);
-                        console.WriteLine((String) "Size: " + ((theMSDDisk.BlockCount*theMSDDisk.BlockSize) >> 20) +
+                        console.WriteLine((String) "Block Count: " + theMSDDisk.Blocks);
+                        console.WriteLine((String) "Size: " + ((theMSDDisk.Blocks*theMSDDisk.BlockSize) >> 20) +
                                           " MB");
 
                         numDrives++;

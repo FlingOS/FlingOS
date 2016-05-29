@@ -315,7 +315,7 @@ namespace Kernel
 
             if (PrimaryOutputEnabled)
             {
-                int strLength = str.length;
+                int strLength = str.Length;
                 int maxOffset = rows*cols;
 
                 //This block shifts the video memory up the required number of lines.
@@ -447,7 +447,7 @@ namespace Kernel
 
             String str =
                 "1234567890!\"£$%^&*()qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM[];'#,./{}:@~<>?\\|`¬¦";
-            int strLength = str.length;
+            int strLength = str.Length;
             char* strPtr = str.GetCharPointer();
             char* vidMemPtr = vidMemBasePtr;
             while (strLength > 0)

@@ -96,7 +96,7 @@ namespace Kernel.FileSystems
         /// <returns>The path without the prefix.</returns>
         public String RemoveMappingPrefix(String aPath)
         {
-            return aPath.Substring(prefix.length, aPath.length - prefix.length);
+            return aPath.Substring(prefix.Length, aPath.Length - prefix.Length);
         }
     }
 }

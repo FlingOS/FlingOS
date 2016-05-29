@@ -87,8 +87,8 @@ namespace Kernel.Framework
         [NoDebug]
         public static byte[] GetASCIIBytes(String asciiString)
         {
-            byte[] result = new byte[asciiString.length];
-            for (int i = 0; i < asciiString.length; i++)
+            byte[] result = new byte[asciiString.Length];
+            for (int i = 0; i < asciiString.Length; i++)
             {
                 result[i] = (byte) asciiString[i];
             }
@@ -115,7 +115,7 @@ namespace Kernel.Framework
 
             byte[] result = new byte[count*2];
             int endIndex = offset + count;
-            if (endIndex > asciiString.length)
+            if (endIndex > asciiString.Length)
             {
                 ExceptionMethods.Throw(
                     new Exception("ByteConverter.GetUTF16Bytes: offset + count >= asciiString.length!"));

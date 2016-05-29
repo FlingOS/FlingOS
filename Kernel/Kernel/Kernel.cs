@@ -109,10 +109,10 @@ namespace Kernel
                 KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
                 KernelThread.State->ESP = (uint) KernelThread.State->ThreadStackTop;
                 KernelThread.State->ExState = (ExceptionState*) (KernelThread.State->ThreadStackTop + 4);
-                byte* exStateBytePtr = (byte*) KernelThread.State->ExState;
+                byte* ExStateBytePtr = (byte*) KernelThread.State->ExState;
                 for (int i = 0; i < sizeof(ExceptionState); i++)
                 {
-                    *exStateBytePtr++ = 0;
+                    *ExStateBytePtr++ = 0;
                 }
 
                 BasicConsole.WriteLine("Registering kernel process...");
@@ -137,7 +137,7 @@ namespace Kernel
                 BasicConsole.SecondaryOutputEnabled = true;
                 BasicConsole.PrimaryOutputEnabled = false;
 
-                for (int i = 0; i < TextSplashScreen.length; i += 80)
+                for (int i = 0; i < TextSplashScreen.Length; i += 80)
                 {
                     TextSplashScreen[i] = '\n';
                 }
@@ -150,10 +150,10 @@ namespace Kernel
                 {
                     BasicConsole.Write(' ');
                 }
-                char num = '1';
+                char Num = '1';
                 for (int i = 0; i < 3; i++)
                 {
-                    BasicConsole.Write(num++);
+                    BasicConsole.Write(Num++);
                     Timer.Default.Wait(1000);
                     BasicConsole.Write(' ');
                 }
@@ -220,6 +220,7 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Starting scheduler...");
                 PreemptionHandler PreempHandler = Scheduler.Start();
+                // ReSharper disable once PossibleInvalidCastException
                 Timer.Default.RegisterHandler((TimerHandler) (object) PreempHandler, Scheduler.PreemptionPeriod, true,
                     Scheduler.PreemptionState);
                 Scheduler.Enable();

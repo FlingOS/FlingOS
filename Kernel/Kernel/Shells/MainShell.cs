@@ -464,7 +464,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
                                             console.WriteLine("Listing dir: " + opt2);
                                             OutputDirectoryContents(opt2);
@@ -486,7 +486,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
 
                                             Directory aDir = Directory.Find(opt2);
@@ -516,7 +516,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
                                             console.WriteLine("Creating dir: " + opt2);
                                             NewDirectory(opt2);
@@ -538,7 +538,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
                                             console.WriteLine("Deleting dir: " + opt2);
                                             DeleteDirectory(opt2);
@@ -560,7 +560,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
 
                                             String opt3 = null;
@@ -573,7 +573,7 @@ namespace Kernel.Shells
                                             {
                                                 if (opt3.StartsWith("./"))
                                                 {
-                                                    opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
+                                                    opt3 = CurrentDir + opt3.Substring(2, opt3.Length - 2);
                                                 }
 
                                                 console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 +
@@ -632,7 +632,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
 
                                             OutputFileContents(opt2);
@@ -654,7 +654,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
 
                                             DeleteFile(opt2);
@@ -676,7 +676,7 @@ namespace Kernel.Shells
                                         {
                                             if (opt2.StartsWith("./"))
                                             {
-                                                opt2 = CurrentDir + opt2.Substring(2, opt2.length - 2);
+                                                opt2 = CurrentDir + opt2.Substring(2, opt2.Length - 2);
                                             }
 
                                             String opt3 = null;
@@ -689,7 +689,7 @@ namespace Kernel.Shells
                                             {
                                                 if (opt3.StartsWith("./"))
                                                 {
-                                                    opt3 = CurrentDir + opt3.Substring(2, opt3.length - 2);
+                                                    opt3 = CurrentDir + opt3.Substring(2, opt3.Length - 2);
                                                 }
 
                                                 console.WriteLine("Copy cmd, opt2=\"" + opt2 + "\", opt3=\"" + opt3 +
@@ -858,7 +858,7 @@ namespace Kernel.Shells
                                 {
                                     if (opt1.StartsWith("./"))
                                     {
-                                        opt1 = CurrentDir + opt1.Substring(2, opt1.length - 2);
+                                        opt1 = CurrentDir + opt1.Substring(2, opt1.Length - 2);
                                     }
 
                                     File aFile = File.Open(opt1);
@@ -1055,10 +1055,10 @@ namespace Kernel.Shells
                 if (c.Key == KeyboardKey.Backspace)
                 {
                     //If we actually have something to delete:
-                    if (result.length > 0)
+                    if (result.Length > 0)
                     {
                         //Remove the last character
-                        result = result.Substring(0, result.length - 1);
+                        result = result.Substring(0, result.Length - 1);
 
                         //Print the backspace character
                         console.Write(c.Value);
@@ -1067,7 +1067,7 @@ namespace Kernel.Shells
                 else if (c.Key == KeyboardKey.Escape)
                 {
                     //Clear output line
-                    console.Write(((String) "").PadLeft(result.length, '\b'));
+                    console.Write(((String) "").PadLeft(result.Length, '\b'));
 
                     //Clear out the result
                     result = "";
@@ -1237,7 +1237,7 @@ which should have been provided with the executable.");
                     if (currPart.EndsWith("\""))
                     {
                         //Remove the closing quote
-                        currPart = currPart.Substring(0, currPart.length - 1);
+                        currPart = currPart.Substring(0, currPart.Length - 1);
                         //End the search
                         waitingForCloseQuote = false;
                         //Add the part to the result
@@ -1258,14 +1258,14 @@ which should have been provided with the executable.");
                         if (currPart.EndsWith("\""))
                         {
                             //Remove the start and end quotes
-                            currPart = currPart.Substring(1, currPart.length - 2);
+                            currPart = currPart.Substring(1, currPart.Length - 2);
                             //Add the part to the result
                             result.Add(currPart.ToLower());
                         }
                         else
                         {
                             //Remove the start quote
-                            currPart = currPart.Substring(1, currPart.length - 1);
+                            currPart = currPart.Substring(1, currPart.Length - 1);
                             //Begin the search for the end of the group part
                             waitingForCloseQuote = true;
                         }
@@ -1368,7 +1368,7 @@ which should have been provided with the executable.");
                 //+1 to include the slash in dir name
                 int lastIdx = dst.LastIndexOf(FileSystemManager.PathDelimiter) + 1;
                 String dstDir = dst.Substring(0, lastIdx);
-                String dstName = dst.Substring(lastIdx, dst.length - lastIdx);
+                String dstName = dst.Substring(lastIdx, dst.Length - lastIdx);
 
                 //console.WriteLine("dstDir: " + dstDir);
                 //console.WriteLine("dstName: " + dstName);
@@ -1584,7 +1584,7 @@ which should have been provided with the executable.");
                     //  up with a blank "new directory name"
                     if (path.EndsWith(FileSystemManager.PathDelimiter))
                     {
-                        path = path.Substring(0, path.length - 1);
+                        path = path.Substring(0, path.Length - 1);
                     }
 
                     //  + 1 as we wish to include the path delimeter in parent dir name and
@@ -1593,7 +1593,7 @@ which should have been provided with the executable.");
                     //        as the parent dir name may be a FS root which requires the trailing path delimeter.
                     int lastIdx = path.LastIndexOf(FileSystemManager.PathDelimiter) + 1;
                     String dirParentPath = path.Substring(0, lastIdx);
-                    String newDirName = path.Substring(lastIdx, path.length - lastIdx);
+                    String newDirName = path.Substring(lastIdx, path.Length - lastIdx);
 
                     console.WriteLine("Checking parent path: " + dirParentPath);
                     //This causes NewDirectory to become a recursive, self-calling
@@ -2645,7 +2645,7 @@ which should have been provided with the executable.");
                     int inset = 0;
                     while (baseType != null)
                     {
-                        console.WriteLine(baseType.Signature.PadLeft(baseType.Signature.length + inset, ' '));
+                        console.WriteLine(baseType.Signature.PadLeft(baseType.Signature.Length + inset, ' '));
                         inset += 4;
                         baseType = baseType.TheBaseType;
                     }
@@ -2659,7 +2659,7 @@ which should have been provided with the executable.");
                         {
                             console.Write("Field: " + fieldType.Signature + "\n @ Offset=");
                             console.Write_AsDecimal(fieldInfoPtr->Offset);
-                            console.Write(", Size=");
+                            console.Write(", Blocks=");
                             console.Write_AsDecimal(fieldInfoPtr->Size);
                             console.Write(", Value type?: ");
                             console.Write(fieldType.IsValueType);

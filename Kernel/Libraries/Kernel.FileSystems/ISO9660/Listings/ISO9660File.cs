@@ -43,7 +43,7 @@ namespace Kernel.FileSystems.ISO9660
 
         public ISO9660File(ISO9660FileSystem fileSystem, ISO9660Directory parent, Disk.ISO9660.DirectoryRecord record)
             : base(
-                fileSystem, parent, record.FileIdentifier.length > 0 ? (String) record.FileIdentifier.Split(';')[0] : "",
+                fileSystem, parent, record.FileIdentifier.Length > 0 ? (String) record.FileIdentifier.Split(';')[0] : "",
                 record.DataLength)
         {
             TheDirectoryRecord = record;

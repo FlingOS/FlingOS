@@ -37,19 +37,19 @@ namespace Kernel.Devices.Controllers
             JunkData = NewBlockArray(1);
         }
 
-        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            if (aBlockCount*BlockSize > (ulong) DataInPipe.BufferSize)
+            if (BlockCount*BlockSize > (ulong) DataInPipe.BufferSize)
             {
                 BasicConsole.WriteLine("WARNING! StorageControllerDisk.Read is about to cause a buffer overflow.");
             }
 
-            //BasicConsole.WriteLine("Storage controller disk > Issuing read (storage cmd) " + (Framework.String)aBlockCount + " blocks from " + (Framework.String)aBlockNo + " blocks offset.");
+            //BasicConsole.WriteLine("Storage controller disk > Issuing read (storage cmd) " + (Framework.String)BlockCount + " blocks from " + (Framework.String)BlockNo + " blocks offset.");
             //TODO: Wrap in a loop so we don't hit buffer overflow
-            CmdPipe.Send_Read(CmdPipeId, Id, aBlockNo, aBlockCount);
-            int FullBytesToRead = (int) (aBlockCount*(uint) BlockSize);
-            int BytesRead = DataInPipe.Read(aData, 0, FullBytesToRead, true);
-            if (BytesRead != aData.Length)
+            CmdPipe.Send_Read(CmdPipeId, Id, BlockNo, BlockCount);
+            int FullBytesToRead = (int) (BlockCount*(uint) BlockSize);
+            int BytesRead = DataInPipe.Read(Data, 0, FullBytesToRead, true);
+            if (BytesRead != Data.Length)
             {
                 BasicConsole.WriteLine("Storage controller disk > Error! Data NOT read in full.");
             }
@@ -66,13 +66,13 @@ namespace Kernel.Devices.Controllers
             }
         }
 
-        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            if (aBlockCount*BlockSize > (ulong) DataInPipe.BufferSize)
+            if (BlockCount*BlockSize > (ulong) DataInPipe.BufferSize)
             {
                 BasicConsole.WriteLine("WARNING! StorageControllerDisk.Write might be about to cause a buffer overflow.");
             }
-            else if (aData.Length < (uint) (aBlockCount*BlockSize))
+            else if (Data.Length < (uint) (BlockCount*BlockSize))
             {
                 BasicConsole.WriteLine(
                     "ERROR! Data buffer supplied to StorageControllerDisk.Write is not long enough for the requested number of blocks.");
@@ -82,8 +82,8 @@ namespace Kernel.Devices.Controllers
             }
 
             //TODO: Wrap in a loop so we don't hit buffer overflow
-            CmdPipe.Send_Write(CmdPipeId, Id, aBlockNo, aBlockCount);
-            DataOutPipe.Write(DataOutPipeId, aData, 0, (int) (aBlockCount*(uint) BlockSize), true);
+            CmdPipe.Send_Write(CmdPipeId, Id, BlockNo, BlockCount);
+            DataOutPipe.Write(DataOutPipeId, Data, 0, (int) (BlockCount*(uint) BlockSize), true);
         }
 
         public override void CleanCaches()

@@ -60,14 +60,14 @@ namespace Kernel.Pipes.File
                     ((byte*) ObjectUtilities.GetHandle(buffer) + Array.FieldsBytesSize + sizeof(FilePipeDataHeader));
             for (int i = 0; i < FSPrefixes.Length; i++)
             {
-                if (FSPrefixes[i].length > 10)
+                if (FSPrefixes[i].Length > 10)
                 {
                     BasicConsole.WriteLine(
                         "FileDataOutpoint.WriteFSInfo > Error! FS prefix longer than maximum transmittable length (10).");
                 }
                 for (int j = 0; j < 10; j++)
                 {
-                    DataPtr[i].Prefix[j] = j < FSPrefixes[i].length ? FSPrefixes[i][j] : '\0';
+                    DataPtr[i].Prefix[j] = j < FSPrefixes[i].Length ? FSPrefixes[i][j] : '\0';
                 }
             }
             Write(PipeId, buffer, 0, buffer.Length, true);

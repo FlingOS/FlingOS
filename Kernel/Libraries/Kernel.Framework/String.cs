@@ -47,19 +47,19 @@ namespace Kernel.Framework
         /// <summary>
         ///     The size of the fields in an string object that come before the actual string data.
         /// </summary>
-        public const uint FieldsBytesSize = 8;
+        private const uint FieldsBytesSize = 8;
 
         /// <summary>
         ///     The length of the string.
         /// </summary>
-        public int length;
+        public int Length;
 
         /// <summary>
         ///     Gets the character at the specified index.
         /// </summary>
-        /// <param name="index">The index of the character to get.</param>
+        /// <param name="Index">The index of the character to get.</param>
         /// <returns>The character at the specified index.</returns>
-        public unsafe char this[int index]
+        public unsafe char this[int Index]
         {
             [NoDebug]
             [NoGC]
@@ -67,7 +67,7 @@ namespace Kernel.Framework
             {
                 byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                return ((char*) thisPtr)[index];
+                return ((char*) thisPtr)[Index];
             }
             [NoDebug]
             [NoGC]
@@ -75,16 +75,16 @@ namespace Kernel.Framework
             {
                 byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                ((char*) thisPtr)[index] = value;
+                ((char*) thisPtr)[Index] = value;
             }
         }
 
         /// <summary>
         ///     Gets the character at the specified index.
         /// </summary>
-        /// <param name="index">The index of the character to get.</param>
+        /// <param name="Index">The index of the character to get.</param>
         /// <returns>The character at the specified index.</returns>
-        public unsafe char this[uint index]
+        public unsafe char this[uint Index]
         {
             [NoDebug]
             [NoGC]
@@ -92,7 +92,7 @@ namespace Kernel.Framework
             {
                 byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                return ((char*) thisPtr)[index];
+                return ((char*) thisPtr)[Index];
             }
             [NoDebug]
             [NoGC]
@@ -100,7 +100,7 @@ namespace Kernel.Framework
             {
                 byte* thisPtr = (byte*) ObjectUtilities.GetHandle(this);
                 thisPtr += FieldsBytesSize; /*For fields inc. inherited*/
-                ((char*) thisPtr)[index] = value;
+                ((char*) thisPtr)[Index] = value;
             }
         }
 
@@ -112,45 +112,45 @@ namespace Kernel.Framework
         ///     field etc. You may not use IL or C# that results in an IL Pop op of the return value
         ///     of this method as it will screw up the GC RefCount handling.
         /// </summary>
-        /// <param name="length">The length of the string to create.</param>
+        /// <param name="Length">The length of the string to create.</param>
         /// <returns>The new string.</returns>
         [NoGC]
         [NoDebug]
-        public static unsafe String New(int length)
+        public static unsafe String New(int Length)
         {
-            if (length < 0)
+            if (Length < 0)
             {
                 ExceptionMethods.Throw(
                     new ArgumentException(
-                        "Parameter \"length\" cannot be less than 0 in Framework.String.New(int length)."));
+                        "Parameter \"length\" cannot be less than 0 in Framework.String.New(int Length)."));
             }
-            String result = (String) ObjectUtilities.GetObject(GC.NewString(length));
-            if (result == null)
+            String Result = (String) ObjectUtilities.GetObject(GC.NewString(Length));
+            if (Result == null)
             {
                 ExceptionMethods.Throw(new NullReferenceException());
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
         ///     Concatenates two strings into one new string.
         /// </summary>
-        /// <param name="str1">The first part of the new string.</param>
-        /// <param name="str2">The second part of the new string.</param>
+        /// <param name="Left">The first part of the new string.</param>
+        /// <param name="Right">The second part of the new string.</param>
         /// <returns>The new string.</returns>
         [NoDebug]
-        public static String Concat(String str1, String str2)
+        public static String Concat(String Left, String Right)
         {
-            String newStr = New(str1.length + str2.length);
-            for (int i = 0; i < str1.length; i++)
+            String NewString = New(Left.Length + Right.Length);
+            for (int i = 0; i < Left.Length; i++)
             {
-                newStr[i] = str1[i];
+                NewString[i] = Left[i];
             }
-            for (int i = 0; i < str2.length; i++)
+            for (int i = 0; i < Right.Length; i++)
             {
-                newStr[i + str1.length] = str2[i];
+                NewString[i + Left.Length] = Right[i];
             }
-            return newStr;
+            return NewString;
         }
 
         /// <summary>
@@ -159,64 +159,61 @@ namespace Kernel.Framework
         /// <returns>A pointer to the first char (that represents a character) of the specified string.</returns>
         [NoDebug]
         [NoGC]
-        public unsafe char* GetCharPointer()
-        {
-            return (char*) ((byte*) ObjectUtilities.GetHandle(this) + FieldsBytesSize);
-        }
+        public unsafe char* GetCharPointer() => (char*) ((byte*) ObjectUtilities.GetHandle(this) + FieldsBytesSize);
 
         /// <summary>
         ///     Creates a new string and pads the left side of the string with the specified character until the
         ///     whole string is of the specified length or returns the original string if it is longer.
         /// </summary>
-        /// <param name="totalLength">The final length of the whole string.</param>
-        /// <param name="padChar">The character to pad with.</param>
+        /// <param name="TotalLength">The final length of the whole string.</param>
+        /// <param name="PadChar">The character to pad with.</param>
         /// <returns>The new, padded string.</returns>
         [NoDebug]
-        public String PadLeft(int totalLength, char padChar)
+        public String PadLeft(int TotalLength, char PadChar)
         {
-            String result = New(totalLength);
+            String Result = New(TotalLength);
 
-            if (length >= totalLength)
+            if (Length >= TotalLength)
             {
-                for (int i = 0; i < result.length; i++)
+                for (int i = 0; i < Result.Length; i++)
                 {
-                    result[i] = this[i];
+                    Result[i] = this[i];
                 }
-                return result;
+                return Result;
             }
 
-            int offset = totalLength - length;
-            for (int i = 0; i < length; i++)
+            int Offset = TotalLength - Length;
+            for (int i = 0; i < Length; i++)
             {
-                result[i + offset] = this[i];
+                Result[i + Offset] = this[i];
             }
-            for (int i = 0; i < offset; i++)
+            for (int i = 0; i < Offset; i++)
             {
-                result[i] = padChar;
+                Result[i] = PadChar;
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
         ///     Creates a new string and pads the right side of the string with the specified character until the
         ///     whole string is of the specified length or returns the original string if it is longer.
         /// </summary>
-        /// <param name="totalLength">The final length of the whole string.</param>
-        /// <param name="padChar">The character to pad with.</param>
+        /// <param name="TotalLength">The final length of the whole string.</param>
+        /// <param name="PadChar">The character to pad with.</param>
         /// <returns>The new, padded string.</returns>
         [NoDebug]
-        public String PadRight(int totalLength, char padChar)
+        public String PadRight(int TotalLength, char PadChar)
         {
-            String result = New(totalLength);
-            for (int i = 0; i < length && i < totalLength; i++)
+            String Result = New(TotalLength);
+            for (int i = 0; i < Length && i < TotalLength; i++)
             {
-                result[i] = this[i];
+                Result[i] = this[i];
             }
-            for (int i = length; i < totalLength; i++)
+            for (int i = Length; i < TotalLength; i++)
             {
-                result[i] = padChar;
+                Result[i] = PadChar;
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
@@ -230,12 +227,12 @@ namespace Kernel.Framework
             String TrimChars =
                 "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000";
 
-            int removeStart = 0;
-            int removeEnd = 0;
-            for (int i = 0; i < length; removeStart++, i++)
+            int RemoveStart = 0;
+            int RemoveEnd = 0;
+            for (int i = 0; i < Length; RemoveStart++, i++)
             {
                 bool ShouldBreak = true;
-                for (int j = 0; j < TrimChars.length; j++)
+                for (int j = 0; j < TrimChars.Length; j++)
                 {
                     if (this[i] == TrimChars[j])
                     {
@@ -247,10 +244,10 @@ namespace Kernel.Framework
                     break;
                 }
             }
-            for (int i = length - 1; i > removeStart; removeEnd++, i--)
+            for (int i = Length - 1; i > RemoveStart; RemoveEnd++, i--)
             {
                 bool ShouldBreak = true;
-                for (int j = 0; j < TrimChars.length; j++)
+                for (int j = 0; j < TrimChars.Length; j++)
                 {
                     if (this[i] == TrimChars[j])
                     {
@@ -263,12 +260,12 @@ namespace Kernel.Framework
                 }
             }
 
-            String result = New(length - removeStart - removeEnd);
-            for (int i = removeStart; i < length - removeEnd; i++)
+            String Result = New(Length - RemoveStart - RemoveEnd);
+            for (int i = RemoveStart; i < Length - RemoveEnd; i++)
             {
-                result[i - removeStart] = this[i];
+                Result[i - RemoveStart] = this[i];
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
@@ -282,11 +279,11 @@ namespace Kernel.Framework
             String TrimChars =
                 "\u0009\u000A\u000B\u000C\u000D\u0020\u0085\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000";
 
-            int removeEnd = 0;
-            for (int i = length - 1; i > -1; removeEnd++, i--)
+            int RemoveEnd = 0;
+            for (int i = Length - 1; i > -1; RemoveEnd++, i--)
             {
                 bool ShouldBreak = true;
-                for (int j = 0; j < TrimChars.length; j++)
+                for (int j = 0; j < TrimChars.Length; j++)
                 {
                     if (this[i] == TrimChars[j])
                     {
@@ -299,59 +296,59 @@ namespace Kernel.Framework
                 }
             }
 
-            String result = New(length - removeEnd);
-            for (int i = 0; i < length - removeEnd; i++)
+            String Result = New(Length - RemoveEnd);
+            for (int i = 0; i < Length - RemoveEnd; i++)
             {
-                result[i] = this[i];
+                Result[i] = this[i];
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
         ///     Creates a new string that is a copy of the current string starting at the specified index for specified length.
         /// </summary>
-        /// <param name="startIndex">The index to start copying at.</param>
-        /// <param name="aLength">The number of characters to copy.</param>
+        /// <param name="StartIndex">The index to start copying at.</param>
+        /// <param name="MaxLength">The number of characters to copy.</param>
         /// <returns>The new string.</returns>
         [NoDebug]
-        public String Substring(int startIndex, int aLength)
+        public String Substring(int StartIndex, int MaxLength)
         {
-            if (startIndex >= length)
+            if (StartIndex >= Length)
             {
-                if (aLength == 0)
+                if (MaxLength == 0)
                 {
                     return New(0);
                 }
-                ExceptionMethods.Throw(new IndexOutOfRangeException(startIndex, length));
+                ExceptionMethods.Throw(new IndexOutOfRangeException(StartIndex, Length));
             }
-            else if (aLength > length - startIndex)
+            else if (MaxLength > Length - StartIndex)
             {
-                aLength = length - startIndex;
+                MaxLength = Length - StartIndex;
             }
 
-            String result = New(aLength);
-            for (int i = startIndex; i < aLength + startIndex; i++)
+            String Result = New(MaxLength);
+            for (int i = StartIndex; i < MaxLength + StartIndex; i++)
             {
-                result[i - startIndex] = this[i];
+                Result[i - StartIndex] = this[i];
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
         ///     Determines whether the string starts with the specified string.
         /// </summary>
-        /// <param name="prefix">The string to test for.</param>
+        /// <param name="Prefix">The string to test for.</param>
         /// <returns>Whether the string starts with the prefix.</returns>
         [NoDebug]
-        public bool StartsWith(String prefix)
+        public bool StartsWith(String Prefix)
         {
-            if (length < prefix.length)
+            if (Length < Prefix.Length)
             {
                 return false;
             }
-            for (int i = 0; i < prefix.length; i++)
+            for (int i = 0; i < Prefix.Length; i++)
             {
-                if (this[i] != prefix[i])
+                if (this[i] != Prefix[i])
                 {
                     return false;
                 }
@@ -362,19 +359,19 @@ namespace Kernel.Framework
         /// <summary>
         ///     Determines whether the string ends with the specified string.
         /// </summary>
-        /// <param name="postfix">The string to test for.</param>
+        /// <param name="Postfix">The string to test for.</param>
         /// <returns>Whether the string ends with the postfix.</returns>
         [NoDebug]
-        public bool EndsWith(String postfix)
+        public bool EndsWith(String Postfix)
         {
-            if (length < postfix.length)
+            if (Length < Postfix.Length)
             {
                 return false;
             }
-            int offset = length - postfix.length;
-            for (int i = length - 1; i >= offset; i--)
+            int Offset = Length - Postfix.Length;
+            for (int i = Length - 1; i >= Offset; i--)
             {
-                if (this[i] != postfix[i - offset])
+                if (this[i] != Postfix[i - Offset])
                 {
                     return false;
                 }
@@ -383,31 +380,31 @@ namespace Kernel.Framework
         }
 
         /// <summary>
-        ///     Splits the string at every index where splitChar occurs and adds the splits parts (excluding splitChar)
+        ///     Splits the string at every index where SplitChar occurs and adds the splits parts (excluding SplitChar)
         ///     to a list of strings.
         /// </summary>
-        /// <param name="splitChar">The char to split with.</param>
+        /// <param name="SplitChar">The char to split with.</param>
         /// <returns>The list of split parts.</returns>
         [NoDebug]
-        public List Split(char splitChar)
+        public List Split(char SplitChar)
         {
-            List result = new List(1);
+            List Result = new List(1);
 
-            int lastSplitIndex = 0;
-            for (int i = 0; i < length; i++)
+            int LastSplitIndex = 0;
+            for (int i = 0; i < Length; i++)
             {
-                if (this[i] == splitChar)
+                if (this[i] == SplitChar)
                 {
-                    result.Add(Substring(lastSplitIndex, i - lastSplitIndex));
-                    lastSplitIndex = i + 1;
+                    Result.Add(Substring(LastSplitIndex, i - LastSplitIndex));
+                    LastSplitIndex = i + 1;
                 }
             }
-            if (length - lastSplitIndex > 0)
+            if (Length - LastSplitIndex > 0)
             {
-                result.Add(Substring(lastSplitIndex, length - lastSplitIndex));
+                Result.Add(Substring(LastSplitIndex, Length - LastSplitIndex));
             }
 
-            return result;
+            return Result;
         }
 
         /// <summary>
@@ -417,22 +414,22 @@ namespace Kernel.Framework
         [NoDebug]
         public String ToUpper()
         {
-            if (length == 0)
+            if (Length == 0)
                 return "";
 
-            String result = New(length);
+            String Result = New(Length);
 
-            for (int i = 0; i < result.length; i++)
+            for (int i = 0; i < Result.Length; i++)
             {
-                char cChar = this[i];
-                if (cChar >= 'a' && cChar <= 'z')
+                char CurrentChar = this[i];
+                if (CurrentChar >= 'a' && CurrentChar <= 'z')
                 {
-                    cChar = (char) ('A' + (cChar - 'a'));
+                    CurrentChar = (char) ('A' + (CurrentChar - 'a'));
                 }
-                result[i] = cChar;
+                Result[i] = CurrentChar;
             }
 
-            return result;
+            return Result;
         }
 
         /// <summary>
@@ -442,19 +439,19 @@ namespace Kernel.Framework
         [NoDebug]
         public String ToLower()
         {
-            String result = New(length);
+            String Result = New(Length);
 
-            for (int i = 0; i < result.length; i++)
+            for (int i = 0; i < Result.Length; i++)
             {
-                char cChar = this[i];
-                if (cChar >= 'A' && cChar <= 'Z')
+                char CurrentChar = this[i];
+                if (CurrentChar >= 'A' && CurrentChar <= 'Z')
                 {
-                    cChar = (char) ('a' + (cChar - 'A'));
+                    CurrentChar = (char) ('a' + (CurrentChar - 'A'));
                 }
-                result[i] = cChar;
+                Result[i] = CurrentChar;
             }
 
-            return result;
+            return Result;
         }
 
         /// <summary>
@@ -466,16 +463,16 @@ namespace Kernel.Framework
         [NoGC]
         public int IndexOf(char c)
         {
-            int result = -1;
-            for (int i = 0; i < length; i++)
+            int Result = -1;
+            for (int i = 0; i < Length; i++)
             {
                 if (this[i] == c)
                 {
-                    result = i;
+                    Result = i;
                     break;
                 }
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
@@ -487,121 +484,105 @@ namespace Kernel.Framework
         [NoGC]
         public int LastIndexOf(char c)
         {
-            int result = -1;
-            for (int i = length - 1; i > -1; i--)
+            int Result = -1;
+            for (int i = Length - 1; i > -1; i--)
             {
                 if (this[i] == c)
                 {
-                    result = i;
+                    Result = i;
                     break;
                 }
             }
-            return result;
+            return Result;
         }
 
         /// <summary>
-        ///     Concatenates two strings using "+" operator.
+        ///     Concatenates two FlingOS strings.
         /// </summary>
-        /// <param name="x">The first string.</param>
-        /// <param name="y">The second string.</param>
+        /// <param name="Left">The first string.</param>
+        /// <param name="Right">The second string.</param>
         /// <returns>The new contenated string.</returns>
         [NoDebug]
-        public static String operator +(String x, String y)
+        public static String operator +(String Left, String Right)
         {
-            if (x == null)
+            if (Left == null)
             {
-                if (y == null)
-                {
-                    return null;
-                }
-                return y;
+                // If Right is null, then the best we could do is return null anyway!
+                return Right;
             }
-            if (y == null)
-            {
-                return x;
-            }
-
-            return Concat(x, y);
+            // Likewise, if Left is null, then the best we could do is return null anyway!
+            return Right == null ? Left : Concat(Left, Right);
         }
 
         /// <summary>
-        ///     Tests whether all the characters of two strings are equal.
+        ///     Tests whether all the characters of two FlingOS strings are equal.
         /// </summary>
-        /// <param name="x">The first string.</param>
-        /// <param name="y">The second string.</param>
+        /// <param name="Left">The first string.</param>
+        /// <param name="Right">The second string.</param>
         /// <returns>Whether the two strings are identical or not.</returns>
         [NoDebug]
         [NoGC]
-        public static unsafe bool operator ==(String x, String y)
+        public static unsafe bool operator ==(String Left, String Right)
         {
-            bool equal = true;
+            bool AreEqual = true;
 
             //Prevent recursive calls to this "==" implicit method!
-            if (ObjectUtilities.GetHandle(x) == null ||
-                ObjectUtilities.GetHandle(y) == null)
+            if (ObjectUtilities.GetHandle(Left) == null ||
+                ObjectUtilities.GetHandle(Right) == null)
             {
-                if (ObjectUtilities.GetHandle(x) == null &&
-                    ObjectUtilities.GetHandle(y) == null)
+                if (ObjectUtilities.GetHandle(Left) == null &&
+                    ObjectUtilities.GetHandle(Right) == null)
                 {
                     return true;
                 }
                 return false;
             }
 
-            if (x.length != y.length)
+            if (Left.Length != Right.Length)
             {
-                equal = false;
+                AreEqual = false;
             }
             else
             {
-                for (int i = 0; i < x.length; i++)
+                for (int i = 0; i < Left.Length; i++)
                 {
-                    if (x[i] != y[i])
+                    if (Left[i] != Right[i])
                     {
-                        equal = false;
+                        AreEqual = false;
                         break;
                     }
                 }
             }
 
-            return equal;
+            return AreEqual;
         }
 
         /// <summary>
-        ///     Tests whether any of the characters of two strings are not equal.
+        ///     Tests whether any of the characters of two FlingOS strings are not equal.
         /// </summary>
         /// <param name="x">The first string.</param>
         /// <param name="y">The second string.</param>
         /// <returns>Whether the two strings mismatch in any place.</returns>
         [NoDebug]
         [NoGC]
-        public static bool operator !=(String x, String y)
-        {
-            return !(x == y);
-        }
+        public static bool operator !=(String x, String y) => !(x == y);
 
         /// <summary>
-        ///     Implicitly converts the specified value to an Framework.String.
+        ///     Implicitly converts the specified value to a Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
         [NoGC]
-        public static implicit operator String(string x)
-        {
-            return (String) (object) x;
-        }
+        public static implicit operator String(string x) => (object) x as String;
 
         /// <summary>
-        ///     Implicitly converts the specified value to an Framework.String.
+        ///     Implicitly converts the specified value to a Framework.String.
         /// </summary>
         /// <param name="x">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(bool x)
-        {
-            return x ? "True" : "False";
-        }
+        public static implicit operator String(bool x) => x ? "True" : "False";
 
         /// <summary>
         ///     Implicitly converts the specified Framework.String to a System.String.
@@ -609,170 +590,146 @@ namespace Kernel.Framework
         /// <param name="x">The value to convert.</param>
         /// <returns>The System.String.</returns>
         [NoDebug]
-        public static explicit operator string(String x)
-        {
-            return (string) (object) x;
-        }
+        public static explicit operator string(String x) => (object) x as string;
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(byte x)
-        {
-            return ConvertToString(New(4), x);
-        }
+        public static implicit operator String(byte Value) => ConvertToString(New(4), Value);
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(ushort x)
-        {
-            return ConvertToString(New(6), x);
-        }
+        public static implicit operator String(ushort Value) => ConvertToString(New(6), Value);
 
         /// <summary>
         ///     Implicitly converts the specified value to an Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(char x)
+        public static implicit operator String(char Value)
         {
-            String result = New(1);
-            result[0] = x;
-            return result;
+            String Result = New(1);
+            Result[0] = Value;
+            return Result;
         }
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(short x)
-        {
-            return (ushort) x;
-        }
+        public static implicit operator String(short Value) => (ushort) Value;
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(uint x)
-        {
-            return ConvertToString(New(10), x);
-        }
+        public static implicit operator String(uint Value) => ConvertToString(New(10), Value);
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(int x)
-        {
-            return (uint) x;
-        }
+        public static implicit operator String(int Value) => (uint) Value;
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(ulong x)
-        {
-            return ConvertToString(New(18), x);
-        }
+        public static implicit operator String(ulong Value) => ConvertToString(New(18), Value);
 
         /// <summary>
         ///     Implicitly converts the specified value to a hex Framework.String.
         /// </summary>
-        /// <param name="x">The value to convert.</param>
+        /// <param name="Value">The value to convert.</param>
         /// <returns>The Framework.String value.</returns>
         [NoDebug]
-        public static implicit operator String(long x)
-        {
-            return (ulong) x;
-        }
+        public static implicit operator String(long Value) => (ulong) Value;
 
-        private static String ConvertToString(String result, ulong x)
+        private static String ConvertToString(String Result, ulong Value)
         {
-            result[0] = '0';
-            result[1] = 'x';
-            for (int i = 2; i < result.length; i++)
+            Result[0] = '0';
+            Result[1] = 'x';
+            for (int i = 2; i < Result.Length; i++)
             {
-                result[i] = '0';
+                Result[i] = '0';
             }
 
-            int index = result.length - 1;
-            ulong y = x;
+            int Index = Result.Length - 1;
+            ulong y = Value;
             while (y > 0)
             {
-                uint rem = (uint) (y & 0xFu);
-                switch (rem)
+                uint Rem = (uint) (y & 0xFu);
+                switch (Rem)
                 {
                     case 0:
-                        result[index] = '0';
+                        Result[Index] = '0';
                         break;
                     case 1:
-                        result[index] = '1';
+                        Result[Index] = '1';
                         break;
                     case 2:
-                        result[index] = '2';
+                        Result[Index] = '2';
                         break;
                     case 3:
-                        result[index] = '3';
+                        Result[Index] = '3';
                         break;
                     case 4:
-                        result[index] = '4';
+                        Result[Index] = '4';
                         break;
                     case 5:
-                        result[index] = '5';
+                        Result[Index] = '5';
                         break;
                     case 6:
-                        result[index] = '6';
+                        Result[Index] = '6';
                         break;
                     case 7:
-                        result[index] = '7';
+                        Result[Index] = '7';
                         break;
                     case 8:
-                        result[index] = '8';
+                        Result[Index] = '8';
                         break;
                     case 9:
-                        result[index] = '9';
+                        Result[Index] = '9';
                         break;
                     case 10:
-                        result[index] = 'A';
+                        Result[Index] = 'A';
                         break;
                     case 11:
-                        result[index] = 'B';
+                        Result[Index] = 'B';
                         break;
                     case 12:
-                        result[index] = 'C';
+                        Result[Index] = 'C';
                         break;
                     case 13:
-                        result[index] = 'D';
+                        Result[Index] = 'D';
                         break;
                     case 14:
-                        result[index] = 'E';
+                        Result[Index] = 'E';
                         break;
                     case 15:
-                        result[index] = 'F';
+                        Result[Index] = 'F';
                         break;
                 }
                 y >>= 4;
-                index--;
+                Index--;
             }
-            return result;
+            return Result;
         }
     }
 }

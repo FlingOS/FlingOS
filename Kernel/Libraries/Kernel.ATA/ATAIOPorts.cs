@@ -55,9 +55,6 @@ namespace Kernel.ATA
         /// </summary>
         public readonly IOPort Data;
 
-        // ATA_REG_LBA3       0x09 - HOB
-        // ATA_REG_LBA4       0x0A - HOB
-        // ATA_REG_LBA5       0x0B - HOB
         /// <summary>
         ///     Device select port.
         /// </summary>
@@ -73,9 +70,6 @@ namespace Kernel.ATA
         /// </summary>
         public readonly IOPort Features;
 
-        /********* HOB = High Order Byte = LBA48 mode *********/
-
-        // ATA_REG_SECCOUNT1  0x08 - HOB
         /// <summary>
         ///     LBA0 port.
         /// </summary>
@@ -90,6 +84,14 @@ namespace Kernel.ATA
         ///     LBA2 port.
         /// </summary>
         public readonly IOPort LBA2;
+
+        /* TODO: LBA48 mode
+         ********* HOB = High Order Byte = LBA48 mode *********
+         *  ATA_REG_SECCOUNT1  0x08 - HOB
+         *  ATA_REG_LBA3       0x09 - HOB
+         *  ATA_REG_LBA4       0x0A - HOB
+         *  ATA_REG_LBA5       0x0B - HOB
+         ******************************************************/
 
         /// <summary>
         ///     The sector count.
@@ -106,29 +108,29 @@ namespace Kernel.ATA
         /// <summary>
         ///     Initialises a new ATA IO device including the various ports.
         /// </summary>
-        /// <param name="isSecondary">Whether the device is a secondary ATA device.</param>
+        /// <param name="IsSecondary">Whether the device is a secondary ATA device.</param>
         [NoDebug]
-        internal ATAIOPorts(bool isSecondary)
+        internal ATAIOPorts(bool IsSecondary)
         {
             //BAR of main registers
-            ushort xBAR0 = (ushort) (isSecondary ? 0x0170 : 0x01F0);
+            ushort BAR0Address = (ushort)(IsSecondary ? 0x0170 : 0x01F0);
             //BAR of alternative registers
-            ushort xBAR1 = (ushort) (isSecondary ? 0x0374 : 0x03F4);
-            Data = new IOPort(xBAR0);
-            Error = new IOPort(xBAR0, 1);
-            Features = new IOPort(xBAR0, 1);
-            SectorCount = new IOPort(xBAR0, 2);
+            ushort BAR1Address = (ushort)(IsSecondary ? 0x0374 : 0x03F4);
+            Data = new IOPort(BAR0Address);
+            Error = new IOPort(BAR0Address, 1);
+            Features = new IOPort(BAR0Address, 1);
+            SectorCount = new IOPort(BAR0Address, 2);
             //Logical block address
-            LBA0 = new IOPort(xBAR0, 3); //Lo-bits
-            LBA1 = new IOPort(xBAR0, 4); //Mid-bits
-            LBA2 = new IOPort(xBAR0, 5); //Hi-bits
-            DeviceSelect = new IOPort(xBAR0, 6);
+            LBA0 = new IOPort(BAR0Address, 3); //Lo-bits
+            LBA1 = new IOPort(BAR0Address, 4); //Mid-bits
+            LBA2 = new IOPort(BAR0Address, 5); //Hi-bits
+            DeviceSelect = new IOPort(BAR0Address, 6);
             //Write - command
-            Command = new IOPort(xBAR0, 7);
+            Command = new IOPort(BAR0Address, 7);
             //Read - status
-            Status = new IOPort(xBAR0, 7);
+            Status = new IOPort(BAR0Address, 7);
 
-            Control = new IOPort(xBAR1, 2);
+            Control = new IOPort(BAR1Address, 2);
         }
     }
 }

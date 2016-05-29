@@ -37,15 +37,19 @@ namespace Kernel.Devices
     public abstract class BlockDevice : Device
     {
         /// <summary>
-        ///     The number of logical blocks in the device.
-        /// </summary>
-        protected ulong blockCount = 0;
-
-        /// <summary>
         ///     The size of the logical blocks.
         /// </summary>
         protected ulong blockSize = 0;
 
+        /// <summary>
+        ///     Initialises a new block device with the specified information.
+        /// </summary>
+        /// <param name="Group">The device group of the device.</param>
+        /// <param name="Class">The device class of the device.</param>
+        /// <param name="SubClass">The device subclass of the device.</param>
+        /// <param name="Name">The human-readable name of the device.</param>
+        /// <param name="SomeInfo">A device-specific array of information to store with the device.</param>
+        /// <param name="IsClaimed">Whether the device has already been claimed by a driver or not.</param>
         public BlockDevice(DeviceGroup Group, DeviceClass Class, DeviceSubClass SubClass, String Name,
             uint[] SomeInfo, bool IsClaimed)
             : base(Group, Class, SubClass, Name, SomeInfo, IsClaimed)
@@ -55,37 +59,31 @@ namespace Kernel.Devices
         /// <summary>
         ///     The number of logical blocks in the device.
         /// </summary>
-        public virtual ulong BlockCount
-        {
-            get { return blockCount; }
-        }
+        public virtual ulong Blocks { get; protected set; }
 
         /// <summary>
         ///     The size of the logical blocks.
         /// </summary>
-        public virtual ulong BlockSize
-        {
-            get { return blockSize; }
-        }
+        public virtual ulong BlockSize => blockSize;
 
         /// <summary>
         ///     Reads contiguous logical blocks from the device.
         /// </summary>
-        /// <param name="aBlockNo">The logical block number to read.</param>
-        /// <param name="aBlockCount">The number of blocks to read.</param>
-        /// <param name="aData">The byte array to store the data in.</param>
-        public abstract void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData);
+        /// <param name="BlockNo">The logical block number to read.</param>
+        /// <param name="BlockCount">The number of blocks to read.</param>
+        /// <param name="Data">The byte array to store the data in.</param>
+        public abstract void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data);
 
         /// <summary>
         ///     Writes contiguous logical blocks to the device.
         /// </summary>
-        /// <param name="aBlockNo">The number of the first block to write.</param>
-        /// <param name="aBlockCount">The number of blocks to write.</param>
-        /// <param name="aData">The data to write. Pass null to efficiently write 0s to the device.</param>
+        /// <param name="BlockNo">The number of the first block to write.</param>
+        /// <param name="BlockCount">The number of blocks to write.</param>
+        /// <param name="Data">The data to write. Pass null to efficiently write 0s to the device.</param>
         /// <remarks>
         ///     If data is null, all data to be written should be assumed to be 0.
         /// </remarks>
-        public abstract void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData);
+        public abstract void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data);
 
         /// <summary>
         ///     Creates a new byte array sized to fit the specified number of blocks.

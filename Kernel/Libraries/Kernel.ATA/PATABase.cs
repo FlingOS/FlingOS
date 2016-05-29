@@ -27,6 +27,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Exception = Kernel.Framework.Exception;
 using NotSupportedException = Kernel.Framework.Exceptions.NotSupportedException;
 using String = Kernel.Framework.String;
@@ -34,7 +35,7 @@ using String = Kernel.Framework.String;
 namespace Kernel.ATA
 {
     /// <summary>
-    ///     Represents any generic PATA device. 
+    ///     Represents any generic PATA device.
     ///     PATA Base Device provides a common set of data and functions for managing PATA devices.
     ///     The PATA and PATAPI classes wrap the base device with a specific implementation.
     /// </summary>
@@ -43,7 +44,8 @@ namespace Kernel.ATA
     ///     This allows the driver to determine the actual type of disk and thus create the correct wrapper for the
     ///     device.
     /// </remarks>
-    public class PATABase : ATA
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    internal sealed class PATABase : ATA
     {
         /// <summary>
         ///     ATA Pio commands.
@@ -53,42 +55,42 @@ namespace Kernel.ATA
             /// <summary>
             ///     Read Pio command.
             /// </summary>
-            ReadPio = 0x20,
+            ReadPIO = 0x20,
 
             /// <summary>
             ///     Read Pio extended command.
             /// </summary>
-            ReadPioExt = 0x24,
+            ReadPIOExt = 0x24,
 
             /// <summary>
             ///     Read direct memory access command.
             /// </summary>
-            ReadDma = 0xC8,
+            ReadDMA = 0xC8,
 
             /// <summary>
             ///     Read direct memory access extended command.
             /// </summary>
-            ReadDmaExt = 0x25,
+            ReadDMAExt = 0x25,
 
             /// <summary>
             ///     Write Pio command.
             /// </summary>
-            WritePio = 0x30,
+            WritePIO = 0x30,
 
             /// <summary>
             ///     Write Pio extended command.
             /// </summary>
-            WritePioExt = 0x34,
+            WritePIOExt = 0x34,
 
             /// <summary>
             ///     Write direct memory access command.
             /// </summary>
-            WriteDma = 0xCA,
+            WriteDMA = 0xCA,
 
             /// <summary>
             ///     Write direct memory access extended command.
             /// </summary>
-            WriteDmaExt = 0x35,
+            WriteDMAExt = 0x35,
 
             /// <summary>
             ///     Cache flush command.
@@ -298,113 +300,108 @@ namespace Kernel.ATA
             /// </summary>
             Error = 0x01,
 
+            /// <summary>
+            ///     Timeout error.
+            /// </summary>
             Timeout = 0xFF
         }
-
-        internal bool initialised;
 
         /// <summary>
         ///     IO ports for this device.
         /// </summary>
-        public ATAIOPorts IO;
-
-        internal uint maxWritePioBlocks = 128;
+        public readonly ATAIOPorts IO;
 
         /// <summary>
-        ///     Pio drive type.
+        ///     PIO drive type.
         /// </summary>
-        internal SpecLevel mDriveType;
-
-        /// <summary>
-        ///     Drive's .
-        /// </summary>
-        internal String mFirmwareRev;
-
-        internal bool mLBA48Mode;
-
-        /// <summary>
-        ///     Drive's model number.
-        /// </summary>
-        internal String mModelNo;
+        public SpecLevel DriveType { get; }
 
         /// <summary>
         ///     Drive's serial number.
         /// </summary>
-        internal String mSerialNo;
-
-        public PATABase(ATAIOPorts anIO, ControllerIds aControllerId, BusPositions aBusPosition)
-            : base("PATA Base Device")
-        {
-            IO = anIO;
-            Info[0] = (uint) (ControllerId = aControllerId);
-            Info[1] = (uint) (BusPosition = aBusPosition);
-
-            // Disable IRQs, we use polling currently
-            SelectDrive(0, false);
-            IO.Control.Write_Byte(0x02);
-
-            mDriveType = DiscoverDrive();
-
-            if (mDriveType == SpecLevel.PATAPI)
-            {
-                blockSize = 2048;
-            }
-
-            if (mDriveType == SpecLevel.PATA ||
-                mDriveType == SpecLevel.PATAPI)
-            {
-                InitDrive();
-                initialised = true;
-            }
-        }
+        public String SerialNo { get; private set; }
 
         /// <summary>
-        ///     Pio drive type.
+        ///     Drive's firmware reivision.
         /// </summary>
-        public SpecLevel DriveType => mDriveType;
-
-        /// <summary>
-        ///     Drive's .
-        /// </summary>
-        public String SerialNo => mSerialNo;
-
-        /// <summary>
-        ///     Drive's .
-        /// </summary>
-        public String FirmwareRev => mFirmwareRev;
+        public String FirmwareRev { get; private set; }
 
         /// <summary>
         ///     Drive's model number.
         /// </summary>
-        public String ModelNo => mModelNo;
+        public String ModelNo { get; private set; }
 
-        public bool LBA48Mode => mLBA48Mode;
+        /// <summary>
+        ///     Whether the drive is capable of LBA-48 Mode commands.
+        /// </summary>
+        public bool LBA48Mode { get; private set; }
 
-        public bool Initialised => initialised;
+        /// <summary>
+        ///     Whether the drive has been initialised or not.
+        /// </summary>
+        public bool Initialised { get; private set; }
 
-        public uint MaxWritePioBlocks => maxWritePioBlocks;
+        /// <summary>
+        ///     The maximum number of logical blocks to write in a single PIO command for the drive.
+        /// </summary>
+        /// <remarks>
+        ///     This limit is necessary because some real-world drives do not conform to standards.
+        /// </remarks>
+        public uint MaxWritePioBlocks { get; private set; } = 128;
+
+        /// <summary>
+        ///     Initialises a new PATA Base device with the specified information.
+        /// </summary>
+        /// <param name="IO">The IO Ports to use for accessing the device.</param>
+        /// <param name="ControllerId">The controller identifier of the device.</param>
+        /// <param name="BusPosition">The position of the device on the ATA bus.</param>
+        public PATABase(ATAIOPorts IO, ControllerIds ControllerId, BusPositions BusPosition)
+            : base("PATA Base Device")
+        {
+            this.IO = IO;
+            Info[0] = (uint)(this.ControllerId = ControllerId);
+            Info[1] = (uint)(this.BusPosition = BusPosition);
+
+            // Disable IRQs, we use polling currently
+            SelectDrive(0, false);
+            this.IO.Control.Write_Byte(0x02);
+
+            DriveType = DiscoverDrive();
+
+            if (DriveType == SpecLevel.PATAPI)
+            {
+                blockSize = 2048;
+            }
+
+            if (DriveType == SpecLevel.PATA ||
+                DriveType == SpecLevel.PATAPI)
+            {
+                InitDrive();
+                Initialised = true;
+            }
+        }
 
         /// <summary>
         ///     Attempts to initialise the ATA drive.
         /// </summary>
-        protected void InitDrive()
+        private void InitDrive()
         {
             // At this point, DiscoverDrive has been called, but the additional identification data 
             // has not been read
 
             // If it's a PATAPI drive, we need to send the IDENTIFY_PACKET command
-            if (mDriveType == SpecLevel.PATAPI)
+            if (DriveType == SpecLevel.PATAPI)
             {
                 Reset();
                 SendCmd(Cmd.IdentifyPacket);
             }
 
             // Read Identification Space of the Device
-            var deviceInfoBuffer = new ushort[256];
-            IO.Data.Read_UInt16s(deviceInfoBuffer);
-            mSerialNo = GetString(deviceInfoBuffer, 10, 20).Trim();
-            mFirmwareRev = GetString(deviceInfoBuffer, 23, 8).Trim();
-            mModelNo = GetString(deviceInfoBuffer, 27, 40).Trim();
+            var DeviceInfoBuffer = new ushort[256];
+            IO.Data.Read_UInt16s(DeviceInfoBuffer);
+            SerialNo = GetString(DeviceInfoBuffer, 10, 20).Trim();
+            FirmwareRev = GetString(DeviceInfoBuffer, 23, 8).Trim();
+            ModelNo = GetString(DeviceInfoBuffer, 27, 40).Trim();
 
             // Hitachi hardrives found in real-world hardware failed in that:
             //      They only work with one-sector writes at a time
@@ -413,50 +410,50 @@ namespace Kernel.ATA
             //  one though.
             //  
             //  Fujitsu drives suffer a similar fault.
-            if (mModelNo.StartsWith("Hitachi") || mModelNo.StartsWith("FUJITSU"))
+            if (ModelNo.StartsWith("Hitachi") || ModelNo.StartsWith("FUJITSU"))
             {
-                maxWritePioBlocks = 1;
+                MaxWritePioBlocks = 1;
             }
 
             //Words (61:60) shall contain the value one greater than the total number of user-addressable
             //sectors in 28-bit addressing and shall not exceed 0x0FFFFFFF. 
             // We need 28 bit addressing - small drives on VMWare and possibly other cases are 28 bit
-            blockCount = ((uint) deviceInfoBuffer[61] << 16 | deviceInfoBuffer[60]) - 1;
+            Blocks = ((uint)DeviceInfoBuffer[61] << 16 | DeviceInfoBuffer[60]) - 1;
 
             //Words (103:100) shall contain the value one greater than the total number of user-addressable
             //sectors in 48-bit addressing and shall not exceed 0x0000FFFFFFFFFFFF.
             //The contents of words (61:60) and (103:100) shall not be used to determine if 48-bit addressing is
             //supported. IDENTIFY DEVICE bit 10 word 83 indicates support for 48-bit addressing.
-            bool xLba48Capable = (deviceInfoBuffer[83] & 0x400) != 0;
-            if (xLba48Capable)
+            bool LBA48Capable = (DeviceInfoBuffer[83] & 0x400) != 0;
+            if (LBA48Capable)
             {
-                blockCount = ((ulong) deviceInfoBuffer[103] << 48 | (ulong) deviceInfoBuffer[102] << 32 |
-                              (ulong) deviceInfoBuffer[101] << 16 | deviceInfoBuffer[100]) - 1;
-                mLBA48Mode = true;
+                Blocks = ((ulong)DeviceInfoBuffer[103] << 48 | (ulong)DeviceInfoBuffer[102] << 32 |
+                          (ulong)DeviceInfoBuffer[101] << 16 | DeviceInfoBuffer[100]) - 1;
+                LBA48Mode = true;
             }
         }
 
         /// <summary>
         ///     Gets a string from the specified UInt16[]. Equivalent of ASCII byte array conversion.
         /// </summary>
-        /// <param name="buffer">The data to convert.</param>
-        /// <param name="startIndex">The index to start converting at.</param>
-        /// <param name="strLength">The length of the string to create.</param>
+        /// <param name="Buffer">The data to convert.</param>
+        /// <param name="StartIndex">The index to start converting at.</param>
+        /// <param name="StrLength">The length of the string to create.</param>
         /// <returns>The new string.</returns>
-        protected String GetString(ushort[] buffer, int startIndex, int strLength)
+        private static String GetString(ushort[] Buffer, int StartIndex, int StrLength)
         {
             //Each UInt16 is treated as 2 ASCII characters.
-            //  The upshot is that the buffer is essentially a byte array 
+            //  The upshot is that the Buffer is essentially a byte array 
             //  and we are treating each byte as one ASCII character.
 
-            String newStr = String.New(strLength);
-            for (int i = 0; i < strLength/2; i++)
+            String NewString = String.New(StrLength);
+            for (int i = 0; i < StrLength/2; i++)
             {
-                ushort xChar = buffer[startIndex + i];
-                newStr[i*2] = (char) ((xChar >> 8) & 0xFF);
-                newStr[i*2 + 1] = (char) (xChar & 0xFF);
+                ushort CurrentChar = Buffer[StartIndex + i];
+                NewString[i*2] = (char)((CurrentChar >> 8) & 0xFF);
+                NewString[i*2 + 1] = (char)(CurrentChar & 0xFF);
             }
-            return newStr;
+            return NewString;
         }
 
 
@@ -518,33 +515,31 @@ namespace Kernel.ATA
             IO.LBA0.Write_Byte(0);
             IO.LBA1.Write_Byte(0);
             IO.LBA2.Write_Byte(0);
-            var status = SendCmd(Cmd.Identify, false);
+            Status TheStatus = SendCmd(Cmd.Identify, false);
 
-            if ((status & Status.Error) != 0)
+            if ((TheStatus & Status.Error) != 0)
             {
                 // Can look in Error port for more info
                 // Device is not ATA
                 // Error status can also triggered by ATAPI devices
                 // So check LBA1 and LBA2 to detect an ATAPI device.
-                ushort typeId = (ushort) (IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
-                if (typeId == (ushort) SpecLevel.PATAPI)
+                ushort TypeId = (ushort)(IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
+                switch (TypeId)
                 {
-                    return SpecLevel.PATAPI;
+                    case (ushort)SpecLevel.PATAPI:
+                        return SpecLevel.PATAPI;
+                    case (ushort)SpecLevel.SATAPI:
+                        return SpecLevel.SATAPI;
+                    case (ushort)SpecLevel.SATA:
+                        return SpecLevel.SATA;
+                    default:
+                        // Unknown type. Might not be a device.
+                        return SpecLevel.Null;
                 }
-                if (typeId == (ushort) SpecLevel.SATAPI)
-                {
-                    return SpecLevel.SATAPI;
-                }
-                if (typeId == (ushort) SpecLevel.SATA)
-                {
-                    return SpecLevel.SATA;
-                }
-                // Unknown type. Might not be a device.
-                return SpecLevel.Null;
             }
 
             // No drive found, go to next
-            if (status == Status.None)
+            if (TheStatus == Status.None)
             {
                 return SpecLevel.Null;
             }
@@ -554,41 +549,40 @@ namespace Kernel.ATA
             //  check LBA1 and LBA2 ports for non-zero values.
             //  If they are non-zero, then the drive is not ATA.
             {
-                ushort typeId = (ushort) (IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
+                ushort TypeId = (ushort)(IO.LBA2.Read_Byte() << 8 | IO.LBA1.Read_Byte());
                 // It is, however, possible to detect what type of device is actually attached.
-                if (typeId == (ushort) SpecLevel.PATAPI)
+                switch (TypeId)
                 {
-                    return SpecLevel.PATAPI;
-                }
-                if (typeId == (ushort) SpecLevel.SATAPI)
-                {
-                    return SpecLevel.SATAPI;
-                }
-                if (typeId == (ushort) SpecLevel.SATA)
-                {
-                    return SpecLevel.SATA;
-                }
-                if (typeId != 0u)
-                {
-                    // Unknown type. Might not be a device.
-                    return SpecLevel.Null;
+                    case 0:
+                        // PATA - Proceed as normal
+                        break;
+                    case (ushort)SpecLevel.PATAPI:
+                        return SpecLevel.PATAPI;
+                    case (ushort)SpecLevel.SATAPI:
+                        return SpecLevel.SATAPI;
+                    case (ushort)SpecLevel.SATA:
+                        return SpecLevel.SATA;
+                    default:
+                        // Unknown type. Might not be a device.
+                        return SpecLevel.Null;
                 }
             }
 
             do
             {
                 Wait();
-                status = (Status) IO.Status.Read_Byte();
-            } while ((status & Status.DRQ) == 0 &&
-                     (status & Status.Error) == 0);
+                TheStatus = (Status)IO.Status.Read_Byte();
+            } while ((TheStatus & Status.DRQ) == 0 &&
+                     (TheStatus & Status.Error) == 0);
 
-            if ((status & Status.Error) != 0)
+            if ((TheStatus & Status.Error) != 0)
             {
                 // Error
                 return SpecLevel.Null;
             }
 
-            if ((status & Status.DRQ) == 0)
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if ((TheStatus & Status.DRQ) == 0)
             {
                 // Error
                 return SpecLevel.Null;
@@ -600,120 +594,120 @@ namespace Kernel.ATA
         /// <summary>
         ///     Sends the specified command (with ThrowOnError=true).
         /// </summary>
-        /// <param name="aCmd">The command to send.</param>
+        /// <param name="TheCommand">The command to send.</param>
         /// <returns>The device status.</returns>
-        internal Status SendCmd(Cmd aCmd)
-        {
-            return SendCmd(aCmd, true);
-        }
+        internal Status SendCmd(Cmd TheCommand) => SendCmd(TheCommand, true);
 
         /// <summary>
         ///     Sends the specified command.
         /// </summary>
-        /// <param name="aCmd">The command to send.</param>
-        /// <param name="aThrowOnError">
+        /// <param name="TheCommand">The command to send.</param>
+        /// <param name="ThrowOnError">
         ///     Whether to throw an exception if the device reports
         ///     an error status.
         /// </param>
         /// <returns>The device status.</returns>
-        internal Status SendCmd(Cmd aCmd, bool aThrowOnError)
+        internal Status SendCmd(Cmd TheCommand, bool ThrowOnError)
         {
-            IO.Command.Write_Byte((byte) aCmd);
-            Status xStatus;
-            int timeout = 20000000;
+            IO.Command.Write_Byte((byte)TheCommand);
+            Status TheStatus;
+            int Timeout = 20000000;
             do
             {
                 Wait();
-                xStatus = (Status) IO.Control.Read_Byte();
-            } while ((xStatus & Status.Busy) != 0 &&
-                     (xStatus & Status.Error) == 0 &&
-                     timeout-- > 0);
+                TheStatus = (Status)IO.Control.Read_Byte();
+            } while ((TheStatus & Status.Busy) != 0 &&
+                     (TheStatus & Status.Error) == 0 &&
+                     Timeout-- > 0);
 
             // Error occurred
-            if (aThrowOnError && ((xStatus & Status.Error) != 0 || timeout == 0))
+            if (ThrowOnError && ((TheStatus & Status.Error) != 0 || Timeout == 0))
             {
                 #region Throw Exception 
 
-                String cmdName = "";
-                switch (aCmd)
+                String CommandName = "";
+                switch (TheCommand)
                 {
                     case Cmd.CacheFlush:
-                        cmdName = "CacheFlush";
+                        CommandName = "CacheFlush";
                         break;
                     case Cmd.CacheFlushExt:
-                        cmdName = "CacheFlushExt";
+                        CommandName = "CacheFlushExt";
                         break;
                     case Cmd.Eject:
-                        cmdName = "Eject";
+                        CommandName = "Eject";
                         break;
                     case Cmd.Identify:
-                        cmdName = "Identify";
+                        CommandName = "Identify";
                         break;
                     case Cmd.IdentifyPacket:
-                        cmdName = "IdentifyPacket";
+                        CommandName = "IdentifyPacket";
                         break;
                     case Cmd.Packet:
-                        cmdName = "Packet";
+                        CommandName = "Packet";
                         break;
                     case Cmd.Read:
-                        cmdName = "Read";
+                        CommandName = "Read";
                         break;
-                    case Cmd.ReadDma:
-                        cmdName = "ReadDma";
+                    case Cmd.ReadDMA:
+                        CommandName = "ReadDMA";
                         break;
-                    case Cmd.ReadDmaExt:
-                        cmdName = "ReadDmaExt";
+                    case Cmd.ReadDMAExt:
+                        CommandName = "ReadDMAExt";
                         break;
-                    case Cmd.ReadPio:
-                        cmdName = "ReadPio";
+                    case Cmd.ReadPIO:
+                        CommandName = "ReadPIO";
                         break;
-                    case Cmd.ReadPioExt:
-                        cmdName = "ReadPioExt";
+                    case Cmd.ReadPIOExt:
+                        CommandName = "ReadPIOExt";
                         break;
-                    case Cmd.WriteDma:
-                        cmdName = "WriteDma";
+                    case Cmd.WriteDMA:
+                        CommandName = "WriteDMA";
                         break;
-                    case Cmd.WriteDmaExt:
-                        cmdName = "WriteDmaExt";
+                    case Cmd.WriteDMAExt:
+                        CommandName = "WriteDMAExt";
                         break;
-                    case Cmd.WritePio:
-                        cmdName = "WritePio";
+                    case Cmd.WritePIO:
+                        CommandName = "WritePIO";
                         break;
-                    case Cmd.WritePioExt:
-                        cmdName = "WritePioExt";
+                    case Cmd.WritePIOExt:
+                        CommandName = "WritePIOExt";
                         break;
                     default:
-                        cmdName = "[Unrecognised]";
+                        CommandName = "[Unrecognised]";
                         break;
                 }
-                ExceptionMethods.Throw(new Exception("ATA send command error! Command was: " + cmdName));
+                ExceptionMethods.Throw(new Exception("ATA send command error! Command was: " + CommandName));
 
                 #endregion
             }
-            return timeout == 0 ? Status.Timeout : xStatus;
+            return Timeout == 0 ? Status.Timeout : TheStatus;
         }
 
-        public virtual void Reset()
+        /// <summary>
+        ///     Resets the device.
+        /// </summary>
+        public void Reset()
         {
             IO.Control.Write_Byte(0x4);
             Wait();
             IO.Control.Write_Byte(0x0);
-            Status xStatus;
-            int timeout = 20000000;
+            Status TheStatus;
+            int Timeout = 20000000;
             do
             {
                 Wait();
-                xStatus = (Status) IO.Control.Read_Byte();
-            } while ((xStatus & Status.Busy) != 0 &&
-                     (xStatus & Status.Error) == 0 &&
-                     timeout-- > 0);
+                TheStatus = (Status)IO.Control.Read_Byte();
+            } while ((TheStatus & Status.Busy) != 0 &&
+                     (TheStatus & Status.Error) == 0 &&
+                     Timeout-- > 0);
 
             // Error occurred
-            if ((xStatus & Status.Error) != 0)
+            if ((TheStatus & Status.Error) != 0)
             {
                 ExceptionMethods.Throw(new Exception("ATA software reset error!"));
             }
-            else if (timeout == 0)
+            else if (Timeout == 0)
             {
                 ExceptionMethods.Throw(new Exception("ATA software reset timeout!"));
             }
@@ -722,19 +716,41 @@ namespace Kernel.ATA
             SelectDrive(0, false);
         }
 
-        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
-        {
-            ExceptionMethods.Throw(new NotSupportedException("Read from PATABase object not supported!"));
-        }
+        /// <summary>
+        ///     Cannot read or write an unspecific ATA device! Use one of the specific driver classes: PATA/PATAPI/SATA/SATAPI.
+        ///     Throws Not Supported Exception.
+        /// </summary>
+        /// <param name="BlockNo">Unused</param>
+        /// <param name="BlockCount">Unused</param>
+        /// <param name="Data">Unused</param>
+        public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
+            => ExceptionMethods.Throw(new NotSupportedException("Read from PATABase object not supported!"));
 
-        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
-        {
-            ExceptionMethods.Throw(new NotSupportedException("Write to PATABase object not supported!"));
-        }
+        /// <summary>
+        ///     Cannot read or write an unspecific ATA device! Use one of the specific driver classes: PATA/PATAPI.
+        ///     Throws Not Supported Exception.
+        /// </summary>
+        /// <param name="BlockNo">Unused</param>
+        /// <param name="BlockCount">Unused</param>
+        /// <param name="Data">Unused</param>
+        public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
+            => ExceptionMethods.Throw(new NotSupportedException("Write to PATABase object not supported!"));
 
+        /// <summary>
+        ///     Cannot write an unspecific ATA device and therefore cannot clean caches of one either! Use one of the specific
+        ///     driver classes: PATA/PATAPI.
+        ///     Throws Not Supported Exception.
+        /// </summary>
+        /// <remarks>
+        ///     Unlike in other classes, this method does throw an exception. This is on the basis that a PATABase device should
+        ///     never be passed outside of
+        ///     an ATA driver (or manager) - it is internal. Thus there should be no high level management code that is able to
+        ///     directly call this method.
+        ///     If there is such code able to access this class directly, then the class has been misused.
+        /// </remarks>
         public override void CleanCaches()
-        {
-            ExceptionMethods.Throw(new NotSupportedException("CleanCaches of PATABase object not supported!"));
-        }
+            =>
+                ExceptionMethods.Throw(
+                    new NotSupportedException("CleanCaches of PATABase object should never be called!"));
     }
 }

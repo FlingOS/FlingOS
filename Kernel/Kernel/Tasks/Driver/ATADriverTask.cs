@@ -77,8 +77,8 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine("Firmware Rev: " + theATA.FirmwareRev);
                     console.WriteLine("Model No: " + theATA.ModelNo);
                     console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
-                    console.WriteLine((String) "Block Count: " + theATA.BlockCount);
-                    console.WriteLine((String) "Size: " + ((theATA.BlockCount*theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine((String) "Block Count: " + theATA.Blocks);
+                    console.WriteLine((String) "Size: " + ((theATA.Blocks*theATA.BlockSize) >> 20) + " MB");
                     console.WriteLine((String) "Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
 
                     numDrives++;
@@ -97,8 +97,8 @@ namespace Kernel.Tasks.Driver
                     console.WriteLine("Firmware Rev: " + theATA.FirmwareRev);
                     console.WriteLine("Model No: " + theATA.ModelNo);
                     console.WriteLine((String) "Block Size: " + theATA.BlockSize + " bytes");
-                    console.WriteLine((String) "Block Count: " + theATA.BlockCount);
-                    console.WriteLine((String) "Size: " + ((theATA.BlockCount*theATA.BlockSize) >> 20) + " MB");
+                    console.WriteLine((String) "Block Count: " + theATA.Blocks);
+                    console.WriteLine((String) "Size: " + ((theATA.Blocks*theATA.BlockSize) >> 20) + " MB");
                     console.WriteLine((String) "Max Write Pio Blocks: " + theATA.MaxWritePioBlocks);
 
                     numDrives++;

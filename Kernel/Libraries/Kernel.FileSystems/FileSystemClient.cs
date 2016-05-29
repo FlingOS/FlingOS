@@ -74,7 +74,7 @@ namespace Kernel.FileSystems
         private void StatFS()
         {
             String FSPath = DataInPipe.ReadString(true);
-            if (FSPath.length > 0)
+            if (FSPath.Length > 0)
             {
                 FileSystemMapping Mapping = FileSystemManager.GetMapping(FSPath);
                 String[] Prefixes = new String[1];

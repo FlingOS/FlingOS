@@ -488,6 +488,7 @@ namespace Kernel.USB
                     }
                     catch
                     {
+                        // ignored
 #if USB_TRACE
                         DBGMSG("Error creating USB device! Aborted creating device.");
 #endif

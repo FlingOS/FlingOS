@@ -32,8 +32,17 @@ using Kernel.Framework;
 
 namespace Kernel.ATA
 {
+    /// <summary>
+    ///     Test methods for testing the ATA drivers.
+    /// </summary>
     public class ATATests : Test
     {
+        /// <summary>
+        ///     Tests reading a lot of data from the first available PATA device.
+        /// </summary>
+        /// <param name="OutputMessage">Delegate method for outputting informational messages.</param>
+        /// <param name="OutputWarning">Delegate method for outputting warning messages.</param>
+        /// <param name="OutputError">Delegate method for outputting error messages.</param>
         public void Test_LongRead(OutputMessageDel OutputMessage, OutputWarningDel OutputWarning,
             OutputErrorDel OutputError)
         {
@@ -46,10 +55,10 @@ namespace Kernel.ATA
             OutputMessage("ATATests : Test_LongRead", "Searching for PATA device...");
             for (int i = 0; i < ATAManager.Devices.Count; i++)
             {
-                Device ADevice = (Device) ATAManager.Devices[i];
+                Device ADevice = (Device)ATAManager.Devices[i];
                 if (ADevice is PATA)
                 {
-                    TestDevice = (PATA) ADevice;
+                    TestDevice = (PATA)ADevice;
                     break;
                 }
             }
@@ -60,7 +69,7 @@ namespace Kernel.ATA
                 OutputWarning("ATATests : Test_LongRead", "No PATA device found. Aborting test.");
                 return;
             }
-            OutputMessage("ATATests : Test_LongRead", (String) "Device found. Controller ID: " +
+            OutputMessage("ATATests : Test_LongRead", (String)"Device found. Controller ID: " +
                                                       (TestDevice.ControllerIds == ATA.ControllerIds.Primary
                                                           ? "Primary"
                                                           : "Secondary") + " , Position: " +
@@ -70,37 +79,30 @@ namespace Kernel.ATA
 
             // Create a buffer for storing up to 16 blocks of data
             OutputMessage("ATATests : Test_LongRead", "Creating data buffer...");
-            byte[] buffer = new byte[32*(int) (uint) TestDevice.BlockSize];
+            byte[] Buffer = new byte[32*(int)(uint)TestDevice.BlockSize];
             OutputMessage("ATATests : Test_LongRead", "done.");
 
             try
             {
                 OutputMessage("ATATests : Test_LongRead", "Calculating statistical data...");
-                ulong FractionOfDisk = Math.Divide(TestDevice.BlockCount, 10);
+                ulong FractionOfDisk = Math.Divide(TestDevice.Blocks, 10);
                 ulong PercentileOfFraction = Math.Divide(FractionOfDisk, 100);
-                ulong dist = 0;
-                bool a = true;
+                ulong Dist = 0;
+                bool A = true;
                 OutputMessage("ATATests : Test_LongRead", "done.");
 
                 OutputMessage("ATATests : Test_LongRead", "Reading disk 32 sectors at a time...");
                 // Attempt to read every sector of the disk 32 at a time
-                for (ulong i = 0; i < FractionOfDisk; i += 32, dist += 32)
+                for (ulong i = 0; i < FractionOfDisk; i += 32, Dist += 32)
                 {
-                    TestDevice.ReadBlock(i, 32, buffer);
+                    TestDevice.ReadBlock(i, 32, Buffer);
 
-                    if (dist >= PercentileOfFraction)
+                    if (Dist >= PercentileOfFraction)
                     {
-                        dist -= PercentileOfFraction;
-                        if (a)
-                        {
-                            OutputMessage("ATATests : Test_LongRead", "[+1% complete] (a)");
-                        }
-                        else
-                        {
-                            OutputMessage("ATATests : Test_LongRead", "[+1% complete] (b)");
-                        }
+                        Dist -= PercentileOfFraction;
 
-                        a = !a;
+                        OutputMessage("ATATests : Test_LongRead", A ? "[+1% complete] (a)" : "[+1% complete] (b)");
+                        A = !A;
                     }
                 }
                 OutputMessage("ATATests : Test_LongRead", "done.");

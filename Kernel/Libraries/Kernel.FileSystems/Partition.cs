@@ -67,10 +67,7 @@ namespace Kernel.FileSystems
             StartingSector = aStartingSector;
         }
 
-        public override ulong BlockCount
-        {
-            get { return TheDiskDevice.BlockCount; }
-        }
+        public override ulong Blocks => TheDiskDevice.Blocks;
 
         public override ulong BlockSize
         {
@@ -80,25 +77,25 @@ namespace Kernel.FileSystems
         /// <summary>
         ///     Reads contiguous blocks within the partition. Block 0 = 1st sector of the partition.
         /// </summary>
-        /// <param name="aBlockNo">The first sector (block) number to read.</param>
-        /// <param name="aBlockCount">The number of sectors (blocks) to read.</param>
-        /// <param name="aData">The buffer to read into.</param>
-        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        /// <param name="BlockNo">The first sector (block) number to read.</param>
+        /// <param name="BlockCount">The number of sectors (blocks) to read.</param>
+        /// <param name="Data">The buffer to read into.</param>
+        public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            ulong DiskBlockNo = StartingSector + aBlockNo;
-            TheDiskDevice.ReadBlock(DiskBlockNo, aBlockCount, aData);
+            ulong DiskBlockNo = StartingSector + BlockNo;
+            TheDiskDevice.ReadBlock(DiskBlockNo, BlockCount, Data);
         }
 
         /// <summary>
         ///     See base class.
         /// </summary>
-        /// <param name="aBlockNo">See base class.</param>
-        /// <param name="aBlockCount">See base class.</param>
-        /// <param name="aData">See base class.</param>
-        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        /// <param name="BlockNo">See base class.</param>
+        /// <param name="BlockCount">See base class.</param>
+        /// <param name="Data">See base class.</param>
+        public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            ulong xHostBlockNo = StartingSector + aBlockNo;
-            TheDiskDevice.WriteBlock(xHostBlockNo, aBlockCount, aData);
+            ulong xHostBlockNo = StartingSector + BlockNo;
+            TheDiskDevice.WriteBlock(xHostBlockNo, BlockCount, Data);
         }
 
         /// <summary>

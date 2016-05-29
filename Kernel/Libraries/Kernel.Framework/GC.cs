@@ -675,7 +675,7 @@ namespace Kernel.Framework
 
                 String newStr = (String) ObjectUtilities.GetObject(newObjPtr + 1);
                 newStr._type = (Type) typeof(String);
-                newStr.length = length;
+                newStr.Length = length;
 
                 //Move past GCHeader
                 byte* newObjBytePtr = (byte*) (newObjPtr + 1);

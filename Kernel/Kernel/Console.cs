@@ -132,7 +132,7 @@ namespace Kernel
             //  the current character.
             //This is so that typed characters at least appear in current 
             //  colour otherwise they wouldn't show at all.
-            for (int i = 0; i < str.length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 str[i] |= (char) CurrentAttr;
             }
@@ -168,7 +168,7 @@ namespace Kernel
         public virtual void Write(String str)
         {
             //Loop through each character, outputting them.
-            for (int i = 0; i < str.length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 //If we have reached the end of the current line,
                 //  create a new one using WriteLine()
@@ -283,7 +283,7 @@ namespace Kernel
                 Buffer.RemoveAt(0);
 
                 // And make it into a new blank line
-                for (int i = 0; i < line.length; i++)
+                for (int i = 0; i < line.Length; i++)
                 {
                     line[i] = ' ';
                 }
@@ -414,7 +414,7 @@ namespace Kernel
 
             //Set the attr of all characters in the rest of the line to
             //  the current colour.
-            for (int i = CurrentChar; i < str.length; i++)
+            for (int i = CurrentChar; i < str.Length; i++)
             {
                 str[i] = (char) ((str[i] & 0x00FF) | CurrentAttr);
             }

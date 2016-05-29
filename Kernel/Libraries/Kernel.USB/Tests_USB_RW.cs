@@ -71,7 +71,7 @@ namespace Kernel.USB
             try
             {
                 OutputMessage("USBTests : Test_LongRead", "Calculating statistical data...");
-                ulong FractionOfDisk = TestDevice.BlockCount; // Framework.Math.Divide(TestDevice.BlockCount, 10);
+                ulong FractionOfDisk = TestDevice.Blocks; // Framework.Math.Divide(TestDevice.BlockCount, 10);
                 ulong PercentileOfFraction = Math.Divide(FractionOfDisk, 100);
                 ulong dist = 0;
                 bool a = true;

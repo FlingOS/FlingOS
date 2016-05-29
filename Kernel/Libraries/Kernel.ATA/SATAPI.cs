@@ -27,25 +27,51 @@
 #endregion
 
 using Kernel.Devices;
+using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes.Requests.Devices;
 
 namespace Kernel.ATA
 {
+    /// <summary>
+    ///     Represents a SATAPI driver. Nothing is implemented yet so this is just a stub.
+    /// </summary>
     public class SATAPI : DiskDevice
     {
+        /// <summary>
+        ///     Initialises a new stub SATAPI driver.
+        /// </summary>
         public SATAPI()
             : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "SATAPI Disk", new uint[0], true)
         {
         }
 
-        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
-        {
-        }
+        /// <summary>
+        ///     This is only a stub driver at the moment so this method throws a not supported exception.
+        /// </summary>
+        /// <param name="BlockNo">Unused</param>
+        /// <param name="BlockCount">Unused</param>
+        /// <param name="Data">Unused</param>
+        public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
+            => ExceptionMethods.Throw(new NotSupportedException("SATAPI driver has not been implemented yet."));
 
-        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
-        {
-        }
+        /// <summary>
+        ///     This is only a stub driver at the moment so this method throws a not supported exception.
+        /// </summary>
+        /// <param name="BlockNo">Unused</param>
+        /// <param name="BlockCount">Unused</param>
+        /// <param name="Data">Unused</param>
+        public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
+            => ExceptionMethods.Throw(new NotSupportedException("SATAPI driver has not been implemented yet."));
 
+        /// <summary>
+        ///     This is only a stub driver at the moment so this method does nothing.
+        /// </summary>
+        /// <remarks>
+        ///     The choice to do nothing rather than throw an exception is deliberate. Management code
+        ///     higher up may iterate all known disk devices to clean all caches before performing a
+        ///     shut down. The management code shouldn't have to worry about devices which don't clean
+        ///     anything because there is nothing to clean!
+        /// </remarks>
         public override void CleanCaches()
         {
         }

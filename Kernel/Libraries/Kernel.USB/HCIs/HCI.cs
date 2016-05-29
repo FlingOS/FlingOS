@@ -164,7 +164,7 @@ namespace Kernel.USB.HCIs
         {
 #if HCI_TRACE || USB_TRACE
             BasicConsole.WriteLine(((Framework.String)"transfer.packetSize=") + transfer.packetSize +
-                                                       ", length=" + length);
+                                                       ", length=" + Length);
 #endif
             ushort clampedLength = Math.Min(transfer.packetSize, length);
             length -= clampedLength;

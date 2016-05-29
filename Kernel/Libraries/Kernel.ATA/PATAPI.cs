@@ -28,8 +28,8 @@
 
 //#define PATAPI_TRACE
 
-using Kernel.Devices;
 using Kernel.ATA.Exceptions;
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
@@ -45,21 +45,75 @@ namespace Kernel.ATA
         /// <summary>
         ///     Whether IRQ 14 has been invoked or not.
         /// </summary>
-        private static bool _IRQ14Invoked;
+        private static bool IRQ14Invoked;
+
         /// <summary>
         ///     Whether IRQ 15 has been invoked or not.
         /// </summary>
-        private static bool _IRQ15Invoked;
+        private static bool IRQ15Invoked;
+
         /// <summary>
         ///     The underlying PATA device that this PATAPI driver is wrapping.
         /// </summary>
-        protected PATABase BaseDevice;
+        private readonly PATABase BaseDevice;
+
+        /// <summary>
+        ///     The serial number of the device. <seealso cref="PATABase.SerialNo" />
+        /// </summary>
+        public String SerialNo => BaseDevice.SerialNo;
+
+        /// <summary>
+        ///     The firmware revision of the device.
+        /// </summary>
+        public String FirmwareRev => BaseDevice.FirmwareRev;
+
+        /// <summary>
+        ///     The model number of the device.
+        /// </summary>
+        public String ModelNo => BaseDevice.ModelNo;
+
+        /// <summary>
+        ///     The total number of logical blocks on the currently inserted disc. Undefined if no disc is present.
+        /// </summary>
+        public override ulong Blocks => BaseDevice.Blocks;
+
+        /// <summary>
+        ///     The size (in bytes) of the logical blocks on the currently inserted disc. Undefined if no disc is present.
+        /// </summary>
+        public override ulong BlockSize => BaseDevice.BlockSize;
+
+        /// <summary>
+        ///     The maximum number of logical blocks to write in a single PIO command for the drive.
+        /// </summary>
+        /// <remarks>
+        ///     This limit is necessary because some real-world drives do not conform to standards.
+        /// </remarks>
+        public uint MaxWritePioBlocks => BaseDevice.MaxWritePioBlocks;
+
+        /// <summary>
+        ///     True if the relevant IRQ for the device has been invoked. Otherwise, false.
+        /// </summary>
+        private bool IRQInvoked
+        {
+            get { return BaseDevice.ControllerId == ATA.ControllerIds.Primary ? IRQ14Invoked : IRQ15Invoked; }
+            set
+            {
+                if (BaseDevice.ControllerId == ATA.ControllerIds.Primary)
+                {
+                    IRQ14Invoked = value;
+                }
+                else
+                {
+                    IRQ15Invoked = value;
+                }
+            }
+        }
 
         /// <summary>
         ///     Initialises a new PATAPI driver for the specified device.
         /// </summary>
         /// <param name="BaseDevice">The PATAPI device to be wrapped.</param>
-        public PATAPI(PATABase BaseDevice)
+        internal PATAPI(PATABase BaseDevice)
             : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATAPI Disk", BaseDevice.Info, true)
         {
             this.BaseDevice = BaseDevice;
@@ -73,61 +127,45 @@ namespace Kernel.ATA
         }
 
         /// <summary>
-        ///     The serial number of the device. <seealso cref="PATABase.SerialNo"/>
+        ///     Handles IRQs by checking if they are relevant and setting the correct IRQ Invoked flag if necessary.
+        ///     <seealso cref="IRQInvoked" />
         /// </summary>
-        public String SerialNo => BaseDevice.SerialNo;
-
-        public String FirmwareRev => BaseDevice.FirmwareRev;
-
-        public String ModelNo => BaseDevice.ModelNo;
-
-        public override ulong BlockCount => BaseDevice.BlockCount;
-
-        public override ulong BlockSize => BaseDevice.BlockSize;
-
-        public uint MaxWritePioBlocks => BaseDevice.MaxWritePioBlocks;
-
-        private bool IRQInvoked
+        /// <param name="IRQNumber">The number of the IRQ that has triggered the interrupt.</param>
+        public static void IRQHandler(uint IRQNumber)
         {
-            get { return BaseDevice.ControllerId == ATA.ControllerIds.Primary ? _IRQ14Invoked : _IRQ15Invoked; }
-            set
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (IRQNumber)
             {
-                if (BaseDevice.ControllerId == ATA.ControllerIds.Primary)
-                {
-                    _IRQ14Invoked = value;
-                }
-                else
-                {
-                    _IRQ15Invoked = value;
-                }
+                case 14:
+                    IRQ14Invoked = true;
+                    break;
+                case 15:
+                    IRQ15Invoked = true;
+                    break;
             }
         }
 
-        public static void IRQHandler(uint irqNumber)
-        {
-            if (irqNumber == 14)
-            {
-                _IRQ14Invoked = true;
-            }
-            else if (irqNumber == 15)
-            {
-                _IRQ15Invoked = true;
-            }
-        }
-
+        /// <summary>
+        ///     Waits up to 100ms for an IRQ to occur.
+        /// </summary>
+        /// <returns>True if an IRQ was invoked during the wait, otherwise false.</returns>
         private bool WaitForIRQ()
         {
-            int timeout = 20;
-            while (!IRQInvoked && timeout-- > 0)
+            int Timeout = 20;
+            while (!IRQInvoked && Timeout-- > 0)
                 SystemCalls.SleepThread(5);
 
-            return timeout == 0;
+            return IRQInvoked;
         }
 
-        public override void ReadBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
+        /// <summary>
+        ///     Reads contiguous logical blocks from the device.
+        /// </summary>
+        /// <param name="BlockNo">The logical block number to read.</param>
+        /// <param name="BlockCount">The number of blocks to read.</param>
+        /// <param name="Data">The byte array to store the data in.</param>
+        public override void ReadBlock(ulong BlockNo, uint BlockCount, byte[] Data)
         {
-            //ExceptionMethods.Throw(new Framework.Exceptions.NotSupportedException("Cannot read from PATAPI device (yet)!"));
-
             // Reset IRQ (by reading status register)
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Reset IRQ");
@@ -142,34 +180,40 @@ namespace Kernel.ATA
             BaseDevice.SelectDrive(0, false);
 
             // Read the data
-            for (uint i = 0; i < aBlockCount; i++)
+            for (uint i = 0; i < BlockCount; i++)
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Read block");
 #endif
-                _ReadBlock(aBlockNo + i, aData, (uint) (i*BlockSize));
+                _ReadBlock(BlockNo + i, Data, (uint)(i*BlockSize));
             }
         }
 
-        private void _ReadBlock(ulong aBlockNo, byte[] aData, uint DataOffset)
+        /// <summary>
+        ///     Reads a single block from position BlockNo on the disc into the Data array at the specified Offset.
+        /// </summary>
+        /// <param name="BlockNo">The number of the block to read.</param>
+        /// <param name="Data">The array to store the data in.</param>
+        /// <param name="Offset">The offset in the Data array to start storing the data at.</param>
+        private void _ReadBlock(ulong BlockNo, byte[] Data, uint Offset)
         {
             // Setup the packet
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Setup ATAPI packet");
 #endif
-            byte[] atapi_packet = new byte[12];
-            atapi_packet[0] = 0xA8;
-            atapi_packet[1] = 0x0;
-            atapi_packet[2] = (byte) (aBlockNo >> 24);
-            atapi_packet[3] = (byte) (aBlockNo >> 16);
-            atapi_packet[4] = (byte) (aBlockNo >> 8);
-            atapi_packet[5] = (byte) (aBlockNo >> 0);
-            atapi_packet[6] = 0x0;
-            atapi_packet[7] = 0x0;
-            atapi_packet[8] = 0x0;
-            atapi_packet[9] = 1;
-            atapi_packet[10] = 0x0;
-            atapi_packet[11] = 0x0;
+            byte[] PATAPIPacket = new byte[12];
+            PATAPIPacket[0] = 0xA8;
+            PATAPIPacket[1] = 0x0;
+            PATAPIPacket[2] = (byte)(BlockNo >> 24);
+            PATAPIPacket[3] = (byte)(BlockNo >> 16);
+            PATAPIPacket[4] = (byte)(BlockNo >> 8);
+            PATAPIPacket[5] = (byte)(BlockNo >> 0);
+            PATAPIPacket[6] = 0x0;
+            PATAPIPacket[7] = 0x0;
+            PATAPIPacket[8] = 0x0;
+            PATAPIPacket[9] = 1;
+            PATAPIPacket[10] = 0x0;
+            PATAPIPacket[11] = 0x0;
 
             // Inform the controller we are using PIO mode
 #if PATAPI_TRACE
@@ -181,20 +225,20 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Tell drive the buffer size");
 #endif
-            BaseDevice.IO.LBA1.Write_Byte((byte) BlockSize); // Low byte
-            BaseDevice.IO.LBA1.Write_Byte((byte) (BlockSize >> 8)); // High byte
+            BaseDevice.IO.LBA1.Write_Byte((byte)BlockSize); // Low byte
+            BaseDevice.IO.LBA1.Write_Byte((byte)(BlockSize >> 8)); // High byte
 
             // Send the packet command (includes the wait)
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Send Packet command");
 #endif
-            PATABase.Status xStatus = BaseDevice.SendCmd(PATABase.Cmd.Packet);
+            PATABase.Status Status = BaseDevice.SendCmd(PATABase.Cmd.Packet);
 
             // Error occurred
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Check for error");
 #endif
-            if ((xStatus & PATABase.Status.Error) != 0)
+            if ((Status & PATABase.Status.Error) != 0)
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error detected");
@@ -220,7 +264,7 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Write packet data");
 #endif
-            BaseDevice.IO.Data.Write_UInt16s(atapi_packet);
+            BaseDevice.IO.Data.Write_UInt16s(PATAPIPacket);
 
             // Wait a bit
 #if PATAPI_TRACE
@@ -232,7 +276,7 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Wait for IRQ");
 #endif
-            if (WaitForIRQ())
+            if (!WaitForIRQ())
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error! Wait for IRQ timed out.");
@@ -244,28 +288,28 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Wait till not busy");
 #endif
-            uint timeout = 0xF0000000;
+            uint Timeout = 0xF0000000;
             do
             {
                 BaseDevice.Wait();
-                xStatus = (PATABase.Status) BaseDevice.IO.Control.Read_Byte();
-            } while ((xStatus & PATABase.Status.Busy) != 0 &&
-                     (xStatus & PATABase.Status.Error) == 0 &&
-                     timeout-- > 0);
+                Status = (PATABase.Status)BaseDevice.IO.Control.Read_Byte();
+            } while ((Status & PATABase.Status.Busy) != 0 &&
+                     (Status & PATABase.Status.Error) == 0 &&
+                     Timeout-- > 0);
 
             // Read status reg to clear IRQ
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Read status");
 #endif
-            xStatus = (PATABase.Status) BaseDevice.IO.Status.Read_Byte();
+            Status = (PATABase.Status)BaseDevice.IO.Status.Read_Byte();
             IRQInvoked = false;
 
             // Error occurred
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Check for error");
 #endif
-            if ((xStatus & (PATABase.Status.Error | PATABase.Status.ATA_SR_DF)) != 0 ||
-                (xStatus & PATABase.Status.DRQ) == 0)
+            if ((Status & (PATABase.Status.Error | PATABase.Status.ATA_SR_DF)) != 0 ||
+                (Status & PATABase.Status.DRQ) == 0)
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error detected");
@@ -276,15 +320,15 @@ namespace Kernel.ATA
             // Read the data
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Read the data");
-            BasicConsole.WriteLine("Length: " + (Framework.String)aData.Length);
+            BasicConsole.WriteLine("Length: " + (Framework.String)Data.Length);
 #endif
-            uint offset = DataOffset + 1;
+            uint CurrentOffset = Offset + 1;
             uint i = 0;
-            for (; i < BlockSize && offset < aData.Length; i += 2, offset += 2)
+            for (; i < BlockSize && CurrentOffset < Data.Length; i += 2, CurrentOffset += 2)
             {
-                ushort val = BaseDevice.IO.Data.Read_UInt16();
-                aData[offset - 1] = (byte) val;
-                aData[offset] = (byte) (val >> 8);
+                ushort Value = BaseDevice.IO.Data.Read_UInt16();
+                Data[CurrentOffset - 1] = (byte)Value;
+                Data[CurrentOffset] = (byte)(Value >> 8);
             }
             // Clear out any remaining data
             for (; i < BlockSize; i++)
@@ -295,13 +339,13 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             unsafe
             {
-                BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(aData) + Framework.Array.FieldsBytesSize, aData.Length);
+                BasicConsole.DumpMemory((byte*)Utilities.ObjectUtilities.GetHandle(Data) + Framework.Array.FieldsBytesSize, Data.Length);
             }
 
             BasicConsole.WriteLine("Wait for IRQ");
 #endif
             // Wait for IRQ
-            if (WaitForIRQ())
+            if (!WaitForIRQ())
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error! Wait for IRQ timed out. (1)");
@@ -313,21 +357,21 @@ namespace Kernel.ATA
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Wait till not busy");
 #endif
-            timeout = 0xF0000000;
+            Timeout = 0xF0000000;
             do
             {
                 BaseDevice.Wait();
-                xStatus = (PATABase.Status) BaseDevice.IO.Control.Read_Byte();
-            } while ((xStatus & (PATABase.Status.Busy | PATABase.Status.DRQ)) != 0 &&
-                     (xStatus & PATABase.Status.Error) == 0 &&
-                     timeout-- > 0);
+                Status = (PATABase.Status)BaseDevice.IO.Control.Read_Byte();
+            } while ((Status & (PATABase.Status.Busy | PATABase.Status.DRQ)) != 0 &&
+                     (Status & PATABase.Status.Error) == 0 &&
+                     Timeout-- > 0);
 
             // Error occurred
 #if PATAPI_TRACE
             BasicConsole.WriteLine("Check for error");
 #endif
-            if ((xStatus & (PATABase.Status.Error | PATABase.Status.ATA_SR_DF)) != 0 ||
-                (xStatus & PATABase.Status.DRQ) != 0)
+            if ((Status & (PATABase.Status.Error | PATABase.Status.ATA_SR_DF)) != 0 ||
+                (Status & PATABase.Status.DRQ) != 0)
             {
 #if PATAPI_TRACE
                 BasicConsole.WriteLine("Error detected");
@@ -341,15 +385,81 @@ namespace Kernel.ATA
 #endif
         }
 
-        public override void WriteBlock(ulong aBlockNo, uint aBlockCount, byte[] aData)
-        {
-            //TODO: Implement PATAPI.WriteBlock
-            ExceptionMethods.Throw(new NotSupportedException("Cannot write to PATAPI device!"));
-        }
+        //TODO: Implement PATAPI.WriteBlock
+        /// <summary>
+        ///     Writing to PATAPI drives is not supported yet. This method will throw a <see cref="NotSupportedException" />
+        /// </summary>
+        /// <param name="BlockNo">Unused</param>
+        /// <param name="BlockCount">Unused</param>
+        /// <param name="Data">Unused</param>
+        public override void WriteBlock(ulong BlockNo, uint BlockCount, byte[] Data)
+            => ExceptionMethods.Throw(new NotSupportedException("Cannot write to PATAPI device!"));
 
+        /// <summary>
+        ///     Writing to PATAPI devices is currently not supported so this method will do nothing. No exception is thrown.
+        /// </summary>
         public override void CleanCaches()
         {
             //TODO: Implement PATAPI.CleanCaches when PATAPI.WriteBlock is implemented
         }
+
+
+        /*
+         * This is PATAPI related:
+         *
+         *      TODO: Suspect this should be being used for the Identity command
+
+                /// <summary>
+                /// Identity values.
+                /// </summary>
+                public enum Ident : byte
+                {
+                    /// <summary>
+                    /// Device type
+                    /// </summary>
+                    DEVICETYPE = 0,
+                    /// <summary>
+                    /// Cylinders
+                    /// </summary>
+                    CYLINDERS = 2,
+                    /// <summary>
+                    /// Heads
+                    /// </summary>
+                    HEADS = 6,
+                    /// <summary>
+                    /// Sectors
+                    /// </summary>
+                    SECTORS = 12,
+                    /// <summary>
+                    /// Serial
+                    /// </summary>
+                    SERIAL = 20,
+                    /// <summary>
+                    /// Model
+                    /// </summary>
+                    MODEL = 54,
+                    /// <summary>
+                    /// Capabilities
+                    /// </summary>
+                    CAPABILITIES = 98,
+                    /// <summary>
+                    /// Field valid
+                    /// </summary>
+                    FIELDVALID = 106,
+                    /// <summary>
+                    /// Max LBA
+                    /// </summary>
+                    MAX_LBA = 120,
+                    /// <summary>
+                    /// Command sets
+                    /// </summary>
+                    COMMANDSETS = 164,
+                    /// <summary>
+                    /// Max LBA extended
+                    /// </summary>
+                    MAX_LBA_EXT = 200
+                }
+
+        */
     }
 }

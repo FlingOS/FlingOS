@@ -50,13 +50,13 @@ namespace Kernel.Devices
         {
         }
 
-        public Device(DeviceGroup @group, DeviceClass @class, DeviceSubClass subClass, String name, uint[] SomeInfo,
+        public Device(DeviceGroup Group, DeviceClass Class, DeviceSubClass SubClass, String Name, uint[] SomeInfo,
             bool IsClaimed)
         {
-            Group = @group;
-            Class = @class;
-            SubClass = subClass;
-            Name = name;
+            this.Group = Group;
+            this.Class = Class;
+            this.SubClass = SubClass;
+            this.Name = Name;
             Info = SomeInfo;
             Claimed = IsClaimed;
             OwnerProcessId = 0;
@@ -108,7 +108,7 @@ namespace Kernel.Devices
             int j = 0;
             if (Name != null)
             {
-                for (; j < Name.length; j++)
+                for (; j < Name.Length; j++)
                 {
                     TheDescriptor->Name[j] = Name[j];
                 }

@@ -50,7 +50,7 @@ namespace Kernel.Framework
         public static uint Parse_DecimalUnsigned(String str, int offset)
         {
             uint result = 0;
-            for (int i = offset; i < str.length; i++)
+            for (int i = offset; i < str.Length; i++)
             {
                 char c = str[i];
                 if (c < '0' || c > '9')
@@ -89,7 +89,7 @@ namespace Kernel.Framework
         {
             str = str.ToLower();
 
-            if (str.length - offset >= 2)
+            if (str.Length - offset >= 2)
             {
                 if (str[offset] == '0' && str[offset + 1] == 'x')
                 {
@@ -98,7 +98,7 @@ namespace Kernel.Framework
             }
 
             uint result = 0;
-            for (int i = offset; i < str.length; i++)
+            for (int i = offset; i < str.Length; i++)
             {
                 char c = str[i];
                 if ((c < '0' || c > '9') && (c < 'a' || c > 'f'))

@@ -26,6 +26,7 @@
 
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
 using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
 using Kernel.Devices.Keyboards;
@@ -190,8 +191,8 @@ namespace Kernel.Tasks
                 }
             }
         }
-
-        private static volatile char* TextPtr;
+        
+        [SuppressMessage("ReSharper", "LoopVariableIsNeverChangedInsideLoop")]
         public static void TestThread()
         {
             int MessageCount = 0;
@@ -200,7 +201,7 @@ namespace Kernel.Tasks
                 SystemCalls.SleepThread(3000);
                 if (AcceptedPages_Count > 0)
                 {
-                    TextPtr = (char*) AcceptedPages_StartAddress;
+                    char* TextPtr = (char*) AcceptedPages_StartAddress;
                     while (*TextPtr == '\0')
                     {
                         SystemCalls.SleepThread(50);
@@ -217,7 +218,7 @@ namespace Kernel.Tasks
             }
 
             {
-                TextPtr = (char*) AcceptedPages_StartAddress;
+                char* TextPtr = (char*) AcceptedPages_StartAddress;
                 while (*TextPtr == '\0')
                 {
                     SystemCalls.SleepThread(50);

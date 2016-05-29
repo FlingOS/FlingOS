@@ -696,13 +696,13 @@ namespace Kernel.FileSystems.FAT
                         //BasicConsole.WriteLine("xLongPart1: " + xLongPart);
                         // We have to check the length because 0xFFFF is a valid Unicode codepoint.
                         // So we only want to stop if the 0xFFFF is AFTER a 0x0000. We can determine
-                        // this by also looking at the length. Since we short circuit the or, the length
+                        // this by also looking at the length. Since we short circuit the or, the Length
                         // is rarely evaluated.
-                        if (xLongPart.length == 5)
+                        if (xLongPart.Length == 5)
                         {
                             xLongPart = xLongPart + ByteConverter.GetASCIIStringFromUTF16(xData, i + 14, 6);
                             //BasicConsole.WriteLine("xLongPart2: " + xLongPart);
-                            if (xLongPart.length == 11)
+                            if (xLongPart.Length == 11)
                             {
                                 xLongPart = xLongPart + ByteConverter.GetASCIIStringFromUTF16(xData, i + 28, 2);
                                 //BasicConsole.WriteLine("xLongPart3: " + xLongPart);
@@ -735,7 +735,7 @@ namespace Kernel.FileSystems.FAT
 
                         int xTest = xAttrib & (ListingAttribs.Directory | ListingAttribs.VolumeID);
 
-                        if (xLongName.length > 0)
+                        if (xLongName.Length > 0)
                         {
                             // Leading and trailing spaces are to be ignored according to spec.
                             // Many programs (including Windows) pad trailing spaces although it 
@@ -744,7 +744,7 @@ namespace Kernel.FileSystems.FAT
 
                             // As per spec, ignore trailing periods
                             //If there are trailing periods
-                            int nameIndex = xName.length - 1;
+                            int nameIndex = xName.Length - 1;
                             if (xName[nameIndex] == '.')
                             {
                                 //Search backwards till we find the first non-period character
@@ -772,14 +772,14 @@ namespace Kernel.FileSystems.FAT
                                 //Attempt to apply original spec:
                                 // - 8 chars for filename
                                 // - 3 chars for extension
-                                if (xEntry.length >= 8)
+                                if (xEntry.Length >= 8)
                                 {
                                     xName = xEntry.Substring(0, 8).TrimEnd();
 
-                                    if (xEntry.length >= 11)
+                                    if (xEntry.Length >= 11)
                                     {
                                         String xExt = xEntry.Substring(8, 3).TrimEnd();
-                                        if (xExt.length > 0)
+                                        if (xExt.Length > 0)
                                         {
                                             xName += "." + xExt;
                                         }
@@ -801,7 +801,7 @@ namespace Kernel.FileSystems.FAT
 
                         if (xTest == 0)
                         {
-                            if (xName[xName.length - 1] != '~')
+                            if (xName[xName.Length - 1] != '~')
                             {
                                 uint xSize = ByteConverter.ToUInt32(xData, i + 28);
                                 xResult.Add(new FATFile(this, thisDir, xName, xSize, xFirstCluster));
@@ -837,7 +837,7 @@ namespace Kernel.FileSystems.FAT
                 if (IsLongNameListing((Base) listings[i]))
                 {
                     //+1 for null terminator on long name
-                    int nameLength = ((Base) listings[i]).Name.length + 1;
+                    int nameLength = ((Base) listings[i]).Name.Length + 1;
                     LongFilenamesSize += nameLength/13;
                     if (nameLength%13 > 0)
                     {
@@ -894,7 +894,7 @@ namespace Kernel.FileSystems.FAT
         /// <returns>True if it is a long-named listing. Otherwise, false.</returns>
         private bool IsLongNameListing(Base listing)
         {
-            return ((String) listing.Name.Split('.')[0]).length > 8;
+            return ((String) listing.Name.Split('.')[0]).Length > 8;
         }
 
         /// <summary>
@@ -928,21 +928,21 @@ namespace Kernel.FileSystems.FAT
             byte ShortNameChecksum = CalculateShortNameCheckSum(ByteConverter.GetASCIIBytes(shortName));
 
             longName += (char) 0;
-            int nameLengthDiff = 13 - longName.length%13;
+            int nameLengthDiff = 13 - longName.Length%13;
 
             if (nameLengthDiff < 13)
             {
-                longName = longName.PadRight(longName.length + nameLengthDiff, (char) 0xFFFF);
+                longName = longName.PadRight(longName.Length + nameLengthDiff, (char) 0xFFFF);
             }
 
-            int longNameLength = longName.length;
+            int longNameLength = longName.Length;
             int NumNameParts = longNameLength/13;
             bool first = true;
             for (int i = NumNameParts - 1; i > -1; i--)
             {
                 String currPart = longName.Substring(i*13, 13);
 
-                byte[] UTF16Bytes = ByteConverter.GetUTF16Bytes(currPart, 0, currPart.length);
+                byte[] UTF16Bytes = ByteConverter.GetUTF16Bytes(currPart, 0, currPart.Length);
 
                 //[offset+ 0] = Order of entry in sequence
                 //[offset+ 1] = LSB UTF16Bytes[0]
@@ -1287,7 +1287,7 @@ namespace Kernel.FileSystems.FAT
             ushort bytesPerSector = 512;
             newBPBData[11] = (byte) bytesPerSector;
             newBPBData[12] = (byte) (bytesPerSector >> 8);
-            ulong partitionSize = thePartition.BlockCount*thePartition.BlockSize;
+            ulong partitionSize = thePartition.Blocks*thePartition.BlockSize;
 
 #if FATFS_TRACE
             BasicConsole.WriteLine(((Framework.String)"partitionSize: ") + partitionSize);
@@ -1335,7 +1335,7 @@ namespace Kernel.FileSystems.FAT
             // - At newBPBData[19] - N/A for FAT32
             //      - Do nothing
             // - At newBPBData[32] - Total number of sectors in the file system
-            uint totalSectors = (uint) thePartition.BlockCount;
+            uint totalSectors = (uint) thePartition.Blocks;
             newBPBData[32] = (byte) totalSectors;
             newBPBData[33] = (byte) (totalSectors >> 8);
             newBPBData[34] = (byte) (totalSectors >> 16);
