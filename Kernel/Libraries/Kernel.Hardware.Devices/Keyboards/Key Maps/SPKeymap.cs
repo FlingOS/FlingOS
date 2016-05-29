@@ -28,30 +28,25 @@
 
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Devices
+namespace Kernel.Devices.Keyboards
 {
-    public abstract partial class Keyboard : Device
+    public abstract partial class Keyboard
     {
         /// <summary>
-        ///     Creates the UK keyboard mapping (UK layout).
+        ///     Creates the Spanish keyboard mapping
         /// </summary>
-        protected void CreateUKKeymap()
+        protected void CreateSPKeymap()
         {
-            //  This creates (most/some of) a UK keyboard mapping.
+            //  This creates (most/some of) a Spain keyboard mapping.
             //  You can go look up scancodes / characters etc. for other
-            //  keyboards if you like. I'd recommend you change it if 
-            //  you're on a US keyboard otherwise your life will be hell
-            //  (and demo'ing to your few remaining friends will be 
-            //  embarrassing).
-            BasicConsole.WriteLine("Using UK Keyboard layout.");
+            //  keyboards if you like.
+            BasicConsole.WriteLine("Using Spanish Keyboard layout.");
             //BasicConsole.DelayOutput(3);
-
             KeyMappings = new List(164);
 
             //TODO: Fn key
             //TODO: Full numpad?
             //TODO: Alt special symbols
-            //TODO: Other UK keys e.g. backslash
 
             #region Letters
 
@@ -94,6 +89,8 @@ namespace Kernel.Devices
             AddKey(0x250000, 'K', KeyboardKey.K);
             AddKey(0x26, 'l', KeyboardKey.L);
             AddKey(0x260000, 'L', KeyboardKey.L);
+            AddKey(0x27, 'ñ', KeyboardKey.NoName);
+            AddKey(0x270000, 'Ñ', KeyboardKey.NoName);
 
             AddKey(0x2C, 'z', KeyboardKey.Z);
             AddKey(0x2C0000, 'Z', KeyboardKey.Z);
@@ -114,28 +111,28 @@ namespace Kernel.Devices
 
             #region Digits
 
-            AddKey(0x29, '`', KeyboardKey.NoName);
-            AddKey(0x290000, (char) 170u, KeyboardKey.NoName);
+            AddKey(0x29, 'º', KeyboardKey.NoName);
+            AddKey(0x290000, 'ª', KeyboardKey.NoName);
             AddKey(0x2, '1', KeyboardKey.D1);
             AddKey(0x20000, '!', KeyboardKey.D1);
             AddKey(0x3, '2', KeyboardKey.D2);
             AddKey(0x30000, '"', KeyboardKey.D2);
             AddKey(0x4, '3', KeyboardKey.D3);
-            AddKey(0x40000, (char) 156u, KeyboardKey.D3);
+            AddKey(0x40000, '·', KeyboardKey.D3);
             AddKey(0x5, '4', KeyboardKey.D4);
             AddKey(0x50000, '$', KeyboardKey.D5);
             AddKey(0x6, '5', KeyboardKey.D5);
             AddKey(0x60000, '%', KeyboardKey.D5);
             AddKey(0x7, '6', KeyboardKey.D6);
-            AddKey(0x70000, '^', KeyboardKey.D6);
+            AddKey(0x70000, '&', KeyboardKey.D6);
             AddKey(0x8, '7', KeyboardKey.D7);
-            AddKey(0x80000, '&', KeyboardKey.D7);
+            AddKey(0x80000, '/', KeyboardKey.D7);
             AddKey(0x9, '8', KeyboardKey.D8);
-            AddKey(0x90000, '*', KeyboardKey.D8);
+            AddKey(0x90000, '(', KeyboardKey.D8);
             AddKey(0xA, '9', KeyboardKey.D9);
-            AddKey(0xA0000, '(', KeyboardKey.D9);
+            AddKey(0xA0000, ')', KeyboardKey.D9);
             AddKey(0xB, '0', KeyboardKey.D0);
-            AddKey(0xB0000, ')', KeyboardKey.D0);
+            AddKey(0xB0000, '=', KeyboardKey.D0);
 
             #endregion
 
@@ -185,28 +182,24 @@ namespace Kernel.Devices
 
             #region Punctuation and Signs
 
-            AddKey(0x27, ';', KeyboardKey.NoName);
-            AddKey(0x270000, ':', KeyboardKey.NoName);
-            AddKey(0x28, '\'', KeyboardKey.NoName);
-            AddKey(0x280000, '@', KeyboardKey.NoName);
-            AddKey(0x2B, '#', KeyboardKey.NoName);
-            AddKey(0x2B0000, '~', KeyboardKey.NoName);
+            AddKey(0x2B, 'ç', KeyboardKey.NoName);
+            AddKey(0x2B0000, 'Ç', KeyboardKey.NoName);
+            //AddKey(0x29, '`', KeyboardKey.NoName);
+            //AddKey(0x290000, '~', KeyboardKey.NoName);
             AddKey(0x33, ',', KeyboardKey.OemComma);
-            AddKey(0x330000, '<', KeyboardKey.OemComma);
+            AddKey(0x330000, ';', KeyboardKey.OemComma);
             AddKey(0x34, '.', KeyboardKey.OemPeriod);
-            AddKey(0x340000, '>', KeyboardKey.OemPeriod);
-            AddKey(0x35, '/', KeyboardKey.Divide);
-            AddKey(0x350000, '?', KeyboardKey.Divide);
-            //AddKey(0x4A, '-');
-            AddKey(0x0C, '-', KeyboardKey.Subtract);
-            AddKey(0x0C0000, '_', KeyboardKey.Subtract);
-            AddKey(0x0D, '=', KeyboardKey.OemPlus);
-            AddKey(0x0D0000, '+', KeyboardKey.OemPlus);
-            //AddKey(0x4E, '+');
-            AddKey(0x1A, '[', KeyboardKey.NoName);
-            AddKey(0x1A0000, '{', KeyboardKey.NoName);
-            AddKey(0x1B, ']', KeyboardKey.NoName);
-            AddKey(0x1B0000, '}', KeyboardKey.NoName);
+            AddKey(0x340000, ':', KeyboardKey.OemPeriod);
+            AddKey(0x35, '-', KeyboardKey.Divide);
+            AddKey(0x350000, '_', KeyboardKey.Divide);
+            AddKey(0x0C, '\'', KeyboardKey.Subtract);
+            AddKey(0x0C0000, '?', KeyboardKey.Subtract);
+            AddKey(0x0D, '¡', KeyboardKey.OemPlus);
+            AddKey(0x0D0000, '¿', KeyboardKey.OemPlus);
+            AddKey(0x1A, '`', KeyboardKey.NoName);
+            AddKey(0x1A0000, '^', KeyboardKey.NoName);
+            AddKey(0x1B, '+', KeyboardKey.NoName);
+            AddKey(0x1B0000, '*', KeyboardKey.NoName);
 
             AddKeyWithAndWithoutShift(0x4c, '5', KeyboardKey.NumPad5);
 

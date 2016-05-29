@@ -28,9 +28,9 @@
 
 using Kernel.FOS_System.Collections;
 
-namespace Kernel.Devices
+namespace Kernel.Devices.Keyboards
 {
-    public abstract partial class Keyboard : Device
+    public abstract partial class Keyboard
     {
         /// <summary>
         ///     Creates the US keyboard mapping

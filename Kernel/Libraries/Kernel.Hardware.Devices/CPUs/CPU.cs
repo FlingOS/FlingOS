@@ -26,7 +26,7 @@
 
 #endregion
 
-namespace Kernel.Devices
+namespace Kernel.Devices.CPUs
 {
     /// <summary>
     ///     Represents a CPU in the machine.

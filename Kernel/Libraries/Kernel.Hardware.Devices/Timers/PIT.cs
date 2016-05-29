@@ -477,7 +477,7 @@ namespace Kernel.Devices.Timers
 
             while (!WaitSignaled)
             {
-                CPU.Default.Halt();
+                CPUs.CPU.Default.Halt();
             }
         }
 

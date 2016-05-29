@@ -2,7 +2,7 @@
 using Kernel.FOS_System.Collections;
 using Kernel.FOS_System.Processes;
 using Kernel.Devices;
-using Kernel.Devices;
+using Kernel.Devices.Keyboards;
 using Kernel.Tasks;
 using Kernel.Tasks.Driver;
 

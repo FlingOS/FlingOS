@@ -2,7 +2,7 @@
 using Kernel.FOS_System.Processes.Requests.Devices;
 using Kernel.Pipes.Storage;
 
-namespace Kernel.Devices
+namespace Kernel.Devices.Controllers
 {
     public class StorageControllerDisk : DiskDevice
     {

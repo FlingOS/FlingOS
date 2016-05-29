@@ -30,7 +30,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.FOS_System;
 using Kernel.FOS_System.Processes.Requests.Devices;
 
-namespace Kernel.Devices
+namespace Kernel.Devices.Timers
 {
     public delegate void TimerHandler(IObject state);
 
