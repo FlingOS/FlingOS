@@ -31,7 +31,7 @@
 using Drivers.Compiler.Attributes;
 using Kernel.ATA;
 using Kernel.Devices;
-using Kernel.Devices.Exceptions;
+using Kernel.ATA.Exceptions;
 using Kernel.Devices.Keyboards;
 using Kernel.Devices.Timers;
 using Kernel.FileSystems;

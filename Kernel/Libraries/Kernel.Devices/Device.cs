@@ -50,13 +50,13 @@ namespace Kernel.Devices
         {
         }
 
-        public Device(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName, uint[] SomeInfo,
+        public Device(DeviceGroup @group, DeviceClass @class, DeviceSubClass subClass, String name, uint[] SomeInfo,
             bool IsClaimed)
         {
-            Group = AGroup;
-            Class = AClass;
-            SubClass = ASubClass;
-            Name = AName;
+            Group = @group;
+            Class = @class;
+            SubClass = subClass;
+            Name = name;
             Info = SomeInfo;
             Claimed = IsClaimed;
             OwnerProcessId = 0;

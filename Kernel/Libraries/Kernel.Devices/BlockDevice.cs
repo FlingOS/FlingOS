@@ -46,9 +46,9 @@ namespace Kernel.Devices
         /// </summary>
         protected ulong blockSize = 0;
 
-        public BlockDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName,
+        public BlockDevice(DeviceGroup Group, DeviceClass Class, DeviceSubClass SubClass, String Name,
             uint[] SomeInfo, bool IsClaimed)
-            : base(AGroup, AClass, ASubClass, AName, SomeInfo, IsClaimed)
+            : base(Group, Class, SubClass, Name, SomeInfo, IsClaimed)
         {
         }
 

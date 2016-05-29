@@ -48,6 +48,9 @@ namespace Kernel.ATA
         /// </summary>
         private static ATAIOPorts ATAIO2;
 
+        /// <summary>
+        ///     All the ATA devices detected by the ATA manager.
+        /// </summary>
         public static List Devices;
 
         /// <summary>
@@ -66,7 +69,7 @@ namespace Kernel.ATA
             //Try to initialise primary IDE:PATA/PATAPI drives.
             try
             {
-                InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Master);
+                InitDrive(ATA.ControllerIds.Primary, ATA.BusPositions.Master);
             }
             catch
             {
@@ -86,7 +89,7 @@ namespace Kernel.ATA
             }
             try
             {
-                InitDrive(ATA.ControllerID.Primary, ATA.BusPosition.Slave);
+                InitDrive(ATA.ControllerIds.Primary, ATA.BusPositions.Slave);
             }
             catch
             {
@@ -106,7 +109,7 @@ namespace Kernel.ATA
             }
             try
             {
-                InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Master);
+                InitDrive(ATA.ControllerIds.Secondary, ATA.BusPositions.Master);
             }
             catch
             {
@@ -126,7 +129,7 @@ namespace Kernel.ATA
             }
             try
             {
-                InitDrive(ATA.ControllerID.Secondary, ATA.BusPosition.Slave);
+                InitDrive(ATA.ControllerIds.Secondary, ATA.BusPositions.Slave);
             }
             catch
             {
@@ -156,16 +159,16 @@ namespace Kernel.ATA
         /// <summary>
         ///     Initialises a particular drive on the ATA bus.
         /// </summary>
-        /// <param name="ctrlId">The controller ID of the device.</param>
+        /// <param name="ctrlIds>The controller ID of the device.</param>
         /// <param name="busPos">The bus position of the device.</param>
-        public static void InitDrive(ATA.ControllerID ctrlId, ATA.BusPosition busPos)
+        public static void InitDrive(ATA.ControllerIds ctrlIds, ATA.BusPositions busPos)
         {
             //Get the IO ports for the correct bus
-            ATAIOPorts theIO = ctrlId == ATA.ControllerID.Primary ? ATAIO1 : ATAIO2;
+            ATAIOPorts theIO = ctrlIds == ATA.ControllerIds.Primary ? ATAIO1 : ATAIO2;
             //Create / init the device on the bus
             try
             {
-                PATABase ThePATABase = new PATABase(theIO, ctrlId, busPos);
+                PATABase ThePATABase = new PATABase(theIO, ctrlIds, busPos);
                 //If the device was detected as present:
                 if (ThePATABase.DriveType != PATABase.SpecLevel.Null)
                 {
@@ -249,9 +252,9 @@ namespace Kernel.ATA
             catch
             {
                 ExceptionMethods.Throw(new Exception((String) "Error initialising PATA Base device. Controller ID: " +
-                                                     (ctrlId == ATA.ControllerID.Primary ? "Primary" : "Secondary") +
+                                                     (ctrlIds == ATA.ControllerIds.Primary ? "Primary" : "Secondary") +
                                                      " , Position: " +
-                                                     (busPos == ATA.BusPosition.Master ? "Master" : "Slave")));
+                                                     (busPos == ATA.BusPositions.Master ? "Master" : "Slave")));
             }
         }
     }

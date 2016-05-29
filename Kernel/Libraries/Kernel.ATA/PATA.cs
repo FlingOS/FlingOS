@@ -39,6 +39,9 @@ namespace Kernel.ATA
     {
         //TODO: This implementation does not support LBA48 mode.
 
+        /// <summary>
+        ///     The underlying PATA device that this PATA driver is wrapping.
+        /// </summary>
         protected PATABase BaseDevice;
 
         /// <summary>
@@ -75,14 +78,14 @@ namespace Kernel.ATA
             get { return BaseDevice.BlockSize; }
         }
 
-        public ATA.BusPosition BusPosition
+        public ATA.BusPositions BusPosition
         {
-            get { return BaseDevice.busPosition; }
+            get { return BaseDevice.BusPosition; }
         }
 
-        public ATA.ControllerID ControllerID
+        public ATA.ControllerIds ControllerIds
         {
-            get { return BaseDevice.controllerId; }
+            get { return BaseDevice.ControllerId; }
         }
 
         public uint MaxWritePioBlocks

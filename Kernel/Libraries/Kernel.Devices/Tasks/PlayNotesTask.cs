@@ -26,6 +26,9 @@
 
 #endregion
 
+/*
+    Note: This class is totally out of date and probably won't function properly in the modern system
+
 using Kernel.Devices.Timers;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
@@ -36,6 +39,7 @@ namespace Kernel.Devices.Tasks
 {
     public static class PlayNotesTask
     {
+
         public static Thread OwnerThread;
         public static bool Awake = true;
 
@@ -202,5 +206,6 @@ namespace Kernel.Devices.Tasks
             public PIT.MusicalNoteValue duration;
             public PIT.MusicalNote note;
         }
-    }
+    }  
 }
+*/

@@ -29,7 +29,7 @@
 //#define PATAPI_TRACE
 
 using Kernel.Devices;
-using Kernel.Devices.Exceptions;
+using Kernel.ATA.Exceptions;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
@@ -37,33 +37,47 @@ using Kernel.Framework.Processes.Requests.Devices;
 
 namespace Kernel.ATA
 {
+    /// <summary>
+    ///     Driver for handling PATAPI disks.
+    /// </summary>
     public class PATAPI : DiskDevice
     {
-        private static bool IRQ14Invoked;
-        private static bool IRQ15Invoked;
+        /// <summary>
+        ///     Whether IRQ 14 has been invoked or not.
+        /// </summary>
+        private static bool _IRQ14Invoked;
+        /// <summary>
+        ///     Whether IRQ 15 has been invoked or not.
+        /// </summary>
+        private static bool _IRQ15Invoked;
+        /// <summary>
+        ///     The underlying PATA device that this PATAPI driver is wrapping.
+        /// </summary>
         protected PATABase BaseDevice;
 
-        public PATAPI(PATABase baseDevice)
-            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATAPI Disk", baseDevice.Info, true)
+        /// <summary>
+        ///     Initialises a new PATAPI driver for the specified device.
+        /// </summary>
+        /// <param name="BaseDevice">The PATAPI device to be wrapped.</param>
+        public PATAPI(PATABase BaseDevice)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, "PATAPI Disk", BaseDevice.Info, true)
         {
-            BaseDevice = baseDevice;
+            this.BaseDevice = BaseDevice;
 
             // Enable IRQs - required for PATAPI
-            BaseDevice.SelectDrive(0, false);
-            BaseDevice.IO.Control.Write_Byte(0x00);
+            this.BaseDevice.SelectDrive(0, false);
+            this.BaseDevice.IO.Control.Write_Byte(0x00);
 
-            //Note: IRQHandler is called from DeviceManagerTask
+            //Note: IRQHandler is hooked from DeviceManagerTask
+            //TODO: Delegate for the handler should be passed up to Device Manager from this class
         }
 
-        public String SerialNo
-        {
-            get { return BaseDevice.SerialNo; }
-        }
+        /// <summary>
+        ///     The serial number of the device. <seealso cref="PATABase.SerialNo"/>
+        /// </summary>
+        public String SerialNo => BaseDevice.SerialNo;
 
-        public String FirmwareRev
-        {
-            get { return BaseDevice.FirmwareRev; }
-        }
+        public String FirmwareRev => BaseDevice.FirmwareRev;
 
         public String ModelNo
         {
@@ -87,16 +101,16 @@ namespace Kernel.ATA
 
         private bool IRQInvoked
         {
-            get { return BaseDevice.controllerId == ATA.ControllerID.Primary ? IRQ14Invoked : IRQ15Invoked; }
+            get { return BaseDevice.ControllerId == ATA.ControllerIds.Primary ? _IRQ14Invoked : _IRQ15Invoked; }
             set
             {
-                if (BaseDevice.controllerId == ATA.ControllerID.Primary)
+                if (BaseDevice.ControllerId == ATA.ControllerIds.Primary)
                 {
-                    IRQ14Invoked = value;
+                    _IRQ14Invoked = value;
                 }
                 else
                 {
-                    IRQ15Invoked = value;
+                    _IRQ15Invoked = value;
                 }
             }
         }
@@ -105,11 +119,11 @@ namespace Kernel.ATA
         {
             if (irqNumber == 14)
             {
-                IRQ14Invoked = true;
+                _IRQ14Invoked = true;
             }
             else if (irqNumber == 15)
             {
-                IRQ15Invoked = true;
+                _IRQ15Invoked = true;
             }
         }
 

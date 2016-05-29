@@ -33,14 +33,16 @@ using Kernel.Framework.Processes.Requests.Devices;
 namespace Kernel.ATA
 {
     /// <summary>
-    ///     Represents an ATA device.
+    ///     Represents any ATA device. This class provides the most
+    ///     basic subset of information that every ATA device will 
+    ///     have.
     /// </summary>
     public abstract class ATA : DiskDevice
     {
         /// <summary>
         ///     The ATA bus positions.
         /// </summary>
-        public enum BusPosition
+        public enum BusPositions
         {
             /// <summary>
             ///     Master device.
@@ -54,9 +56,9 @@ namespace Kernel.ATA
         }
 
         /// <summary>
-        ///     The ATA controller IDs.
+        ///     The ATA controller identifiers.
         /// </summary>
-        public enum ControllerID
+        public enum ControllerIds
         {
             /// <summary>
             ///     Primary ATA controller.
@@ -72,18 +74,18 @@ namespace Kernel.ATA
         /// <summary>
         ///     The device's bus position.
         /// </summary>
-        public BusPosition busPosition;
+        public BusPositions BusPosition;
 
         /// <summary>
         ///     The device's controller ID.
         /// </summary>
-        public ControllerID controllerId;
+        public ControllerIds ControllerId;
 
         /// <summary>
         ///     Initialises a new ATA device with block size 512.
         /// </summary>
-        internal ATA(String AName)
-            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, AName, new uint[2], true)
+        internal ATA(String Name)
+            : base(DeviceGroup.Storage, DeviceClass.Storage, DeviceSubClass.ATA, Name, new uint[2], true)
         {
             blockSize = 512;
         }

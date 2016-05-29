@@ -50,8 +50,8 @@ namespace Kernel.Devices.Timers
         /// </summary>
         protected bool enabled;
 
-        public Timer(DeviceGroup AGroup, DeviceSubClass ASubClass, String AName, uint[] SomeInfo, bool IsClaimed)
-            : base(AGroup, DeviceClass.Timer, ASubClass, AName, SomeInfo, IsClaimed)
+        public Timer(DeviceGroup @group, DeviceSubClass subClass, String name, uint[] SomeInfo, bool IsClaimed)
+            : base(@group, DeviceClass.Timer, subClass, name, SomeInfo, IsClaimed)
         {
         }
 

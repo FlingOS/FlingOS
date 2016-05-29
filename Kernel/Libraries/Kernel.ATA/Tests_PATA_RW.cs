@@ -61,10 +61,10 @@ namespace Kernel.ATA
                 return;
             }
             OutputMessage("ATATests : Test_LongRead", (String) "Device found. Controller ID: " +
-                                                      (TestDevice.ControllerID == ATA.ControllerID.Primary
+                                                      (TestDevice.ControllerIds == ATA.ControllerIds.Primary
                                                           ? "Primary"
                                                           : "Secondary") + " , Position: " +
-                                                      (TestDevice.BusPosition == ATA.BusPosition.Master
+                                                      (TestDevice.BusPosition == ATA.BusPositions.Master
                                                           ? "Master"
                                                           : "Slave"));
 

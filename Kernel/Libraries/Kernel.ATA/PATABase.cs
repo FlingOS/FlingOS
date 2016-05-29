@@ -33,6 +33,16 @@ using String = Kernel.Framework.String;
 
 namespace Kernel.ATA
 {
+    /// <summary>
+    ///     Represents any generic PATA device. 
+    ///     PATA Base Device provides a common set of data and functions for managing PATA devices.
+    ///     The PATA and PATAPI classes wrap the base device with a specific implementation.
+    /// </summary>
+    /// <remarks>
+    ///     The base device is also used to initially detect devices and carry out the basic identification protocol.
+    ///     This allows the driver to determine the actual type of disk and thus create the correct wrapper for the
+    ///     device.
+    /// </remarks>
     public class PATABase : ATA
     {
         /// <summary>
@@ -322,12 +332,12 @@ namespace Kernel.ATA
         /// </summary>
         internal String mSerialNo;
 
-        public PATABase(ATAIOPorts anIO, ControllerID aControllerId, BusPosition aBusPosition)
+        public PATABase(ATAIOPorts anIO, ControllerIds aControllerId, BusPositions aBusPosition)
             : base("PATA Base Device")
         {
             IO = anIO;
-            Info[0] = (uint) (controllerId = aControllerId);
-            Info[1] = (uint) (busPosition = aBusPosition);
+            Info[0] = (uint) (ControllerId = aControllerId);
+            Info[1] = (uint) (BusPosition = aBusPosition);
 
             // Disable IRQs, we use polling currently
             SelectDrive(0, false);
@@ -472,26 +482,27 @@ namespace Kernel.ATA
 
 
         /// <summary>
-        ///     Sends the drive select command.
+        ///     Sends the drive select command and waits for 400ns.
         /// </summary>
-        /// <param name="aLbaHigh4">LBA High 4 bits</param>
-        internal void SelectDrive(byte aLbaHigh4, bool setLBA)
+        /// <param name="LBAHigh4Bits">LBA High 4 bits (also specify SetLBA)</param>
+        /// <param name="SetLBA">Whether to set the LBA flag and high 4 bits or not.</param>
+        internal void SelectDrive(byte LBAHigh4Bits, bool SetLBA)
         {
-            if (setLBA)
+            if (SetLBA)
             {
                 IO.DeviceSelect.Write_Byte(
                     (byte)
                         ((byte)
                             (DriveSelectValue.Default | DriveSelectValue.LBA |
-                             (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) | aLbaHigh4));
+                             (BusPosition == BusPositions.Slave ? DriveSelectValue.Slave : 0)) | LBAHigh4Bits));
             }
             else
             {
                 IO.DeviceSelect.Write_Byte(
                     (byte)
                         ((byte)
-                            (DriveSelectValue.Default | (busPosition == BusPosition.Slave ? DriveSelectValue.Slave : 0)) |
-                         aLbaHigh4));
+                            (DriveSelectValue.Default | (BusPosition == BusPositions.Slave ? DriveSelectValue.Slave : 0)) |
+                         LBAHigh4Bits));
             }
             Wait();
         }

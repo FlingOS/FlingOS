@@ -271,8 +271,8 @@ namespace Kernel.PCI
         /// <param name="slot">The PCI slot number.</param>
         /// <param name="function">The PCI function number.</param>
         [NoDebug]
-        public PCIDevice(uint bus, uint slot, uint function, String AName)
-            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, AName, new uint[3], false)
+        public PCIDevice(uint bus, uint slot, uint function, String name)
+            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3], false)
         {
             Info[0] = this.bus = bus;
             Info[1] = this.slot = slot;

@@ -44,9 +44,9 @@ namespace Kernel.USB.Devices
         ///     device manager and USB manager.
         /// </summary>
         /// <param name="aDeviceInfo">The device info of the physical device.</param>
-        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass,
-            String AName, bool IsClaimed)
-            : base(AGroup, AClass, ASubClass, AName, new uint[5], IsClaimed)
+        public USBDevice(USBDeviceInfo aDeviceInfo, DeviceGroup @group, DeviceClass @class, DeviceSubClass subClass,
+            String name, bool IsClaimed)
+            : base(@group, @class, subClass, name, new uint[5], IsClaimed)
         {
             DeviceInfo = aDeviceInfo;
 

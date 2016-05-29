@@ -73,8 +73,8 @@ namespace Kernel.USB.HCIs
         ///     Initializes a new generic host controller interface using the specified PCI device.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
-        public HCI(PCIDeviceNormal aPCIDevice, string AName)
-            : base(DeviceGroup.USB, DeviceClass.Controller, DeviceSubClass.USB, AName, new uint[3], true)
+        public HCI(PCIDeviceNormal aPCIDevice, string name)
+            : base(DeviceGroup.USB, DeviceClass.Controller, DeviceSubClass.USB, name, new uint[3], true)
         {
             Status = HCIStatus.Unset;
 

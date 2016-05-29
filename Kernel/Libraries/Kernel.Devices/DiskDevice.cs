@@ -36,9 +36,9 @@ namespace Kernel.Devices
     /// </summary>
     public abstract class DiskDevice : BlockDevice
     {
-        public DiskDevice(DeviceGroup AGroup, DeviceClass AClass, DeviceSubClass ASubClass, String AName,
+        public DiskDevice(DeviceGroup Group, DeviceClass Class, DeviceSubClass SubClass, String Name,
             uint[] SomeInfo, bool IsClaimed)
-            : base(AGroup, AClass, ASubClass, AName, SomeInfo, IsClaimed)
+            : base(Group, Class, SubClass, Name, SomeInfo, IsClaimed)
         {
         }
 
