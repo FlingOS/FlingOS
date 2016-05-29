@@ -48,7 +48,7 @@ namespace Kernel.Framework.Collections
         /// </remarks>
         protected ulong[] _array;
 
-        public int ExpandAmount = 5;
+        public int ExpandAmount;
 
         /// <summary>
         ///     The "currentIndex" is the index to insert the next new item.

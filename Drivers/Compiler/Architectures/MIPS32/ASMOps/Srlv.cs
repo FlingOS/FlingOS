@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Dest;
         public string Src;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "srlv " + Dest + ", " + Src + ", " + BitsReg;
         }

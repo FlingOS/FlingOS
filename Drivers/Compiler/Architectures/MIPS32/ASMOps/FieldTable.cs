@@ -42,7 +42,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         {
         }
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine("# Field Table - " + CurrentTypeName);

@@ -37,7 +37,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         public JmpOp JumpType;
         public bool UnsignedTest;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             string jmpOp = "";
             switch (JumpType)
@@ -99,7 +99,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
                     break;
             }
 
-            return jmpOp + " " + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+            return jmpOp + " " + TheBlock.GenerateILOpLabel(DestILPosition, Extension);
         }
     }
 

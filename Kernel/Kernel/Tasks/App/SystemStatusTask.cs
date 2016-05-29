@@ -166,7 +166,7 @@ namespace Kernel.Tasks.App
             catch
             {
                 BasicConsole.WriteLine("System Status > Error initialising!");
-                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                BasicConsole.WriteLine(ExceptionMethods.CurrentException != null ? ExceptionMethods.CurrentException.Message : "[NO EXCEPTION OBJECT]");
             }
 
             BasicConsole.WriteLine("System Status > Exiting...");

@@ -71,8 +71,8 @@ namespace Drivers.Compiler.ASM
         /// <summary>
         ///     Converts the ASM op into assembly code.
         /// </summary>
-        /// <param name="theBlock">The ASM block to which the ASM op belongs.</param>
+        /// <param name="TheBlock">The ASM block to which the ASM op belongs.</param>
         /// <returns>The assembly code text.</returns>
-        public abstract string Convert(ASMBlock theBlock);
+        public abstract string Convert(ASMBlock TheBlock);
     }
 }

@@ -39,7 +39,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Src2;
         public bool UnsignedTest;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             string jmpOp = "";
             int numSourceOperands = 2;
@@ -105,7 +105,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
                     break;
             }
 
-            string label = theBlock.GenerateMethodLabel() + theBlock.GenerateILOpLabel(DestILPosition, Extension);
+            string label = TheBlock.GenerateMethodLabel() + TheBlock.GenerateILOpLabel(DestILPosition, Extension);
 
             if (numSourceOperands == 2)
             {

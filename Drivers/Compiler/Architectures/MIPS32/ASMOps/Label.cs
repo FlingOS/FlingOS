@@ -50,15 +50,15 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         /// <summary>
         ///     Generates the label itself (using the ASM block) and the line of assembly for the label.
         /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <param name="TheBlock">The block for which the comment is to be generated.</param>
         /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             if (MethodLabel)
             {
-                return theBlock.GenerateMethodLabel() + ":\r\nnop";
+                return TheBlock.GenerateMethodLabel() + ":\r\nnop";
             }
-            return theBlock.GenerateMethodLabel() + theBlock.GenerateILOpLabel(ILPosition, Extension) + ":\r\nnop";
+            return TheBlock.GenerateMethodLabel() + TheBlock.GenerateILOpLabel(ILPosition, Extension) + ":\r\nnop";
         }
     }
 }

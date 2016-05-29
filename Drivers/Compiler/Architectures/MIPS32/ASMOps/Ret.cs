@@ -32,7 +32,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
 {
     public class Ret : ASMOp
     {
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "lw $ra, 0($sp)\r\n" +
                    "addi $sp, $sp, 4\r\n" +

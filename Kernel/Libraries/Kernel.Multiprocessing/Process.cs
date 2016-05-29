@@ -35,7 +35,7 @@ using Kernel.VirtualMemory;
 
 namespace Kernel.Multiprocessing
 {
-    public unsafe class Process : Object
+    public sealed unsafe class Process : Object
     {
         public readonly bool UserMode;
 
@@ -85,7 +85,7 @@ namespace Kernel.Multiprocessing
             CreateThread(StartPoint, "Main");
         }
 
-        public virtual Thread CreateThread(ThreadStartPoint StartPoint, String Name)
+        public Thread CreateThread(ThreadStartPoint StartPoint, String Name)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
@@ -151,7 +151,7 @@ namespace Kernel.Multiprocessing
             }
         }
 
-        public virtual void SwitchFromLayout(MemoryLayout old)
+        public void SwitchFromLayout(MemoryLayout old)
         {
             TheMemoryLayout.SwitchFrom(UserMode, old);
         }

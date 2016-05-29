@@ -41,9 +41,9 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         /// <summary>
         ///     Generates the complete line of assembling using the Text field.
         /// </summary>
-        /// <param name="theBlock">The block for which the comment is to be generated.</param>
+        /// <param name="TheBlock">The block for which the comment is to be generated.</param>
         /// <returns>The complete line of assembly code.</returns>
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "#" + Text;
         }

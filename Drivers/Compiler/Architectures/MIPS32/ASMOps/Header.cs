@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         {
         }
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "." + Section;
         }

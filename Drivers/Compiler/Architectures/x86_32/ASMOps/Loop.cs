@@ -35,9 +35,9 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         public string Extension;
         public int ILPosition;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
-            return "loop " + theBlock.GenerateILOpLabel(ILPosition, Extension);
+            return "loop " + TheBlock.GenerateILOpLabel(ILPosition, Extension);
         }
     }
 }

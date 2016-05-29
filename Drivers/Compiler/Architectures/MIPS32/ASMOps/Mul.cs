@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Src1 = null;
         public string Src2 = null;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             if (Signed)
             {

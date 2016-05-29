@@ -2362,7 +2362,7 @@ which should have been provided with the executable.");
             try
             {
                 Dummy obj = new Dummy();
-                new Dummy();
+                Dummy unused = new Dummy();
                 obj = new Dummy();
                 obj.x = obj.x + obj.y;
                 if (obj.x == 21)

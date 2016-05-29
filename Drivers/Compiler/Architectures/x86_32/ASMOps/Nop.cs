@@ -32,7 +32,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
 {
     public class Nop : ASMOp
     {
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "nop";
         }

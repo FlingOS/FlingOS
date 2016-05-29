@@ -76,7 +76,7 @@ namespace Kernel.Devices.Keyboards
         /// </summary>
         protected UInt32List scancodeBuffer = new UInt32List(512);
 
-        protected int ScancodeBufferSemaphoreId = -1;
+        protected int ScancodeBufferSemaphoreId;
 
         /// <summary>
         ///     Whether the shift key is currently pressed or not.

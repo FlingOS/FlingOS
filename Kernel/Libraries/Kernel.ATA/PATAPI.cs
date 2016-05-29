@@ -79,25 +79,13 @@ namespace Kernel.ATA
 
         public String FirmwareRev => BaseDevice.FirmwareRev;
 
-        public String ModelNo
-        {
-            get { return BaseDevice.ModelNo; }
-        }
+        public String ModelNo => BaseDevice.ModelNo;
 
-        public override ulong BlockCount
-        {
-            get { return BaseDevice.BlockCount; }
-        }
+        public override ulong BlockCount => BaseDevice.BlockCount;
 
-        public override ulong BlockSize
-        {
-            get { return BaseDevice.BlockSize; }
-        }
+        public override ulong BlockSize => BaseDevice.BlockSize;
 
-        public uint MaxWritePioBlocks
-        {
-            get { return BaseDevice.MaxWritePioBlocks; }
-        }
+        public uint MaxWritePioBlocks => BaseDevice.MaxWritePioBlocks;
 
         private bool IRQInvoked
         {

@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         {
         }
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return @"BITS 32
 SECTION ." + Section;

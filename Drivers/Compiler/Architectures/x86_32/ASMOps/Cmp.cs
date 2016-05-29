@@ -35,7 +35,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         public string Arg1;
         public string Arg2;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "cmp " + Arg1 + ", " + Arg2;
         }

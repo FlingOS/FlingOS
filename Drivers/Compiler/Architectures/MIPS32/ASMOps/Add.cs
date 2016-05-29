@@ -37,12 +37,13 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Src2;
         public bool Unsigned = true;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             if (Unsigned)
             {
                 return "addu " + Dest + ", " + Src1 + ", " + Src2;
             }
+
             return "add " + Dest + ", " + Src1 + ", " + Src2;
         }
     }

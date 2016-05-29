@@ -48,7 +48,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public OperandSize Size;
         public string Src;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             if (MoveType == MoveTypes.SrcRegToDestMemory)
             {

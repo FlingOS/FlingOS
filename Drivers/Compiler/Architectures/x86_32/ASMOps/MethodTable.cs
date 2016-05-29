@@ -42,7 +42,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         {
         }
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             StringBuilder ASMResult = new StringBuilder();
             ASMResult.AppendLine("; Method Table - " + CurrentTypeName);

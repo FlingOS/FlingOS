@@ -35,7 +35,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public OperandSize Size;
         public string Src;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             int numBytes = -(int) Size;
             string storeOp = "";

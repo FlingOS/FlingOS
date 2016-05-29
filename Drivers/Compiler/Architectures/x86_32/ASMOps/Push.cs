@@ -35,7 +35,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
         public OperandSize Size;
         public string Src;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "push " + ASMUtilities.GetOpSizeStr(Size) + " " + Src;
         }

@@ -34,10 +34,7 @@
             }
         }
 
-        public int Capacity
-        {
-            get { return InternalArray.Length; }
-        }
+        public int Capacity => InternalArray.Length;
 
         public void Push(Object val)
         {

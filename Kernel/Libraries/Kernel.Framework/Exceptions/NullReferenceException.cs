@@ -40,5 +40,13 @@ namespace Kernel.Framework.Exceptions
             : base("Null reference exception.")
         {
         }
+
+        /// <summary>
+        ///     Sets the exception's message to the specified message prepended with "Null reference exception."
+        /// </summary>
+        public NullReferenceException(String Message)
+            : base("Null reference exception. " + Message)
+        {
+        }
     }
 }

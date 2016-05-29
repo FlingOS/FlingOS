@@ -30,15 +30,6 @@ namespace Kernel.Framework.Collections
 {
     public abstract class Comparable : Object
     {
-        public Comparable()
-        {
-        }
-
-        public Comparable(int key)
-        {
-            Key = key;
-        }
-
         public virtual int Position { get; set; }
 
         public virtual int Key { get; set; }

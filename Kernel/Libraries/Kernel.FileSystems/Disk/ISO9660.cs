@@ -264,6 +264,7 @@ namespace Kernel.FileSystems.Disk
 
         public class DirectoryRecord : Object
         {
+            [System.Flags]
             public enum FileFlags : byte
             {
                 /// <summary>

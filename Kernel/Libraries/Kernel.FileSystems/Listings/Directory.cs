@@ -73,7 +73,8 @@ namespace Kernel.FileSystems
             {
                 return (Directory) baseListing;
             }
-            return null;
+
+            return ((File) baseListing).Parent;
         }
 
         /// <summary>

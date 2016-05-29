@@ -34,7 +34,7 @@ namespace Drivers.Compiler.Architectures.x86.ASMOps
     {
         public string Target;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "call " + Target;
         }

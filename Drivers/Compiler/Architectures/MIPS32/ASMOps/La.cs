@@ -35,7 +35,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Dest;
         public string Label;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "la " + Dest + ", " + Label;
         }

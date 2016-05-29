@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Arg2;
         public bool Signed = false;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             if (Signed)
             {

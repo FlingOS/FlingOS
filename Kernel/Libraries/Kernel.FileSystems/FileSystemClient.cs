@@ -113,19 +113,10 @@ namespace Kernel.FileSystems
         private void ListDir()
         {
             String Path = DataInPipe.ReadString(true);
-            Base BaseListing = Directory.Find(Path);
-            if (BaseListing != null)
+            Directory Listing = Directory.Find(Path);
+            if (Listing != null)
             {
-                Directory DirectoryListing;
-                if (BaseListing.IsDirectory)
-                {
-                    DirectoryListing = (Directory) BaseListing;
-                }
-                else
-                {
-                    DirectoryListing = ((File) BaseListing).Parent;
-                }
-                List Listings = DirectoryListing.GetListings();
+                List Listings = Listing.GetListings();
                 String Output = "";
                 for (int i = 0; i < Listings.Count; i++)
                 {

@@ -48,7 +48,7 @@ namespace Kernel.Framework.Collections
         /// </remarks>
         protected uint[] _array;
 
-        public int ExpandAmount = 5;
+        public int ExpandAmount;
 
         /// <summary>
         ///     The "nextIndex" is the index to insert the next new item.

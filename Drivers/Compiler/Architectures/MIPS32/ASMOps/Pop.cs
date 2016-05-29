@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public bool SignExtend = false;
         public OperandSize Size;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             int numBytes = (int) Size;
             string loadOp = "";

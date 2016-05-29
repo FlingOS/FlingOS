@@ -53,45 +53,21 @@ namespace Kernel.ATA
             BaseDevice = baseDevice;
         }
 
-        public String SerialNo
-        {
-            get { return BaseDevice.SerialNo; }
-        }
+        public String SerialNo => BaseDevice.SerialNo;
 
-        public String FirmwareRev
-        {
-            get { return BaseDevice.FirmwareRev; }
-        }
+        public String FirmwareRev => BaseDevice.FirmwareRev;
 
-        public String ModelNo
-        {
-            get { return BaseDevice.ModelNo; }
-        }
+        public String ModelNo => BaseDevice.ModelNo;
 
-        public override ulong BlockCount
-        {
-            get { return BaseDevice.BlockCount; }
-        }
+        public override ulong BlockCount => BaseDevice.BlockCount;
 
-        public override ulong BlockSize
-        {
-            get { return BaseDevice.BlockSize; }
-        }
+        public override ulong BlockSize => BaseDevice.BlockSize;
 
-        public ATA.BusPositions BusPosition
-        {
-            get { return BaseDevice.BusPosition; }
-        }
+        public ATA.BusPositions BusPosition => BaseDevice.BusPosition;
 
-        public ATA.ControllerIds ControllerIds
-        {
-            get { return BaseDevice.ControllerId; }
-        }
+        public ATA.ControllerIds ControllerIds => BaseDevice.ControllerId;
 
-        public uint MaxWritePioBlocks
-        {
-            get { return BaseDevice.MaxWritePioBlocks; }
-        }
+        public uint MaxWritePioBlocks => BaseDevice.MaxWritePioBlocks;
 
         /// <summary>
         ///     Selects the specified contiguous sectors on the drive.

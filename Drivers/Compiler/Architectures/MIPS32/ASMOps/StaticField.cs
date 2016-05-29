@@ -38,7 +38,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         {
         }
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return string.Format(".global {0}\r\n.align 2\r\n{0}:\r\n.rept {1}\r\n.byte 0\r\n.endr", FieldID, Size);
         }

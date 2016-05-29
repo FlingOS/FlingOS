@@ -313,7 +313,7 @@ namespace Kernel.ATA
         /// <summary>
         ///     Pio drive type.
         /// </summary>
-        internal SpecLevel mDriveType = SpecLevel.Null;
+        internal SpecLevel mDriveType;
 
         /// <summary>
         ///     Drive's .
@@ -361,49 +361,28 @@ namespace Kernel.ATA
         /// <summary>
         ///     Pio drive type.
         /// </summary>
-        public SpecLevel DriveType
-        {
-            get { return mDriveType; }
-        }
+        public SpecLevel DriveType => mDriveType;
 
         /// <summary>
         ///     Drive's .
         /// </summary>
-        public String SerialNo
-        {
-            get { return mSerialNo; }
-        }
+        public String SerialNo => mSerialNo;
 
         /// <summary>
         ///     Drive's .
         /// </summary>
-        public String FirmwareRev
-        {
-            get { return mFirmwareRev; }
-        }
+        public String FirmwareRev => mFirmwareRev;
 
         /// <summary>
         ///     Drive's model number.
         /// </summary>
-        public String ModelNo
-        {
-            get { return mModelNo; }
-        }
+        public String ModelNo => mModelNo;
 
-        public bool LBA48Mode
-        {
-            get { return mLBA48Mode; }
-        }
+        public bool LBA48Mode => mLBA48Mode;
 
-        public bool Initialised
-        {
-            get { return initialised; }
-        }
+        public bool Initialised => initialised;
 
-        public uint MaxWritePioBlocks
-        {
-            get { return maxWritePioBlocks; }
-        }
+        public uint MaxWritePioBlocks => maxWritePioBlocks;
 
         /// <summary>
         ///     Attempts to initialise the ATA drive.

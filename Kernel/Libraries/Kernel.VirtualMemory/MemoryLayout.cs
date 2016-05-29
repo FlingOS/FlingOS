@@ -201,6 +201,7 @@ namespace Kernel.VirtualMemory
             //    BasicConsole.WriteLine("Debug Point 9.1.1");
             //}
 
+            if (old != null)
             {
                 UInt32Dictionary.Iterator iterator = old.CodePages.GetIterator();
                 while (iterator.HasNext())

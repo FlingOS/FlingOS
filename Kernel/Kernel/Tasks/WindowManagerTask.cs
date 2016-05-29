@@ -154,17 +154,25 @@ namespace Kernel.Tasks
                             CurrentPipeInfo.TheConsole.Update();
                         }
 
-                        String str = CurrentPipeInfo.StdOut.Read(false);
+                        if (CurrentPipeInfo != null)
+                        {
+                            String str = CurrentPipeInfo.StdOut.Read(false);
 
-                        SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
-                        try
-                        {
-                            CurrentPipeInfo.TheConsole.Scroll(CurrentPipeInfo.TheConsole.ScreenHeight);
-                            CurrentPipeInfo.TheConsole.Write(str);
+                            SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                            try
+                            {
+                                CurrentPipeInfo.TheConsole.Scroll(CurrentPipeInfo.TheConsole.ScreenHeight);
+                                CurrentPipeInfo.TheConsole.Write(str);
+                            }
+                            finally
+                            {
+                                SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                            }
                         }
-                        finally
+                        else
                         {
-                            SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                            BasicConsole.WriteLine("WM > CurrentPipeInfo null but CurrentPipeIdx > -1??");
+                            SystemCalls.SleepThread(50);
                         }
                     }
                 }
@@ -183,6 +191,7 @@ namespace Kernel.Tasks
             }
         }
 
+        private static volatile char* TextPtr;
         public static void TestThread()
         {
             int MessageCount = 0;
@@ -191,7 +200,7 @@ namespace Kernel.Tasks
                 SystemCalls.SleepThread(3000);
                 if (AcceptedPages_Count > 0)
                 {
-                    char* TextPtr = (char*) AcceptedPages_StartAddress;
+                    TextPtr = (char*) AcceptedPages_StartAddress;
                     while (*TextPtr == '\0')
                     {
                         SystemCalls.SleepThread(50);
@@ -208,7 +217,7 @@ namespace Kernel.Tasks
             }
 
             {
-                char* TextPtr = (char*) AcceptedPages_StartAddress;
+                TextPtr = (char*) AcceptedPages_StartAddress;
                 while (*TextPtr == '\0')
                 {
                     SystemCalls.SleepThread(50);

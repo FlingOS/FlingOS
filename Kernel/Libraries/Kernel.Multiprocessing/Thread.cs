@@ -487,19 +487,7 @@ namespace Kernel.Multiprocessing
             //    Scheduler.Enable();
             //}
         }
-
-        [NoGC]
-        [NoDebug]
-        public static void EnterSleep(int ms)
-        {
-            if (ProcessManager.CurrentThread == null)
-            {
-                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
-                BasicConsole.DelayOutput(5);
-            }
-            ProcessManager.CurrentThread._EnterSleep(ms);
-        }
-
+        
         [NoGC]
         [NoDebug]
         public static bool Sleep(int ms)
@@ -508,6 +496,7 @@ namespace Kernel.Multiprocessing
             {
                 BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
                 BasicConsole.DelayOutput(5);
+                return false;
             }
             return ProcessManager.CurrentThread._Sleep(ms);
         }
@@ -520,20 +509,9 @@ namespace Kernel.Multiprocessing
             {
                 BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
                 BasicConsole.DelayOutput(5);
+                return false;
             }
             return ProcessManager.CurrentThread._Sleep_Indefinitely();
-        }
-
-        [NoGC]
-        [NoDebug]
-        public static void Wake()
-        {
-            if (ProcessManager.CurrentThread == null)
-            {
-                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't wake null thread.");
-                BasicConsole.DelayOutput(5);
-            }
-            ProcessManager.CurrentThread._Wake();
         }
     }
 

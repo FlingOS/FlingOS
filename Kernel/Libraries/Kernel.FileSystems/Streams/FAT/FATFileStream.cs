@@ -136,9 +136,17 @@ namespace Kernel.FileSystems.Streams.FAT
                 {
                     GetClusterNums();
                 }
-                //We have assumed at this point that GetClusterNums worked. If it didn't,
-                //  then ClusterNums will be null and we will have a serious problem! :)
-                return (uint) ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
+
+                if (ClusterNums == null)
+                {
+                    ExceptionMethods.Throw(new NullReferenceException("ClusterNums still null! GetClusterNums must have failed."));
+                }
+                else
+                {
+                    //We have assumed at this point that GetClusterNums worked. If it didn't,
+                    //  then ClusterNums will be null and we will have a serious problem! :)
+                    return (uint) ClusterNums.Count*TheFATFileSystem.BytesPerCluster;
+                }
             }
             return TheFile.Size;
         }

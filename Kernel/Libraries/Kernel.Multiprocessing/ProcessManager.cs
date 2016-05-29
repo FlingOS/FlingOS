@@ -30,6 +30,7 @@
 //#define PROCESSMANAGER_SWITCH_TRACE
 //#define PROCESSMANAGER_KERNEL_ACCESS_TRACE
 
+using System.Diagnostics.Contracts;
 using Drivers.Compiler.Attributes;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
@@ -313,8 +314,7 @@ namespace Kernel.Multiprocessing
             {
                 ExceptionMethods.Throw(new Exception("Attempted to register null process!"));
             }
-
-            if (process.Registered)
+            else if (process.Registered)
             {
                 ExceptionMethods.Throw(new Exception("Attempted to re-register process! Process name: " + process.Name));
             }
@@ -431,7 +431,7 @@ namespace Kernel.Multiprocessing
                 //    BasicConsole.WriteLine("Debug Point 9.1");
                 //}
 
-                NewProcess.SwitchFromLayout(CurrentProcess.TheMemoryLayout);
+                NewProcess.SwitchFromLayout(CurrentProcess != null ? CurrentProcess.TheMemoryLayout : null);
 
                 //if (Scheduler.OutputMessages)
                 //{
@@ -546,10 +546,11 @@ namespace Kernel.Multiprocessing
                 }
             }
 
-            if (result == -1)
+            if (theSemaphore == null)
             {
                 result = Semaphores.Count;
-                Semaphores.Add(theSemaphore = new Semaphore(result, limit));
+                theSemaphore = new Semaphore(result, limit);
+                Semaphores.Add(theSemaphore);
             }
 
             theSemaphore.OwnerProcesses.Add(aProcess.Id);

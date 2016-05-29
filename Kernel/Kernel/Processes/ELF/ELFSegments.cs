@@ -42,6 +42,7 @@ namespace Kernel.Processes.ELF
         PHDR = 6
     }
 
+    [System.Flags]
     public enum ELFFlags : uint
     {
         Executable = 1,

@@ -36,7 +36,7 @@ namespace Drivers.Compiler.Architectures.MIPS32.ASMOps
         public string Src1;
         public string Src2;
 
-        public override string Convert(ASMBlock theBlock)
+        public override string Convert(ASMBlock TheBlock)
         {
             return "or " + Dest + ", " + Src1 + ", " + Src2;
         }

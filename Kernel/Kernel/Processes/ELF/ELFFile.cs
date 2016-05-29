@@ -74,13 +74,16 @@ namespace Kernel.Processes.ELF
                 Console.Default.DefaultColour();
                 ExceptionMethods.Throw(new Exception("Error loading ELF file! Supplied file is null."));
             }
-            theStream = new CachedFileStream(theFile.GetStream());
-            ReadHeader();
-
-            if (IsValidFile())
+            else
             {
-                ReadSectionHeaders();
-                ReadSegmentHeaders();
+                theStream = new CachedFileStream(theFile.GetStream());
+                ReadHeader();
+
+                if (IsValidFile())
+                {
+                    ReadSectionHeaders();
+                    ReadSegmentHeaders();
+                }
             }
         }
 
