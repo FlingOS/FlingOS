@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F7DE5AC3-C4AD-4240-91CE-87C1E5EB7B7E}</ProjectGuid>
+    <ProjectGuid>{F64A12DF-0514-4F93-90C7-5E86B0A35F86}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kernel.Devices</RootNamespace>
-    <AssemblyName>Kernel.Devices</AssemblyName>
+    <RootNamespace>Kernel.Pipes</RootNamespace>
+    <AssemblyName>Kernel.Pipes</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Devices.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Pipes.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;x86</DefineConstants>
   </PropertyGroup>
@@ -39,7 +39,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;x86</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Devices.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Pipes.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -53,7 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Devices.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Pipes.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG;MIPS</DefineConstants>
   </PropertyGroup>
@@ -72,7 +72,7 @@
     <OutputPath>bin\Docs\</OutputPath>
     <DefineConstants>DEBUG;TRACE;MIPS</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Debug\Kernel.Devices.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Kernel.Pipes.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -81,29 +81,37 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockDevice.cs" />
-    <Compile Include="Controllers\StorageController.cs" />
-    <Compile Include="CPUs\CPUx86_32.cs" />
-    <Compile Include="Device.cs" />
-    <Compile Include="Devices\CPU.cs" />
-    <Compile Include="Devices\DeviceManager.cs" />
-    <Compile Include="Devices\DiskDevice.cs" />
-    <Compile Include="Devices\Key Maps\SPKeymap.cs" />
-    <Compile Include="Devices\Key Maps\UKKeymap.cs" />
-    <Compile Include="Devices\Key Maps\USKeymap.cs" />
-    <Compile Include="Devices\Keyboard.cs" />
-    <Compile Include="Devices\StorageControllerDisk.cs" />
-    <Compile Include="Devices\Timer.cs" />
-    <Compile Include="Serial\Serial.cs" />
-    <Compile Include="Keyboards\PS2.cs" />
-    <Compile Include="Keyboards\VirtualKeyboard.cs" />
+    <Compile Include="BasicInpoint.cs" />
+    <Compile Include="BasicOutpoint.cs" />
+    <Compile Include="Exceptions\RWFailedException.cs" />
+    <Compile Include="Exceptions\RWUnhandledException.cs" />
+    <Compile Include="File\FileCmdInpoint.cs" />
+    <Compile Include="File\FileCmdOutpoint.cs" />
+    <Compile Include="File\FileDataInpoint.cs" />
+    <Compile Include="File\FileDataOutpoint.cs" />
+    <Compile Include="File\FilePipeCommand.cs" />
+    <Compile Include="File\FilePipeDataHeader.cs" />
+    <Compile Include="Pipe.cs" />
+    <Compile Include="PipeInpoint.cs" />
+    <Compile Include="PipeManager.cs" />
+    <Compile Include="PipeOutpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tasks\PlayNotesTask.cs" />
-    <Compile Include="Testing\Test.cs" />
-    <Compile Include="Timers\PIT.cs" />
-    <Compile Include="Timers\RTC.cs" />
+    <Compile Include="Standard\StandardInpoint.cs" />
+    <Compile Include="Standard\StandardOutpoint.cs" />
+    <Compile Include="Storage\StorageCmdInpoint.cs" />
+    <Compile Include="Storage\StorageCmdOutpoint.cs" />
+    <Compile Include="Storage\StorageDataInpoint.cs" />
+    <Compile Include="Storage\StorageDataOutpoint.cs" />
+    <Compile Include="Storage\StoragePipeCommand.cs" />
+    <Compile Include="Storage\StoragePipeDataHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
@@ -114,23 +122,10 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.FOS_System</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Hardware.IO\Kernel.IO.csproj">
-      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.IO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kernel.Hardware\Kernel.Multiprocessing.csproj">
       <Project>{f59b042c-435d-48ed-ad7b-23666931a952}</Project>
       <Name>Kernel.Multiprocessing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.Pipes\Kernel.Pipes.csproj">
-      <Project>{f64a12df-0514-4f93-90c7-5e86b0a35f86}</Project>
-      <Name>Kernel.Pipes</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ASM\CPUs\CPUx86_32\Halt.x86_32.asm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
