@@ -157,7 +157,7 @@ namespace Kernel.IO
         /// <returns>The value read.</returns>
         [NoDebug]
         [NoGC]
-        public ushort Read_Byte(ushort offset)
+        public byte Read_Byte(ushort offset)
         {
             return doRead_Byte((ushort)(Port + offset));
         }

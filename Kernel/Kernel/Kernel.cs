@@ -91,148 +91,153 @@ namespace Kernel
                 BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
 
-                BasicConsole.WriteLine("Creating kernel process...");
-                Process KernelProcess = new Process(KernelTask.Main, ProcessManager.ProcessIdGenerator++, "Kernel Task",
-                    false);
-                //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
-                //          by adding it to Kernel Process' memory layout.
-                ProcessManager.KernelProcess = KernelProcess;
+                BasicConsole.WriteLine("Testing VGA...");
+                VGA.VGA TheVGA = new VGA.VGA();
+                TheVGA.TestMode_G_640x480x4();
+                BasicConsole.WriteLine("Test finished.");
 
-                BasicConsole.WriteLine("Getting kernel thread...");
-                Thread KernelThread = (Thread)KernelProcess.Threads[0];
+//                BasicConsole.WriteLine("Creating kernel process...");
+//                Process KernelProcess = new Process(KernelTask.Main, ProcessManager.ProcessIdGenerator++, "Kernel Task",
+//                    false);
+//                //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
+//                //          by adding it to Kernel Process' memory layout.
+//                ProcessManager.KernelProcess = KernelProcess;
 
-                BasicConsole.WriteLine("Initialising kernel thread stack...");
-                VirtualMemoryManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
-                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop -
-                                                         Thread.ThreadStackTopOffset);
-                VirtualMemoryManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
-                KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
-                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
-                KernelThread.State->ExState = (ExceptionState*)(KernelThread.State->ThreadStackTop + 4);
-                byte* ExStateBytePtr = (byte*)KernelThread.State->ExState;
-                for (int i = 0; i < sizeof(ExceptionState); i++)
-                {
-                    *ExStateBytePtr++ = 0;
-                }
+//                BasicConsole.WriteLine("Getting kernel thread...");
+//                Thread KernelThread = (Thread)KernelProcess.Threads[0];
 
-                BasicConsole.WriteLine("Registering kernel process...");
-                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.High);
+//                BasicConsole.WriteLine("Initialising kernel thread stack...");
+//                VirtualMemoryManager.Unmap(KernelThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
+//                KernelProcess.TheMemoryLayout.RemovePage((uint)KernelThread.State->ThreadStackTop -
+//                                                         Thread.ThreadStackTopOffset);
+//                VirtualMemoryManager.MapKernelProcessToMemoryLayout(KernelProcess.TheMemoryLayout);
+//                KernelThread.State->ThreadStackTop = GetKernelStackPtr() - (4096 - Thread.ThreadStackTopOffset);
+//                KernelThread.State->ESP = (uint)KernelThread.State->ThreadStackTop;
+//                KernelThread.State->ExState = (ExceptionState*)(KernelThread.State->ThreadStackTop + 4);
+//                byte* ExStateBytePtr = (byte*)KernelThread.State->ExState;
+//                for (int i = 0; i < sizeof(ExceptionState); i++)
+//                {
+//                    *ExStateBytePtr++ = 0;
+//                }
 
-                BasicConsole.WriteLine("Initialising kernel IRQs...");
-                KernelProcess.IRQHandler = KernelTask.HandleIRQ;
-                KernelProcess.SwitchProcessForIRQs = false;
-                KernelProcess.IRQsToHandle.Set(0);
+//                BasicConsole.WriteLine("Registering kernel process...");
+//                ProcessManager.RegisterProcess(KernelProcess, Scheduler.Priority.High);
 
-                BasicConsole.WriteLine("Initialising default timer...");
-                PIT.Init();
-                Timer.Default = PIT.ThePIT;
+//                BasicConsole.WriteLine("Initialising kernel IRQs...");
+//                KernelProcess.IRQHandler = KernelTask.HandleIRQ;
+//                KernelProcess.SwitchProcessForIRQs = false;
+//                KernelProcess.IRQsToHandle.Set(0);
+
+//                BasicConsole.WriteLine("Initialising default timer...");
+//                PIT.Init();
+//                Timer.Default = PIT.ThePIT;
 
 
-                BasicConsole.PrimaryOutputEnabled = true;
-                BasicConsole.SecondaryOutputEnabled = false;
-                BasicConsole.WriteLine();
-                BasicConsole.WriteLine();
-                BasicConsole.WriteLine(TextSplashScreen);
+//                BasicConsole.PrimaryOutputEnabled = true;
+//                BasicConsole.SecondaryOutputEnabled = false;
+//                BasicConsole.WriteLine();
+//                BasicConsole.WriteLine();
+//                BasicConsole.WriteLine(TextSplashScreen);
 
-                BasicConsole.SecondaryOutputEnabled = true;
-                BasicConsole.PrimaryOutputEnabled = false;
+//                BasicConsole.SecondaryOutputEnabled = true;
+//                BasicConsole.PrimaryOutputEnabled = false;
 
-                for (int i = 0; i < TextSplashScreen.Length; i += 80)
-                {
-                    TextSplashScreen[i] = '\n';
-                }
-                BasicConsole.WriteLine(TextSplashScreen);
+//                for (int i = 0; i < TextSplashScreen.Length; i += 80)
+//                {
+//                    TextSplashScreen[i] = '\n';
+//                }
+//                BasicConsole.WriteLine(TextSplashScreen);
 
-                BasicConsole.PrimaryOutputEnabled = true;
-                BasicConsole.SecondaryOutputEnabled = true;
+//                BasicConsole.PrimaryOutputEnabled = true;
+//                BasicConsole.SecondaryOutputEnabled = true;
 
-                for (int i = 0; i < 37; i++)
-                {
-                    BasicConsole.Write(' ');
-                }
-                char Num = '1';
-                for (int i = 0; i < 3; i++)
-                {
-                    BasicConsole.Write(Num++);
-                    Timer.Default.Wait(1000);
-                    BasicConsole.Write(' ');
-                }
-                BasicConsole.WriteLine();
+//                for (int i = 0; i < 37; i++)
+//                {
+//                    BasicConsole.Write(' ');
+//                }
+//                char Num = '1';
+//                for (int i = 0; i < 3; i++)
+//                {
+//                    BasicConsole.Write(Num++);
+//                    Timer.Default.Wait(1000);
+//                    BasicConsole.Write(' ');
+//                }
+//                BasicConsole.WriteLine();
 
-                BasicConsole.WriteLine("FlingOS(TM)");
-                BasicConsole.WriteLine("Copyright (C) 2014-15 Edward Nutting");
-                BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
-                BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
-                BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
-                BasicConsole.WriteLine("which should have been provided with the executable.");
+//                BasicConsole.WriteLine("FlingOS(TM)");
+//                BasicConsole.WriteLine("Copyright (C) 2014-15 Edward Nutting");
+//                BasicConsole.WriteLine("This program comes with ABSOLUTELY NO WARRANTY;.");
+//                BasicConsole.WriteLine("This is free software, and you are welcome to redistribute it");
+//                BasicConsole.WriteLine("under certain conditions; See GPL V2 for details, a copy of");
+//                BasicConsole.WriteLine("which should have been provided with the executable.");
 
-                BasicConsole.WriteLine("Fling OS Running...");
-                BasicConsole.WriteLine();
+//                BasicConsole.WriteLine("Fling OS Running...");
+//                BasicConsole.WriteLine();
 
-#if MIPS
-            BasicConsole.WriteLine("MIPS Kernel");
-#elif x86 || AnyCPU
-                BasicConsole.WriteLine("x86 Kernel");
-#endif
-                BasicConsole.WriteLine();
+//#if MIPS
+//            BasicConsole.WriteLine("MIPS Kernel");
+//#elif x86 || AnyCPU
+//                BasicConsole.WriteLine("x86 Kernel");
+//#endif
+//                BasicConsole.WriteLine();
 
-                //uint bpm = 140;
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.C4,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.Silent,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.E4,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.Silent,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.G4,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.Silent,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.C5,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.Silent,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.G4,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
-                //Hardware.Timers.PIT.ThePIT.PlayNote(
-                //    Hardware.Timers.PIT.MusicalNote.C5,
-                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
-                //    bpm);
+//                //uint bpm = 140;
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.C4,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.Silent,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.E4,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.Silent,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.G4,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Quaver,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.Silent,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.C5,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.Silent,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.G4,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
+//                //Hardware.Timers.PIT.ThePIT.PlayNote(
+//                //    Hardware.Timers.PIT.MusicalNote.C5,
+//                //    Hardware.Timers.PIT.MusicalNoteValue.Minim,
+//                //    bpm);
 
-                BasicConsole.WriteLine("Starting scheduler...");
-                PreemptionHandler PreempHandler = Scheduler.Start();
-                //TODO: Should store the handler Id for future reference
-                // ReSharper disable once PossibleInvalidCastException
-                Timer.Default.RegisterHandler((TimerHandler)(object)PreempHandler, Scheduler.PreemptionPeriod, true,
-                    Scheduler.PreemptionState);
-                Scheduler.Enable();
+//                BasicConsole.WriteLine("Starting scheduler...");
+//                PreemptionHandler PreempHandler = Scheduler.Start();
+//                //TODO: Should store the handler Id for future reference
+//                // ReSharper disable once PossibleInvalidCastException
+//                Timer.Default.RegisterHandler((TimerHandler)(object)PreempHandler, Scheduler.PreemptionPeriod, true,
+//                    Scheduler.PreemptionState);
+//                Scheduler.Enable();
 
-                // Busy wait until the scheduler interrupts us. 
-                while (true)
-                {
-                    ;
-                }
-                // We will never return to this point since there is no way for the scheduler to point
-                //  to it.
+//                // Busy wait until the scheduler interrupts us. 
+//                while (true)
+//                {
+//                    ;
+//                }
+//                // We will never return to this point since there is no way for the scheduler to point
+//                //  to it.
             }
             catch
             {

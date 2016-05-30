@@ -166,6 +166,10 @@
       <Project>{63c61b22-f7fb-4de2-8d25-73bc0d1dc04f}</Project>
       <Name>Kernel.USB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Libraries\Kernel.VGA\Kernel.VGA.csproj">
+      <Project>{f775ce64-881b-4e6f-b51b-2dcbf5fcc5f0}</Project>
+      <Name>Kernel.VGA</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libraries\Kernel.VirtualMemory\Kernel.VirtualMemory.csproj">
       <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
       <Name>Kernel.VirtualMemory</Name>
