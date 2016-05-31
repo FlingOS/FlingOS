@@ -77,8 +77,8 @@ namespace Kernel.VGA
         }
         private void UnblankAndLock()
         {
-            Registers.VerticalRetraceEnd = (byte)(Registers.VerticalRetraceEnd | 0x80);
-            Registers.EndHorizontalBlanking = (byte)(Registers.EndHorizontalBlanking & 0x7F);
+            //Registers.VerticalRetraceEnd = (byte)(Registers.VerticalRetraceEnd | 0x80);
+            //Registers.EndHorizontalBlanking = (byte)(Registers.EndHorizontalBlanking & 0x7F);
 
             Registers.PaletteAddressSource = true;
 
@@ -287,35 +287,75 @@ namespace Kernel.VGA
 
             Registers.DACMask = 0xFF;
             
+            // Some flickering is to be expected as each plane is updated in turn!
+            //  Changes between colours that happen much faster than the clear calls
+            //  below are just flicker and can be ignored.
+
+            //int i = 0;
+            //SetPaletteEntry(i++, new Colour18Bit(0, 0, 0));
+            //while (i < 16)
+            //{
+            //    SetPaletteEntry(i++, new Colour18Bit(63, 0, 0)); // 0to5 & 7 = Works for 0to5 and 7
+            //}
+
+            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 16
+            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 17
+            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 18
+            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 19
+            //SetPaletteEntry(i++, new Colour18Bit(63, 63, 63)); // 20 = Works for 6
+
+            //Colour18Bit Black = new Colour18Bit(0, 0, 42);
+            //while (i < 32)
+            //{
+            //    SetPaletteEntry(i++, Black);
+            //}
+            
+            //// 32 to 48 - No effect
+            //i = 48;
+
+            //while (i < 64)
+            //{
+            //    SetPaletteEntry(i++, new Colour18Bit(0, 63, 0)); // 48to63 = Works for 9to15
+            //}
+            
+            //// 64 to 255 - No effect
+
             int i = 0;
-            while (i < 16)
+            byte col = 0;
+
+            while (i < 6)
             {
-                SetPaletteEntry(i++, new Colour18Bit(63, 0, 0));
+                ColourPalette[i++] = new Colour18Bit(col, col, col); // 0 to 5
+                col += 4;
             }
-            Colour18Bit Black = new Colour18Bit(0, 42, 42);
-            while (i < 32)
+            ColourPalette[i++] = new Colour18Bit(63, 0, 0);
+            ColourPalette[i++] = new Colour18Bit((byte)(col + 4), (byte)(col + 4), (byte)(col + 4)); // 7
+            while (i < 20)
             {
-                SetPaletteEntry(i++, Black);
+                ColourPalette[i++] = new Colour18Bit(63, 63, 0);
             }
-            Colour18Bit White = new Colour18Bit(63, 63, 63);
-            while (i < 48)
+            ColourPalette[i++] = new Colour18Bit(col, col, col); // 6
+            col += 8;
+            while (i < 56)
             {
-                SetPaletteEntry(i++, White);
+                ColourPalette[i++] = new Colour18Bit(0, 63, 0);
             }
             while (i < 64)
             {
-                SetPaletteEntry(i++, new Colour18Bit(0, 63, 0));
+                ColourPalette[i++] = new Colour18Bit(col, col, col); // 8 to 15
+                col += 4;
             }
             while (i < 256)
             {
-                SetPaletteEntry(i++, new Colour18Bit(0, 0, 63));
+                ColourPalette[i++] = new Colour18Bit(0, 0, 63);
             }
+            SetPalette(ColourPalette);
 
             for (i = 0; i < 16; i++)
             {
                 Clear(new Colour24Bit((byte)i, 0, 0));
 
-                for (int j = 0; j < 1000000000; j++) { }
+                for (int j = 0; j < 400000000; j++) { }
             }
         }
 
@@ -327,11 +367,11 @@ namespace Kernel.VGA
         private Colour18Bit[] ColourPalette = new Colour18Bit[256];
         public Colour18Bit GetPaletteEntry(int Index) => ColourPalette[Index];
 
-        public void SetPalette(int Index, Colour18Bit[] NewPallete)
+        public void SetPalette(Colour18Bit[] NewPallete)
         {
             ColourPalette = NewPallete;
 
-            Registers.DACWriteAddress = (byte)Index;
+            Registers.DACWriteAddress = 0;
             // ReSharper disable once ForCanBeConvertedToForeach
             for (int i = 0; i < NewPallete.Length; i++)
             {
