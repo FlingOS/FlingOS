@@ -31,7 +31,7 @@ using Kernel.Framework.Exceptions;
 
 namespace Kernel.VGA.Configurations.Graphical
 {
-    public class G_640x480x4 : Object, IVGAConfiguration
+    public sealed class G_640x480x4 : Object, IVGAConfiguration
     {
         public uint Width => 640;
         public uint Height => 480;
@@ -43,15 +43,16 @@ namespace Kernel.VGA.Configurations.Graphical
         public GetPixelDelegate GetPixelMethod => GetPixel;
         public SetPixelDelegate ClearMethod => Clear;
 
-        private static void SetCell(VGA TheVGA, int X, int Y, char Character, Colour8Bit Colour)
+        private static void SetCell(VGA TheVGA, int X, int Y, char Character, Colour4Bit ForeColour, Colour4Bit BackColour)
         {
             ExceptionMethods.Throw(new NotSupportedException("Cannot set cell in 640x480x4 graphical VGA mode."));
         }
 
-        private static char GetCell(VGA TheVGA, int X, int Y, out Colour8Bit Colour)
+        private static char GetCell(VGA TheVGA, int X, int Y, out Colour4Bit ForeColour, out Colour4Bit BackColour)
         {
             ExceptionMethods.Throw(new NotSupportedException("Cannot get cell in 640x480x4 graphical VGA mode."));
-            Colour = null;
+            ForeColour = null;
+            BackColour = null;
             return '\0';
         }
 

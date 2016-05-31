@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-// - - - - - - - - - - - - - - - - - - - LICENSE - - - - - - - - - - - - - - - - - - -  //
+﻿#region LICENSE
+
+// ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
 //    Copyright (C) 2015 Edward Nutting
@@ -22,10 +22,36 @@
 //		Email: edwardnutting@outlook.com
 //		For paper mail address, please contact via email for details.
 //
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  //
--->
-<configuration>
-    <startup> 
-        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1"/>
-    </startup>
-</configuration>
+// ------------------------------------------------------------------------------ //
+
+#endregion
+
+using Drivers.Compiler.Attributes;
+using Kernel.Framework;
+
+namespace Kernel.VGA.Fonts
+{
+    public sealed class Default8x8 : Object, IFont
+    {
+        private static byte[] _FontData;
+
+        [PluggedMethod(ASMFilePath = @"ASM\Fonts\Default8x8")]
+        private static void InitFont()
+        {
+        }
+
+        public byte[] FontData
+        {
+            get
+            {
+                if (_FontData == null)
+                {
+                    InitFont();
+                }
+                return _FontData;
+            }
+        }
+
+        public int FontHeight => 8;
+    }
+}

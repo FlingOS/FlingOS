@@ -31,27 +31,27 @@ using Kernel.Framework;
 namespace Kernel.VGA
 {
     /// <summary>
-    ///     Immutable class representing an 8-bit colour (/character attribute) 
-    ///     consisting of a single 8-bit component.
+    ///     Immutable class representing an 4-bit colour (/character attribute) 
+    ///     consisting of a single 4-bit component.
     /// </summary>
     /// <remarks>
     ///     Used by external software when getting/setting characters.
     /// </remarks>
-    public class Colour8Bit : Object
+    public class Colour4Bit : Object
     {
         /// <summary>
-        ///     The 8-bit component of the colour.
+        ///     The 4-bit component of the colour.
         /// </summary>
         public readonly byte Value;
 
         /// <summary>
-        ///     Initialises a new 8-bit colour (/character attribute) instance with the 
+        ///     Initialises a new 4-bit colour (/character attribute) instance with the 
         ///     specified value.
         /// </summary>
-        /// <param name="Value">The 8-bit component value.</param>
-        public Colour8Bit(byte Value)
+        /// <param name="Value">The 4-bit component value (auto-clipped).</param>
+        public Colour4Bit(byte Value)
         {
-            this.Value = Value;
+            this.Value = (byte)(Value & 0xF);
         }
     }
 }

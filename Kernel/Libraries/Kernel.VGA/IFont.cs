@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-// - - - - - - - - - - - - - - - - - - - LICENSE - - - - - - - - - - - - - - - - - - -  //
+﻿#region LICENSE
+
+// ---------------------------------- LICENSE ---------------------------------- //
 //
 //    Fling OS - The educational operating system
 //    Copyright (C) 2015 Edward Nutting
@@ -22,10 +22,30 @@
 //		Email: edwardnutting@outlook.com
 //		For paper mail address, please contact via email for details.
 //
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  //
--->
-<configuration>
-    <startup> 
-        <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.6.1"/>
-    </startup>
-</configuration>
+// ------------------------------------------------------------------------------ //
+
+#endregion
+
+using Kernel.Framework;
+
+namespace Kernel.VGA
+{
+    /// <summary>
+    ///     Interface for a font for text-mode VGA configurations.
+    /// </summary>
+    /// <remarks>
+    ///     A font implementation can be hard-coded by the developer
+    ///     or loaded at runtime. However, it must remain constant once loaded.
+    /// </remarks>
+    public interface IFont : IObject
+    {
+        /// <summary>
+        ///     The data for the font. Must contain exactly 256 characters.
+        /// </summary>
+        byte[] FontData { get; }
+        /// <summary>
+        ///     The height of the font, in pixels.
+        /// </summary>
+        int FontHeight { get; }
+    }
+}

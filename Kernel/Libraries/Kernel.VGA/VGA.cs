@@ -28,6 +28,7 @@
 
 using Kernel.Devices;
 using Kernel.VGA.Configurations.Graphical;
+using Kernel.VGA.Fonts;
 
 namespace Kernel.VGA
 {
@@ -227,7 +228,52 @@ namespace Kernel.VGA
             Registers.MapMask = (byte)(1 << Plane);
         }
 
-        //TODO: Load font
+        /// <summary>
+        ///     Loads the specified font to the VGA font buffer.
+        /// </summary>
+        /// <param name="TheFont">The font to load.</param>
+        public void LoadFont(IFont TheFont)
+        {
+            // Save registers
+            byte MapMask = Registers.MapMask;
+            SequencerMemoryModeFlags SequencerMemoryMode = Registers.SequencerMemoryMode;
+
+            // Switch to flat addressing (assuming chain-4 addressing already off)
+            Registers.SequencerMemoryMode = SequencerMemoryMode | SequencerMemoryModeFlags.OddEvenDisable;
+
+            // Save registers
+            byte ReadMapSelect = Registers.ReadMapSelect;
+
+            // Save register and turn off even-odd addressing
+            GraphicsModeFlags GraphicsMode = Registers.GraphicsMode;
+            Registers.GraphicsMode = GraphicsMode & ~GraphicsModeFlags.HostOddEvenMemoryReadAddressingEnable;
+
+            // Save register and turn off even-odd addressing
+            byte MiscellaneousGraphics = Registers.MiscellaneousGraphics;
+            Registers.MiscellaneousGraphics = (byte)(MiscellaneousGraphics & ~0x02);
+
+            // Write font to plane P4
+            SelectPlane(2);
+
+            // Write to font 0
+            byte* Buffer = FrameBuffer;
+            int FontHeight = TheFont.FontHeight;
+            byte[] FontData = TheFont.FontData;
+            for (int i = 0; i < 256; i++)
+            {
+                for (int j = 0; j < FontHeight; j++)
+                {
+                    Buffer[(i * 32) + j] = FontData[(i * FontHeight) + j];
+                }
+            }
+
+            // Restore registers
+            Registers.MapMask = MapMask;
+            Registers.SequencerMemoryMode = SequencerMemoryMode;
+            Registers.ReadMapSelect = ReadMapSelect;
+            Registers.GraphicsMode = GraphicsMode;
+            Registers.MiscellaneousGraphics = MiscellaneousGraphics;
+        }
 
         /// <summary>
         ///     Sets the colour of a pixel on the screen.
@@ -261,9 +307,10 @@ namespace Kernel.VGA
         /// <param name="X">The X-coordinate (from left to right) as a 0-based index of the cell to set.</param>
         /// <param name="Y">The Y-coordinate (from top to bottom) as a 0-based index of the cell to set.</param>
         /// <param name="Character">The character to set the cell to.</param>
-        /// <param name="Colour">The colour (/attribute) for the cell.</param>
-        public void SetCell(int X, int Y, char Character, Colour8Bit Colour)
-            => Configuration.SetCellMethod(this, X, Y, Character, Colour);
+        /// <param name="ForeColour">The foreground colour (/attribute) for the cell.</param>
+        /// <param name="BackColour">The background colour (/attribute) for the cell.</param>
+        public void SetCell(int X, int Y, char Character, Colour4Bit ForeColour, Colour4Bit BackColour)
+            => Configuration.SetCellMethod(this, X, Y, Character, ForeColour, BackColour);
 
         /// <summary>
         ///     Gets the character and colour (/attribute) of a cell on the screen.
@@ -273,10 +320,64 @@ namespace Kernel.VGA
         /// </remarks>
         /// <param name="X">The X-coordinate (from left to right) as a 0-based index of the cell to get.</param>
         /// <param name="Y">The Y-coordinate (from top to bottom) as a 0-based index of the cell to get.</param>
-        /// <param name="Colour">The colour (/attribute) of the cell.</param>
+        /// <param name="ForeColour">The foreground colour (/attribute) of the cell.</param>
+        /// <param name="BackColour">The background colour (/attribute) of the cell.</param>
         /// <returns>The character of the cell.</returns>
-        public char GetCell(int X, int Y, out Colour8Bit Colour)
-            => Configuration.GetCellMethod(this, X, Y, out Colour);
+        public char GetCell(int X, int Y, out Colour4Bit ForeColour, out Colour4Bit BackColour)
+            => Configuration.GetCellMethod(this, X, Y, out ForeColour, out BackColour);
+
+        /// <summary>
+        ///     Sets the entire screen to the specified colour.
+        /// </summary>
+        /// <param name="Colour"></param>
+        public void Clear(Colour24Bit Colour) => Configuration.ClearMethod(this, 0, 0, Colour);
+
+        /// <summary>
+        ///     The current colour palette.
+        /// </summary>
+        private Colour18Bit[] ColourPalette = new Colour18Bit[256];
+        /// <summary>
+        ///     Looks up the specified index in the (cached) colour palette.
+        /// </summary>
+        /// <param name="Index">The index of the entry to look up.</param>
+        /// <returns>The entry value as an 18-bit colour.</returns>
+        public Colour18Bit GetPaletteEntry(int Index) => ColourPalette[Index];
+
+        /// <summary>
+        ///     Sets the colour palette to the specified colours.
+        /// </summary>
+        /// <param name="NewPallete">The colours to set the palette to.</param>
+        public void SetPalette(Colour18Bit[] NewPallete) => SetPalette(0, NewPallete);
+
+        /// <summary>
+        ///     Sets the colour palette starting from the specified offset to the specified colours.
+        /// </summary>
+        /// <param name="Offset">The offset to start setting at.</param>
+        /// <param name="NewPallete">The colours to set the palette to.</param>
+        public void SetPalette(int Offset, Colour18Bit[] NewPallete)
+        {
+            Registers.DACWriteAddress = 0;
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (int i = 0; i < NewPallete.Length; i++)
+            {
+                Registers.DACData = ColourPalette[i + Offset] = NewPallete[i];
+            }
+        }
+        /// <summary>
+        ///     Sets a specific entry in the colour palette.
+        /// </summary>
+        /// <seealso cref="SetPalette(int, Kernel.VGA.Colour18Bit[])"/>
+        /// <param name="Index">The idnex of the entry to set.</param>
+        /// <param name="Colour">The colour to set the entry to.</param>
+        public void SetPaletteEntry(int Index, Colour18Bit Colour)
+        {
+            ColourPalette[Index] = Colour;
+
+            Registers.DACWriteAddress = (byte)Index;
+            Registers.DACData = Colour;
+        }
+        
+
 
         /// <summary>
         ///     Tests the 640x480, 4-bit graphical configuration
@@ -285,15 +386,10 @@ namespace Kernel.VGA
         {
             LoadConfiguration(new G_640x480x4());
 
+            // Configure custom colours in the colour palette
             Registers.DACMask = 0xFF;
-            
-            // Some flickering is to be expected as each plane is updated in turn!
-            //  Changes between colours that happen much faster than the clear calls
-            //  below are just flicker and can be ignored.
-            
             int i = 0;
             byte col = 0;
-
             ColourPalette = new Colour18Bit[16];
             while (i < 16)
             {
@@ -303,6 +399,8 @@ namespace Kernel.VGA
             SetPalette(ColourPalette);
 
             // Gray code progression through the colours
+            //  Gray coding eliminates flicker between colours as the planes
+            //  change separately.
             Colour24Bit ClearColour = new Colour24Bit(0x0, 0, 0);
             Clear(ClearColour);
             ClearColour.Red = 0x1;
@@ -337,28 +435,40 @@ namespace Kernel.VGA
             Clear(ClearColour);
         }
 
-        public void Clear(Colour24Bit Colour) => Configuration.ClearMethod(this, 0, 0, Colour);
-
-        private Colour18Bit[] ColourPalette = new Colour18Bit[256];
-        public Colour18Bit GetPaletteEntry(int Index) => ColourPalette[Index];
-
-        public void SetPalette(Colour18Bit[] NewPallete)
+        /// <summary>
+        ///     Tests the 80x25, 8x16-font text configuration
+        /// </summary>
+        public void TestMode_T_80x25()
         {
-            ColourPalette = NewPallete;
+            LoadConfiguration(new T_80x25());
+            LoadFont(new LucidaConsole());
 
-            Registers.DACWriteAddress = 0;
-            // ReSharper disable once ForCanBeConvertedToForeach
-            for (int i = 0; i < NewPallete.Length; i++)
-            {
-                Registers.DACData = NewPallete[i];
-            }
-        }
-        public void SetPaletteEntry(int Index, Colour18Bit Colour)
-        {
-            ColourPalette[Index] = Colour;
+            //// Configure custom colours in the colour palette
+            //Registers.DACMask = 0xFF;
+            //int i = 0;
+            //byte col = 0;
+            //ColourPalette = new Colour18Bit[16];
+            //while (i < 16)
+            //{
+            //    ColourPalette[i++] = new Colour18Bit(col, col, col);
+            //    col += 4;
+            //}
+            //SetPalette(ColourPalette);
 
-            Registers.DACWriteAddress = (byte)Index;
-            Registers.DACData = Colour;
+            Colour4Bit ForeColour = new Colour4Bit(0xF);
+            Colour4Bit BackColour = new Colour4Bit(0x2);
+            SetCell(0, 0, 'H', ForeColour, BackColour);
+            SetCell(0, 1, 'e', ForeColour, BackColour);
+            SetCell(0, 2, 'l', ForeColour, BackColour);
+            SetCell(0, 3, 'l', ForeColour, BackColour);
+            SetCell(0, 4, 'o', ForeColour, BackColour);
+            SetCell(0, 5, ' ', ForeColour, BackColour);
+            SetCell(0, 6, 'w', ForeColour, BackColour);
+            SetCell(0, 7, 'o', ForeColour, BackColour);
+            SetCell(0, 8, 'r', ForeColour, BackColour);
+            SetCell(0, 9, 'l', ForeColour, BackColour);
+            SetCell(0, 10, 'd', ForeColour, BackColour);
+            SetCell(0, 11, '!', ForeColour, BackColour);
         }
     }
 }

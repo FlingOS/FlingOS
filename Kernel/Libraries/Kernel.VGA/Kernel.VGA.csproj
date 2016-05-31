@@ -89,10 +89,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Colour8Bit.cs" />
+    <Compile Include="Colour4Bit.cs" />
     <Compile Include="Colour24Bit.cs" />
     <Compile Include="Colour18Bit.cs" />
     <Compile Include="Configurations\Graphical\G_640x480x4.cs" />
+    <Compile Include="Configurations\Text\T_80x25.cs" />
+    <Compile Include="Fonts\Default8x8.cs" />
+    <Compile Include="Fonts\LucidaConsole.cs" />
+    <Compile Include="IFont.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VGA.cs" />
     <Compile Include="IVGAConfiguration.cs" />
@@ -103,6 +107,10 @@
     <Compile Include="VGARegisters.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
+      <Project>{1fb0e622-d2c6-4a5c-b5b6-d2bb5e502af1}</Project>
+      <Name>Drivers.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kernel.Devices\Kernel.Devices.csproj">
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Devices</Name>
@@ -116,7 +124,14 @@
       <Name>Kernel.IO</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ASM\Fonts\LucidaConsole.x86.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\Fonts\Default8x8.x86.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

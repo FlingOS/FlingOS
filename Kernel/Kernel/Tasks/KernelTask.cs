@@ -309,6 +309,17 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(50);
                 }
 
+
+                BasicConsole.WriteLine("Testing VGA Graphical mode...");
+                //VGA.VGA TheVGA = new VGA.VGA();
+                //TheVGA.TestMode_G_640x480x4();
+                BasicConsole.WriteLine("Test finished.");
+
+                BasicConsole.WriteLine("Testing VGA Text mode...");
+                //TheVGA.TestMode_T_80x25();
+                BasicConsole.WriteLine("Test finished.");
+
+
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);

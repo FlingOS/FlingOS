@@ -54,17 +54,19 @@ namespace Kernel.VGA
     /// <param name="X">The X-coordinate (from left to right) as a 0-based index of the cell to set.</param>
     /// <param name="Y">The Y-coordinate (from top to bottom) as a 0-based index of the cell to set.</param>
     /// <param name="Character">The character to set the cell to.</param>
-    /// <param name="Colour">The colour (/attribute) for the cell.</param>
-    public delegate void SetCellDelegate(VGA TheVGA, int X, int Y, char Character, Colour8Bit Colour);
+    /// <param name="ForeColour">The foreground colour (/attribute) for the cell.</param>
+    /// <param name="BackColour">The background colour (/attribute) for the cell.</param>
+    public delegate void SetCellDelegate(VGA TheVGA, int X, int Y, char Character, Colour4Bit ForeColour, Colour4Bit BackColour);
     /// <summary>
     ///     Delegate for a method for getting a cell in a particular VGA configuration.
     /// </summary>
     /// <param name="TheVGA">The VGA device making the call.</param>
     /// <param name="X">The X-coordinate (from left to right) as a 0-based index of the cell to get.</param>
     /// <param name="Y">The Y-coordinate (from top to bottom) as a 0-based index of the cell to get.</param>
-    /// <param name="Colour">The colour (/attribute) of the cell.</param>
+    /// <param name="ForeColour">The foreground colour (/attribute) of the cell.</param>
+    /// <param name="BackColour">The background colour (/attribute) of the cell.</param>
     /// <returns>The character of the cell.</returns>
-    public delegate char GetCellDelegate(VGA TheVGA, int X, int Y, out Colour8Bit Colour);
+    public delegate char GetCellDelegate(VGA TheVGA, int X, int Y, out Colour4Bit ForeColour, out Colour4Bit BackColour);
 
     /// <summary>
     ///     Interface for a configuration of the VGA registers.
