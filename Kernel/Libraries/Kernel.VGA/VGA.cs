@@ -303,28 +303,41 @@ namespace Kernel.VGA
             SetPalette(ColourPalette);
 
             // Gray code progression through the colours
-            Clear(new Colour24Bit(0x0, 0, 0));
-            Clear(new Colour24Bit(0x1, 0, 0));
-            Clear(new Colour24Bit(0x3, 0, 0));
-            Clear(new Colour24Bit(0x2, 0, 0));
-            Clear(new Colour24Bit(0x6, 0, 0));
-            Clear(new Colour24Bit(0x7, 0, 0));
-            Clear(new Colour24Bit(0x5, 0, 0));
-            Clear(new Colour24Bit(0x4, 0, 0));
-            Clear(new Colour24Bit(0xC, 0, 0));
-            Clear(new Colour24Bit(0xD, 0, 0));
-            Clear(new Colour24Bit(0xF, 0, 0));
-            Clear(new Colour24Bit(0xE, 0, 0));
-            Clear(new Colour24Bit(0xA, 0, 0));
-            Clear(new Colour24Bit(0xB, 0, 0));
-            Clear(new Colour24Bit(0x9, 0, 0));
-            Clear(new Colour24Bit(0x8, 0, 0));
+            Colour24Bit ClearColour = new Colour24Bit(0x0, 0, 0);
+            Clear(ClearColour);
+            ClearColour.Red = 0x1;
+            Clear(ClearColour);
+            ClearColour.Red = 0x3;
+            Clear(ClearColour);
+            ClearColour.Red = 0x2;
+            Clear(ClearColour);
+            ClearColour.Red = 0x6;
+            Clear(ClearColour);
+            ClearColour.Red = 0x7;
+            Clear(ClearColour);
+            ClearColour.Red = 0x5;
+            Clear(ClearColour);
+            ClearColour.Red = 0x4;
+            Clear(ClearColour);
+            ClearColour.Red = 0xC;
+            Clear(ClearColour);
+            ClearColour.Red = 0xD;
+            Clear(ClearColour);
+            ClearColour.Red = 0xF;
+            Clear(ClearColour);
+            ClearColour.Red = 0xE;
+            Clear(ClearColour);
+            ClearColour.Red = 0xA;
+            Clear(ClearColour);
+            ClearColour.Red = 0xB;
+            Clear(ClearColour);
+            ClearColour.Red = 0x9;
+            Clear(ClearColour);
+            ClearColour.Red = 0x8;
+            Clear(ClearColour);
         }
 
-        public void Clear(Colour24Bit Colour)
-        {
-            Configuration.ClearMethod(this, 0, 0, Colour);
-        }
+        public void Clear(Colour24Bit Colour) => Configuration.ClearMethod(this, 0, 0, Colour);
 
         private Colour18Bit[] ColourPalette = new Colour18Bit[256];
         public Colour18Bit GetPaletteEntry(int Index) => ColourPalette[Index];

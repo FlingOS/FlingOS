@@ -31,7 +31,7 @@ using Kernel.Framework;
 namespace Kernel.VGA
 {
     /// <summary>
-    ///     Immutable class representing an 24-bit colour consisting of
+    ///     Class representing an 24-bit colour consisting of
     ///     three 8-bit components: red, green and blue.
     /// </summary>
     /// <remarks>
@@ -42,15 +42,15 @@ namespace Kernel.VGA
         /// <summary>
         ///     The 8-bit red component of the colour.
         /// </summary>
-        public readonly byte Red;
+        public byte Red;
         /// <summary>
         ///     The 8-bit green component of the colour.
         /// </summary>
-        public readonly byte Green;
+        public byte Green;
         /// <summary>
         ///     The 8-bit blue component of the colour.
         /// </summary>
-        public readonly byte Blue;
+        public byte Blue;
 
         /// <summary>
         ///     Initialises a new 24-bit RGB colour instance with the specified

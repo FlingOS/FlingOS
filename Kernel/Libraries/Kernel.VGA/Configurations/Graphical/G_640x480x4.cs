@@ -91,27 +91,29 @@ namespace Kernel.VGA.Configurations.Graphical
         {
             uint PlaneMask = 1;
 
-            byte* FrameBuffer = TheVGA.FrameBuffer;
+            uint* FrameBuffer = (uint*)TheVGA.FrameBuffer;
 
             // TODO: Proper colour to palette index translation
             uint ColourUI32 = Colour.Red;
-            
+
+            const uint Pixels = (640*480)/4;
+
             for (byte PlaneIndex = 0; PlaneIndex < 4; PlaneIndex++)
             {
                 TheVGA.SelectPlane(PlaneIndex);
 
                 if ((PlaneMask & ColourUI32) != 0)
                 {
-                    for (uint Offset = 0; Offset < (640*480); Offset++)
+                    for (uint Offset = 0; Offset < Pixels; Offset++)
                     {
-                        FrameBuffer[Offset] = 0xFF;
+                        FrameBuffer[Offset] = 0xFFFFFFFF;
                     }
                 }
                 else
                 {
-                    for (uint Offset = 0; Offset < (640 * 480); Offset++)
+                    for (uint Offset = 0; Offset < Pixels; Offset++)
                     {
-                        FrameBuffer[Offset] = 0x00;
+                        FrameBuffer[Offset] = 0x00000000;
                     }
                 }
 
