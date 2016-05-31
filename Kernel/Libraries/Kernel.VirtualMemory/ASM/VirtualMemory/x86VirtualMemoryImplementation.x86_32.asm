@@ -202,6 +202,20 @@ pop dword ebp
 ret
 
 
+EXTERN IsolatedKernel_Pipes_BSS
+GLOBAL method_System_UInt32__RETEND_Kernel_VirtualMemory_Implementations_X86VirtualMemoryImplementation_DECLEND_GetIsolatedKernel_PipesPtr_NAMEEND___:function
+method_System_UInt32__RETEND_Kernel_VirtualMemory_Implementations_X86VirtualMemoryImplementation_DECLEND_GetIsolatedKernel_PipesPtr_NAMEEND___:
+
+push dword ebp
+mov dword ebp, esp
+
+mov dword [ebp+8], IsolatedKernel_Pipes_BSS
+
+pop dword ebp
+
+ret
+
+
 
 EXTERN __bss_start
 GLOBAL method_System_UInt32__RETEND_Kernel_VirtualMemory_Implementations_X86VirtualMemoryImplementation_DECLEND_GetBSS_StartPtr_NAMEEND___:function

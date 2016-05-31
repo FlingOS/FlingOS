@@ -67,12 +67,12 @@ namespace Kernel.Pipes
         /// <summary>
         ///     The list of all registered outpoints.
         /// </summary>
-        [Group(Name = "IsolatedKernel_Hardware_Devices")] public static List PipeOutpoints = new List(256, 256);
+        [Group(Name = "IsolatedKernel_Pipes")] public static List PipeOutpoints = new List(256, 256);
 
         /// <summary>
         ///     The list of all created pipes.
         /// </summary>
-        [Group(Name = "IsolatedKernel_Hardware_Devices")] public static List Pipes = new List(20);
+        [Group(Name = "IsolatedKernel_Pipes")] public static List Pipes = new List(20);
 
         /// <summary>
         ///     Number used to generate Ids for pipes.
@@ -82,7 +82,7 @@ namespace Kernel.Pipes
         ///     out of memory first and
         ///     there isn't currently a way to destroy pipes).
         /// </remarks>
-        [Group(Name = "IsolatedKernel_Hardware_Devices")] private static int PipeIdGenerator = 1;
+        [Group(Name = "IsolatedKernel_Pipes")] private static int PipeIdGenerator = 1;
 
         /// <summary>
         ///     Attempts to register a pipe outpoint.

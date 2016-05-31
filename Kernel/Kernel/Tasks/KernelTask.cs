@@ -311,12 +311,12 @@ namespace Kernel.Tasks
 
 
                 BasicConsole.WriteLine("Testing VGA Graphical mode...");
-                //VGA.VGA TheVGA = new VGA.VGA();
-                //TheVGA.TestMode_G_640x480x4();
+                VGA.VGA TheVGA = new VGA.VGA();
+                TheVGA.TestMode_G_640x480x4();
                 BasicConsole.WriteLine("Test finished.");
 
                 BasicConsole.WriteLine("Testing VGA Text mode...");
-                //TheVGA.TestMode_T_80x25();
+                TheVGA.TestMode_T_80x25();
                 BasicConsole.WriteLine("Test finished.");
 
 

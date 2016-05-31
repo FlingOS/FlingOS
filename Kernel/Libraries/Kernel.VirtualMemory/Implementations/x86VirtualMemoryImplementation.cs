@@ -576,13 +576,14 @@ namespace Kernel.VirtualMemory.Implementations
             uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
             uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
             uint isolatedKFSPtr = (uint)GetIsolatedKernel_FrameworkPtr();
+            uint isolatedKPPtr = (uint)GetIsolatedKernel_PipesPtr();
 
             uint cPhysPtr = GetPhysicalAddress(cPtr);
 
             for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
             {
                 if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                    cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                    cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr && cPtr != isolatedKPPtr)
                 {
                     TheLayout.AddDataPage(cPhysPtr, cPtr);
                 }
@@ -600,6 +601,7 @@ namespace Kernel.VirtualMemory.Implementations
                 uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
                 uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
                 uint isolatedKFSPtr = (uint)GetIsolatedKernel_FrameworkPtr();
+                uint isolatedKPPtr = (uint)GetIsolatedKernel_PipesPtr();
 
                 uint startPhysPtr = GetPhysicalAddress(startPtr);
 
@@ -610,7 +612,7 @@ namespace Kernel.VirtualMemory.Implementations
                 for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
                 {
                     if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr && cPtr != isolatedKPPtr)
                     {
                         count++;
                     }
@@ -623,7 +625,7 @@ namespace Kernel.VirtualMemory.Implementations
                 for (int i = 0; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
                 {
                     if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr)
+                        cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr && cPtr != isolatedKPPtr)
                     {
                         BuiltInProcessVAddrs[i++] = cPtr;
                     }
@@ -901,6 +903,12 @@ namespace Kernel.VirtualMemory.Implementations
 
         [PluggedMethod(ASMFilePath = null)]
         private static uint* GetIsolatedKernel_FrameworkPtr()
+        {
+            return null;
+        }
+
+        [PluggedMethod(ASMFilePath = null)]
+        private static uint* GetIsolatedKernel_PipesPtr()
         {
             return null;
         }
