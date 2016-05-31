@@ -285,28 +285,40 @@ namespace Kernel.VGA
         {
             LoadConfiguration(new G_640x480x4());
 
-            for (byte i = 0; i < 64; i++)
-            {
-                SetPaletteEntry(i, new Colour18Bit(i, 0, 0));
-                SetPaletteEntry(i + 64, new Colour18Bit(63, i, 0));
-                SetPaletteEntry(i + 128, new Colour18Bit(63, 63, i));
-                SetPaletteEntry(i + 192, new Colour18Bit((byte)(63 - i), (byte)(63 - i), (byte)(63 - i)));
-            }
+            Registers.DACMask = 0xFF;
             
-            Clear(new Colour24Bit(255, 255, 255));
+            int i = 0;
+            while (i < 16)
+            {
+                SetPaletteEntry(i++, new Colour18Bit((byte)i, 0, 0));
+            }
+            Colour18Bit Black = new Colour18Bit(0, 0, 0);
+            while (i < 32)
+            {
+                SetPaletteEntry(i++, Black);
+            }
+            Colour18Bit White = new Colour18Bit(63, 63, 63);
+            while (i < 48)
+            {
+                SetPaletteEntry(i++, White);
+            }
+            Colour18Bit DGrey = new Colour18Bit(21, 21, 21);
+            while (i < 64)
+            {
+                SetPaletteEntry(i++, DGrey);
+            }
+
+            for (i = 0; i < 16; i++)
+            {
+                Clear(new Colour24Bit((byte)i, 0, 0));
+
+                for (int j = 0; j < 1000000; j++) { }
+            }
         }
 
         public void Clear(Colour24Bit Colour)
         {
-            uint Height = Configuration.Height;
-            uint Width = Configuration.Width;
-            for (int Y = 0; Y < Height; Y++)
-            {
-                for (int X = 0; X < Width; X++)
-                {
-                    SetPixel(X, Y, Colour);
-                }
-            }
+            Configuration.ClearMethod(this, 0, 0, Colour);
         }
 
         private Colour18Bit[] ColourPalette = new Colour18Bit[256];

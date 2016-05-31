@@ -41,6 +41,7 @@ namespace Kernel.VGA.Configurations.Graphical
         public GetCellDelegate GetCellMethod => GetCell;
         public SetPixelDelegate SetPixelMethod => SetPixel;
         public GetPixelDelegate GetPixelMethod => GetPixel;
+        public SetPixelDelegate ClearMethod => Clear;
 
         private static void SetCell(VGA TheVGA, int X, int Y, char Character, Colour8Bit Colour)
         {
@@ -60,7 +61,7 @@ namespace Kernel.VGA.Configurations.Graphical
 
             X = (X & 7) * 1;
 
-            uint Mask = (byte)(0x80 >> (int)X);
+            uint Mask = (byte)(0x80 >> X);
             uint PlaneMask = 1;
 
             byte* FrameBuffer = TheVGA.FrameBuffer;
@@ -80,6 +81,38 @@ namespace Kernel.VGA.Configurations.Graphical
                 else
                 {
                     FrameBuffer[Offset] = (byte)(FrameBuffer[Offset] & ~Mask);
+                }
+
+                PlaneMask <<= 1;
+            }
+        }
+
+        private static unsafe void Clear(VGA TheVGA, int X, int Y, Colour24Bit Colour)
+        {
+            uint PlaneMask = 1;
+
+            byte* FrameBuffer = TheVGA.FrameBuffer;
+
+            // TODO: Proper colour to palette index translation
+            uint ColourUI32 = Colour.Red;
+            
+            for (byte PlaneIndex = 0; PlaneIndex < 4; PlaneIndex++)
+            {
+                TheVGA.SelectPlane(PlaneIndex);
+
+                if ((PlaneMask & ColourUI32) != 0)
+                {
+                    for (uint Offset = 0; Offset < (640*480); Offset++)
+                    {
+                        FrameBuffer[Offset] = 0xFF;
+                    }
+                }
+                else
+                {
+                    for (uint Offset = 0; Offset < (640 * 480); Offset++)
+                    {
+                        FrameBuffer[Offset] = 0x00;
+                    }
                 }
 
                 PlaneMask <<= 1;

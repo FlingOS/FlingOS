@@ -128,7 +128,16 @@ namespace Kernel.VGA
         ///     is a text mode configuration.
         /// </remarks>
         GetPixelDelegate GetPixelMethod { get; }
-        
+
+        /// <summary>
+        ///     Method for setting all the pixels on the screen.
+        /// </summary>
+        /// <remarks>
+        ///     Not valid for text mode configurations. Should return null if the configuration
+        ///     is a text mode configuration.
+        /// </remarks>
+        SetPixelDelegate ClearMethod { get; }
+
         #region Registers
 
         #region Graphics registers

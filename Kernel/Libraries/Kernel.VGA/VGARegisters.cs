@@ -1141,7 +1141,13 @@ namespace Kernel.VGA
         #endregion
 
         #region Colour registers
-        
+
+        public byte DACMask
+        {
+            get { return IO.DACMask.Read_Byte(); }
+            set { IO.DACMask.Write_Byte(value); }
+        }
+
         /// <summary>
         ///     The DAC Write-Access Address register
         /// </summary>
