@@ -290,66 +290,16 @@ namespace Kernel.VGA
             // Some flickering is to be expected as each plane is updated in turn!
             //  Changes between colours that happen much faster than the clear calls
             //  below are just flicker and can be ignored.
-
-            //int i = 0;
-            //SetPaletteEntry(i++, new Colour18Bit(0, 0, 0));
-            //while (i < 16)
-            //{
-            //    SetPaletteEntry(i++, new Colour18Bit(63, 0, 0)); // 0to5 & 7 = Works for 0to5 and 7
-            //}
-
-            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 16
-            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 17
-            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 18
-            //SetPaletteEntry(i++, new Colour18Bit(42, 0, 0)); // 19
-            //SetPaletteEntry(i++, new Colour18Bit(63, 63, 63)); // 20 = Works for 6
-
-            //Colour18Bit Black = new Colour18Bit(0, 0, 42);
-            //while (i < 32)
-            //{
-            //    SetPaletteEntry(i++, Black);
-            //}
             
-            //// 32 to 48 - No effect
-            //i = 48;
-
-            //while (i < 64)
-            //{
-            //    SetPaletteEntry(i++, new Colour18Bit(0, 63, 0)); // 48to63 = Works for 9to15
-            //}
-            
-            //// 64 to 255 - No effect
-
             int i = 0;
             byte col = 0;
 
-            while (i < 6)
+            ColourPalette = new Colour18Bit[16];
+            while (i < 16)
             {
-                ColourPalette[i++] = new Colour18Bit(col, col, col); // 0 to 5
+                ColourPalette[i++] = new Colour18Bit(col, col, col);
                 col += 4;
             }
-            ColourPalette[i++] = new Colour18Bit(63, 0, 0);
-            ColourPalette[i++] = new Colour18Bit((byte)(col + 4), (byte)(col + 4), (byte)(col + 4)); // 7
-            while (i < 20)
-            {
-                ColourPalette[i++] = new Colour18Bit(63, 63, 0);
-            }
-            ColourPalette[i++] = new Colour18Bit(col, col, col); // 6
-            col += 8;
-            while (i < 56)
-            {
-                ColourPalette[i++] = new Colour18Bit(0, 63, 0);
-            }
-            while (i < 64)
-            {
-                ColourPalette[i++] = new Colour18Bit(col, col, col); // 8 to 15
-                col += 4;
-            }
-            while (i < 256)
-            {
-                ColourPalette[i++] = new Colour18Bit(0, 0, 63);
-            }
-            SetPalette(ColourPalette);
 
             for (i = 0; i < 16; i++)
             {

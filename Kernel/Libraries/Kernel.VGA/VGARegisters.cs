@@ -281,9 +281,7 @@ namespace Kernel.VGA
             }
             set
             {
-                // Write index to SequencerIndex
                 IO.SequencerIndex.Write_Byte(VGAConstants.SequencerMemoryModeRegisterIndex);
-                // Write data to SequencerData
                 IO.SequencerData.Write_Byte((byte)value);
             }
         }
@@ -1190,10 +1188,7 @@ namespace Kernel.VGA
         /// <remarks>
         ///     This is a read-only register.
         /// </remarks>
-        public byte DACState
-        {
-            get { return IO.DACState.Read_Byte(); }
-        }
+        public byte DACState => IO.DACState.Read_Byte();
 
         #endregion
 
