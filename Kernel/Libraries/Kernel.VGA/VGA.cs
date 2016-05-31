@@ -300,13 +300,25 @@ namespace Kernel.VGA
                 ColourPalette[i++] = new Colour18Bit(col, col, col);
                 col += 4;
             }
+            SetPalette(ColourPalette);
 
-            for (i = 0; i < 16; i++)
-            {
-                Clear(new Colour24Bit((byte)i, 0, 0));
-
-                for (int j = 0; j < 400000000; j++) { }
-            }
+            // Gray code progression through the colours
+            Clear(new Colour24Bit(0x0, 0, 0));
+            Clear(new Colour24Bit(0x1, 0, 0));
+            Clear(new Colour24Bit(0x3, 0, 0));
+            Clear(new Colour24Bit(0x2, 0, 0));
+            Clear(new Colour24Bit(0x6, 0, 0));
+            Clear(new Colour24Bit(0x7, 0, 0));
+            Clear(new Colour24Bit(0x5, 0, 0));
+            Clear(new Colour24Bit(0x4, 0, 0));
+            Clear(new Colour24Bit(0xC, 0, 0));
+            Clear(new Colour24Bit(0xD, 0, 0));
+            Clear(new Colour24Bit(0xF, 0, 0));
+            Clear(new Colour24Bit(0xE, 0, 0));
+            Clear(new Colour24Bit(0xA, 0, 0));
+            Clear(new Colour24Bit(0xB, 0, 0));
+            Clear(new Colour24Bit(0x9, 0, 0));
+            Clear(new Colour24Bit(0x8, 0, 0));
         }
 
         public void Clear(Colour24Bit Colour)
