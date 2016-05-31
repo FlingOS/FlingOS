@@ -290,9 +290,9 @@ namespace Kernel.VGA
             int i = 0;
             while (i < 16)
             {
-                SetPaletteEntry(i++, new Colour18Bit((byte)i, 0, 0));
+                SetPaletteEntry(i++, new Colour18Bit(63, 0, 0));
             }
-            Colour18Bit Black = new Colour18Bit(0, 0, 0);
+            Colour18Bit Black = new Colour18Bit(0, 42, 42);
             while (i < 32)
             {
                 SetPaletteEntry(i++, Black);
@@ -302,17 +302,20 @@ namespace Kernel.VGA
             {
                 SetPaletteEntry(i++, White);
             }
-            Colour18Bit DGrey = new Colour18Bit(21, 21, 21);
             while (i < 64)
             {
-                SetPaletteEntry(i++, DGrey);
+                SetPaletteEntry(i++, new Colour18Bit(0, 63, 0));
+            }
+            while (i < 256)
+            {
+                SetPaletteEntry(i++, new Colour18Bit(0, 0, 63));
             }
 
             for (i = 0; i < 16; i++)
             {
                 Clear(new Colour24Bit((byte)i, 0, 0));
 
-                for (int j = 0; j < 1000000; j++) { }
+                for (int j = 0; j < 1000000000; j++) { }
             }
         }
 
