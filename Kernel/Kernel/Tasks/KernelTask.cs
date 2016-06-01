@@ -314,8 +314,9 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Setting up VGA...");
                 VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
                 
-                BasicConsole.WriteLine("Testing VGA Graphical mode...");
+                BasicConsole.WriteLine("Testing VGA Graphical modes...");
                 TheVGA.TestMode_G_640x480x4();
+                TheVGA.TestMode_G_720x480x4();
                 BasicConsole.WriteLine("Test finished.");
 
                 BasicConsole.WriteLine("Resetting graphics adapter...");

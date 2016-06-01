@@ -500,6 +500,61 @@ namespace Kernel.VGA
             ClearColour.Red = 0x8;
             Clear(ClearColour);
         }
+        /// <summary>
+        ///     Tests the 640x480, 4-bit graphical configuration
+        /// </summary>
+        public void TestMode_G_720x480x4()
+        {
+            LoadConfiguration(G_720x480x4.Instance);
+
+            // Configure custom colours in the colour palette
+            Registers.DACMask = 0xFF;
+            int i = 0;
+            byte col = 0;
+            ColourPalette = new Colour18Bit[16];
+            while (i < 16)
+            {
+                ColourPalette[i++] = new Colour18Bit(col, col, col);
+                col += 4;
+            }
+            SetPalette(ColourPalette);
+
+            // Gray code progression through the colours
+            //  Gray coding eliminates flicker between colours as the planes
+            //  change separately.
+            Colour24Bit ClearColour = new Colour24Bit(0x0, 0, 0);
+            Clear(ClearColour);
+            ClearColour.Red = 0x1;
+            Clear(ClearColour);
+            ClearColour.Red = 0x3;
+            Clear(ClearColour);
+            ClearColour.Red = 0x2;
+            Clear(ClearColour);
+            ClearColour.Red = 0x6;
+            Clear(ClearColour);
+            ClearColour.Red = 0x7;
+            Clear(ClearColour);
+            ClearColour.Red = 0x5;
+            Clear(ClearColour);
+            ClearColour.Red = 0x4;
+            Clear(ClearColour);
+            ClearColour.Red = 0xC;
+            Clear(ClearColour);
+            ClearColour.Red = 0xD;
+            Clear(ClearColour);
+            ClearColour.Red = 0xF;
+            Clear(ClearColour);
+            ClearColour.Red = 0xE;
+            Clear(ClearColour);
+            ClearColour.Red = 0xA;
+            Clear(ClearColour);
+            ClearColour.Red = 0xB;
+            Clear(ClearColour);
+            ClearColour.Red = 0x9;
+            Clear(ClearColour);
+            ClearColour.Red = 0x8;
+            Clear(ClearColour);
+        }
 
         /// <summary>
         ///     Tests the 80x25, 8x16-font text configuration

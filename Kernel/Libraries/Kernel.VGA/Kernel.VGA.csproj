@@ -92,6 +92,7 @@
     <Compile Include="Colour4Bit.cs" />
     <Compile Include="Colour24Bit.cs" />
     <Compile Include="Colour18Bit.cs" />
+    <Compile Include="Configurations\Graphical\G_720x480x4.cs" />
     <Compile Include="Configurations\Graphical\G_640x480x4.cs" />
     <Compile Include="Configurations\Text\T_80x50.cs" />
     <Compile Include="Configurations\Text\T_80x25.cs" />

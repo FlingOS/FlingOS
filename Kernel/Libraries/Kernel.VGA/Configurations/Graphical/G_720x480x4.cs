@@ -31,16 +31,16 @@ using Kernel.Framework.Exceptions;
 
 namespace Kernel.VGA.Configurations.Graphical
 {
-    public sealed class G_640x480x4 : Object, IVGAConfiguration
+    public sealed class G_720x480x4 : Object, IVGAConfiguration
     {
-        private static G_640x480x4 _Instance;
-        public static G_640x480x4 Instance => _Instance ?? (_Instance = new G_640x480x4());
+        private static G_720x480x4 _Instance;
+        public static G_720x480x4 Instance => _Instance ?? (_Instance = new G_720x480x4());
 
-        private G_640x480x4()
+        private G_720x480x4()
         {
         }
 
-        public uint Width => 640;
+        public uint Width => 720;
         public uint Height => 480;
         public uint BitDepth => 4;
         public ScreenMode Mode => ScreenMode.Graphical;
@@ -65,7 +65,7 @@ namespace Kernel.VGA.Configurations.Graphical
 
         private static unsafe void SetPixel(VGA TheVGA, int X, int Y, Colour24Bit Colour)
         {
-            uint Offset = (uint)(X / 8 + (640 / 8) * Y);
+            uint Offset = (uint)(X / 8 + (720 / 8) * Y);
 
             X = X & 7;
 
@@ -104,7 +104,7 @@ namespace Kernel.VGA.Configurations.Graphical
             // TODO: Proper colour to palette index translation
             uint ColourUI32 = Colour.Red;
 
-            const uint Pixels = (640*480)/4;
+            const uint Pixels = (720*480)/4;
 
             for (byte PlaneIndex = 0; PlaneIndex < 4; PlaneIndex++)
             {
@@ -131,7 +131,7 @@ namespace Kernel.VGA.Configurations.Graphical
 
         private static unsafe Colour24Bit GetPixel(VGA TheVGA, int X, int Y)
         {
-            uint Offset = (uint)(X / 8 + (640 / 8) * Y);
+            uint Offset = (uint)(X / 8 + (720 / 8) * Y);
 
             X = X & 7;
 
@@ -195,18 +195,18 @@ namespace Kernel.VGA.Configurations.Graphical
         public byte ColourPlaneEnable => 0x0F;
         public byte HorizontalPixelPanning => 0x00;
         public byte ColourSelect => 0x00;
-        public byte HorizontalTotal => 0x5F;
-        public byte EndHorizontalDisplay => 0x4F;
-        public byte StartHorizontalBlanking => 0x50;
+        public byte HorizontalTotal => 0x6B;
+        public byte EndHorizontalDisplay => 0x59;
+        public byte StartHorizontalBlanking => 0x5A;
         public byte EndHorizontalBlanking => 0x82;
-        public byte StartHorizontalRetrace => 0x54;
-        public byte EndHorizontalRetrace => 0x80;
+        public byte StartHorizontalRetrace => 0x60;
+        public byte EndHorizontalRetrace => 0x8D;
         public byte VerticalTotal => 0x0B;
         public byte Overflow => 0x3E;
         public byte PresetRowScan => 0x00;
         public byte MaximumScanLine => 0x40;
-        public byte CursorStart => 0x00;
-        public byte CursorEnd => 0x00;
+        public byte CursorStart => 0x06;
+        public byte CursorEnd => 0x07;
         public byte StartAddressHigh => 0x00;
         public byte StartAddressLow => 0x00;
         public byte CursorLocationHigh => 0x00;
@@ -214,10 +214,10 @@ namespace Kernel.VGA.Configurations.Graphical
         public byte VerticalRetraceStart => 0xEA;
         public byte VerticalRetraceEnd => 0x8C;
         public byte VerticalDisplayEnd => 0xDF;
-        public byte Offset => 0x28;
-        public byte UnderlineLocation => 0x00;
-        public byte StartVerticalBlanking => 0xE7;
-        public byte EndVerticalBlanking => 0x04;
+        public byte Offset => 0x2D;
+        public byte UnderlineLocation => 0x08;
+        public byte StartVerticalBlanking => 0xE8;
+        public byte EndVerticalBlanking => 0x05;
         public byte CRTCModeControl => 0xE3;
         public byte LineCompare => 0xFF;
         public byte MiscellaneousOutput => 0xE3;
