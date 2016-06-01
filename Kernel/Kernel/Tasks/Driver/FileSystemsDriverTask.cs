@@ -45,6 +45,8 @@ namespace Kernel.Tasks.Driver
                     BasicConsole.WriteLine("File Systems Driver > Reporting ready.");
                     Ready = true;
 
+                    int Delay = 10000;
+                    int DelayMax = 60000*5;
                     while (!Terminating)
                     {
                         BasicConsole.WriteLine("File Systems Driver > Searching for file systems...");
@@ -52,7 +54,16 @@ namespace Kernel.Tasks.Driver
                         StorageManager.InitStoragePipes();
                         StorageManager.InitControllers();
 
-                        SystemCalls.SleepThread(10000);
+                        SystemCalls.SleepThread(Delay);
+                        
+                        if (Delay * 2 < DelayMax)
+                        {
+                            Delay = Delay * 2;
+                        }
+                        else
+                        {
+                            Delay = DelayMax;
+                        }
                     }
                 }
                 catch
