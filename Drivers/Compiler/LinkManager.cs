@@ -274,6 +274,15 @@ namespace Drivers.Compiler
         /// <returns>/// -1 = a before b, 0 = a or b in either order, +1 = a after b.</returns>
         public static int GetOrder(ASMBlock a, ASMBlock b)
         {
+            if (a.Priority == b.Priority)
+            {
+                if (a.OriginMethodInfo != null && b.OriginMethodInfo != null)
+                {
+                    return a.OriginMethodInfo.Signature.CompareTo(b.OriginMethodInfo.Signature);
+                }
+                return -1;
+            }
+
             return a.Priority.CompareTo(b.Priority);
         }
 

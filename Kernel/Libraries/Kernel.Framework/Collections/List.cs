@@ -255,6 +255,12 @@ namespace Kernel.Framework.Collections
             //Note: Beyond the length of the list not the capacity of the list.
             if (index >= nextIndex)
             {
+                BasicConsole.WriteLine("Error! List.RemoveAt : index >= nextIndex");
+                ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
+            }
+            else if (index < 0)
+            {
+                BasicConsole.WriteLine("Error! List.RemoveAt : index < 0");
                 ExceptionMethods.Throw(new IndexOutOfRangeException(index, nextIndex));
             }
 

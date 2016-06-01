@@ -43,11 +43,9 @@ namespace Kernel.Multiprocessing.Scheduling
     {
         [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private static PriorityQueueScheduler ThePQScheduler;
 
-        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private readonly PriorityQueue ActiveQueue =
-            new PriorityQueue(1024);
+        private readonly PriorityQueue ActiveQueue = new PriorityQueue(1024);
 
-        [Group(Name = "IsolatedKernel_Hardware_Multiprocessing")] private readonly PriorityQueue InactiveQueue =
-            new PriorityQueue(1024);
+        private readonly PriorityQueue InactiveQueue = new PriorityQueue(1024);
 
         //private List SuspendedList = new List(1024);
 

@@ -248,7 +248,7 @@ namespace Kernel.Multiprocessing
             CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
 
             // Guarantee memory layout cleanly loaded
-            Thread.Sleep(50);
+            //Thread.Sleep(50);
 
             uint* srcPtr = (uint*)startVAddr;
             uint* dstPtr = (uint*)newVAddr;
@@ -286,7 +286,7 @@ namespace Kernel.Multiprocessing
             CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
 
             // Guarantee memory layout cleanly loaded
-            Thread.Sleep(50);
+            //Thread.Sleep(50);
 
             uint* srcPtr = (uint*)startVAddr;
             uint* dstPtr = (uint*)newVAddr;
