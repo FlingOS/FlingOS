@@ -28,6 +28,7 @@
 
 using Kernel.Framework;
 using Kernel.IO;
+using Kernel.VGA;
 
 namespace Kernel.Consoles
 {
@@ -36,7 +37,7 @@ namespace Kernel.Consoles
     ///     VGA text-mode implementation. This implementation of the Console class outputs text in VGA text-mode
     ///     directly to the VGA memory.
     /// </summary>
-    public unsafe class AdvancedConsole : Console
+    public unsafe class VGAConsole : Console
     {
         /// <summary>
         ///     The command port for manipulating the VGA text-mode cursor.
@@ -54,6 +55,22 @@ namespace Kernel.Consoles
         protected char* vidMemBasePtr
         {
             get { return (char*)0xB8000 + ScreenStartLine*ScreenLineWidth + ScreenStartLineOffset; }
+        }
+
+        /// <summary>
+        ///     The VGA driver used to control the screen.
+        /// </summary>
+        private readonly VGA.VGA TheVGA;
+
+        public VGAConsole()
+            : this(VGA.VGA.GetInstance().Configuration, VGA.VGA.GetInstance().Font)
+        {
+            
+        }
+        public VGAConsole(IVGAConfiguration Configuration, IFont Font)
+            : base((int)Configuration.Width, (int)Configuration.Height)
+        {
+            TheVGA = VGA.VGA.GetConfiguredInstance(Configuration, Font);
         }
 
         /// <summary>

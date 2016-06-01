@@ -478,7 +478,7 @@ namespace Kernel.Tasks
 
         private class PipeInfo : Object
         {
-            public readonly Console TheConsole = new AdvancedConsole();
+            public readonly Console TheConsole = new VGAConsole();
             public StandardInpoint StdOut;
         }
     }

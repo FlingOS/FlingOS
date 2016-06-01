@@ -47,13 +47,13 @@
 //            // Wait for other system startup to occur
 //            SystemCalls.SleepThread(1000);
 
-//            MainConsole = new Consoles.AdvancedConsole();
+//            MainConsole = new Consoles.VGAConsole();
 //            MainConsole.ScreenHeight = 7;
 //            MainConsole.LineLength = 55;
 //            MainConsole.ScreenStartLineOffset = 0;
 //            MainConsole.UpdateScreenCursor = false;
 
-//            StatusConsole = new Consoles.AdvancedConsole();
+//            StatusConsole = new Consoles.VGAConsole();
 //            StatusConsole.ScreenHeight = 7;
 //            StatusConsole.LineLength = 24;
 //            StatusConsole.ScreenStartLineOffset = 56;
@@ -74,9 +74,9 @@
 //            {
 //                try
 //                {
-//                    ((Consoles.AdvancedConsole)StatusConsole).DrawBottomBorder();
-//                    ((Consoles.AdvancedConsole)StatusConsole).DrawLeftBorder();
-//                    ((Consoles.AdvancedConsole)MainConsole).DrawBottomBorder();
+//                    ((Consoles.VGAConsole)StatusConsole).DrawBottomBorder();
+//                    ((Consoles.VGAConsole)StatusConsole).DrawLeftBorder();
+//                    ((Consoles.VGAConsole)MainConsole).DrawBottomBorder();
 
 //                    StatusConsole.Clear();
 //                    if (StatusLine1)

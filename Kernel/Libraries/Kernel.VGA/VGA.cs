@@ -43,6 +43,23 @@ namespace Kernel.VGA
     /// </summary>
     public sealed unsafe class VGA : Device
     {
+        private static VGA _Instance;
+        private static VGA Instance => _Instance ?? (_Instance = new VGA());
+
+        private VGA()
+        {
+        }
+
+        public static VGA GetInstance() => Instance;
+
+        public static VGA GetConfiguredInstance(IVGAConfiguration Configuration, IFont Font)
+        {
+            Instance.LoadConfiguration(Configuration);
+            Instance.LoadFont(Font);
+            return Instance;
+        }
+
+
         private readonly VGARegisters Registers = new VGARegisters();
 
         private FrameBufferSegments FrameBufferSegment => (FrameBufferSegments)((Registers.MiscellaneousGraphics >> 2) & 3);
@@ -105,13 +122,21 @@ namespace Kernel.VGA
         ///     The currently loaded configuration for the screen.
         /// </summary>
         public IVGAConfiguration Configuration { get; private set; }
-        
+
+        /// <summary>
+        ///     The currently loaded font for the screen.
+        /// </summary>
+        public IFont Font { get; private set; }
+
         /// <summary>
         ///     Loads the specified screen configuration.
         /// </summary>
         /// <param name="TheConfiguration">The configuration to load.</param>
         public void LoadConfiguration(IVGAConfiguration TheConfiguration)
         {
+            if (Configuration == TheConfiguration)
+                return;
+
             Configuration = TheConfiguration;
             
             Registers.MiscellaneousOutput = TheConfiguration.MiscellaneousOutput;
@@ -138,6 +163,70 @@ namespace Kernel.VGA
 
             // Lock CRT registers and unblank the screen
             UnblankAndLock();
+
+            if (TheConfiguration.Mode == ScreenMode.Text)
+            {
+                if (Font != null)
+                {
+                    LoadFont(Font, true);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Loads the specified font to the VGA font buffer.
+        /// </summary>
+        /// <param name="TheFont">The font to load.</param>
+        public void LoadFont(IFont TheFont)
+        {
+            LoadFont(TheFont, false);
+        }
+        private void LoadFont(IFont TheFont, bool SkipCheck)
+        {
+            if (!SkipCheck && Font == TheFont)
+                return;
+
+            Font = TheFont;
+
+            // Save registers
+            byte MapMask = Registers.MapMask;
+            SequencerMemoryModeFlags SequencerMemoryMode = Registers.SequencerMemoryMode;
+
+            // Switch to flat addressing (assuming chain-4 addressing already off)
+            Registers.SequencerMemoryMode = SequencerMemoryMode | SequencerMemoryModeFlags.OddEvenDisable;
+
+            // Save registers
+            byte ReadMapSelect = Registers.ReadMapSelect;
+
+            // Save register and turn off even-odd addressing
+            GraphicsModeFlags GraphicsMode = Registers.GraphicsMode;
+            Registers.GraphicsMode = GraphicsMode & ~GraphicsModeFlags.HostOddEvenMemoryReadAddressingEnable;
+
+            // Save register and turn off even-odd addressing
+            byte MiscellaneousGraphics = Registers.MiscellaneousGraphics;
+            Registers.MiscellaneousGraphics = (byte)(MiscellaneousGraphics & ~0x02);
+
+            // Write font to plane P4
+            SelectPlane(2);
+
+            // Write to font 0
+            byte* Buffer = FrameBuffer;
+            int FontHeight = TheFont.FontHeight;
+            byte[] FontData = TheFont.FontData;
+            for (int i = 0; i < 256; i++)
+            {
+                for (int j = 0; j < FontHeight; j++)
+                {
+                    Buffer[(i * 32) + j] = FontData[(i * FontHeight) + j];
+                }
+            }
+
+            // Restore registers
+            Registers.MapMask = MapMask;
+            Registers.SequencerMemoryMode = SequencerMemoryMode;
+            Registers.ReadMapSelect = ReadMapSelect;
+            Registers.GraphicsMode = GraphicsMode;
+            Registers.MiscellaneousGraphics = MiscellaneousGraphics;
         }
 
         private void WriteSequencerRegisters(IVGAConfiguration TheConfiguration)
@@ -226,53 +315,6 @@ namespace Kernel.VGA
 
             // Set plane to write to
             Registers.MapMask = (byte)(1 << Plane);
-        }
-
-        /// <summary>
-        ///     Loads the specified font to the VGA font buffer.
-        /// </summary>
-        /// <param name="TheFont">The font to load.</param>
-        public void LoadFont(IFont TheFont)
-        {
-            // Save registers
-            byte MapMask = Registers.MapMask;
-            SequencerMemoryModeFlags SequencerMemoryMode = Registers.SequencerMemoryMode;
-
-            // Switch to flat addressing (assuming chain-4 addressing already off)
-            Registers.SequencerMemoryMode = SequencerMemoryMode | SequencerMemoryModeFlags.OddEvenDisable;
-
-            // Save registers
-            byte ReadMapSelect = Registers.ReadMapSelect;
-
-            // Save register and turn off even-odd addressing
-            GraphicsModeFlags GraphicsMode = Registers.GraphicsMode;
-            Registers.GraphicsMode = GraphicsMode & ~GraphicsModeFlags.HostOddEvenMemoryReadAddressingEnable;
-
-            // Save register and turn off even-odd addressing
-            byte MiscellaneousGraphics = Registers.MiscellaneousGraphics;
-            Registers.MiscellaneousGraphics = (byte)(MiscellaneousGraphics & ~0x02);
-
-            // Write font to plane P4
-            SelectPlane(2);
-
-            // Write to font 0
-            byte* Buffer = FrameBuffer;
-            int FontHeight = TheFont.FontHeight;
-            byte[] FontData = TheFont.FontData;
-            for (int i = 0; i < 256; i++)
-            {
-                for (int j = 0; j < FontHeight; j++)
-                {
-                    Buffer[(i * 32) + j] = FontData[(i * FontHeight) + j];
-                }
-            }
-
-            // Restore registers
-            Registers.MapMask = MapMask;
-            Registers.SequencerMemoryMode = SequencerMemoryMode;
-            Registers.ReadMapSelect = ReadMapSelect;
-            Registers.GraphicsMode = GraphicsMode;
-            Registers.MiscellaneousGraphics = MiscellaneousGraphics;
         }
 
         /// <summary>

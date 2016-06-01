@@ -49,6 +49,11 @@ namespace Kernel.Consoles
 
         protected uint StdOutRemoteProcessId;
 
+        public VirtualConsole()
+            : base(0, 0)
+        {
+        }
+
         /// <summary>
         ///     Creates the output pipe and waits for the Window Manager to connect.
         /// </summary>

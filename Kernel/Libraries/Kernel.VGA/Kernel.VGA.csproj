@@ -93,8 +93,10 @@
     <Compile Include="Colour24Bit.cs" />
     <Compile Include="Colour18Bit.cs" />
     <Compile Include="Configurations\Graphical\G_640x480x4.cs" />
+    <Compile Include="Configurations\Text\T_80x50.cs" />
     <Compile Include="Configurations\Text\T_80x25.cs" />
     <Compile Include="Fonts\Default8x8.cs" />
+    <Compile Include="Fonts\Jupitor.cs" />
     <Compile Include="Fonts\LucidaConsole.cs" />
     <Compile Include="IFont.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -125,6 +127,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ASM\Fonts\Jupitor.x86.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ASM\Fonts\LucidaConsole.x86.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

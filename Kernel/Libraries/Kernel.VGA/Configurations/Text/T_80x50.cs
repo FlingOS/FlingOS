@@ -31,17 +31,17 @@ using Kernel.Framework.Exceptions;
 
 namespace Kernel.VGA.Configurations.Graphical
 {
-    public sealed class T_80x25 : Object, IVGAConfiguration
+    public sealed class T_80x50 : Object, IVGAConfiguration
     {
-        private static T_80x25 _Instance;
-        public static T_80x25 Instance => _Instance ?? (_Instance = new T_80x25());
+        private static T_80x50 _Instance;
+        public static T_80x50 Instance => _Instance ?? (_Instance = new T_80x50());
 
-        private T_80x25()
+        private T_80x50()
         {
         }
 
         public uint Width => 80;
-        public uint Height => 25;
+        public uint Height => 50;
         public uint BitDepth => 4;
         public ScreenMode Mode => ScreenMode.Text;
         public SetCellDelegate SetCellMethod => SetCell;
@@ -59,7 +59,7 @@ namespace Kernel.VGA.Configurations.Graphical
 
         private static char GetCell(VGA TheVGA, int X, int Y, out Colour4Bit ForeColour, out Colour4Bit BackColour)
         {
-            ExceptionMethods.Throw(new NotImplementedException("Get cell in 80x25 text VGA mode not implemented yet."));
+            ExceptionMethods.Throw(new NotImplementedException("Get cell in 80x50 text VGA mode not implemented yet."));
             ForeColour = null;
             BackColour = null;
             return '\0';
@@ -67,17 +67,17 @@ namespace Kernel.VGA.Configurations.Graphical
 
         private static unsafe void SetPixel(VGA TheVGA, int X, int Y, Colour24Bit Colour)
         {
-            ExceptionMethods.Throw(new NotSupportedException("Cannot set pixel in 80x25 text VGA mode."));
+            ExceptionMethods.Throw(new NotSupportedException("Cannot set pixel in 80x50 text VGA mode."));
         }
 
         private static unsafe void Clear(VGA TheVGA, int X, int Y, Colour24Bit Colour)
         {
-            ExceptionMethods.Throw(new NotSupportedException("Cannot clear pixels in 80x25 text VGA mode."));
+            ExceptionMethods.Throw(new NotSupportedException("Cannot clear pixels in 80x50 text VGA mode."));
         }
 
         private static unsafe Colour24Bit GetPixel(VGA TheVGA, int X, int Y)
         {
-            ExceptionMethods.Throw(new NotSupportedException("Cannot get pixel in 80x25 text VGA mode."));
+            ExceptionMethods.Throw(new NotSupportedException("Cannot get pixel in 80x50 text VGA mode."));
             return null;
         }
 
@@ -127,13 +127,13 @@ namespace Kernel.VGA.Configurations.Graphical
         public byte VerticalTotal => 0xBF;
         public byte Overflow => 0x1F;
         public byte PresetRowScan => 0x00;
-        public byte MaximumScanLine => 0x4F;
-        public byte CursorStart => 0x0D;
-        public byte CursorEnd => 0x0E;
+        public byte MaximumScanLine => 0x47;
+        public byte CursorStart => 0x06;
+        public byte CursorEnd => 0x07;
         public byte StartAddressHigh => 0x00;
         public byte StartAddressLow => 0x00;
-        public byte CursorLocationHigh => 0x00;
-        public byte CursorLocationLow => 0x50;
+        public byte CursorLocationHigh => 0x01;
+        public byte CursorLocationLow => 0x40;
         public byte VerticalRetraceStart => 0x9C;
         public byte VerticalRetraceEnd => 0x8E;
         public byte VerticalDisplayEnd => 0x8F;

@@ -101,7 +101,7 @@
   <ItemGroup>
     <Compile Include="CommandHelp.cs" />
     <Compile Include="Console.cs" />
-    <Compile Include="Consoles\AdvancedConsole.cs" />
+    <Compile Include="Consoles\VGAConsole.cs" />
     <Compile Include="Consoles\VirtualConsole.cs" />
     <Compile Include="Debug\Debugger.cs" />
     <Compile Include="Tasks\App\SystemStatusTask.cs" />

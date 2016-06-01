@@ -31,19 +31,19 @@ using Kernel.Framework;
 
 namespace Kernel.VGA.Fonts
 {
-    public sealed class Default8x8 : Object, IFont
+    public sealed class Jupitor : Object, IFont
     {
         private static byte[] _FontData;
 
-        private static Default8x8 _Instance;
-        public static Default8x8 Instance => _Instance ?? (_Instance = new Default8x8());
+        private static Jupitor _Instance;
+        public static Jupitor Instance => _Instance ?? (_Instance = new Jupitor());
 
-        private Default8x8()
+        private Jupitor()
         {
             InitFont();
         }
 
-        [PluggedMethod(ASMFilePath = @"ASM\Fonts\Default8x8")]
+        [PluggedMethod(ASMFilePath = @"ASM\Fonts\Jupitor")]
         private static void InitFont()
         {
         }
@@ -52,14 +52,10 @@ namespace Kernel.VGA.Fonts
         {
             get
             {
-                if (_FontData == null)
-                {
-                    InitFont();
-                }
                 return _FontData;
             }
         }
 
-        public int FontHeight => 8;
+        public int FontHeight => 16;
     }
 }

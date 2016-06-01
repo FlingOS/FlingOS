@@ -311,18 +311,17 @@ namespace Kernel.Tasks
                     SystemCalls.SleepThread(50);
                 }
                 
-                BasicConsole.WriteLine("Creating VGA device...");
-                VGA.VGA TheVGA = new VGA.VGA();
+                BasicConsole.WriteLine("Setting up VGA...");
+                VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
+                
+                BasicConsole.WriteLine("Testing VGA Graphical mode...");
+                TheVGA.TestMode_G_640x480x4();
+                BasicConsole.WriteLine("Test finished.");
 
-                //BasicConsole.WriteLine("Testing VGA Graphical mode...");
-                //TheVGA.TestMode_G_640x480x4();
-                //BasicConsole.WriteLine("Test finished.");
-
-                BasicConsole.WriteLine("Setting VGA Text mode 80x25, Lucida Console font...");
+                BasicConsole.WriteLine("Resetting graphics adapter...");
                 TheVGA.LoadConfiguration(T_80x25.Instance);
-                TheVGA.LoadFont(LucidaConsole.Instance);
+                TheVGA.LoadFont(Jupitor.Instance);
                 TheVGA.SetCGAPalette();
-
 
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false);

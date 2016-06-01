@@ -113,8 +113,11 @@ namespace Kernel
         /// <summary>
         ///     Initialises a new instance of a Console.
         /// </summary>
-        public Console()
+        public Console(int ScreenLineWidth, int ScreenHeight)
         {
+            this.ScreenLineWidth = ScreenLineWidth;
+            this.ScreenHeight = ScreenHeight;
+
             Buffer.Add(CreateBlankLine());
             DefaultColour();
         }
@@ -451,7 +454,7 @@ namespace Kernel
         {
             if (Default == null)
             {
-                Default = new AdvancedConsole();
+                Default = new VGAConsole();
             }
         }
 
