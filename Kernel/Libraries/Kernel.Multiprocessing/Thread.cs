@@ -455,6 +455,9 @@ namespace Kernel.Multiprocessing
             //  so the thread will continue
             while (ProcessManager.CurrentThread.TimeToSleep != 0)
             {
+                //  Note: Due to the way Deferred Sys Calls work, we would expect the
+                //      deferred syscalls thread to go through this loop at least once
+                //      fairly frequently. 
                 ;
             }
 
@@ -486,32 +489,6 @@ namespace Kernel.Multiprocessing
             //{
             //    Scheduler.Enable();
             //}
-        }
-
-        [NoGC]
-        [NoDebug]
-        public static bool Sleep(int ms)
-        {
-            if (ProcessManager.CurrentThread == null)
-            {
-                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
-                BasicConsole.DelayOutput(5);
-                return false;
-            }
-            return ProcessManager.CurrentThread._Sleep(ms);
-        }
-
-        [NoGC]
-        [NoDebug]
-        public static bool Sleep_Indefinitely()
-        {
-            if (ProcessManager.CurrentThread == null)
-            {
-                BasicConsole.WriteLine("Massive problem! The current thread is null! Can't sleep null thread.");
-                BasicConsole.DelayOutput(5);
-                return false;
-            }
-            return ProcessManager.CurrentThread._Sleep_Indefinitely();
         }
     }
 

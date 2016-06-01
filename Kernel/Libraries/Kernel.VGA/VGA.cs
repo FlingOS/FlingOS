@@ -376,15 +376,39 @@ namespace Kernel.VGA
             Registers.DACWriteAddress = (byte)Index;
             Registers.DACData = Colour;
         }
-        
 
+        /// <summary>
+        ///     Sets the first 16 palettes to the standard CGA colours.
+        /// </summary>
+        /// <remarks>
+        ///     See <a href="https://en.wikipedia.org/wiki/Video_Graphics_Array#Color_palette">the Wikipedia article on VGA</a>./
+        /// </remarks>
+        public void SetCGAPalette()
+        {
+            SetPaletteEntry(0x0, new Colour18Bit(0 ,0, 0));
+            SetPaletteEntry(0x1, new Colour18Bit(0, 0, 42));
+            SetPaletteEntry(0x2, new Colour18Bit(0, 42, 0));
+            SetPaletteEntry(0x3, new Colour18Bit(0, 42, 42));
+            SetPaletteEntry(0x4, new Colour18Bit(42, 0, 0));
+            SetPaletteEntry(0x5, new Colour18Bit(42, 0, 42));
+            SetPaletteEntry(0x6, new Colour18Bit(42, 21, 0));
+            SetPaletteEntry(0x7, new Colour18Bit(42, 42, 42));
+            SetPaletteEntry(0x8, new Colour18Bit(21, 21, 21));
+            SetPaletteEntry(0x9, new Colour18Bit(21, 21, 63));
+            SetPaletteEntry(0xA, new Colour18Bit(21, 63, 21));
+            SetPaletteEntry(0xB, new Colour18Bit(21, 63, 63));
+            SetPaletteEntry(0xC, new Colour18Bit(63, 21, 21));
+            SetPaletteEntry(0xD, new Colour18Bit(63, 21, 63));
+            SetPaletteEntry(0xE, new Colour18Bit(63, 63, 21));
+            SetPaletteEntry(0xF, new Colour18Bit(63, 63, 63));
+        }
 
         /// <summary>
         ///     Tests the 640x480, 4-bit graphical configuration
         /// </summary>
         public void TestMode_G_640x480x4()
         {
-            LoadConfiguration(new G_640x480x4());
+            LoadConfiguration(G_640x480x4.Instance);
 
             // Configure custom colours in the colour palette
             Registers.DACMask = 0xFF;
@@ -440,8 +464,8 @@ namespace Kernel.VGA
         /// </summary>
         public void TestMode_T_80x25()
         {
-            LoadConfiguration(new T_80x25());
-            LoadFont(new LucidaConsole());
+            LoadConfiguration(T_80x25.Instance);
+            LoadFont(LucidaConsole.Instance);
 
             //// Configure custom colours in the colour palette
             //Registers.DACMask = 0xFF;

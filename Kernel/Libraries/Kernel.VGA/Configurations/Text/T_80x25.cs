@@ -33,6 +33,13 @@ namespace Kernel.VGA.Configurations.Graphical
 {
     public sealed class T_80x25 : Object, IVGAConfiguration
     {
+        private static T_80x25 _Instance;
+        public static T_80x25 Instance => _Instance ?? (_Instance = new T_80x25());
+
+        private T_80x25()
+        {
+        }
+
         public uint Width => 640;
         public uint Height => 480;
         public uint BitDepth => 4;
@@ -92,20 +99,20 @@ namespace Kernel.VGA.Configurations.Graphical
         //  can be made
         public byte Palette0 => 0x00;
         public byte Palette1 => 0x01;
-        public byte Palette2 => 0x03;
-        public byte Palette3 => 0x02;
-        public byte Palette4 => 0x07;
-        public byte Palette5 => 0x06;
-        public byte Palette6 => 0x04;
-        public byte Palette7 => 0x05;
-        public byte Palette8 => 0x0F;
-        public byte Palette9 => 0x0E;
-        public byte Palette10 => 0x0C;
-        public byte Palette11 => 0x0D;
-        public byte Palette12 => 0x08;
-        public byte Palette13 => 0x09;
-        public byte Palette14 => 0x0B;
-        public byte Palette15 => 0x0A;
+        public byte Palette2 => 0x02;
+        public byte Palette3 => 0x03;
+        public byte Palette4 => 0x04;
+        public byte Palette5 => 0x05;
+        public byte Palette6 => 0x06;
+        public byte Palette7 => 0x07;
+        public byte Palette8 => 0x08;
+        public byte Palette9 => 0x09;
+        public byte Palette10 => 0x0A;
+        public byte Palette11 => 0x0B;
+        public byte Palette12 => 0x0C;
+        public byte Palette13 => 0x0D;
+        public byte Palette14 => 0x0E;
+        public byte Palette15 => 0x0F;
         public byte AttributeModeControl => 0x0C;
         public byte OverscanColour => 0x00;
         public byte ColourPlaneEnable => 0x0F;

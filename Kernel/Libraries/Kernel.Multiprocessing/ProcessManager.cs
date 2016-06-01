@@ -248,7 +248,12 @@ namespace Kernel.Multiprocessing
             CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
 
             // Guarantee memory layout cleanly loaded
-            //Thread.Sleep(50);
+            //      TODO: Does this guard work properly?
+            //      TODO: Is this guard even necessary?
+            if (!Interrupts.Interrupts.InsideCriticalHandler)
+            {
+                SystemCalls.SleepThread(10);
+            }
 
             uint* srcPtr = (uint*)startVAddr;
             uint* dstPtr = (uint*)newVAddr;
@@ -286,8 +291,13 @@ namespace Kernel.Multiprocessing
             CurrentProcess.TheMemoryLayout.AddDataPages((uint)newVAddr, (uint)newPAddr, vAddrCount);
 
             // Guarantee memory layout cleanly loaded
-            //Thread.Sleep(50);
-
+            //      TODO: Does this guard work properly?
+            //      TODO: Is this guard even necessary?
+            if (!Interrupts.Interrupts.InsideCriticalHandler)
+            {
+                SystemCalls.SleepThread(10);
+            }
+            
             uint* srcPtr = (uint*)startVAddr;
             uint* dstPtr = (uint*)newVAddr;
             for (uint j = 0; j < 1024*vAddrCount; j++, srcPtr++, dstPtr++)

@@ -50,6 +50,8 @@ using Kernel.Shells;
 using Kernel.Tasks.App;
 using Kernel.Tasks.Driver;
 using Kernel.Utilities;
+using Kernel.VGA.Configurations.Graphical;
+using Kernel.VGA.Fonts;
 using Kernel.VirtualMemory;
 using x86Interrupts = Kernel.Interrupts.Interrupts;
 
@@ -308,16 +310,18 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("Waiting on deferred syscalls thread...");
                     SystemCalls.SleepThread(50);
                 }
-
-
-                BasicConsole.WriteLine("Testing VGA Graphical mode...");
+                
+                BasicConsole.WriteLine("Creating VGA device...");
                 VGA.VGA TheVGA = new VGA.VGA();
-                TheVGA.TestMode_G_640x480x4();
-                BasicConsole.WriteLine("Test finished.");
 
-                BasicConsole.WriteLine("Testing VGA Text mode...");
-                TheVGA.TestMode_T_80x25();
-                BasicConsole.WriteLine("Test finished.");
+                //BasicConsole.WriteLine("Testing VGA Graphical mode...");
+                //TheVGA.TestMode_G_640x480x4();
+                //BasicConsole.WriteLine("Test finished.");
+
+                BasicConsole.WriteLine("Setting VGA Text mode 80x25, Lucida Console font...");
+                TheVGA.LoadConfiguration(T_80x25.Instance);
+                TheVGA.LoadFont(LucidaConsole.Instance);
+                TheVGA.SetCGAPalette();
 
 
                 BasicConsole.WriteLine(" > Starting Idle process...");

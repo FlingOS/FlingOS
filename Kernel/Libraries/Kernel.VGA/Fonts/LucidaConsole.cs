@@ -35,6 +35,14 @@ namespace Kernel.VGA.Fonts
     {
         private static byte[] _FontData;
 
+        private static LucidaConsole _Instance;
+        public static LucidaConsole Instance => _Instance ?? (_Instance = new LucidaConsole());
+
+        private LucidaConsole()
+        {
+            InitFont();
+        }
+
         [PluggedMethod(ASMFilePath = @"ASM\Fonts\LucidaConsole")]
         private static void InitFont()
         {
@@ -44,10 +52,6 @@ namespace Kernel.VGA.Fonts
         {
             get
             {
-                if (_FontData == null)
-                {
-                    InitFont();
-                }
                 return _FontData;
             }
         }

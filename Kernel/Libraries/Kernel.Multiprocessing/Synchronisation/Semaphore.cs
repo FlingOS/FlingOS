@@ -79,7 +79,7 @@ namespace Kernel.Multiprocessing.Synchronisation
             {
                 WaitingThreads.Add(identifier);
                 ExclLock.Exit();
-                Thread.Sleep_Indefinitely();
+                ProcessManager.CurrentThread._Sleep_Indefinitely();
             }
         }
 

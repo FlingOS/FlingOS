@@ -33,6 +33,13 @@ namespace Kernel.VGA.Configurations.Graphical
 {
     public sealed class G_640x480x4 : Object, IVGAConfiguration
     {
+        private static G_640x480x4 _Instance;
+        public static G_640x480x4 Instance => _Instance ?? (_Instance = new G_640x480x4());
+
+        private G_640x480x4()
+        {
+        }
+
         public uint Width => 640;
         public uint Height => 480;
         public uint BitDepth => 4;
