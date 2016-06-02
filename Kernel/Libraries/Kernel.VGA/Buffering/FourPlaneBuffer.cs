@@ -26,6 +26,7 @@
 
 #endregion
 
+using Drivers.Compiler.Attributes;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
 
@@ -33,8 +34,16 @@ namespace Kernel.VGA.Buffering
 {
     public unsafe class FourPlaneBuffer : Object, IVGABuffer
     {
-        public uint Width { get; private set; }
-        public uint Height { get; private set; }
+        public uint Width
+        {
+            [NoDebug]
+            [NoGC]
+            get; private set; }
+        public uint Height
+        {
+            [NoDebug]
+            [NoGC]
+            get; private set; }
 
         private readonly byte[] Plane1;
         private readonly byte[] Plane2;
@@ -54,6 +63,8 @@ namespace Kernel.VGA.Buffering
             Plane4 = new byte[BufferSize];
         }
 
+        [NoDebug]
+        [NoGC]
         public void SetPixel(int X, int Y, Colour24Bit Colour)
         {
             uint Offset = (uint)(X / 8 + (Width / 8) * Y);
@@ -102,6 +113,8 @@ namespace Kernel.VGA.Buffering
             }
         }
 
+        [NoDebug]
+        [NoGC]
         public void Clear(Colour24Bit Colour)
         {
             // TODO: Proper colour to palette index translation
@@ -126,6 +139,8 @@ namespace Kernel.VGA.Buffering
             }
         }
 
+        [NoDebug]
+        [NoGC]
         public Colour24Bit GetPixel(int X, int Y)
         {
             uint Offset = (uint)(X / 8 + (Width / 8) * Y);
@@ -160,6 +175,8 @@ namespace Kernel.VGA.Buffering
             return new Colour24Bit((byte)Color, 0, 0);
         }
 
+        [NoDebug]
+        [NoGC]
         public void CopyTo(VGA TheVGA)
         {
             uint* Plane1Source = (uint*)((byte*)Utilities.ObjectUtilities.GetHandle(Plane1) + Array.FieldsBytesSize);
@@ -190,6 +207,8 @@ namespace Kernel.VGA.Buffering
             }
         }
 
+        [NoDebug]
+        [NoGC]
         public void BlendTo(IVGABuffer Destination, BlendingModes BlendMode)
         {
             if (Destination.Width != Width ||
