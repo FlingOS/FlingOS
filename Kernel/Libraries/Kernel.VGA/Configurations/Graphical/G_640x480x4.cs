@@ -104,7 +104,7 @@ namespace Kernel.VGA.Configurations.Graphical
             // TODO: Proper colour to palette index translation
             uint ColourUI32 = Colour.Red;
 
-            const uint Pixels = (640*480)/4;
+            const uint Pixels = (640*480)/32;
 
             for (byte PlaneIndex = 0; PlaneIndex < 4; PlaneIndex++)
             {

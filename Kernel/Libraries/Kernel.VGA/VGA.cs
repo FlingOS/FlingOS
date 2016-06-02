@@ -55,7 +55,10 @@ namespace Kernel.VGA
         public static VGA GetConfiguredInstance(IVGAConfiguration Configuration, IFont Font)
         {
             Instance.LoadConfiguration(Configuration);
-            Instance.LoadFont(Font);
+            if (Configuration.Mode == ScreenMode.Text)
+            {
+                Instance.LoadFont(Font);
+            }
             return Instance;
         }
 
@@ -427,7 +430,33 @@ namespace Kernel.VGA
         /// </remarks>
         public void SetCGAPalette()
         {
-            SetPaletteEntry(0x0, new Colour18Bit(0 ,0, 0));
+            // Force palette indexes
+
+            BlankAndUnlock();
+
+            Registers.Palette0 = 0;
+            Registers.Palette1 = 1;
+            Registers.Palette2 = 2;
+            Registers.Palette3 = 3;
+            Registers.Palette4 = 4;
+            Registers.Palette5 = 5;
+            Registers.Palette6 = 6;
+            Registers.Palette7 = 7;
+            Registers.Palette8 = 8;
+            Registers.Palette9 = 9;
+            Registers.Palette10 = 10;
+            Registers.Palette11 = 11;
+            Registers.Palette12 = 12;
+            Registers.Palette13 = 13;
+            Registers.Palette14 = 14;
+            Registers.Palette15 = 15;
+
+            UnblankAndLock();
+
+
+            // Set palette colours
+
+            SetPaletteEntry(0x0, new Colour18Bit(0, 0, 0));
             SetPaletteEntry(0x1, new Colour18Bit(0, 0, 42));
             SetPaletteEntry(0x2, new Colour18Bit(0, 42, 0));
             SetPaletteEntry(0x3, new Colour18Bit(0, 42, 42));

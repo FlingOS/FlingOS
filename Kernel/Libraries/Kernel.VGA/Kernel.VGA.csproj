@@ -89,6 +89,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffering\BlendingModes.cs" />
+    <Compile Include="Buffering\FourPlaneBuffer.cs" />
+    <Compile Include="Buffering\FourPlaneBuffersTest.cs" />
+    <Compile Include="Buffering\IVGABuffer.cs" />
     <Compile Include="Colour4Bit.cs" />
     <Compile Include="Colour24Bit.cs" />
     <Compile Include="Colour18Bit.cs" />

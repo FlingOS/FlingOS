@@ -37,6 +37,8 @@ using Kernel.Framework.Processes.Requests.Pipes;
 using Kernel.Pipes;
 using Kernel.Pipes.Exceptions;
 using Kernel.Pipes.Standard;
+using Kernel.VGA.Configurations.Graphical;
+using Kernel.VGA.Fonts;
 
 namespace Kernel.Tasks
 {
@@ -133,6 +135,22 @@ namespace Kernel.Tasks
             Keyboard.Default = PS2.SingletonPS2;
             BasicConsole.WriteLine("WM > Register IRQ 1 handler");
             SystemCalls.RegisterIRQHandler(1, HandleIRQ);
+
+
+            BasicConsole.WriteLine("Setting up VGA...");
+            VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
+
+            BasicConsole.WriteLine("Testing VGA Graphical modes...");
+            TheVGA.TestMode_G_640x480x4();
+            TheVGA.TestMode_G_720x480x4();
+            VGA.Buffering.FourPlaneBuffersTest.Test1();
+            BasicConsole.WriteLine("Test finished.");
+
+            BasicConsole.WriteLine("Resetting graphics adapter...");
+            TheVGA.LoadConfiguration(T_80x25.Instance);
+            TheVGA.LoadFont(Jupitor.Instance);
+            TheVGA.SetCGAPalette();
+
 
             BasicConsole.WriteLine("WM > Wait for pipe to be created");
             // Wait for pipe to be created
