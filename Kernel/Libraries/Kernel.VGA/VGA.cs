@@ -54,12 +54,17 @@ namespace Kernel.VGA
 
         public static VGA GetConfiguredInstance(IVGAConfiguration Configuration, IFont Font)
         {
+            SetConfiguration(Configuration, Font);
+            return Instance;
+        }
+
+        public static void SetConfiguration(IVGAConfiguration Configuration, IFont Font)
+        {
             Instance.LoadConfiguration(Configuration);
             if (Configuration.Mode == ScreenMode.Text)
             {
                 Instance.LoadFont(Font);
             }
-            return Instance;
         }
 
 

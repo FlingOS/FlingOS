@@ -259,12 +259,12 @@ namespace Kernel.Multiprocessing
             uint* dstPtr = (uint*)newVAddr;
             for (uint j = 0; j < 1024*vAddrCount; j++, srcPtr++, dstPtr++)
             {
+#if PROCESSMANAGER_TRACE
                 if (j%1024 == 0)
                 {
-#if PROCESSMANAGER_TRACE
                     BasicConsole.WriteLine("vAddr=" + (Framework.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
-#endif
                 }
+#endif
 
                 *dstPtr = *srcPtr;
             }
@@ -302,12 +302,12 @@ namespace Kernel.Multiprocessing
             uint* dstPtr = (uint*)newVAddr;
             for (uint j = 0; j < 1024*vAddrCount; j++, srcPtr++, dstPtr++)
             {
+#if PROCESSMANAGER_TRACE
                 if (j%1024 == 0)
                 {
-#if PROCESSMANAGER_TRACE
                     BasicConsole.WriteLine("vAddr=" + (Framework.String)((uint)srcPtr) + ", newVAddr=" + ((uint)dstPtr) + ", newPAddr=" + ((uint)newPAddr + (j * 4)));
-#endif
                 }
+#endif
 
                 *dstPtr = *srcPtr;
             }

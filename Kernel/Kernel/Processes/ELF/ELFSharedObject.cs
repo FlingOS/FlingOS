@@ -74,7 +74,7 @@ namespace Kernel.Processes.ELF
             bool DynamicLinkingRequired = false;
 
             // Load the ELF segments (i.e. the library code and data)
-            //TODO
+            //TODO: Use system calls
             //BaseAddress = Hardware.VirtMemManager.FindFreeVirtPage();
             //theProcess.LoadSegments(theFile, ref OK, ref DynamicLinkingRequired, BaseAddress);
         }

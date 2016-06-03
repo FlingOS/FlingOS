@@ -131,18 +131,18 @@ namespace Kernel.Tasks
 
 
             BasicConsole.WriteLine("Setting up VGA...");
-            VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
+            VGA.VGA.SetConfiguration(T_80x25.Instance, Jupitor.Instance);
 
-            BasicConsole.WriteLine("Testing VGA Graphical modes...");
-            TheVGA.TestMode_G_640x480x4();
-            TheVGA.TestMode_G_720x480x4();
-            VGA.Buffering.FourPlaneBuffersTest.Test1();
-            BasicConsole.WriteLine("Test finished.");
+            //BasicConsole.WriteLine("Testing VGA Graphical modes...");
+            //TheVGA.TestMode_G_640x480x4();
+            //TheVGA.TestMode_G_720x480x4();
+            //VGA.Buffering.FourPlaneBuffersTest.Test1();
+            //BasicConsole.WriteLine("Test finished.");
 
-            BasicConsole.WriteLine("Resetting graphics adapter...");
-            TheVGA.LoadConfiguration(T_80x25.Instance);
-            TheVGA.LoadFont(Jupitor.Instance);
-            TheVGA.SetCGAPalette();
+            //BasicConsole.WriteLine("Resetting graphics adapter...");
+            //TheVGA.LoadConfiguration(T_80x25.Instance);
+            //TheVGA.LoadFont(Jupitor.Instance);
+            //TheVGA.SetCGAPalette();
 
 
             BasicConsole.WriteLine("WM > Wait for pipe to be created");

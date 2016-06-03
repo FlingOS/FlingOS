@@ -877,92 +877,94 @@ namespace Kernel.Shells
                                             opt2 = (String)cmdParts[2];
                                         }
 
-                                        if (opt2 != null)
-                                        {
-                                            if (opt2 == "km")
-                                            {
-                                                String opt3 = null;
-                                                if (cmdParts.Count > 3)
-                                                {
-                                                    opt3 = (String)cmdParts[3];
-                                                }
+                                        // TODO: Well now that system calls have been implemented, this entire section is wrong.
 
-                                                if (opt3 != null)
-                                                {
-                                                    if (opt3 == "raw")
-                                                    {
-                                                        ProcessManager.RegisterProcess(
-                                                            DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
-                                                            Scheduler.Priority.Normal);
-                                                    }
-                                                    else if (opt3 == "elf")
-                                                    {
-                                                        ProcessManager.RegisterProcess(
-                                                            DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false)
-                                                                .TheProcess,
-                                                            Scheduler.Priority.Normal);
-                                                    }
-                                                    else
-                                                    {
-                                                        UnrecognisedOption(opt3);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    //Run as RAW for now
-                                                    ProcessManager.RegisterProcess(
-                                                        DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
-                                                        Scheduler.Priority.Normal);
-                                                }
-                                            }
-                                            else if (opt2 == "um")
-                                            {
-                                                String opt3 = null;
-                                                if (cmdParts.Count > 3)
-                                                {
-                                                    opt3 = (String)cmdParts[3];
-                                                }
+                                        //if (opt2 != null)
+                                        //{
+                                        //    if (opt2 == "km")
+                                        //    {
+                                        //        String opt3 = null;
+                                        //        if (cmdParts.Count > 3)
+                                        //        {
+                                        //            opt3 = (String)cmdParts[3];
+                                        //        }
 
-                                                if (opt3 != null)
-                                                {
-                                                    if (opt3 == "raw")
-                                                    {
-                                                        ProcessManager.RegisterProcess(
-                                                            DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
-                                                            Scheduler.Priority.Normal);
-                                                    }
-                                                    else if (opt3 == "elf")
-                                                    {
-                                                        ProcessManager.RegisterProcess(
-                                                            DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true)
-                                                                .TheProcess,
-                                                            Scheduler.Priority.Normal);
-                                                    }
-                                                    else
-                                                    {
-                                                        UnrecognisedOption(opt3);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    //Run as RAW for now
-                                                    ProcessManager.RegisterProcess(
-                                                        DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
-                                                        Scheduler.Priority.Normal);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                UnrecognisedOption(opt2);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //Run as KM, ELF for now
-                                            ProcessManager.RegisterProcess(
-                                                DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
-                                                Scheduler.Priority.Normal);
-                                        }
+                                        //        if (opt3 != null)
+                                        //        {
+                                        //            if (opt3 == "raw")
+                                        //            {
+                                        //                ProcessManager.RegisterProcess(
+                                        //                    DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                        //                    Scheduler.Priority.Normal);
+                                        //            }
+                                        //            else if (opt3 == "elf")
+                                        //            {
+                                        //                ProcessManager.RegisterProcess(
+                                        //                    DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false)
+                                        //                        .TheProcess,
+                                        //                    Scheduler.Priority.Normal);
+                                        //            }
+                                        //            else
+                                        //            {
+                                        //                UnrecognisedOption(opt3);
+                                        //            }
+                                        //        }
+                                        //        else
+                                        //        {
+                                        //            //Run as RAW for now
+                                        //            ProcessManager.RegisterProcess(
+                                        //                DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, false),
+                                        //                Scheduler.Priority.Normal);
+                                        //        }
+                                        //    }
+                                        //    else if (opt2 == "um")
+                                        //    {
+                                        //        String opt3 = null;
+                                        //        if (cmdParts.Count > 3)
+                                        //        {
+                                        //            opt3 = (String)cmdParts[3];
+                                        //        }
+
+                                        //        if (opt3 != null)
+                                        //        {
+                                        //            if (opt3 == "raw")
+                                        //            {
+                                        //                ProcessManager.RegisterProcess(
+                                        //                    DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                        //                    Scheduler.Priority.Normal);
+                                        //            }
+                                        //            else if (opt3 == "elf")
+                                        //            {
+                                        //                ProcessManager.RegisterProcess(
+                                        //                    DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, true)
+                                        //                        .TheProcess,
+                                        //                    Scheduler.Priority.Normal);
+                                        //            }
+                                        //            else
+                                        //            {
+                                        //                UnrecognisedOption(opt3);
+                                        //            }
+                                        //        }
+                                        //        else
+                                        //        {
+                                        //            //Run as RAW for now
+                                        //            ProcessManager.RegisterProcess(
+                                        //                DynamicLinkerLoader.LoadProcess_FromRawExe(aFile, true),
+                                        //                Scheduler.Priority.Normal);
+                                        //        }
+                                        //    }
+                                        //    else
+                                        //    {
+                                        //        UnrecognisedOption(opt2);
+                                        //    }
+                                        //}
+                                        //else
+                                        //{
+                                        //    //Run as KM, ELF for now
+                                        //    ProcessManager.RegisterProcess(
+                                        //        DynamicLinkerLoader.LoadProcess_FromELFExe(aFile, false).TheProcess,
+                                        //        Scheduler.Priority.Normal);
+                                        //}
                                     }
                                     else
                                     {

@@ -107,7 +107,6 @@ namespace Kernel.VirtualMemory.Implementations
 
 
         void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout);
-        void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout);
         uint[] GetBuiltInProcessVAddrs();
     }
 }

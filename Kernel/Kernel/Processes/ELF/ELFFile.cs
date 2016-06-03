@@ -34,6 +34,8 @@ using Kernel.Framework.Stubs;
 
 namespace Kernel.Processes.ELF
 {
+    //TODO: Well, this class is now wrong because it doesn't use file system calls
+
     public unsafe class ELFFile : Object
     {
         private readonly File theFile;

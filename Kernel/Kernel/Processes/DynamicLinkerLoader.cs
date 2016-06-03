@@ -40,74 +40,78 @@ namespace Kernel.Processes
     {
         public static Process LoadProcess_FromRawExe(File RawExeFile, bool UserMode)
         {
-            // - Read in file contents
-            // - Map enough memory for the exe file contents
-            // - Copy the memory over
+            // TODO: Well now that system calls have been implemented, this entire function is just plain wrong.
 
-            //bool reenable = Scheduler.Enabled;
-            //if (reenable)
-            //{
-            //    Scheduler.Disable();
-            //}
 
-            //TODO: Handle case of EXE being bigger than 4KiB
-            //          - Need to map contiguous (virtual) pages.
+            //// - Read in file contents
+            //// - Map enough memory for the exe file contents
+            //// - Copy the memory over
 
-            BasicConsole.WriteLine("Mapping free page for process...");
-            void* unusedPAddr;
-            byte* destMemPtr = (byte*)VirtualMemoryManager.MapFreePage(
-                UserMode ? PageFlags.None : PageFlags.KernelOnly,
-                out unusedPAddr);
-            BasicConsole.WriteLine((String)"Physical address = " +
-                                   (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr));
-            BasicConsole.WriteLine((String)"Virtual address = " + (uint)destMemPtr);
+            ////bool reenable = Scheduler.Enabled;
+            ////if (reenable)
+            ////{
+            ////    Scheduler.Disable();
+            ////}
 
-            // Add the page to the current processes memory layout
-            //  So we can access the memory while we load the process. 
-            //  Otherwise we will hit a page fault as soon as we try copying the memory
-            //      further down.
-            //  Note: The page fault will only be hit on starting a second process because
-            //      the scheduler doesn't change the context when only one process is running.
-            ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
-                (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
-                (uint)destMemPtr);
-            // We could have been "scheduler interrupted" just after the map but just before the 
-            //  add data page...
-            //TODO: Hardware.Processes.ProcessManager.CurrentProcess.LoadMemLayout();
+            ////TODO: Handle case of EXE being bigger than 4KiB
+            ////          - Need to map contiguous (virtual) pages.
 
-            //BasicConsole.WriteLine("Reading file...");
-            int bytesRead = 0;
-            byte[] readBuffer = new byte[4096];
-            bytesRead = RawExeFile.GetStream().Read(readBuffer, 0, 4096);
-            //BasicConsole.WriteLine("Copying data...");
-            MemoryUtils.MemCpy_32(destMemPtr, (byte*)ObjectUtilities.GetHandle(readBuffer) + Array.FieldsBytesSize,
-                (uint)bytesRead);
+            //BasicConsole.WriteLine("Mapping free page for process...");
+            //void* unusedPAddr;
+            //byte* destMemPtr = (byte*)VirtualMemoryManager.MapFreePage(
+            //    UserMode ? PageFlags.None : PageFlags.KernelOnly,
+            //    out unusedPAddr);
+            //BasicConsole.WriteLine((String)"Physical address = " +
+            //                       (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr));
+            //BasicConsole.WriteLine((String)"Virtual address = " + (uint)destMemPtr);
 
-            //BasicConsole.WriteLine("Converting destMemPtr...");
-            ThreadStartPoint mainMethod = (ThreadStartPoint)ObjectUtilities.GetObject(destMemPtr);
+            //// Add the page to the current processes memory layout
+            ////  So we can access the memory while we load the process. 
+            ////  Otherwise we will hit a page fault as soon as we try copying the memory
+            ////      further down.
+            ////  Note: The page fault will only be hit on starting a second process because
+            ////      the scheduler doesn't change the context when only one process is running.
+            //ProcessManager.CurrentProcess.TheMemoryLayout.AddDataPage(
+            //    (uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
+            //    (uint)destMemPtr);
+            //// We could have been "scheduler interrupted" just after the map but just before the 
+            ////  add data page...
+            ////TODO: Hardware.Processes.ProcessManager.CurrentProcess.LoadMemLayout();
 
-            //BasicConsole.WriteLine("Getting process name...");
-            String name = RawExeFile.Name;
+            ////BasicConsole.WriteLine("Reading file...");
+            //int bytesRead = 0;
+            //byte[] readBuffer = new byte[4096];
+            //bytesRead = RawExeFile.GetStream().Read(readBuffer, 0, 4096);
+            ////BasicConsole.WriteLine("Copying data...");
+            //MemoryUtils.MemCpy_32(destMemPtr, (byte*)ObjectUtilities.GetHandle(readBuffer) + Array.FieldsBytesSize,
+            //    (uint)bytesRead);
 
-            // - Create the process
-            //BasicConsole.WriteLine("Creating process...");
-            Process process = ProcessManager.CreateProcess(
-                mainMethod, name, UserMode);
-            //BasicConsole.WriteLine("Adding process' code page...");
-            // Add code page to new processes memory layout
-            process.TheMemoryLayout.AddCodePage((uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
-                (uint)destMemPtr);
+            ////BasicConsole.WriteLine("Converting destMemPtr...");
+            //ThreadStartPoint mainMethod = (ThreadStartPoint)ObjectUtilities.GetObject(destMemPtr);
 
-            //BasicConsole.WriteLine("Removing process' code page from current process...");
-            //Remove from current processes memory layout
-            ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+            ////BasicConsole.WriteLine("Getting process name...");
+            //String name = RawExeFile.Name;
 
-            //if (reenable)
-            //{
-            //    Scheduler.Enable();
-            //}
+            //// - Create the process
+            ////BasicConsole.WriteLine("Creating process...");
+            //Process process = ProcessManager.CreateProcess(
+            //    mainMethod, name, UserMode);
+            ////BasicConsole.WriteLine("Adding process' code page...");
+            //// Add code page to new processes memory layout
+            //process.TheMemoryLayout.AddCodePage((uint)VirtualMemoryManager.GetPhysicalAddress(destMemPtr),
+            //    (uint)destMemPtr);
 
-            return process;
+            ////BasicConsole.WriteLine("Removing process' code page from current process...");
+            ////Remove from current processes memory layout
+            //ProcessManager.CurrentProcess.TheMemoryLayout.RemovePage((uint)destMemPtr);
+
+            ////if (reenable)
+            ////{
+            ////    Scheduler.Enable();
+            ////}
+
+            //return process;
+            return null;
         }
 
         public static ELFProcess LoadProcess_FromELFExe(File ELFExeFile, bool UserMode)

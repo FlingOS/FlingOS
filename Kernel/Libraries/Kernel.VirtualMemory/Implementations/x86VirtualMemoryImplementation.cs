@@ -566,30 +566,7 @@ namespace Kernel.VirtualMemory.Implementations
                 TheLayout.AddDataPage(cPhysPtr, cPtr);
             }
         }
-
-        public void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
-        {
-            uint cPtr = (uint)GetStaticFields_StartPtr();
-            uint endPtr = (uint)GetStaticFields_EndPtr();
-            uint isolatedKPtr = (uint)GetIsolatedKernelPtr();
-            uint isolatedKH_MPPtr = (uint)GetIsolatedKernel_Hardware_MultiprocessingPtr();
-            uint isolatedKH_DPtr = (uint)GetIsolatedKernel_Hardware_DevicesPtr();
-            uint isolatedKVMPtr = (uint)GetIsolatedKernel_VirtualMemoryPtr();
-            uint isolatedKFSPtr = (uint)GetIsolatedKernel_FrameworkPtr();
-            uint isolatedKPPtr = (uint)GetIsolatedKernel_PipesPtr();
-
-            uint cPhysPtr = GetPhysicalAddress(cPtr);
-
-            for (; cPtr < endPtr; cPtr += 4096, cPhysPtr += 4096)
-            {
-                if (cPtr != isolatedKPtr && cPtr != isolatedKH_MPPtr && cPtr != isolatedKH_DPtr &&
-                    cPtr != isolatedKVMPtr && cPtr != isolatedKFSPtr && cPtr != isolatedKPPtr)
-                {
-                    TheLayout.AddDataPage(cPhysPtr, cPtr);
-                }
-            }
-        }
-
+        
         public uint[] GetBuiltInProcessVAddrs()
         {
             if (BuiltInProcessVAddrs == null)

@@ -473,29 +473,11 @@ namespace Kernel.VirtualMemory
             impl.MapKernelProcessToMemoryLayout(TheLayout);
         }
 
-        public static void MapBuiltInProcessToMemoryLayout(MemoryLayout TheLayout)
-        {
-            impl.MapBuiltInProcessToMemoryLayout(TheLayout);
-        }
-
         public static uint[] GetBuiltInProcessVAddrs()
         {
             return impl.GetBuiltInProcessVAddrs();
         }
-
-        /// <summary>
-        ///     Gets the physical address for the specified virtual address.
-        /// </summary>
-        /// <param name="vAddr">The virtual address to get the physical address of.</param>
-        /// <returns>The physical address.</returns>
-        /// <remarks>
-        ///     This has an undefined return value and behaviour if the virtual address is not mapped.
-        /// </remarks>
-        public static void* GetPhysicalAddress(void* vAddr)
-        {
-            return (void*)GetPhysicalAddress((uint)vAddr);
-        }
-
+        
         /// <summary>
         ///     Gets the physical address for the specified virtual address.
         /// </summary>
