@@ -33,7 +33,12 @@ namespace Kernel.VGA.Fonts
 {
     public sealed class Default8x8 : Object, IFont
     {
+#pragma warning disable 649
+        /// <summary>
+        ///     The underlying font data. Assigned by the InitFont function that is implemented in ASM code.
+        /// </summary>
         private static byte[] _FontData;
+#pragma warning restore 649
 
         private static Default8x8 _Instance;
         public static Default8x8 Instance => _Instance ?? (_Instance = new Default8x8());

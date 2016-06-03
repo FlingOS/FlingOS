@@ -1357,12 +1357,15 @@ namespace Kernel
             }
         }
 
+        // ReSharper disable once InconsistentNaming
         private struct AddExceptionHandlerInfo_EntryStackState
         {
+#pragma warning disable 649
             public uint EBP;
             public uint RetAddr;
             public uint FilterPtr;
             public uint HandlerPtr;
+#pragma warning restore 649
         }
     }
 

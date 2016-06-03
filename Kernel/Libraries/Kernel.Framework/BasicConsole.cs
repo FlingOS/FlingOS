@@ -517,6 +517,15 @@ namespace Kernel
             }
         }
 
+        /// <summary>
+        ///     Prints a memory dump of the data at the specified location.
+        /// </summary>
+        /// <param name="ptr">The location of data to start printing from.</param>
+        /// <param name="size">The size of data to print (rounded up to multiple of 4).</param>
+        /// <remarks>
+        ///     This function prints dwords (uint32's) so data appears in a slightly weird format.
+        ///     Namely, low word first printed in high-to-low bit order (reading left to right).
+        /// </remarks>
         public static void DumpMemory(void* ptr, int size)
         {
             if (!Initialised) return;

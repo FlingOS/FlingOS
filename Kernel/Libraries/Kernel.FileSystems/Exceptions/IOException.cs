@@ -38,9 +38,9 @@ namespace Kernel.FileSystems
         /// <summary>
         ///     Initializes a new IO exception.
         /// </summary>
-        /// <param name="aMessage">The IO exception message.</param>
-        public IOException(string aMessage)
-            : base(aMessage)
+        /// <param name="Message">The IO exception message.</param>
+        public IOException(string Message)
+            : base(Message)
         {
         }
     }

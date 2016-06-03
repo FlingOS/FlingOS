@@ -33,7 +33,12 @@ namespace Kernel.VGA.Fonts
 {
     public sealed class LucidaConsole : Object, IFont
     {
+#pragma warning disable 649
+        /// <summary>
+        ///     The underlying font data. Assigned by the InitFont function that is implemented in ASM code.
+        /// </summary>
         private static byte[] _FontData;
+#pragma warning restore 649
 
         private static LucidaConsole _Instance;
         public static LucidaConsole Instance => _Instance ?? (_Instance = new LucidaConsole());

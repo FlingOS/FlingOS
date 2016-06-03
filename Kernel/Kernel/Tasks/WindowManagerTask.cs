@@ -48,14 +48,7 @@ namespace Kernel.Tasks
 
         private static List ConnectedPipes;
         private static int CurrentPipeIdx = -1;
-
-        /// <summary>
-        /// </summary>
-        /// <remarks>
-        ///     This is guaranteed to be one.
-        /// </remarks>
-        private static uint MainThreadId = 1;
-
+        
         private static uint GCThreadId;
         private static int NewOutpointAvailable_SemaphoreId;
         private static int NewPipeConnected_SemaphoreId;

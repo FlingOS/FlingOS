@@ -33,7 +33,12 @@ namespace Kernel.VGA.Fonts
 {
     public sealed class Jupitor : Object, IFont
     {
+#pragma warning disable 649
+        /// <summary>
+        ///     The underlying font data. Assigned by the InitFont function that is implemented in ASM code.
+        /// </summary>
         private static byte[] _FontData;
+#pragma warning restore 649
 
         private static Jupitor _Instance;
         public static Jupitor Instance => _Instance ?? (_Instance = new Jupitor());

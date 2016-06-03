@@ -33,13 +33,26 @@ namespace Kernel.Framework
     /// </summary>
     public class Exception : Object
     {
+        /// <summary>
+        ///     The inner exception (may be null).
+        /// </summary>
+        /// <remarks>
+        ///     An inner exception refers to an exception that was unhandled at the 
+        ///     point when the current exception was thrown.
+        /// </remarks>
         public Exception InnerException;
 
+        /// <summary>
+        ///     The address of the instruction which caused the exception.
+        /// </summary>
         public uint InstructionAddress = 0;
-        protected String message;
+        /// <summary>
+        ///     The message for the exception not including any inner exceptions.
+        /// </summary>
+        private String _Message;
 
         /// <summary>
-        ///     The exception message.
+        ///     The exception message including messages from any inner exceptions.
         /// </summary>
         public String Message
         {
@@ -47,28 +60,21 @@ namespace Kernel.Framework
             {
                 if (InnerException != null)
                 {
-                    return message + "\nInner exception:\n" + InnerException.Message + "\nInstruction address: " +
+                    return _Message + "\nInner exception:\n" + InnerException.Message + "\nInstruction address: " +
                            InstructionAddress;
                 }
-                return message + "\nInstruction address: " + InstructionAddress;
+                return _Message + "\nInstruction address: " + InstructionAddress;
             }
-            set { message = value; }
+            private set { _Message = value; }
         }
-
-        /// <summary>
-        ///     Creates a new, empty exception.
-        /// </summary>
-        public Exception()
-        {
-        }
-
+        
         /// <summary>
         ///     Creates a new exception with specified message.
         /// </summary>
-        /// <param name="aMessage">The exception message.</param>
-        public Exception(String aMessage)
+        /// <param name="Message">The exception message.</param>
+        public Exception(String Message)
         {
-            Message = aMessage;
+            this.Message = Message;
         }
     }
 }
