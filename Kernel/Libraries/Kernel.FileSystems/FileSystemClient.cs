@@ -98,15 +98,8 @@ namespace Kernel.FileSystems
                 {
                     FileSystemManager.UnlockMappingsList();
                 }
-
-                if (Prefixes != null)
-                {
-                    DataOutPipe.WriteFSInfos(DataOutPipeId, Prefixes);
-                }
-                else
-                {
-                    DataOutPipe.WriteFSInfos(DataOutPipeId, new String[0]);
-                }
+                
+                DataOutPipe.WriteFSInfos(DataOutPipeId, Prefixes);
             }
         }
 

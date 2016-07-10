@@ -121,25 +121,36 @@ namespace Kernel.FileSystems
                         if ((uint)(IdPair >> 32) == RemoteProcessId)
                         {
                             CmdPipeId = (int)(IdPair & 0xFFFFFFFF);
+                            Found = true;
                         }
-                        position++;
+                        else
+                        {
+                            position++;
+                        }
 
                         BasicConsole.WriteLine("FileSystemAccessor > Got command output pipe id.");
                     }
                 }
 
-                Found = false;
                 position = 0;
-                if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
+                Found = false;
+                while (!Found)
                 {
-                    ulong IdPair = DataOutPipes[position];
-                    if ((uint)(IdPair >> 32) == RemoteProcessId)
+                    if (SystemCalls.WaitSemaphore(DataOutPipesSemaphoreId) == SystemCallResults.OK)
                     {
-                        DataOutPipeId = (int)(IdPair & 0xFFFFFFFF);
-                    }
-                    position++;
+                        ulong IdPair = DataOutPipes[position];
+                        if ((uint)(IdPair >> 32) == RemoteProcessId)
+                        {
+                            DataOutPipeId = (int)(IdPair & 0xFFFFFFFF);
+                            Found = true;
+                        }
+                        else
+                        {
+                            position++;
+                        }
 
-                    BasicConsole.WriteLine("FileSystemAccessor > Got data output pipe id.");
+                        BasicConsole.WriteLine("FileSystemAccessor > Got data output pipe id.");
+                    }
                 }
 
                 MappingPrefixes = new String[1];

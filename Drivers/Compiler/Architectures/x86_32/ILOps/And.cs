@@ -90,7 +90,7 @@ namespace Drivers.Compiler.Architectures.x86
             if (itemB.isFloat || itemA.isFloat)
             {
                 //SUPPORT - floats
-                throw new NotSupportedException("Add floats is unsupported!");
+                throw new NotSupportedException("And floats is unsupported!");
             }
             if (itemA.sizeOnStackInBytes == 4 &&
                 itemB.sizeOnStackInBytes == 4)

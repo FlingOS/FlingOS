@@ -379,78 +379,22 @@ namespace Drivers.Compiler.Architectures.x86
 
             // 4. Calculate address of element
             //      4.1. Pop index into EBX
-            //      4.2. Pop array ref into EAX
-            //      4.3. Move element type ref (from array ref) into EAX
-            //      4.4. Move IsValueType (from element ref type) into ECX
-            //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
-            //      4.6. Move Size (from element type ref) into EAX
-            //      4.7. Skip over 4.8.
-            //      4.8. Move StackSize (from element type ref) into EAX
-            //      4.9. Mulitply EAX by EBX (index by element size)
-            //      4.10. Move array ref into EBX
-            //      4.11. Add enough to go past Kernel.Framework.Array fields
-            //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
+            //      4.2. Move element size into EAX
+            //      4.3. Mulitply EAX by EBX (index by element size)
+            //      4.4. Move array ref into EBX
+            //      4.5. Add enough to go past Kernel.Framework.Array fields
+            //      4.6. Add EAX and EBX (array ref + fields + (index * element size))
 
             //      4.1. Pop index into EBX
             conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
-            //      4.2. Move array ref into EAX
-            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "[ESP]", Dest = "EAX"});
-            //      4.3. Move element type ref (from array ref) into EAX
-            conversionState.Append(new Mov
-            {
-                Size = OperandSize.Dword,
-                Src = "[EAX+" + elemTypeOffset + "]",
-                Dest = "EAX"
-            });
-            //      4.4. Move IsValueType (from element ref type) into ECX
-            int isValueTypeOffset = conversionState.GetTypeFieldOffset("IsValueType");
-            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = "0", Dest = "ECX"});
-            conversionState.Append(new Mov
-            {
-                Size = OperandSize.Byte,
-                Src = "[EAX+" + isValueTypeOffset + "]",
-                Dest = "CL"
-            });
-            //      4.5. If IsValueType, continue to 4.6., else goto 4.8.
-            conversionState.Append(new Cmp {Arg1 = "ECX", Arg2 = "0"});
-            conversionState.Append(new Jmp
-            {
-                JumpType = JmpOp.JumpZero,
-                DestILPosition = currOpPosition,
-                Extension = "Continue4_1"
-            });
-            //      4.6. Move Size (from element type ref) into EAX
-            int sizeOffset = conversionState.GetTypeFieldOffset("Size");
-            conversionState.Append(new Mov
-            {
-                Size = OperandSize.Dword,
-                Src = "[EAX+" + sizeOffset + "]",
-                Dest = "EAX"
-            });
-            //      4.7. Skip over 4.8.
-            conversionState.Append(new Jmp
-            {
-                JumpType = JmpOp.Jump,
-                DestILPosition = currOpPosition,
-                Extension = "Continue4_2"
-            });
-            //      4.8. Move StackSize (from element type ref) into EAX
-            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue4_1"});
-            int stackSizeOffset = conversionState.GetTypeFieldOffset("StackSize");
-            conversionState.Append(new Mov
-            {
-                Size = OperandSize.Dword,
-                Src = "[EAX+" + stackSizeOffset + "]",
-                Dest = "EAX"
-            });
-            //      4.9. Mulitply EAX by EBX (index by element size)
-            conversionState.Append(new Label {ILPosition = currOpPosition, Extension = "Continue4_2"});
+            //      4.2. Move element size into EAX
+            conversionState.Append(new Mov {Size = OperandSize.Dword, Src = sizeToLoad.ToString(), Dest = "EAX"});
+            //      4.3. Mulitply EAX by EBX (index by element size)
             conversionState.Append(new ASMOps.Mul {Arg = "EBX"});
-            //      4.10. Pop array ref into EBX
+            //      4.4. Pop array ref into EBX
             conversionState.Append(new ASMOps.Pop {Size = OperandSize.Dword, Dest = "EBX"});
-            //      4.11. Add enough to go past Kernel.Framework.Array fields
+            //      4.5. Add enough to go past Kernel.Framework.Array fields
             int allFieldsOffset = 0;
-
             #region Offset calculation
 
             {
@@ -465,9 +409,8 @@ namespace Drivers.Compiler.Architectures.x86
             }
 
             #endregion
-
             conversionState.Append(new ASMOps.Add {Src = allFieldsOffset.ToString(), Dest = "EBX"});
-            //      4.12. Add EAX and EBX (array ref + fields + (index * element size))
+            //      4.6. Add EAX and EBX (array ref + fields + (index * element size))
             conversionState.Append(new ASMOps.Add {Src = "EBX", Dest = "EAX"});
 
             // 5. Push the element onto the stack
