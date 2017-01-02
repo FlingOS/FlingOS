@@ -74,10 +74,6 @@ namespace Drivers.Compiler.Architectures.x86
             try
             {
                 Type theType = conversionState.Input.TheMethodInfo.UnderlyingInfo.Module.ResolveType(metadataToken);
-                if (theType == null)
-                {
-                    throw new NullReferenceException();
-                }
                 string typeTableId = conversionState.TheILLibrary.GetTypeInfo(theType).ID;
                 conversionState.AddExternalLabel(typeTableId);
 

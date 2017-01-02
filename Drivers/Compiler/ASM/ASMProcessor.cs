@@ -302,6 +302,7 @@ namespace Drivers.Compiler.ASM
             if (!Directory.Exists(OutputPath))
             {
                 Directory.CreateDirectory(OutputPath);
+                CleanedASMOutputFolder = true;
             }
             else
             {
@@ -330,6 +331,7 @@ namespace Drivers.Compiler.ASM
             if (!Directory.Exists(OutputPath))
             {
                 Directory.CreateDirectory(OutputPath);
+                CleanedObjectsOutputFolder = true;
             }
             else
             {
