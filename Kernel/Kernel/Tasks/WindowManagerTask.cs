@@ -392,80 +392,72 @@ namespace Kernel.Tasks
                 {
                     //BasicConsole.WriteLine("WM > OP : (0)");
 
-                    uint Scancode;
-                    bool GotScancode = Keyboard.Default.GetScancode(out Scancode);
-                    if (GotScancode)
+                    uint Scancode = Keyboard.Default.ReadScancode();
+                    bool AltPressed = Keyboard.Default.AltPressed;
+                    //BasicConsole.WriteLine("WM > OP : (1)");
+
+                    KeyboardKey Key;
+                    if (Keyboard.Default.GetKeyValue(Scancode, out Key))
                     {
-                        bool AltPressed = Keyboard.Default.AltPressed;
-                        //BasicConsole.WriteLine("WM > OP : (1)");
+                        //BasicConsole.WriteLine("WM > OP : (2)");
 
-                        KeyboardKey Key;
-                        if (Keyboard.Default.GetKeyValue(Scancode, out Key))
+                        if (AltPressed && Key == KeyboardKey.Tab)
                         {
-                            //BasicConsole.WriteLine("WM > OP : (2)");
+                            //BasicConsole.WriteLine("WM > OP : (3)");
 
-                            if (AltPressed && Key == KeyboardKey.Tab)
+                            CurrentPipeIdx++;
+                            if (CurrentPipeIdx >= ConnectedPipes.Count)
                             {
-                                //BasicConsole.WriteLine("WM > OP : (3)");
+                                CurrentPipeIdx = 0;
+                            }
 
-                                CurrentPipeIdx++;
-                                if (CurrentPipeIdx >= ConnectedPipes.Count)
-                                {
-                                    CurrentPipeIdx = 0;
-                                }
+                            SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                            try
+                            {
+                                CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
+                                CurrentPipeIndex_Changed = true;
+                            }
+                            finally
+                            {
+                                SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                            }
 
+                            //BasicConsole.WriteLine("WM > OP : (4)");
+                        }
+                        else
+                        {
+                            if (Key == KeyboardKey.UpArrow)
+                            {
                                 SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
                                 try
                                 {
-                                    CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
-                                    CurrentPipeIndex_Changed = true;
+                                    CurrentPipeInfo.TheConsole.Scroll(-1);
                                 }
                                 finally
                                 {
                                     SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
                                 }
-
-                                //BasicConsole.WriteLine("WM > OP : (4)");
                             }
-                            else
+                            else if (Key == KeyboardKey.DownArrow)
                             {
-                                if (Key == KeyboardKey.UpArrow)
+                                SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                                try
                                 {
-                                    SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
-                                    try
-                                    {
-                                        CurrentPipeInfo.TheConsole.Scroll(-1);
-                                    }
-                                    finally
-                                    {
-                                        SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
-                                    }
+                                    CurrentPipeInfo.TheConsole.Scroll(+1);
                                 }
-                                else if (Key == KeyboardKey.DownArrow)
+                                finally
                                 {
-                                    SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
-                                    try
-                                    {
-                                        CurrentPipeInfo.TheConsole.Scroll(+1);
-                                    }
-                                    finally
-                                    {
-                                        SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
-                                    }
+                                    SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
                                 }
-
-                                //BasicConsole.WriteLine("WM > OP : (5)");
-
-                                SystemCalls.SendMessage(
-                                    ((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
-
-                                //BasicConsole.WriteLine("WM > OP : (6)");
                             }
+
+                            //BasicConsole.WriteLine("WM > OP : (5)");
+
+                            SystemCalls.SendMessage(
+                                ((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
+
+                            //BasicConsole.WriteLine("WM > OP : (6)");
                         }
-                    }
-                    else
-                    {
-                        SystemCalls.SleepThread(50);
                     }
                 }
                 catch
