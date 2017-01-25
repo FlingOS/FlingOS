@@ -127,7 +127,7 @@
             this.BinPathBox.Name = "BinPathBox";
             this.BinPathBox.Size = new System.Drawing.Size(589, 20);
             this.BinPathBox.TabIndex = 5;
-            this.BinPathBox.Text = "C:\\Fling OS\\Fling OS\\Kernel\\Kernel\\bin\\Debug";
+            this.BinPathBox.Text = "C:\\Users\\Edward\\Documents\\FlingOS\\FlingOS\\Kernel\\Kernel\\bin\\Debug";
             // 
             // ConnectButton
             // 
@@ -482,7 +482,7 @@
             this.ResumeButton.UseVisualStyleBackColor = true;
             this.ResumeButton.Click += new System.EventHandler(this.ResumeButton_Click);
             // 
-            // SuspendButton
+            // DebugButton
             // 
             this.DebugButton.Location = new System.Drawing.Point(273, 48);
             this.DebugButton.Name = "DebugButton";

@@ -325,8 +325,8 @@ namespace Kernel.Tasks
                 DeviceManager.Init();
 
 #if DEBUG
-                //BasicConsole.WriteLine(" > Starting Debugger thread...");
-                //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
+                BasicConsole.WriteLine(" > Starting Debugger thread...");
+                Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
 
                 BasicConsole.PrimaryOutputEnabled = false;

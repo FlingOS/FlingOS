@@ -311,27 +311,34 @@ namespace Drivers.Debugger.App
 
         private void Connect()
         {
-            TheDebugger = new Debugger();
-            TheDebugger.NotificationEvent += TheDebugger_NotificationEvent;
-            UpdateEnableStates();
-
-            if (!TheDebugger.Init(PipeNameBox.Text, BinPathBox.Text, AssemblyNameBox.Text))
+            if (!Directory.Exists(BinPathBox.Text))
             {
-                TheDebugger.Dispose();
-                TheDebugger = null;
-
+                MessageBox.Show("Invalid bin path! Please set the path to the Kernel's Debug build directory.");
+            }
+            else
+            {
+                TheDebugger = new Debugger();
+                TheDebugger.NotificationEvent += TheDebugger_NotificationEvent;
                 UpdateEnableStates();
-            }
 
-            try
-            {
-                while (!TheDebugger.Ready)
+                if (!TheDebugger.Init(PipeNameBox.Text, BinPathBox.Text, AssemblyNameBox.Text))
                 {
-                    System.Threading.Thread.Sleep(100);
+                    TheDebugger.Dispose();
+                    TheDebugger = null;
+
+                    UpdateEnableStates();
                 }
-            }
-            catch (NullReferenceException)
-            {
+
+                try
+                {
+                    while (!TheDebugger.Ready)
+                    {
+                        System.Threading.Thread.Sleep(100);
+                    }
+                }
+                catch (NullReferenceException)
+                {
+                }
             }
 
             UpdateEnableStates();
