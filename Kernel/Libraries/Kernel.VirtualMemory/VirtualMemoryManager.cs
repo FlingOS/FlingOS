@@ -81,6 +81,11 @@ namespace Kernel.VirtualMemory
             impl.MapKernel();
         }
 
+        public static bool IsWithinKernelFixedMemory(uint VAddr)
+        {
+            return impl.IsWithinKernelFixedMemory(VAddr);
+        }
+
         public static void* MapFreePage(PageFlags flags, out void* physAddr)
         {
             return MapFreePages(flags, 1, out physAddr);

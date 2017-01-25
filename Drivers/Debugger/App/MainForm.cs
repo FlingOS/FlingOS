@@ -317,7 +317,7 @@ namespace Drivers.Debugger.App
             }
             else
             {
-                TheDebugger = new Debugger();
+                TheDebugger = new Debugger(LogBox);
                 TheDebugger.NotificationEvent += TheDebugger_NotificationEvent;
                 UpdateEnableStates();
 
@@ -384,7 +384,7 @@ namespace Drivers.Debugger.App
         {
             uint BPAddress =
                 TheDebugger.GetLabelAddress(SelectedBreakpointFullLabel.Key + SelectedBreakpointFullLabel.Value);
-            if (TheDebugger.ClearBreakpoint(BPAddress))
+            if (TheDebugger.ClearBreakpoint(GetSelectedProcessId(), BPAddress))
             {
                 KeyValuePair<string, List<string>> BP =
                     Breakpoints.Where(x => x.Key == SelectedBreakpointFullLabel.Key).First();
@@ -412,7 +412,7 @@ namespace Drivers.Debugger.App
         private void DoSetBreakpoint(string FullLabel)
         {
             uint DPAddress = TheDebugger.GetLabelAddress(FullLabel);
-            if (TheDebugger.SetBreakpoint(DPAddress))
+            if (TheDebugger.SetBreakpoint(GetSelectedProcessId(), DPAddress))
             {
                 List<KeyValuePair<string, List<string>>> BPs =
                     Breakpoints.Where(x => x.Key == FullLabel.Split('.')[0]).ToList();

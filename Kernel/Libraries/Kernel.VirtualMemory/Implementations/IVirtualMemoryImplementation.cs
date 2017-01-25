@@ -105,6 +105,7 @@ namespace Kernel.VirtualMemory.Implementations
         /// </summary>
         void MapKernel();
 
+        bool IsWithinKernelFixedMemory(uint VAddr);
 
         void MapKernelProcessToMemoryLayout(MemoryLayout TheLayout);
         uint[] GetBuiltInProcessVAddrs();

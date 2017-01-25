@@ -38,6 +38,8 @@ namespace Drivers.Debugger
 
     public sealed class Debugger : IDisposable
     {
+        private delegate void StringArrayDelegate(string[] Lines);
+
         private readonly List<uint> BreakpointAddresses = new List<uint>();
         private DebugDataReader DebugData;
         private Serial MsgSerial;
@@ -47,6 +49,8 @@ namespace Drivers.Debugger
 
         private bool terminating;
         private bool WaitingForNotification;
+
+        private System.Windows.Forms.TextBox LogBox;
 
         public bool Terminating
         {
@@ -63,8 +67,9 @@ namespace Drivers.Debugger
 
         public bool Ready { get; private set; }
 
-        public Debugger()
+        public Debugger(System.Windows.Forms.TextBox ALogBox)
         {
+            LogBox = ALogBox;
             MsgSerial = new Serial();
         }
 
@@ -321,11 +326,11 @@ namespace Drivers.Debugger
             }
         }
 
-        public bool ClearBreakpoint(uint Address)
+        public bool ClearBreakpoint(uint ProcessId, uint Address)
         {
             try
             {
-                string[] Lines = ExecuteCommand("bpc " + Address.ToString("X8"));
+                string[] Lines = ExecuteCommand("bpc " + ProcessId + " " + Address.ToString("X8"));
                 BreakpointAddresses.Remove(Address);
                 return true;
             }
@@ -335,14 +340,14 @@ namespace Drivers.Debugger
             return false;
         }
 
-        public bool SetBreakpoint(uint Address)
+        public bool SetBreakpoint(uint ProcessId, uint Address)
         {
             try
             {
                 if (!BreakpointAddresses.Contains(Address))
                 {
                     BreakpointAddresses.Add(Address);
-                    string[] Lines = ExecuteCommand("bps " + Address.ToString("X8"));
+                    string[] Lines = ExecuteCommand("bps " + ProcessId + " " + Address.ToString("X8"));
                     return true;
                 }
             }
@@ -464,7 +469,20 @@ namespace Drivers.Debugger
             {
                 Result.Add(str);
             }
+            AddToLog(Result.ToArray());
             return Result.ToArray();
+        }
+
+        private void AddToLog(string[] Lines)
+        {
+            if (LogBox.InvokeRequired)
+            {
+                LogBox.Invoke(new StringArrayDelegate(AddToLog), new object[] {Lines});
+            }
+            else
+            {
+                LogBox.AppendText(string.Join(Environment.NewLine, Lines) + "\n");
+            }
         }
 
         private void BeginWaitForNotification()

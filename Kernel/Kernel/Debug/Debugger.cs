@@ -29,6 +29,7 @@
 #define DEBUGGER_INTERUPT_TRACE
 #undef DEBUGGER_INTERUPT_TRACE
 
+using System.Security.Principal;
 using Drivers.Compiler.Attributes;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
@@ -123,6 +124,8 @@ namespace Kernel.Debug
         [Drivers.Compiler.Attributes.NoGC]
         public static void Int3()
         {
+            BasicConsole.WriteLine("Debugger > Int3 occurred.");
+
             PauseCurrentThread();
         }
 
@@ -318,8 +321,8 @@ namespace Kernel.Debug
                             MsgPort.Write(" - step (processId) (threadId | -1 for all threads)\n");
                             MsgPort.Write(" - ss (processId) (threadId | -1 for all threads)\n");
                             MsgPort.Write(" - sta (processId) (threadId | -1 for all threads) (address)\n");
-                            MsgPort.Write(" - bps (address:hex)\n");
-                            MsgPort.Write(" - bpc (address:hex)\n");
+                            MsgPort.Write(" - bps (processId) (address:hex)\n");
+                            MsgPort.Write(" - bpc (processId) (address:hex)\n");
                             MsgPort.Write(" - regs (processId) (threadId)\n");
                             MsgPort.Write(" - memory (processId) (address:hex) (length) (units:1,2,4)\n");
 
@@ -810,16 +813,40 @@ namespace Kernel.Debug
 
                             BasicConsole.WriteLine("Debugger > Processing `set breakpoint` command.");
 
-                            if (lineParts.Count == 2)
+                            if (lineParts.Count == 3)
                             {
-                                uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[1], 0);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
 
-                                MsgPort.Write(" > Breakpoint to be set at ");
-                                MsgPort.Write(Address);
-                                MsgPort.Write("\n");
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
-                                //TODO: Hmm...target process is definitely required here in future
-                                *(byte*)Address = 0xCC;
+                                if (TheProcess != null)
+                                {
+                                    bool AllSuspended = true;
+
+                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                    {
+                                        AllSuspended &= ((Thread)TheProcess.Threads[i]).Debug_Suspend;
+                                    }
+
+                                    if (AllSuspended)
+                                    {
+                                        uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[2], 0);
+
+                                        MsgPort.Write(" > Breakpoint to be set at ");
+                                        MsgPort.Write(Address);
+                                        MsgPort.Write("\n");
+
+                                        SetProgramByte(TheProcess, Address, 0xCC);
+                                    }
+                                    else
+                                    {
+                                        MsgPort.Write("All threads of the process must be suspended first.\n");
+                                    }
+                                }
+                                else
+                                {
+                                    MsgPort.Write("Process not found.\n");
+                                }
                             }
                             else
                             {
@@ -834,16 +861,40 @@ namespace Kernel.Debug
 
                             BasicConsole.WriteLine("Debugger > Processing `clear breakpoint` command.");
 
-                            if (lineParts.Count == 2)
+                            if (lineParts.Count == 3)
                             {
-                                uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[1], 0);
+                                uint ProcessId = Int32.Parse_DecimalUnsigned((String)lineParts[1], 0);
 
-                                MsgPort.Write(" > Breakpoint to be cleared at ");
-                                MsgPort.Write(Address);
-                                MsgPort.Write("\n");
+                                Process TheProcess = ProcessManager.GetProcessById(ProcessId);
 
-                                //TODO: Hmm...target process is definitely required here in future
-                                *(byte*)Address = 0x90;
+                                if (TheProcess != null)
+                                {
+                                    bool AllSuspended = true;
+                                    
+                                    for (int i = 0; i < TheProcess.Threads.Count; i++)
+                                    {
+                                        AllSuspended &= ((Thread)TheProcess.Threads[i]).Debug_Suspend;
+                                    }
+
+                                    if (AllSuspended)
+                                    {
+                                        uint Address = Int32.Parse_HexadecimalUnsigned((String)lineParts[2], 0);
+
+                                        MsgPort.Write(" > Breakpoint to be cleared at ");
+                                        MsgPort.Write(Address);
+                                        MsgPort.Write("\n");
+
+                                        SetProgramByte(TheProcess, Address, 0x90);
+                                    }
+                                    else
+                                    {
+                                        MsgPort.Write("All threads of the process must be suspended first.\n");
+                                    }
+                                }
+                                else
+                                {
+                                    MsgPort.Write("Process not found.\n");
+                                }
                             }
                             else
                             {
@@ -956,8 +1007,8 @@ namespace Kernel.Debug
                                         int PartialLength = 0;
                                         while (PartialLength < FullLength)
                                         {
-                                            uint OldPAddr =
-                                                TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000);
+                                            uint OldPAddr = CheckPhysicalAddress(OldVAddr, 
+                                                TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000));
                                             uint NewVAddr =
                                                 (uint)
                                                     ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess,
@@ -1052,7 +1103,8 @@ namespace Kernel.Debug
         {
             uint OldESP = AThread.State->ESP;
             uint OldThreadStackBottomVAddr = (uint)(AThread.State->ThreadStackTop - Thread.ThreadStackTopOffset);
-            uint OldThreadStackBottomPAddr = TheProcess.TheMemoryLayout.GetPhysicalAddress(OldThreadStackBottomVAddr);
+            uint OldThreadStackBottomPAddr = CheckPhysicalAddress(OldThreadStackBottomVAddr, 
+                TheProcess.TheMemoryLayout.GetPhysicalAddress(OldThreadStackBottomVAddr));
             uint NewThreadStackBottomVAddr =
                 (uint)ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*)OldThreadStackBottomPAddr);
             uint NewESP = OldESP - OldThreadStackBottomVAddr + NewThreadStackBottomVAddr;
@@ -1064,6 +1116,32 @@ namespace Kernel.Debug
         {
             AThread.State->ESP = OldESP;
             ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+        }
+
+        private static void SetProgramByte(Process TheProcess, uint OldVAddr, byte Value)
+        {
+            uint OldPAddr = CheckPhysicalAddress(OldVAddr, TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000));
+            uint NewVAddr = (uint)ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*)OldPAddr);
+            uint PageOffset = OldVAddr & 0x00000FFF;
+            uint Address = NewVAddr + PageOffset;
+            *(byte*)Address = Value;
+            ProcessManager.DisableDebuggerAccessToProcessMemory(TheProcess);
+        }
+
+        private static uint CheckPhysicalAddress(uint OldVAddr, uint PAddr)
+        {
+            //TODO: Unhack this: "Built in processes" use fixed-addressed kernel memory for their code pages which isn't included in their memory layout
+            if (PAddr == 0xFFFFFFFF)
+            {
+                // Double check that the virtual address wasn't in the process' memory layout because it's a 'kernel fixed page'
+                if (VirtualMemory.VirtualMemoryManager.IsWithinKernelFixedMemory(OldVAddr))
+                {
+                    //WARNING: Enabling this may result in the debugger application hanging as it inteferes with the messaging protocol:
+                    //  MsgPort.Write("Address is inside the kernel fixed-address space.\n");
+                    return VirtualMemory.VirtualMemoryManager.GetPhysicalAddress(OldVAddr);
+                }
+            }
+            return PAddr;
         }
     }
 }

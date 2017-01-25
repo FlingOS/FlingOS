@@ -567,6 +567,11 @@ namespace Kernel.VirtualMemory.Implementations
             }
         }
         
+        public bool IsWithinKernelFixedMemory(uint VAddr)
+        {
+            return VAddr >= (uint)GetKernelMemStartPtr() && VAddr < (uint)GetKernelMemEndPtr();
+        }
+
         public uint[] GetBuiltInProcessVAddrs()
         {
             if (BuiltInProcessVAddrs == null)
