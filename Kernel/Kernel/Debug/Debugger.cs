@@ -1007,7 +1007,7 @@ namespace Kernel.Debug
                                         int PartialLength = 0;
                                         while (PartialLength < FullLength)
                                         {
-                                            uint OldPAddr = CheckPhysicalAddress(OldVAddr, 
+                                            uint OldPAddr = CheckPhysicalAddress(OldVAddr & 0xFFFFF000, 
                                                 TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000));
                                             uint NewVAddr =
                                                 (uint)
@@ -1120,7 +1120,7 @@ namespace Kernel.Debug
 
         private static void SetProgramByte(Process TheProcess, uint OldVAddr, byte Value)
         {
-            uint OldPAddr = CheckPhysicalAddress(OldVAddr, TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000));
+            uint OldPAddr = CheckPhysicalAddress(OldVAddr & 0xFFFFF000, TheProcess.TheMemoryLayout.GetPhysicalAddress(OldVAddr & 0xFFFFF000));
             uint NewVAddr = (uint)ProcessManager.EnableDebuggerAccessToProcessMemory(TheProcess, (void*)OldPAddr);
             uint PageOffset = OldVAddr & 0x00000FFF;
             uint Address = NewVAddr + PageOffset;
