@@ -124,7 +124,7 @@ namespace Kernel.Debug
         [Drivers.Compiler.Attributes.NoGC]
         public static void Int3()
         {
-            BasicConsole.WriteLine("Debugger > Int3 occurred.");
+            //BasicConsole.WriteLine("Debugger > Int3 occurred.");
 
             PauseCurrentThread();
         }
@@ -245,7 +245,7 @@ namespace Kernel.Debug
             // Note: This must be OUTSIDE any exception block.
             x86Interrupts.InsideCriticalHandler = false;
 
-            BasicConsole.WriteLine("Debugger > PauseCurrentThread end.");
+            //BasicConsole.WriteLine("Debugger > PauseCurrentThread end.");
         }
 
         /// <summary>
