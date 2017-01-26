@@ -325,12 +325,75 @@ namespace Kernel.Framework.Processes
             uint Return2 = 0;
             uint Return3 = 0;
             uint Return4 = 0;
-            Call(SystemCallNumbers.StartThread, (uint)ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1,
-                ref Return2, ref Return3, ref Return4);
+            Call(SystemCallNumbers.StartThread, (uint)ObjectUtilities.GetHandle(startMethod), 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
             NewThreadId = Return2;
             return (SystemCallResults)Return1;
         }
 
+        /// <summary>
+        ///     Performs the named system call.
+        /// </summary>
+        /// <param name="startMethod">The main method of the thread.</param>
+        /// <param name="NewThreadId">OUT: The Id of the new thread.</param>
+        /// <param name="StartArgs">The arguments to pass to the main method of the new thread.</param>
+        /// <returns>OK if the new thread was started.</returns>
+        [NoGC]
+        public static SystemCallResults StartThread(ThreadStartPoint startMethod, out uint NewThreadId, uint[] StartArgs)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.StartThread, 
+                (uint)ObjectUtilities.GetHandle(startMethod), 
+                (uint)ObjectUtilities.GetHandle(StartArgs) + Array.FieldsBytesSize, 
+                (uint)StartArgs.Length, 
+                ref Return1, ref Return2, ref Return3, ref Return4);
+            NewThreadId = Return2;
+            return (SystemCallResults)Return1;
+        }
+        
+        /// <summary>
+        ///     Performs the named system call.
+        /// </summary>
+        /// <param name="startMethod">The main method of the thread.</param>
+        /// <param name="NewThreadId">OUT: The Id of the new thread.</param>
+        /// <returns>OK if the new thread was started.</returns>
+        [NoGC]
+        public static SystemCallResults StartThread(void* startMethod, out uint NewThreadId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.StartThread, (uint)startMethod, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            NewThreadId = Return2;
+            return (SystemCallResults)Return1;
+        }
+
+        /// <summary>
+        ///     Performs the named system call.
+        /// </summary>
+        /// <param name="startMethod">The main method of the thread.</param>
+        /// <param name="NewThreadId">OUT: The Id of the new thread.</param>
+        /// <param name="StartArgs">The arguments to pass to the main method of the new thread.</param>
+        /// <returns>OK if the new thread was started.</returns>
+        [NoGC]
+        public static SystemCallResults StartThread(void* startMethod, out uint NewThreadId, uint[] StartArgs)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.StartThread,
+                (uint)startMethod,
+                (uint)ObjectUtilities.GetHandle(StartArgs) + Array.FieldsBytesSize,
+                (uint)StartArgs.Length,
+                ref Return1, ref Return2, ref Return3, ref Return4);
+            NewThreadId = Return2;
+            return (SystemCallResults)Return1;
+        }
+        
         /// <summary>
         ///     Performs the named system call.
         /// </summary>

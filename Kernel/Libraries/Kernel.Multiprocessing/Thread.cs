@@ -61,6 +61,11 @@ namespace Kernel.Multiprocessing
         public ThreadState* State;
         private bool suspend;
 
+        public uint[] StartArgs
+        {
+            get; private set;
+        }
+
         /// <remarks>
         ///     Units of [time period of scheduler]
         /// </remarks>
@@ -279,7 +284,7 @@ namespace Kernel.Multiprocessing
         }
 
         public Thread(Process AnOwner, ThreadStartPoint StartPoint, uint AnId, bool UserMode, String AName,
-            out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr)
+            out void* ThreadStackBottomPAddr, out void* KernelStackBottomPAddr, uint[] SomeStartArgs)
         {
 #if THREAD_TRACE
             BasicConsole.WriteLine("Constructing thread object...");
@@ -378,6 +383,12 @@ namespace Kernel.Multiprocessing
 #if THREAD_TRACE
             BasicConsole.WriteLine("Done.");
 #endif
+
+            StartArgs = SomeStartArgs;
+            if (StartArgs == null)
+            {
+                StartArgs = new uint[0];
+            }
         }
 
         //public static bool EnterSleepPrint = false;

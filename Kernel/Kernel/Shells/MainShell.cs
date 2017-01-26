@@ -1016,7 +1016,7 @@ namespace Kernel.Shells
                             {
                                 #region Easter
 
-                                ProcessManager.CurrentProcess.CreateThread(EasterTask.Main, "Easter");
+                                ProcessManager.CurrentProcess.CreateThread(EasterTask.Main, "Easter", null);
 
                                 #endregion
                             }

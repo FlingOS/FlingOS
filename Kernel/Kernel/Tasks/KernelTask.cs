@@ -300,11 +300,11 @@ namespace Kernel.Tasks
                 GC.Cleanup();
 
                 BasicConsole.WriteLine(" > Starting GC Cleanup thread...");
-                ProcessManager.CurrentProcess.CreateThread(GCCleanupTask.Main, "GC Cleanup");
+                ProcessManager.CurrentProcess.CreateThread(GCCleanupTask.Main, "GC Cleanup", null);
 
                 BasicConsole.WriteLine(" > Starting deferred syscalls thread...");
                 DeferredSyscallsThread = ProcessManager.CurrentProcess.CreateThread(DeferredSyscallsThread_Main,
-                    "Deferred Sys Calls");
+                    "Deferred Sys Calls", null);
 
                 while (!DeferredSyscalls_Ready)
                 {
@@ -313,13 +313,20 @@ namespace Kernel.Tasks
                 }
                 
                 BasicConsole.WriteLine(" > Starting Idle process...");
-                Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false);
+                Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false, null);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
 
 
-                BasicConsole.WriteLine("Setting up VGA...");
+                BasicConsole.WriteLine(" > Setting up VGA...");
                 VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
                 TheVGA.SetCGAPalette();
+
+                BasicConsole.WriteLine(" > Starting test thread...");
+                uint NewThreadId;
+                if (SystemCalls.StartThread(ObjectUtilities.GetHandle((TestThreadStartPoint)Test), out NewThreadId, new uint[] { 0xDEADBEEF }) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine(" > Failed to start test thread.");
+                }
 
 
                 BasicConsole.WriteLine(" > Initialising device manager...");
@@ -335,7 +342,7 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine(" > Starting Window Manager...");
                 Process WindowManagerProcess = ProcessManager.CreateProcess(WindowManagerTask.Main, "Window Manager",
-                    false);
+                    false, null);
                 WindowManagerTask_ProcessId = WindowManagerProcess.Id;
                 //WindowManagerProcess.OutputMemTrace = true;
                 ProcessManager.RegisterProcess(WindowManagerProcess, Scheduler.Priority.Normal);
@@ -350,7 +357,7 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine(" > Starting file pipe initialisation thread...");
                 FilePipeInitialisationThread = ProcessManager.CurrentProcess.CreateThread(FilePipeInitialisation_Main,
-                    "File Management : File Pipe Initialisation");
+                    "File Management : File Pipe Initialisation", null);
 
                 while (!FilePipesReady)
                 {
@@ -360,7 +367,7 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine(" > Starting File Systems driver...");
                 Process FileSystemsProcess = ProcessManager.CreateProcess(FileSystemsDriverTask.Main,
-                    "File Systems Driver", false);
+                    "File Systems Driver", false, null);
                 ProcessManager.RegisterProcess(FileSystemsProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine(" > Waiting for File System Driver to be ready...");
@@ -372,12 +379,12 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine(" > File System Driver reported ready.");
 
                 BasicConsole.WriteLine(" > Starting Device Info task...");
-                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceInfoTask.Main, "Device Info", false);
+                Process DeviceManagerProcess = ProcessManager.CreateProcess(DeviceInfoTask.Main, "Device Info", false, null);
                 ProcessManager.RegisterProcess(DeviceManagerProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine(" > Starting System Status App...");
                 Process SystemStatusProcess = ProcessManager.CreateProcess(SystemStatusTask.Main, "System Status App",
-                    false);
+                    false, null);
                 ProcessManager.RegisterProcess(SystemStatusProcess, Scheduler.Priority.Normal);
 
                 BasicConsole.WriteLine("Kernel Started.");
@@ -547,14 +554,24 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Process");
 #endif
+                    {
+                        ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+                        StartProcessRequest* StartRequest = (StartProcessRequest*)Param1;
+                        uint* OriginStartArgs = StartRequest->StartArgs;
+                        uint[] LocalStartArgs = new uint[StartRequest->StartArgsLength];
+                        for (int i = 0; i < StartRequest->StartArgsLength; i++)
+                        {
+                            LocalStartArgs[i] = OriginStartArgs[i];
+                        }
+                        ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
 
-                    Process NewProcess = ProcessManager.CreateProcess(Param2 == 1 || CallerProcess.UserMode,
-                        CallerProcess, (StartProcessRequest*)Param1);
-                    ProcessManager.RegisterProcess(NewProcess, Scheduler.Priority.Normal);
+                        Process NewProcess = ProcessManager.CreateProcess(Param2 == 1 || CallerProcess.UserMode,
+                            CallerProcess, StartRequest, LocalStartArgs);
+                        ProcessManager.RegisterProcess(NewProcess, Scheduler.Priority.Normal);
 
-                    Return2 = NewProcess.Id;
-                    Return3 = ((Thread)NewProcess.Threads[0]).Id;
-
+                        Return2 = NewProcess.Id;
+                        Return3 = ((Thread)NewProcess.Threads[0]).Id;
+                    }
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Process - done.");
 #endif
@@ -623,9 +640,20 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread");
 #endif
-                    Return2 =
-                        CallerProcess.CreateThread((ThreadStartPoint)ObjectUtilities.GetObject((void*)Param1),
-                            "[From sys call]").Id;
+                    {
+                        ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
+                        uint* OriginStartArgs = (uint*)Param2;
+                        uint[] LocalStartArgs = new uint[Param3];
+                        for (int i = 0; i < Param3; i++)
+                        {
+                            LocalStartArgs[i] = OriginStartArgs[i];
+                        }
+                        ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
+
+                        Return2 =
+                            CallerProcess.CreateThread((ThreadStartPoint)ObjectUtilities.GetObject((void*)Param1),
+                                "[From sys call]", LocalStartArgs).Id;
+                    }
 #if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Start Thread - done.");
 #endif
@@ -1480,7 +1508,7 @@ namespace Kernel.Tasks
             BasicConsole.WriteLine(" > Starting file system helper threads...");
             FileSystemManagerInitialisationThread =
                 ProcessManager.CurrentProcess.CreateThread(FileSystemManagerInitialisation_Main,
-                    "File Management : File System Initialisation");
+                    "File Management : File System Initialisation", null);
 
             FilePipesReady = true;
 
@@ -2524,6 +2552,30 @@ namespace Kernel.Tasks
         {
             public uint ProcessId;
             public uint ThreadId;
+        }
+        
+
+
+        private delegate void TestThreadStartPoint(uint value, uint cs);
+
+        private static void Test(uint value, uint cs)
+        {
+            int count = 10;
+            if (value == 0xDEADBEEF)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    BasicConsole.WriteLine("Test Passed : " + (String)value);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    BasicConsole.WriteLine("Test Failed : " + (String)value);
+                }
+            }
+
         }
     }
 }

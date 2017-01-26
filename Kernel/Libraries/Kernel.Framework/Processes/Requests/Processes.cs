@@ -37,6 +37,9 @@ namespace Kernel.Framework.Processes.Requests.Processes
         public uint* CodePages;
         public uint DataPagesCount;
         public uint* DataPages;
+
+        public uint* StartArgs;
+        public int StartArgsLength;
     }
 
     public struct ProcessDescriptor

@@ -93,7 +93,7 @@ namespace Kernel
 
                 BasicConsole.WriteLine("Creating kernel process...");
                 Process KernelProcess = new Process(KernelTask.Main, ProcessManager.ProcessIdGenerator++, "Kernel Task",
-                    false);
+                    false, null);
                 //TODO: Kernel Process should have kernel's (heap, stack, static and some code) memory isolated 
                 //          by adding it to Kernel Process' memory layout.
                 ProcessManager.KernelProcess = KernelProcess;

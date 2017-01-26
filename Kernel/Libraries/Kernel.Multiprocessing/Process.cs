@@ -58,7 +58,7 @@ namespace Kernel.Multiprocessing
         protected uint ThreadIdGenerator = 1;
         public List Threads;
 
-        public Process(ThreadStartPoint StartPoint, uint AnId, String AName, bool userMode)
+        public Process(ThreadStartPoint StartPoint, uint AnId, String AName, bool userMode, uint[] StartArgs)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Constructing process object...");
@@ -82,10 +82,10 @@ namespace Kernel.Multiprocessing
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: ctor: Creating thread...");
 #endif
-            CreateThread(StartPoint, "Main");
+            CreateThread(StartPoint, "Main", StartArgs);
         }
 
-        public Thread CreateThread(ThreadStartPoint StartPoint, String Name)
+        public Thread CreateThread(ThreadStartPoint StartPoint, String Name, uint[] StartArgs)
         {
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Process: CreateThread: Creating thread...");
@@ -105,7 +105,7 @@ namespace Kernel.Multiprocessing
                 void* threadStackPhysAddr;
                 void* kernelStackPhysAddr;
                 Thread newThread = new Thread(this, StartPoint, ThreadIdGenerator++, UserMode, Name,
-                    out threadStackPhysAddr, out kernelStackPhysAddr);
+                    out threadStackPhysAddr, out kernelStackPhysAddr, StartArgs);
 #if PROCESS_TRACE
             BasicConsole.WriteLine("Adding data page...");
 #endif

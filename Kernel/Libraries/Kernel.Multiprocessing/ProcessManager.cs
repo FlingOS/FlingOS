@@ -64,13 +64,13 @@ namespace Kernel.Multiprocessing
         private static void* ShadowPageVAddr = (void*)0xFFFFFFFF;
         private static void* ShadowPagePAddr = (void*)0xFFFFFFFF;
 
-        public static Process CreateProcess(ThreadStartPoint MainMethod, String Name, bool UserMode)
+        public static Process CreateProcess(ThreadStartPoint MainMethod, String Name, bool UserMode, uint[] StartArgs)
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process...");
 #endif
 
-            Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode);
+            Process NewProcess = new Process(MainMethod, ProcessIdGenerator++, Name, UserMode, StartArgs);
 
             uint[] vAddrs = VirtualMemoryManager.GetBuiltInProcessVAddrs();
             uint startVAddr = 0xDEADBEEF;
@@ -128,7 +128,7 @@ namespace Kernel.Multiprocessing
             return NewProcess;
         }
 
-        public static Process CreateProcess(bool UserMode, Process ProcessToCopyFrom, StartProcessRequest* request)
+        public static Process CreateProcess(bool UserMode, Process ProcessToCopyFrom, StartProcessRequest* request, uint[] StartArgs)
         {
 #if PROCESSMANAGER_TRACE
             BasicConsole.WriteLine("Creating process...");
@@ -142,7 +142,7 @@ namespace Kernel.Multiprocessing
                 Name[i] = request->Name[i];
             }
             Process NewProcess = new Process((ThreadStartPoint)ObjectUtilities.GetObject(request->MainMethod),
-                ProcessIdGenerator++, Name, UserMode);
+                ProcessIdGenerator++, Name, UserMode, StartArgs);
 
             uint* vAddrs = request->CodePages;
             uint startVAddr = 0xDEADBEEF;

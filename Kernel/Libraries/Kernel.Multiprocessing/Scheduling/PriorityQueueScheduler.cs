@@ -540,6 +540,13 @@ namespace Kernel.Multiprocessing.Scheduling
             // Selectors for user-mode must be or'ed with 3 to set privilege level
 
             uint* stackPtr = (uint*)ProcessManager.CurrentThread_State->ThreadStackTop;
+            
+            uint[] args = ProcessManager.CurrentThread.StartArgs;
+            for (int i = 0; i < args.Length; i++)
+            {
+                *stackPtr-- = args[i];
+            }
+
             // Process terminate CS selector
             //      Process terminate should always be jumping into kernel-mode code (for now)
             *stackPtr-- = 8u;
