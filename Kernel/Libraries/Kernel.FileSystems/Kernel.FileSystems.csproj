@@ -97,7 +97,7 @@
     <Compile Include="FAT\Listings\FATDirectory.cs" />
     <Compile Include="FAT\Listings\FATFile.cs" />
     <Compile Include="FileSystemAccessor.cs" />
-    <Compile Include="FileSystemClient.cs" />
+    <Compile Include="FileSystemManagerClient.cs" />
     <Compile Include="FileSystemMapping.cs" />
     <Compile Include="ISO9660\ISO9660FileSystem.cs" />
     <Compile Include="ISO9660\Listings\ISO9660Directory.cs" />

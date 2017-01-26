@@ -177,6 +177,7 @@ namespace Kernel.FileSystems
             {
                 BasicConsole.Write(MappingPrefixes[j]);
             }
+            BasicConsole.WriteLine();
         }
 
         public List ListDir(String Path)

@@ -2563,19 +2563,12 @@ namespace Kernel.Tasks
             int count = 10;
             if (value == 0xDEADBEEF)
             {
-                for (int i = 0; i < count; i++)
-                {
-                    BasicConsole.WriteLine("Test Passed : " + (String)value);
-                }
+                BasicConsole.WriteLine("Thread Start Arguments Test Passed : " + (String)value);
             }
             else
             {
-                for (int i = 0; i < count; i++)
-                {
-                    BasicConsole.WriteLine("Test Failed : " + (String)value);
-                }
+                BasicConsole.WriteLine("Thread Start Arguments Test Failed : " + (String)value);
             }
-
         }
     }
 }

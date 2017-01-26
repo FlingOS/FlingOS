@@ -103,6 +103,14 @@ namespace Kernel.Shells
                         //Output the current command line
                         console.Write(CurrentDir + " > ");
 
+                        /*
+                         * IMPORTANT NOTE: At the time of writing, most of these commands had not
+                         *                 been updated to use the new system calls, etc, etc and
+                         *                 as such, are broken. Most of the commands do not work
+                         *                 and will cause a page fault as they expect full access
+                         *                 to all kernel memory.
+                         */
+
                         //List of supported commands
                         /* Command { Req Arg } [Opt Arg] *Default val*:
                          *  - Halt

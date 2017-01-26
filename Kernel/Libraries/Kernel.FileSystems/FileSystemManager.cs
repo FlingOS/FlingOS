@@ -28,12 +28,14 @@
 
 #define FSM_TRACE
 
+using Kernel.Devices.Controllers;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Pipes;
 using Kernel.Pipes.File;
+using Kernel.Utilities;
 
 namespace Kernel.FileSystems
 {
@@ -78,13 +80,7 @@ namespace Kernel.FileSystems
                 BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (1)");
                 ExceptionMethods.Throw(new NullReferenceException());
             }
-
-            if (SystemCalls.CreateSemaphore(1, out ClientListSemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("File System Manager > Failed to create a semaphore! (2)");
-                ExceptionMethods.Throw(new NullReferenceException());
-            }
-
+            
             if (SystemCalls.StartThread(WaitForClients, out WaitForClientsThreadId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("File System Manager > Failed to create client listener thread!");
@@ -167,7 +163,7 @@ namespace Kernel.FileSystems
             return SystemCalls.SignalSemaphore(MappingsListSemaphoreId) == SystemCallResults.OK;
         }
 
-        private static void WaitForClients()
+        private static unsafe void WaitForClients()
         {
             DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, true);
 
@@ -180,7 +176,7 @@ namespace Kernel.FileSystems
                 FileCmdInpoint CmdInPipe = new FileCmdInpoint(InProcessId);
                 FileDataInpoint DataInPipe = new FileDataInpoint(InProcessId, false);
 
-                FileSystemClient NewInfo = new FileSystemClient
+                FileSystemManagerClient NewInfo = new FileSystemManagerClient
                 {
                     CmdInPipe = CmdInPipe,
                     DataInPipe = DataInPipe,
@@ -188,49 +184,25 @@ namespace Kernel.FileSystems
                     DataOutPipeId = DataOutPipeId,
                     RemoteProcessId = InProcessId
                 };
-
-                while (SystemCalls.WaitSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("File System Manager > Failed wait on client list semaphore!");
-                }
-
+                
                 Clients.Add(NewInfo);
 
                 uint NewThreadId;
-                while (SystemCalls.StartThread(ManageClient, out NewThreadId) != SystemCallResults.OK)
+                if (SystemCalls.StartThread(ObjectUtilities.GetHandle((ManageClientDelegate)ManageClient), out NewThreadId, new uint[] { (uint)ObjectUtilities.GetHandle(NewInfo) }) == SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("File System Manager > Failed to create client management thread!");
                 }
 
                 NewInfo.ManagementThreadId = NewThreadId;
-
-                while (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("File System Manager > Failed signal client list semaphore!");
-                }
             }
         }
 
-        private static void ManageClient()
+        private delegate void ManageClientDelegate(FileSystemManagerClient TheClient, uint CS);
+        private static void ManageClient(FileSystemManagerClient TheClient, uint CS)
         {
-            FileSystemClient TheClient = null;
-            if (SystemCalls.WaitSemaphore(ClientListSemaphoreId) == SystemCallResults.OK)
-            {
-                TheClient = (FileSystemClient)Clients[Clients.Count - 1];
+            BasicConsole.WriteLine("File System Manager > Client manager started.");
 
-                if (SystemCalls.SignalSemaphore(ClientListSemaphoreId) != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("File System Manager > Failed to signal a semaphore! (MC 1)");
-                }
-
-                BasicConsole.WriteLine("File System Manager > Client manager started.");
-
-                TheClient.Manage();
-            }
-            else
-            {
-                BasicConsole.WriteLine("File System Manager > Failed wait on client list semaphore! (MC 2)");
-            }
+            TheClient.Manage();
         }
     }
 }

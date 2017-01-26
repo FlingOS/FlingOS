@@ -33,7 +33,7 @@ using Kernel.Pipes.File;
 
 namespace Kernel.FileSystems
 {
-    public class FileSystemClient : Object
+    public class FileSystemManagerClient : Object
     {
         public FileCmdInpoint CmdInPipe;
         public FileDataInpoint DataInPipe;
