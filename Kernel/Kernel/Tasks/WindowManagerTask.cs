@@ -176,9 +176,9 @@ namespace Kernel.Tasks
 
                         if (CurrentPipeInfo != null)
                         {
-                            BasicConsole.WriteLine((String)"WM > Start blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
+                            //BasicConsole.WriteLine((String)"WM > Start blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
                             String str = CurrentPipeInfo.StdOut.Read(true);
-                            BasicConsole.WriteLine("WM > Blocking read ended.");
+                            //BasicConsole.WriteLine("WM > Blocking read ended.");
 
                             SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
                             try
@@ -202,7 +202,7 @@ namespace Kernel.Tasks
                 {
                     if (ExceptionMethods.CurrentException is RWFailedException)
                     {
-                        BasicConsole.WriteLine("WM > Read/Write Exception handled (expected due to abort?)");
+                        //BasicConsole.WriteLine("WM > Read/Write Exception handled (expected due to abort?)");
                         SystemCalls.SleepThread(50);
                     }
                     else
@@ -425,16 +425,16 @@ namespace Kernel.Tasks
                             SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
 
                             // Abort the blocking read (if any) that was issued on the current pipe
-                            BasicConsole.WriteLine((String)"WM > Issuing abort blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
+                            //BasicConsole.WriteLine((String)"WM > Issuing abort blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
                             SystemCallResults Results = SystemCalls.AbortPipeReadWrite(CurrentPipeInfo.StdOut.PipeId);
-                            BasicConsole.WriteLine((String)"WM > Abort blocking read complete: " + (Results == SystemCallResults.OK ? "Aborted." : "Failed to abort."));
+                            //BasicConsole.WriteLine((String)"WM > Abort blocking read complete: " + (Results == SystemCallResults.OK ? "Aborted." : "Failed to abort."));
 
                             try
                             {
                                 CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
                                 CurrentPipeIndex_Changed = true;
 
-                                BasicConsole.WriteLine("WM > Window switched.");
+                                //BasicConsole.WriteLine("WM > Window switched.");
                             }
                             finally
                             {
