@@ -268,6 +268,7 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.CreatePipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReadPipe);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.WritePipe);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.AbortPipeReadWrite);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.SendMessage);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReceiveMessage);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RequestPages);
@@ -325,8 +326,8 @@ namespace Kernel.Tasks
                 DeviceManager.Init();
 
 #if DEBUG
-                BasicConsole.WriteLine(" > Starting Debugger thread...");
-                Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
+                //BasicConsole.WriteLine(" > Starting Debugger thread...");
+                //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
 #endif
 
                 BasicConsole.PrimaryOutputEnabled = false;
@@ -789,6 +790,7 @@ namespace Kernel.Tasks
                     // Need access to calling process' memory to be able to read values from request structure
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
                     ReadPipeRequest* RequestPtr = (ReadPipeRequest*)Param1;
+                    RequestPtr->Aborted = false;
                     int PipeId = RequestPtr->PipeId;
                     bool Blocking = RequestPtr->Blocking;
                     ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -826,6 +828,7 @@ namespace Kernel.Tasks
                     // Need access to calling process' memory to be able to read values from request structure
                     ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
                     ReadPipeRequest* RequestPtr = (ReadPipeRequest*)Param1;
+                    RequestPtr->Aborted = false;
                     int PipeId = RequestPtr->PipeId;
                     bool Blocking = RequestPtr->Blocking;
                     ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -847,6 +850,35 @@ namespace Kernel.Tasks
                         BasicConsole.WriteLine("DSC: Write Pipe - done");
 #endif
                 }
+
+                    #endregion
+
+                    break;
+                case SystemCallNumbers.AbortPipeReadWrite:
+
+                    #region Abort Pipe Read/Write
+
+                    {
+#if DSC_TRACE
+                        BasicConsole.WriteLine("DSC: Abort Pipe Read/Write");
+#endif
+
+                        int PipeId = (int)Param1;
+                        bool Aborted = PipeManager.AbortPipeReadWrite(PipeId, CallerProcess);
+
+                        if (!Aborted)
+                        {
+                            result = SystemCallResults.Fail;
+                        }
+                        else
+                        {
+                            result = SystemCallResults.OK;
+                        }
+
+#if DSC_TRACE
+                        BasicConsole.WriteLine("DSC: Abort Pipe Read/Write - done");
+#endif
+                    }
 
                     #endregion
 
@@ -1815,6 +1847,18 @@ namespace Kernel.Tasks
 
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Write Pipe");
+#endif
+                    result = SystemCallResults.Deferred;
+
+                    #endregion
+
+                    break;
+                case SystemCallNumbers.AbortPipeReadWrite:
+
+                    #region Abort Pipe Read/Write
+
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Abort Pipe Read/Write");
 #endif
                     result = SystemCallResults.Deferred;
 

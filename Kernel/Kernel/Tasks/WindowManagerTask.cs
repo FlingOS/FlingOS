@@ -158,17 +158,27 @@ namespace Kernel.Tasks
                 {
                     if (CurrentPipeIdx > -1)
                     {
-                        if (CurrentPipeIndex_Changed)
+                        SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                        try
                         {
-                            CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
-                            CurrentPipeIndex_Changed = false;
+                            if (CurrentPipeIndex_Changed)
+                            {
+                                CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
+                                CurrentPipeIndex_Changed = false;
 
-                            CurrentPipeInfo.TheConsole.Update();
+                                CurrentPipeInfo.TheConsole.Update();
+                            }
+                        }
+                        finally
+                        {
+                            SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
                         }
 
                         if (CurrentPipeInfo != null)
                         {
-                            String str = CurrentPipeInfo.StdOut.Read(false);
+                            BasicConsole.WriteLine((String)"WM > Start blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
+                            String str = CurrentPipeInfo.StdOut.Read(true);
+                            BasicConsole.WriteLine("WM > Blocking read ended.");
 
                             SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
                             try
@@ -192,6 +202,7 @@ namespace Kernel.Tasks
                 {
                     if (ExceptionMethods.CurrentException is RWFailedException)
                     {
+                        BasicConsole.WriteLine("WM > Read/Write Exception handled (expected due to abort?)");
                         SystemCalls.SleepThread(50);
                     }
                     else
@@ -412,16 +423,24 @@ namespace Kernel.Tasks
                             }
 
                             SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+
+                            // Abort the blocking read (if any) that was issued on the current pipe
+                            BasicConsole.WriteLine((String)"WM > Issuing abort blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
+                            SystemCallResults Results = SystemCalls.AbortPipeReadWrite(CurrentPipeInfo.StdOut.PipeId);
+                            BasicConsole.WriteLine((String)"WM > Abort blocking read complete: " + (Results == SystemCallResults.OK ? "Aborted." : "Failed to abort."));
+
                             try
                             {
                                 CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
                                 CurrentPipeIndex_Changed = true;
+
+                                BasicConsole.WriteLine("WM > Window switched.");
                             }
                             finally
                             {
                                 SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
                             }
-
+                            
                             //BasicConsole.WriteLine("WM > OP : (4)");
                         }
                         else

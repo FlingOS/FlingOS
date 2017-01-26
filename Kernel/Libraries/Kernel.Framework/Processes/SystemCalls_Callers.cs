@@ -507,6 +507,22 @@ namespace Kernel.Framework.Processes
             return (SystemCallResults)Return1;
         }
 
+        /// <summary>
+        ///     Performs the named system call.
+        /// </summary>
+        /// <param name="PipeId">The id of the pipe to issue the abort on.</param>
+        /// <returns>OK if the system call was successful.</returns>
+        [NoGC]
+        public static SystemCallResults AbortPipeReadWrite(int PipeId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.AbortPipeReadWrite, (uint)PipeId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
+
         #endregion
 
         /// <summary>

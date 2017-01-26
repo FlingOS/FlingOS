@@ -613,6 +613,157 @@ namespace Kernel.Pipes
             return Completed ? RWResults.Complete : RWResults.Queued;
         }
 
+        public static bool AbortPipeReadWrite(int PipeId, Process CallerProcess)
+        {
+            // Validate inputs
+            //  - Check pipe exists
+            Pipe pipe = GetPipe(PipeId);
+            if (pipe == null)
+            {
+                return false;
+            }
+
+            // Check the caller is allowed to access the pipe
+            if (!AllowedToWritePipe(pipe, CallerProcess.Id) && !AllowedToReadPipe(pipe, CallerProcess.Id))
+            {
+                return false;
+            }
+
+            // Get outpoint process
+            Process OutProcess = ProcessManager.GetProcessById(pipe.Outpoint.ProcessId);
+            if (OutProcess == null)
+            {
+                return false;
+            }
+
+            // Get inpoint process
+            Process InProcess = ProcessManager.GetProcessById(pipe.Inpoint.ProcessId);
+            if (InProcess == null)
+            {
+                return false;
+            }
+
+            if (CallerProcess.Id == InProcess.Id)
+            {
+                // Read Request
+                if (pipe.AreThreadsWaitingToRead())
+                {
+                    uint ThreadId;
+                    if (!pipe.PeekToRead(out ThreadId))
+                    {
+#if PIPES_TRACE
+                        BasicConsole.WriteLine("Pipe Manager > Couldn't identify waiting read thread.");
+#endif
+                        return false;
+                    }
+
+                    Thread ReadThread = ProcessManager.GetThreadById(ThreadId, InProcess);
+                    if (ReadThread == null)
+                    {
+#if PIPES_TRACE
+                        BasicConsole.WriteLine("Pipe Manager > Couldn't get waiting read thread.");
+#endif
+                        return false;
+                    }
+
+                    ProcessManager.EnableKernelAccessToProcessMemory(InProcess);
+
+                    ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
+                    Request->Aborted = true;
+#if PIPES_TRACE
+                    BasicConsole.WriteLine("Pipe Manager > Set waiting read request to aborted.");
+#endif
+
+                    ProcessManager.DisableKernelAccessToProcessMemory(InProcess);
+                }
+                else
+                {
+#if PIPES_TRACE
+                    BasicConsole.WriteLine("Pipe Manager > No read to abort.");
+#endif
+                    // Clean return if nothing was waiting
+                    return true;
+                }
+            }
+            else
+            {
+                // Write Request
+
+                if (pipe.AreThreadsWaitingToWrite())
+                {
+                    uint ThreadId;
+                    if (!pipe.PeekToWrite(out ThreadId))
+                    {
+#if PIPES_TRACE
+                        BasicConsole.WriteLine("Pipe Manager > Couldn't identify waiting write thread.");
+#endif
+                        return false;
+                    }
+
+                    Thread WriteThread = ProcessManager.GetThreadById(ThreadId, OutProcess);
+                    if (WriteThread == null)
+                    {
+#if PIPES_TRACE
+                        BasicConsole.WriteLine("Pipe Manager > Couldn't get waiting write thread.");
+#endif
+                        return false;
+                    }
+
+                    ProcessManager.EnableKernelAccessToProcessMemory(OutProcess);
+
+                    WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
+                    Request->Aborted = true;
+#if PIPES_TRACE
+                    BasicConsole.WriteLine("Pipe Manager > Set waiting write request to aborted.");
+#endif
+
+                    ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
+                }
+                else
+                {
+#if PIPES_TRACE
+                    BasicConsole.WriteLine("Pipe Manager > No write to abort.");
+#endif
+                    // Clean return if nothing was waiting
+                    return true;
+                }
+            }
+
+#if PIPES_TRACE
+            BasicConsole.WriteLine("Pipe Manager > Processing pipe queue (after abort)...");
+#endif
+            // Process the pipe queue
+            ProcessPipeQueue(pipe, OutProcess, InProcess);
+#if PIPES_TRACE
+            BasicConsole.WriteLine("Pipe Manager > Pipe queue processed (after abort).");
+#endif
+
+            bool Completed;
+            if (CallerProcess.Id == InProcess.Id)
+            {
+                // Read Request
+                Completed = !pipe.AreThreadsWaitingToRead();
+            }
+            else
+            {
+                // Write Request
+                Completed = !pipe.AreThreadsWaitingToWrite();
+            }
+
+#if PIPES_TRACE
+            if (Completed)
+            {
+                BasicConsole.WriteLine("Pipe Manager > Abort completed.");
+            }
+            else
+            {
+                BasicConsole.WriteLine("Pipe Manager > Abort failed.");
+            }
+#endif
+
+            return Completed;
+        }
+
         /// <summary>
         ///     Process the read/write queues of the specified pipe.
         /// </summary>
@@ -624,16 +775,21 @@ namespace Kernel.Pipes
 #if PIPES_TRACE
             BasicConsole.WriteLine("ProcessPipeQueue: Checking first loop condition");
 #endif
-            while ((pipe.AreThreadsWaitingToWrite() && pipe.CanWrite()) ||
-                   (pipe.AreThreadsWaitingToRead() && pipe.CanRead()))
+            bool AbortWritePossible = true;
+            bool AbortReadPossible = true;
+            bool WritePossible = true;
+            bool ReadPossible = true;
+
+            while ((pipe.AreThreadsWaitingToWrite() && (AbortWritePossible || WritePossible)) ||
+                   (pipe.AreThreadsWaitingToRead() && (AbortReadPossible || ReadPossible)))
             {
 #if PIPES_TRACE
                 BasicConsole.WriteLine("ProcessPipeQueue: Loop start");
 #endif
-                if (pipe.AreThreadsWaitingToWrite() && pipe.CanWrite())
+                if (pipe.AreThreadsWaitingToWrite())
                 {
 #if PIPES_TRACE
-                    BasicConsole.WriteLine("ProcessPipeQueue: Pipe can write");
+                    BasicConsole.WriteLine("ProcessPipeQueue: Pipe waiting to write");
 #endif
 
                     /*  - Dequeue thread to write
@@ -649,50 +805,80 @@ namespace Kernel.Pipes
                     BasicConsole.WriteLine("ProcessPipeQueue: Dequeuing out thread id");
 #endif
                     uint ThreadId;
-                    if (!pipe.DequeueToWrite(out ThreadId))
+                    if (pipe.PeekToWrite(out ThreadId))
                     {
-                        break;
-                    }
 
 #if PIPES_TRACE
-                    BasicConsole.WriteLine("ProcessPipeQueue: Getting out thread");
+                        BasicConsole.WriteLine("ProcessPipeQueue: Getting out thread");
 #endif
-                    Thread WriteThread = ProcessManager.GetThreadById(ThreadId, OutProcess);
-                    if (WriteThread == null)
-                    {
-                        break;
-                    }
+                        Thread WriteThread = ProcessManager.GetThreadById(ThreadId, OutProcess);
+                        if (WriteThread != null)
+                        {
 
 #if PIPES_TRACE
-                    BasicConsole.WriteLine("ProcessPipeQueue: Writing pipe");
+                            BasicConsole.WriteLine("ProcessPipeQueue: Writing pipe");
 #endif
-                    ProcessManager.EnableKernelAccessToProcessMemory(OutProcess);
+                            ProcessManager.EnableKernelAccessToProcessMemory(OutProcess);
 
-                    WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
-                    bool Successful = pipe.Write(Request->InBuffer, Request->Offset, Request->Length);
-                    if (Successful)
-                    {
+                            WritePipeRequest* Request = (WritePipeRequest*)WriteThread.Param1;
+                            bool Successful = false;
+                            bool CanWrite = WritePossible = pipe.CanWrite();
+                            bool ReachedResult = Request->Aborted || CanWrite;
+                            if (!Request->Aborted)
+                            {
+                                if (CanWrite)
+                                {
+                                    pipe.DequeueToWrite(out ThreadId); // Will return the same thread id as peek did
+                                    Successful = pipe.Write(Request->InBuffer, Request->Offset, Request->Length);
+                                }
+                                else
+                                {
+                                    AbortWritePossible = false;
+                                }
+                            }
+                            else
+                            {
 #if PIPES_TRACE
-                        BasicConsole.WriteLine("ProcessPipeQueue: Write successful");
+                                BasicConsole.WriteLine("ProcessPipeQueue: Write request aborted.");
 #endif
-                        WriteThread.Return1 = (uint)SystemCallResults.OK;
-                    }
-                    else
-                    {
+
+                                // Dequeue the aborted request
+                                pipe.DequeueToWrite(out ThreadId); // Will return the same thread id as peek did
+                            }
+
+                            if (ReachedResult)
+                            {
+                                if (Successful)
+                                {
 #if PIPES_TRACE
-                        BasicConsole.WriteLine("ProcessPipeQueue: Write failed");
+                                    BasicConsole.WriteLine("ProcessPipeQueue: Write successful");
 #endif
-                        WriteThread.Return1 = (uint)SystemCallResults.Fail;
+                                    WriteThread.Return1 = (uint)SystemCallResults.OK;
+                                }
+                                else
+                                {
+#if PIPES_TRACE
+                                    BasicConsole.WriteLine("ProcessPipeQueue: Write failed");
+#endif
+                                    WriteThread.Return1 = (uint)SystemCallResults.Fail;
+                                }
+
+                                ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
+
+                                WriteThread._Wake();
+                            }
+                            else
+                            {
+                                ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
+                            }
+                        }
                     }
-
-                    ProcessManager.DisableKernelAccessToProcessMemory(OutProcess);
-
-                    WriteThread._Wake();
                 }
-                else if (pipe.AreThreadsWaitingToRead() && pipe.CanRead())
+
+                if (!(pipe.AreThreadsWaitingToWrite() && WritePossible) && pipe.AreThreadsWaitingToRead())
                 {
 #if PIPES_TRACE
-                    BasicConsole.WriteLine("ProcessPipeQueue: Pipe can read");
+                    BasicConsole.WriteLine("ProcessPipeQueue: Pipe waiting to read");
 #endif
 
                     /*  - Dequeue thread to read
@@ -708,51 +894,107 @@ namespace Kernel.Pipes
                     BasicConsole.WriteLine("ProcessPipeQueue: Dequeuing in thread id");
 #endif
                     uint ThreadId;
-                    if (!pipe.DequeueToRead(out ThreadId))
+                    if (pipe.PeekToRead(out ThreadId))
                     {
-                        break;
-                    }
 
 #if PIPES_TRACE
-                    BasicConsole.WriteLine("ProcessPipeQueue: Getting in thread");
+                        BasicConsole.WriteLine("ProcessPipeQueue: Getting in thread");
 #endif
-                    Thread ReadThread = ProcessManager.GetThreadById(ThreadId, InProcess);
-                    if (ReadThread == null)
-                    {
-                        break;
-                    }
+                        Thread ReadThread = ProcessManager.GetThreadById(ThreadId, InProcess);
+                        if (ReadThread != null)
+                        {
 
 #if PIPES_TRACE
-                    BasicConsole.WriteLine("ProcessPipeQueue: Reading pipe");
+                            BasicConsole.WriteLine("ProcessPipeQueue: Reading pipe");
 #endif
-                    ProcessManager.EnableKernelAccessToProcessMemory(InProcess);
+                            ProcessManager.EnableKernelAccessToProcessMemory(InProcess);
 
-                    ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
-                    int BytesRead;
-                    bool Successful = pipe.Read(Request->OutBuffer, Request->Offset, Request->Length, out BytesRead);
-                    if (Successful)
-                    {
+                            ReadPipeRequest* Request = (ReadPipeRequest*)ReadThread.Param1;
+                            int BytesRead = 0;
+                            bool Successful = false;
+                            bool CanRead = ReadPossible = pipe.CanRead();
+                            bool ReachedResult = Request->Aborted || CanRead;
+                            if (!Request->Aborted)
+                            {
 #if PIPES_TRACE
-                        BasicConsole.WriteLine("ProcessPipeQueue: Read successful");
+                                BasicConsole.WriteLine("ProcessPipeQueue: Read request not aborted");
 #endif
-                        ReadThread.Return1 = (uint)SystemCallResults.OK;
-                        ReadThread.Return2 = (uint)BytesRead;
-                    }
-                    else
-                    {
+
+                                if (CanRead)
+                                {
 #if PIPES_TRACE
-                        BasicConsole.WriteLine("ProcessPipeQueue: Read failed");
+                                    BasicConsole.WriteLine("ProcessPipeQueue: Can read");
 #endif
-                        ReadThread.Return1 = (uint)SystemCallResults.Fail;
+
+                                    pipe.DequeueToRead(out ThreadId); // Will return the same thread id as peek did
+                                    Successful = pipe.Read(Request->OutBuffer, Request->Offset, Request->Length,
+                                        out BytesRead);
+                                }
+                                else
+                                {
+#if PIPES_TRACE
+                                    BasicConsole.WriteLine("ProcessPipeQueue: AbortReadPossible = false");
+#endif
+
+                                    AbortReadPossible = false;
+                                }
+                            }
+                            else
+                            {
+#if PIPES_TRACE
+                                BasicConsole.WriteLine("ProcessPipeQueue: Read request aborted.");
+#endif
+
+                                // Dequeue the aborted request
+                                pipe.DequeueToRead(out ThreadId); // Will return the same thread id as peek did
+                            }
+
+                            if (ReachedResult)
+                            {
+#if PIPES_TRACE
+                                BasicConsole.WriteLine("ProcessPipeQueue: Reached read result");
+#endif
+
+                                if (Successful)
+                                {
+#if PIPES_TRACE
+                                    BasicConsole.WriteLine("ProcessPipeQueue: Read successful");
+#endif
+                                    ReadThread.Return1 = (uint)SystemCallResults.OK;
+                                    ReadThread.Return2 = (uint)BytesRead;
+                                }
+                                else
+                                {
+#if PIPES_TRACE
+                                    BasicConsole.WriteLine("ProcessPipeQueue: Read failed");
+#endif
+                                    ReadThread.Return1 = (uint)SystemCallResults.Fail;
+                                }
+
+                                ProcessManager.DisableKernelAccessToProcessMemory(InProcess);
+
+                                ReadThread._Wake();
+                            }
+                            else
+                            {
+#if PIPES_TRACE
+                                BasicConsole.WriteLine("ProcessPipeQueue: Not reached read result");
+#endif
+
+                                ProcessManager.DisableKernelAccessToProcessMemory(InProcess);
+                            }
+                        }
                     }
-
-                    ProcessManager.DisableKernelAccessToProcessMemory(InProcess);
-
-                    ReadThread._Wake();
                 }
 
 #if PIPES_TRACE
                 BasicConsole.WriteLine("ProcessPipeQueue: Looping...");
+                BasicConsole.Write(pipe.AreThreadsWaitingToWrite()); BasicConsole.Write(" ");
+                BasicConsole.Write(AbortWritePossible); BasicConsole.Write(" ");
+                BasicConsole.Write(WritePossible); BasicConsole.Write(" ");
+                BasicConsole.Write(pipe.AreThreadsWaitingToRead()); BasicConsole.Write(" ");
+                BasicConsole.Write(AbortReadPossible); BasicConsole.Write(" ");
+                BasicConsole.WriteLine(ReadPossible);
 #endif
             }
         }

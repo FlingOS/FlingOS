@@ -150,6 +150,11 @@ namespace Kernel.Framework.Processes.Requests.Pipes
         ///     Whether the request should be blocking or non-blocking.
         /// </summary>
         public bool Blocking;
+
+        /// <summary>
+        ///     Whether the request has been aborted or not.
+        /// </summary>
+        public bool Aborted;
     }
 
     /// <summary>
@@ -181,6 +186,11 @@ namespace Kernel.Framework.Processes.Requests.Pipes
         ///     Whether the request should be blocking or non-blocking.
         /// </summary>
         public bool Blocking;
+
+        /// <summary>
+        ///     Whether the request has been aborted or not.
+        /// </summary>
+        public bool Aborted;
     }
 
     /// <summary>

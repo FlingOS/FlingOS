@@ -174,6 +174,11 @@ namespace Kernel.Framework.Processes
         WritePipe,
 
         /// <summary>
+        ///     Aborts the current (if any) blocking read or write operation on the specified pipe.
+        /// </summary>
+        AbortPipeReadWrite,
+
+        /// <summary>
         ///     Send an 8-byte message immediately to a process.
         /// </summary>
         SendMessage,

@@ -239,6 +239,38 @@ namespace Kernel.Pipes
         }
 
         /// <summary>
+        ///     Peaks a thread (of the process owning the inpoint) from the read queue.
+        /// </summary>
+        /// <param name="ThreadId">Out : The peeked thread Id.</param>
+        /// <returns>True if an Id was available. Otherwise, false.</returns>
+        public bool PeekToRead(out uint ThreadId)
+        {
+            if (ThreadsWaitingToRead.Count > 0)
+            {
+                ThreadId = ThreadsWaitingToRead.Peek();
+                return true;
+            }
+            ThreadId = 0;
+            return false;
+        }
+
+        /// <summary>
+        ///     Peaks a thread (of the process owning the outpoint) from the write queue.
+        /// </summary>
+        /// <param name="ThreadId">Out : The peeked thread Id.</param>
+        /// <returns>True if an Id was available. Otherwise, false.</returns>
+        public bool PeekToWrite(out uint ThreadId)
+        {
+            if (ThreadsWaitingToWrite.Count > 0)
+            {
+                ThreadId = ThreadsWaitingToWrite.Peek();
+                return true;
+            }
+            ThreadId = 0;
+            return false;
+        }
+
+        /// <summary>
         ///     Dequeues a thread (of the process owning the inpoint) from the read queue.
         /// </summary>
         /// <param name="ThreadId">Out : The dequeued thread Id.</param>
