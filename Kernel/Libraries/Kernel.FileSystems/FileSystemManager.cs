@@ -188,7 +188,7 @@ namespace Kernel.FileSystems
                 Clients.Add(NewInfo);
 
                 uint NewThreadId;
-                if (SystemCalls.StartThread(ObjectUtilities.GetHandle((ManageClientDelegate)ManageClient), out NewThreadId, new uint[] { (uint)ObjectUtilities.GetHandle(NewInfo) }) == SystemCallResults.OK)
+                if (SystemCalls.StartThread(ObjectUtilities.GetHandle((ManageClientDelegate)ManageClient), out NewThreadId, new uint[] { (uint)ObjectUtilities.GetHandle(NewInfo) }) != SystemCallResults.OK)
                 {
                     BasicConsole.WriteLine("File System Manager > Failed to create client management thread!");
                 }
