@@ -38,8 +38,6 @@
             this.ConnectButton = new System.Windows.Forms.Button();
             this.ConnectingProgressBar = new System.Windows.Forms.ProgressBar();
             this.MainPanel = new System.Windows.Forms.Panel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.LogBox = new System.Windows.Forms.TextBox();
             this.StepThreadToLabelButton = new System.Windows.Forms.Button();
             this.ViewBPASMCheckBox = new System.Windows.Forms.CheckBox();
             this.SaveToFileListButton = new System.Windows.Forms.Button();
@@ -64,17 +62,20 @@
             this.NearestLabelAddessBox = new System.Windows.Forms.TextBox();
             this.NearestLabelBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.SingleStepButton = new System.Windows.Forms.Button();
             this.StepButton = new System.Windows.Forms.Button();
             this.ResumeButton = new System.Windows.Forms.Button();
             this.DebugButton = new System.Windows.Forms.Button();
             this.RefreshButton = new System.Windows.Forms.Button();
             this.ProcessesTreeView = new System.Windows.Forms.TreeView();
+            this.label11 = new System.Windows.Forms.Label();
+            this.LogBox = new System.Windows.Forms.TextBox();
             this.AbortButton = new System.Windows.Forms.Button();
             this.DestroyButton = new System.Windows.Forms.Button();
             this.TheOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.TheSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.label12 = new System.Windows.Forms.Label();
+            this.Thex86RegistersControl = new Drivers.Debugger.App.x86RegistersControl();
             this.MainPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -158,6 +159,7 @@
             this.MainPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPanel.Controls.Add(this.label12);
             this.MainPanel.Controls.Add(this.StepThreadToLabelButton);
             this.MainPanel.Controls.Add(this.ViewBPASMCheckBox);
             this.MainPanel.Controls.Add(this.SaveToFileListButton);
@@ -194,27 +196,6 @@
             this.MainPanel.Name = "MainPanel";
             this.MainPanel.Size = new System.Drawing.Size(1042, 709);
             this.MainPanel.TabIndex = 8;
-            // 
-            // label11
-            // 
-            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(16, 777);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(28, 13);
-            this.label11.TabIndex = 33;
-            this.label11.Text = "Log:";
-            // 
-            // LogBox
-            // 
-            this.LogBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.LogBox.Location = new System.Drawing.Point(19, 793);
-            this.LogBox.Multiline = true;
-            this.LogBox.Name = "LogBox";
-            this.LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.LogBox.Size = new System.Drawing.Size(1032, 179);
-            this.LogBox.TabIndex = 32;
             // 
             // StepThreadToLabelButton
             // 
@@ -460,21 +441,6 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "Nearest label :";
             // 
-            // Thex86RegistersControl
-            // 
-            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.Thex86RegistersControl.EAX = ((uint)(0u));
-            this.Thex86RegistersControl.EBP = ((uint)(0u));
-            this.Thex86RegistersControl.EBX = ((uint)(0u));
-            this.Thex86RegistersControl.ECX = ((uint)(0u));
-            this.Thex86RegistersControl.EDX = ((uint)(0u));
-            this.Thex86RegistersControl.EIP = ((uint)(0u));
-            this.Thex86RegistersControl.ESP = ((uint)(0u));
-            this.Thex86RegistersControl.Location = new System.Drawing.Point(3, 148);
-            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
-            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
-            this.Thex86RegistersControl.TabIndex = 6;
-            // 
             // SingleStepButton
             // 
             this.SingleStepButton.Location = new System.Drawing.Point(273, 135);
@@ -540,6 +506,27 @@
             this.ProcessesTreeView.TabIndex = 0;
             this.ProcessesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ProcessesTreeView_AfterSelect);
             // 
+            // label11
+            // 
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(16, 777);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(28, 13);
+            this.label11.TabIndex = 33;
+            this.label11.Text = "Log:";
+            // 
+            // LogBox
+            // 
+            this.LogBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LogBox.Location = new System.Drawing.Point(19, 793);
+            this.LogBox.Multiline = true;
+            this.LogBox.Name = "LogBox";
+            this.LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.LogBox.Size = new System.Drawing.Size(1032, 179);
+            this.LogBox.TabIndex = 32;
+            // 
             // AbortButton
             // 
             this.AbortButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -569,6 +556,31 @@
             // TheSaveFileDialog
             // 
             this.TheSaveFileDialog.Title = "Save breakpoints";
+            // 
+            // label12
+            // 
+            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(530, 294);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(352, 13);
+            this.label12.TabIndex = 32;
+            this.label12.Text = "Enter at least 10 characters to filter/search for labels (e.g. PCIDriverTask)";
+            // 
+            // Thex86RegistersControl
+            // 
+            this.Thex86RegistersControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Thex86RegistersControl.EAX = ((uint)(0u));
+            this.Thex86RegistersControl.EBP = ((uint)(0u));
+            this.Thex86RegistersControl.EBX = ((uint)(0u));
+            this.Thex86RegistersControl.ECX = ((uint)(0u));
+            this.Thex86RegistersControl.EDX = ((uint)(0u));
+            this.Thex86RegistersControl.EIP = ((uint)(0u));
+            this.Thex86RegistersControl.ESP = ((uint)(0u));
+            this.Thex86RegistersControl.Location = new System.Drawing.Point(3, 148);
+            this.Thex86RegistersControl.Name = "Thex86RegistersControl";
+            this.Thex86RegistersControl.Size = new System.Drawing.Size(255, 136);
+            this.Thex86RegistersControl.TabIndex = 6;
             // 
             // MainForm
             // 
@@ -646,5 +658,6 @@
         private System.Windows.Forms.Button StepThreadToLabelButton;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox LogBox;
+        private System.Windows.Forms.Label label12;
     }
 }
