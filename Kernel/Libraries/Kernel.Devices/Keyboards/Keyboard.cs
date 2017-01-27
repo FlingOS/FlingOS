@@ -453,5 +453,34 @@ namespace Kernel.Devices.Keyboards
             Character = 0;
             return false;
         }
+
+        /// <summary>
+        ///     Creates an array of all the scancodes that match a given keyboard key.
+        /// </summary>
+        /// <param name="Key">The key to look up mappings for.</param>
+        /// <param name="Scancodes">The array of zero or more scancodes for the desired keyboard key.</param>
+        public uint[] GetScancodesForKey(KeyboardKey Key)
+        {
+            int MatchingMappings = 0;
+            for (int i = 0; i < KeyMappings.Count; i++)
+            {
+                if (((KeyMapping)KeyMappings[i]).Key == Key)
+                {
+                    MatchingMappings++;
+                }
+            }
+
+            uint[] Scancodes = new uint[MatchingMappings];
+            int c = 0;
+            for (int i = 0; i < KeyMappings.Count; i++)
+            {
+                if (((KeyMapping)KeyMappings[i]).Key == Key)
+                {
+                    Scancodes[c++] = ((KeyMapping)KeyMappings[i]).Scancode;
+                }
+            }
+
+            return Scancodes;
+        }
     }
 }

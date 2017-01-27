@@ -93,6 +93,10 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("WM > Failed to create a semaphore! (4)");
             }
 
+            BasicConsole.WriteLine("WM > Init keyboard");
+            PS2.Init();
+            Keyboard.Default = PS2.SingletonPS2;
+
             // Start thread for handling background input processing
             uint InputProcessingThreadId;
             if (SystemCalls.StartThread(InputProcessing, out InputProcessingThreadId) != SystemCallResults.OK)
@@ -123,9 +127,6 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Window Manager: OutputProcessing thread failed to create!");
             }
 
-            BasicConsole.WriteLine("WM > Init keyboard");
-            PS2.Init();
-            Keyboard.Default = PS2.SingletonPS2;
             BasicConsole.WriteLine("WM > Register IRQ 1 handler");
             SystemCalls.RegisterIRQHandler(1, HandleIRQ);
 
@@ -397,86 +398,86 @@ namespace Kernel.Tasks
 
             PipeInfo CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
 
+            uint[] TabKeyScancodes = Keyboard.Default.GetScancodesForKey(KeyboardKey.Tab);
+            uint[] UpArrowKeyScancodes = Keyboard.Default.GetScancodesForKey(KeyboardKey.UpArrow);
+            uint[] DownArrowKeyScancodes = Keyboard.Default.GetScancodesForKey(KeyboardKey.DownArrow);
+
             while (!Terminating)
             {
                 try
                 {
                     //BasicConsole.WriteLine("WM > OP : (0)");
-
+                    
                     uint Scancode = Keyboard.Default.ReadScancode();
                     bool AltPressed = Keyboard.Default.AltPressed;
                     //BasicConsole.WriteLine("WM > OP : (1)");
-
-                    KeyboardKey Key;
-                    if (Keyboard.Default.GetKeyValue(Scancode, out Key))
-                    {
+                    
                         //BasicConsole.WriteLine("WM > OP : (2)");
 
-                        if (AltPressed && Key == KeyboardKey.Tab)
+                    if (AltPressed && ContainsScancode(TabKeyScancodes, Scancode))
+                    {
+                        //BasicConsole.WriteLine("WM > OP : (3)");
+
+                        CurrentPipeIdx++;
+                        if (CurrentPipeIdx >= ConnectedPipes.Count)
                         {
-                            //BasicConsole.WriteLine("WM > OP : (3)");
+                            CurrentPipeIdx = 0;
+                        }
 
-                            CurrentPipeIdx++;
-                            if (CurrentPipeIdx >= ConnectedPipes.Count)
-                            {
-                                CurrentPipeIdx = 0;
-                            }
+                        SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
 
+                        // Abort the blocking read (if any) that was issued on the current pipe
+                        //BasicConsole.WriteLine((String)"WM > Issuing abort blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
+                        SystemCallResults Results = SystemCalls.AbortPipeReadWrite(CurrentPipeInfo.StdOut.PipeId);
+                        //BasicConsole.WriteLine((String)"WM > Abort blocking read complete: " + (Results == SystemCallResults.OK ? "Aborted." : "Failed to abort."));
+
+                        try
+                        {
+                            CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
+                            CurrentPipeIndex_Changed = true;
+
+                            //BasicConsole.WriteLine("WM > Window switched.");
+                        }
+                        finally
+                        {
+                            SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
+                        }
+
+                        //BasicConsole.WriteLine("WM > OP : (4)");
+                    }
+                    else
+                    {
+                        if (ContainsScancode(UpArrowKeyScancodes, Scancode))
+                        {
                             SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
-
-                            // Abort the blocking read (if any) that was issued on the current pipe
-                            //BasicConsole.WriteLine((String)"WM > Issuing abort blocking read... PipeId: " + CurrentPipeInfo.StdOut.PipeId);
-                            SystemCallResults Results = SystemCalls.AbortPipeReadWrite(CurrentPipeInfo.StdOut.PipeId);
-                            //BasicConsole.WriteLine((String)"WM > Abort blocking read complete: " + (Results == SystemCallResults.OK ? "Aborted." : "Failed to abort."));
-
                             try
                             {
-                                CurrentPipeInfo = (PipeInfo)ConnectedPipes[CurrentPipeIdx];
-                                CurrentPipeIndex_Changed = true;
-
-                                //BasicConsole.WriteLine("WM > Window switched.");
+                                CurrentPipeInfo.TheConsole.Scroll(-1);
                             }
                             finally
                             {
                                 SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
                             }
-                            
-                            //BasicConsole.WriteLine("WM > OP : (4)");
                         }
-                        else
+                        else if (ContainsScancode(DownArrowKeyScancodes, Scancode))
                         {
-                            if (Key == KeyboardKey.UpArrow)
+                            SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
+                            try
                             {
-                                SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
-                                try
-                                {
-                                    CurrentPipeInfo.TheConsole.Scroll(-1);
-                                }
-                                finally
-                                {
-                                    SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
-                                }
+                                CurrentPipeInfo.TheConsole.Scroll(+1);
                             }
-                            else if (Key == KeyboardKey.DownArrow)
+                            finally
                             {
-                                SystemCalls.WaitSemaphore(ConsoleAccessSemaphoreId);
-                                try
-                                {
-                                    CurrentPipeInfo.TheConsole.Scroll(+1);
-                                }
-                                finally
-                                {
-                                    SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
-                                }
+                                SystemCalls.SignalSemaphore(ConsoleAccessSemaphoreId);
                             }
-
-                            //BasicConsole.WriteLine("WM > OP : (5)");
-
-                            SystemCalls.SendMessage(
-                                ((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
-
-                            //BasicConsole.WriteLine("WM > OP : (6)");
                         }
+
+                        //BasicConsole.WriteLine("WM > OP : (5)");
+
+                        SystemCalls.SendMessage(
+                            ((PipeInfo)ConnectedPipes[CurrentPipeIdx]).StdOut.OutProcessId, Scancode, 0);
+
+                        //BasicConsole.WriteLine("WM > OP : (6)");
                     }
                 }
                 catch
@@ -485,6 +486,19 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
                 }
             }
+        }
+
+        [NoGC]
+        private static bool ContainsScancode(uint[] Scancodes, uint Scancode)
+        {
+            for (int i = 0; i < Scancodes.Length; i++)
+            {
+                if (Scancodes[i] == Scancode)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static int HandleIRQ(uint IRQNum)
