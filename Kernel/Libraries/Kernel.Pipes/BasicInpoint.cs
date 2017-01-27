@@ -109,20 +109,20 @@ namespace Kernel.Pipes
                     switch (SysCallResult)
                     {
                         case SystemCallResults.Unhandled:
-                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unhandled!");
+                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unhandled!");
                             break;
                         case SystemCallResults.Fail:
-                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Failed!");
+                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Failed!");
                             break;
                         case SystemCallResults.OK:
-                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Succeeded.");
+                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Succeeded.");
                             PipeId = RequestPtr->Result.Id;
 
                             //BasicConsole.Write("BasicInPipe > CreatePipe: New pipe id = ");
                             //BasicConsole.WriteLine(PipeId);
                             break;
                         default:
-                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unexpected system call result!");
+                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Unexpected system call result!");
                             break;
                     }
                 }

@@ -26,11 +26,13 @@
 
 #endregion
 
+using Drivers.Compiler.Attributes;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Pipes;
 using Kernel.Pipes.File;
+using Exception = System.Exception;
 
 namespace Kernel.FileSystems
 {
@@ -46,6 +48,8 @@ namespace Kernel.FileSystems
 
         public FileSystemAccessor(uint ARemoteProcessId)
         {
+            Init();
+
             RemoteProcessId = ARemoteProcessId;
 
             BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String)RemoteProcessId);
@@ -101,6 +105,8 @@ namespace Kernel.FileSystems
 
         public FileSystemAccessor(uint ARemoteProcessId, String Mapping)
         {
+            Init();
+
             RemoteProcessId = ARemoteProcessId;
 
             BasicConsole.WriteLine("FileSystemAccessor > Connecting to: " + (String)RemoteProcessId);
@@ -208,12 +214,13 @@ namespace Kernel.FileSystems
                 BasicConsole.WriteLine();
             }
         }
-
+        
         #endregion
 
         #region Static
 
         public static bool Terminating = false;
+        private static bool Initialised = false;
 
         private static FileCmdOutpoint CmdOutpoint;
         private static FileDataOutpoint DataOutpoint;
@@ -224,29 +231,52 @@ namespace Kernel.FileSystems
 
         public static void Init()
         {
-            CmdOutPipes = new UInt64List();
-            DataOutPipes = new UInt64List();
-            CmdOutpoint = new FileCmdOutpoint(PipeConstants.UnlimitedConnections);
-            DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, false);
+            if (!Initialised)
+            {
+                BasicConsole.WriteLine("[Unkown process/thread] > Initialising File System Accessor.");
 
-            if (SystemCalls.CreateSemaphore(-1, out CmdOutPipesSemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("FileSystemAccessor > Failed to create a semaphore! (1)");
-            }
-            if (SystemCalls.CreateSemaphore(-1, out DataOutPipesSemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("FileSystemAccessor > Failed to create a semaphore! (2)");
-            }
+                CmdOutPipes = new UInt64List();
+                DataOutPipes = new UInt64List();
+                CmdOutpoint = new FileCmdOutpoint(PipeConstants.UnlimitedConnections);
+                DataOutpoint = new FileDataOutpoint(PipeConstants.UnlimitedConnections, false);
 
-            uint ThreadId;
-            if (SystemCalls.StartThread(WaitForFileCmdPipes, out ThreadId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("FileSystemAccessor > Failed to create a thread! (1)");
+                if (SystemCalls.CreateSemaphore(-1, out CmdOutPipesSemaphoreId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("FileSystemAccessor > Failed to create a semaphore! (1)");
+                }
+                if (SystemCalls.CreateSemaphore(-1, out DataOutPipesSemaphoreId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("FileSystemAccessor > Failed to create a semaphore! (2)");
+                }
+
+                uint ThreadId;
+                if (SystemCalls.StartThread(WaitForFileCmdPipes, out ThreadId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("FileSystemAccessor > Failed to create a thread! (1)");
+                }
+                if (SystemCalls.StartThread(WaitForFileDataPipes, out ThreadId) != SystemCallResults.OK)
+                {
+                    BasicConsole.WriteLine("FileSystemAccessor > Failed to create a thread! (2)");
+                }
+
+                Initialised = true;
             }
-            if (SystemCalls.StartThread(WaitForFileDataPipes, out ThreadId) != SystemCallResults.OK)
+            else
             {
-                BasicConsole.WriteLine("FileSystemAccessor > Failed to create a thread! (2)");
+                BasicConsole.WriteLine("[Unkown process/thread] > Already initialised File System Accessor.");
             }
+        }
+
+        [NoGC]
+        public static void HardReset()
+        {
+            Initialised = false;
+            CmdOutpoint = null;
+            DataOutpoint = null;
+            CmdOutPipesSemaphoreId = 0;
+            DataOutPipesSemaphoreId = 0;
+            CmdOutPipes = null;
+            DataOutPipes = null;
         }
 
         private static void WaitForFileCmdPipes()
@@ -271,6 +301,70 @@ namespace Kernel.FileSystems
                 DataOutPipes.Add(((ulong)InProcessId << 32) | (uint)PipeId);
                 SystemCalls.SignalSemaphore(DataOutPipesSemaphoreId);
             }
+        }
+
+        public static bool StatFSBySysCalls(out String[] Mappings, out uint[] ProcessIds)
+        {
+            bool Successful = true;
+            Mappings = new String[0];
+            ProcessIds = new uint[0];
+
+            int FSCount;
+            if (SystemCalls.StatFS(out FSCount) == SystemCallResults.OK)
+            {
+                if (FSCount > 0)
+                {
+                    unsafe
+                    {
+                        char* MappingsPtr =
+                            (char*)
+                                Heap.AllocZeroed((uint)(sizeof(char) * FSCount * 10),
+                                    "FileSystemAccessor : StatFSBySysCalls : Mappings");
+                        try
+                        {
+                            uint* ProcessesPtr =
+                                (uint*)
+                                    Heap.AllocZeroed((uint)(sizeof(uint) * FSCount),
+                                        "FileSystemAccessor : StatFSBySysCalls : FS Processes");
+
+                            try
+                            {
+                                if (SystemCalls.StatFS(ref FSCount, MappingsPtr, ProcessesPtr) ==
+                                    SystemCallResults.OK)
+                                {
+                                    Mappings = new String[FSCount];
+                                    ProcessIds = new uint[FSCount];
+
+                                    for (int i = 0; i < FSCount; i++)
+                                    {
+                                        Mappings[i] = ByteConverter.GetASCIIStringFromUTF16(
+                                            (byte*)MappingsPtr, (uint)(i*10*sizeof(char)), 10);
+                                        ProcessIds[i] = ProcessesPtr[i];
+                                    }
+                                }
+                                else
+                                {
+                                    Successful = false;
+                                }
+                            }
+                            finally
+                            {
+                                Heap.Free(ProcessesPtr);
+                            }
+                        }
+                        finally
+                        {
+                            Heap.Free(MappingsPtr);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Successful = false;
+            }
+
+            return Successful;
         }
 
         #endregion

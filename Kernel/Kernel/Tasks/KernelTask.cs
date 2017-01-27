@@ -1502,9 +1502,6 @@ namespace Kernel.Tasks
                 BasicConsole.WriteLine("Kernel Task > File Access > Failed to create a semaphore! (3)");
             }
 
-            BasicConsole.WriteLine("Kernel Task > File Access > Initialising File System Accessor.");
-            FileSystemAccessor.Init();
-
             BasicConsole.WriteLine(" > Starting file system helper threads...");
             FileSystemManagerInitialisationThread =
                 ProcessManager.CurrentProcess.CreateThread(FileSystemManagerInitialisation_Main,
