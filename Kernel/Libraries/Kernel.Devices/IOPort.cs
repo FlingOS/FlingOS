@@ -28,6 +28,11 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.Framework;
+using Kernel.Framework.Collections;
+using Kernel.Framework.Processes.Requests.Devices;
+using Kernel.Framework.Exceptions;
+using Kernel.Framework.Processes;
+using Kernel.Multiprocessing;
 
 namespace Kernel.Devices
 {
@@ -47,8 +52,8 @@ namespace Kernel.Devices
         /// <param name="aPort">The port number.</param>
         [NoDebug]
         public IOPort(ushort aPort)
+            : this(aPort, 0)
         {
-            Port = aPort;
         }
 
         /// <summary>
@@ -59,8 +64,20 @@ namespace Kernel.Devices
         /// <param name="anOffset">The offset from the base port number.</param>
         [NoDebug]
         public IOPort(ushort aBase, ushort anOffset)
+            : base(DeviceGroup.System, DeviceClass.IO, DeviceSubClass.Port, "IOPort", new uint[] { (uint)(aBase + anOffset) }, false)
         {
             Port = (ushort)(aBase + anOffset);
+            Id = (ulong)(Port + 1);
+
+            BasicConsole.WriteLine((String)"IOPort: Creating port: " + Port);
+            if (ProcessManager.CurrentProcess != null)
+            {
+                // Note: Assumptions: Serial ports were registered first, serial ports have id == portnum+1
+                if (!DeviceManager.ClaimDevice(this))
+                {
+                    ExceptionMethods.Throw(new NotSupportedException((String)"Port already claimed! Port: " + Port));
+                }
+            }
         }
 
         

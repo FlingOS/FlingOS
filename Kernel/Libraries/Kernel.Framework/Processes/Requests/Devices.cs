@@ -26,6 +26,7 @@
 
     public enum DeviceSubClass
     {
+        Port,
         ATA,
         USB,
         PCI,

@@ -36,6 +36,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
 using Kernel.Devices;
 using Kernel.Devices.Keyboards;
+using Kernel.Devices.Serial;
 using Kernel.Devices.Timers;
 using Kernel.FileSystems;
 using Kernel.Framework;
@@ -242,7 +243,7 @@ namespace Kernel.Tasks
 
             try
             {
-                BasicConsole.WriteLine("Initialising kernel ISRs...");
+                BasicConsole.WriteLine("> Initialising kernel ISRs...");
                 ProcessManager.CurrentProcess.ISRHandler = HandleISR;
                 ProcessManager.CurrentProcess.SwitchProcessForISRs = false;
                 ProcessManager.CurrentProcess.ISRsToHandle.Set(48);
@@ -311,17 +312,20 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("Waiting on deferred syscalls thread...");
                     SystemCalls.SleepThread(50);
                 }
-
-                BasicConsole.WriteLine(" > Initialising device manager...");
-                DeviceManager.Init();
-                DeviceManager.InitForProcess();
                 
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false, null);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
 
+                BasicConsole.WriteLine(" > Initialising device manager...");
+                DeviceManager.Init();
+                DeviceManager.InitForProcess();
+
                 BasicConsole.WriteLine(" > Registering PIT device...");
                 DeviceManager.RegisterDevice(PIT.ThePIT);
+
+                BasicConsole.WriteLine(" > Registering COM1 device...");
+                DeviceManager.RegisterDevice(Serial.COM1);
 
                 BasicConsole.WriteLine(" > Setting up VGA...");
                 VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);

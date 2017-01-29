@@ -31,6 +31,7 @@
 
 using System.Security.Principal;
 using Drivers.Compiler.Attributes;
+using Kernel.Devices;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Devices.Serial;
@@ -255,6 +256,11 @@ namespace Kernel.Debug
         [Drivers.Compiler.Attributes.NoGC]
         public static void Main()
         {
+            DeviceManager.InitForProcess();
+
+            Serial.InitCOM2();
+            Serial.InitCOM3();
+
             // The serial ports should have already been initialised
             MsgPort = Serial.COM2;
             NotifPort = Serial.COM3;

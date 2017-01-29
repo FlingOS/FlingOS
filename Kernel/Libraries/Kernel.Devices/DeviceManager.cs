@@ -61,9 +61,25 @@ namespace Kernel.Devices
 
         public static void Init()
         {
-            IdGenerator = 1;
-            Devices = new List(20);
+            IdGenerator = 0xFFFF + 2; // I/O POrts reserve id range 1 to (0xFFFF+1)
+            Devices = new List(0x100 + 40, 0x100);
             Initialised = true;
+            
+            Device NewDevice = new Device();
+            NewDevice.Id = IdGenerator++;
+            NewDevice.Group = DeviceGroup.System;
+            NewDevice.Class = DeviceClass.IO;
+            NewDevice.SubClass = DeviceSubClass.Port;
+
+            NewDevice.Name = "IOPort";
+
+            NewDevice.Info = new uint[16];
+            NewDevice.Info[0] = (uint)Serial.Serial.COMPorts.COM1;
+
+            NewDevice.Claimed = true;
+            NewDevice.OwnerProcessId = ProcessManager.KernelProcess.Id;
+
+            Devices.Add(NewDevice);
         }
 
         public static void InitForProcess()
@@ -351,7 +367,7 @@ namespace Kernel.Devices
             {
                 Device aDevice = (Device)Devices[i];
                 DeviceDescriptor* TheDescriptor = DeviceList + pos++;
-                aDevice.FillDeviceDescriptor(TheDescriptor, true);
+                aDevice.FillDeviceDescriptor(TheDescriptor, aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id);
             }
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -458,6 +474,29 @@ namespace Kernel.Devices
                     return aDevice;
                 }
             }
+
+            if (Id > 0 && Id <= 0xFFFF)
+            {
+                // Allocate I/O Port
+                Device NewDevice = new Device();
+                NewDevice.Id = Id;
+                NewDevice.Group = DeviceGroup.System;
+                NewDevice.Class = DeviceClass.IO;
+                NewDevice.SubClass = DeviceSubClass.Port;
+
+                NewDevice.Name = "IOPort";
+
+                NewDevice.Info = new uint[16];
+                NewDevice.Info[0] = (uint)(Id - 1);
+
+                NewDevice.Claimed = false;
+                NewDevice.OwnerProcessId = 0;
+
+                Devices.Add(NewDevice);
+
+                return NewDevice;
+            }
+
             return null;
         }
 
