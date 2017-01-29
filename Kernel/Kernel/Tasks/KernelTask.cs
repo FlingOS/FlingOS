@@ -311,11 +311,13 @@ namespace Kernel.Tasks
                     BasicConsole.WriteLine("Waiting on deferred syscalls thread...");
                     SystemCalls.SleepThread(50);
                 }
-                
+
+                BasicConsole.WriteLine(" > Initialising device manager...");
+                DeviceManager.Init();
+
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false, null);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
-
 
                 BasicConsole.WriteLine(" > Setting up VGA...");
                 VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
@@ -327,11 +329,7 @@ namespace Kernel.Tasks
                 {
                     BasicConsole.WriteLine(" > Failed to start test thread.");
                 }
-
-
-                BasicConsole.WriteLine(" > Initialising device manager...");
-                DeviceManager.Init();
-
+                
 #if DEBUG
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
                 //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");

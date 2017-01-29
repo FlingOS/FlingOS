@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interrupts.cs" />
+    <Compile Include="IOPort.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="ProcessManager.cs" />
     <Compile Include="Scheduler.cs" />
@@ -104,10 +105,6 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.IO\Kernel.IO.csproj">
-      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.IO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kernel.VirtualMemory\Kernel.VirtualMemory.csproj">
       <Project>{2f9d1b2a-6cc2-45e2-bd36-bdf7ab8626b2}</Project>
       <Name>Kernel.VirtualMemory</Name>
@@ -115,6 +112,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ASM\Interrupts\Interrupts.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\IO\IOPort\Read.x86_32.asm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ASM\IO\IOPort\Write.x86_32.asm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ASM\Processes\Scheduler.x86_32.asm">

@@ -50,14 +50,22 @@ namespace Kernel.Devices
         /// </remarks>
         private static List Devices;
 
+        private static bool Initialised = false;
+
         public static void Init()
         {
             IdGenerator = 1;
             Devices = new List(20);
+            Initialised = true;
         }
 
         public static SystemCallResults RegisterDevice(Device TheDevice)
         {
+            if(!Initialised)
+            {
+                return SystemCallResults.Unhandled;
+            }
+
             SystemCallResults result = SystemCallResults.Fail;
             DeviceDescriptor* descriptor =
                 (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : Register Device");

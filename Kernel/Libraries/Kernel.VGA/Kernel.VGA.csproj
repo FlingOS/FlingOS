@@ -126,10 +126,6 @@
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.IO\Kernel.IO.csproj">
-      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.IO</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ASM\Fonts\Jupitor.x86.asm">

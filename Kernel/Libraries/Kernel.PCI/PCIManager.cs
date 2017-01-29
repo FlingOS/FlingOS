@@ -32,7 +32,6 @@
 using Drivers.Compiler.Attributes;
 using Kernel.Devices;
 using Kernel.Framework.Collections;
-using Kernel.IO;
 
 namespace Kernel.PCI
 {

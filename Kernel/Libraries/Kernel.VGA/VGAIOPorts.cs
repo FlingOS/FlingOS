@@ -27,7 +27,7 @@
 #endregion
 
 using Kernel.Framework;
-using Kernel.IO;
+using Kernel.Devices;
 
 namespace Kernel.VGA
 {
