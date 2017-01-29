@@ -28,6 +28,7 @@
 
 using Kernel.Framework;
 using Kernel.Framework.Collections;
+using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
 using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.Multiprocessing;
@@ -51,6 +52,12 @@ namespace Kernel.Devices
         private static List Devices;
 
         private static bool Initialised = false;
+        private static bool ProcessInit = false;
+
+        public static bool Ready
+        {
+            get { return ProcessInit; }
+        }
 
         public static void Init()
         {
@@ -59,11 +66,16 @@ namespace Kernel.Devices
             Initialised = true;
         }
 
+        public static void InitForProcess()
+        {
+            ProcessInit = true;
+        }
+
         public static SystemCallResults RegisterDevice(Device TheDevice)
         {
-            if(!Initialised)
+            if (!ProcessInit)
             {
-                return SystemCallResults.Unhandled;
+                ExceptionMethods.Throw(new NotSupportedException("RegisterDevice called without initialising the Device Manager for the current process."));
             }
 
             SystemCallResults result = SystemCallResults.Fail;
@@ -91,6 +103,11 @@ namespace Kernel.Devices
 
         public static int GetNumDevices()
         {
+            if (!ProcessInit)
+            {
+                ExceptionMethods.Throw(new NotSupportedException("GetNumDevices called without initialising the Device Manager for the current process."));
+            }
+
             int result;
             if (SystemCalls.GetNumDevices(out result) != SystemCallResults.OK)
             {
@@ -101,6 +118,11 @@ namespace Kernel.Devices
 
         public static List GetDeviceList()
         {
+            if (!ProcessInit)
+            {
+                ExceptionMethods.Throw(new NotSupportedException("GetDeviceList called without initialising the Device Manager for the current process."));
+            }
+
             List result = null;
 
             int NumDevices = GetNumDevices();
@@ -154,6 +176,11 @@ namespace Kernel.Devices
 
         public static bool FillDeviceInfo(Device TheDevice)
         {
+            if (!ProcessInit)
+            {
+                ExceptionMethods.Throw(new NotSupportedException("FillDeviceInfo called without initialising the Device Manager for the current process."));
+            }
+
             bool result = false;
             DeviceDescriptor* descriptor =
                 (DeviceDescriptor*)Heap.AllocZeroed((uint)sizeof(DeviceDescriptor), "DeviceManager : FillDeviceInfo");
@@ -183,11 +210,21 @@ namespace Kernel.Devices
 
         public static bool ClaimDevice(Device TheDevice)
         {
+            if (!ProcessInit)
+            {
+                ExceptionMethods.Throw(new NotSupportedException("ClaimDevice called without initialising the Device Manager for the current process."));
+            }
+
             return SystemCalls.ClaimDevice(TheDevice.Id) == SystemCallResults.OK;
         }
 
         public static bool ReleaseDevice(Device TheDevice)
         {
+            if (!ProcessInit)
+            {
+                ExceptionMethods.Throw(new NotSupportedException("ReleaseDevice called without initialising the Device Manager for the current process."));
+            }
+
             return SystemCalls.ReleaseDevice(TheDevice.Id) == SystemCallResults.OK;
         }
 
@@ -195,6 +232,12 @@ namespace Kernel.Devices
         public static SystemCallResults RegisterDevice(DeviceDescriptor* TheDescriptor, out ulong DeviceId,
             Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                DeviceId = 0;
+                return SystemCallResults.Unhandled;
+            }
+
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
             Device NewDevice = new Device();
@@ -256,6 +299,11 @@ namespace Kernel.Devices
 
         public static SystemCallResults DeregisterDevice(ulong DeviceId, Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                return SystemCallResults.Unhandled;
+            }
+
             Device TheDevice = GetDevice(DeviceId);
 
             if (TheDevice == null)
@@ -278,6 +326,12 @@ namespace Kernel.Devices
 
         public static SystemCallResults GetNumDevices(out int NumDevices, Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                NumDevices = 0;
+                return SystemCallResults.Unhandled;
+            }
+
             NumDevices = Devices.Count;
             return SystemCallResults.OK;
         }
@@ -285,6 +339,11 @@ namespace Kernel.Devices
         public static SystemCallResults GetDeviceList(DeviceDescriptor* DeviceList, int MaxDescriptors,
             Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                return SystemCallResults.Unhandled;
+            }
+
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
             int pos = 0;
@@ -292,8 +351,7 @@ namespace Kernel.Devices
             {
                 Device aDevice = (Device)Devices[i];
                 DeviceDescriptor* TheDescriptor = DeviceList + pos++;
-                aDevice.FillDeviceDescriptor(TheDescriptor,
-                    aDevice.Claimed && aDevice.OwnerProcessId == CallerProcess.Id);
+                aDevice.FillDeviceDescriptor(TheDescriptor, true);
             }
 
             ProcessManager.DisableKernelAccessToProcessMemory(CallerProcess);
@@ -304,6 +362,11 @@ namespace Kernel.Devices
         public static SystemCallResults GetDeviceInfo(ulong DeviceId, DeviceDescriptor* TheDescriptor,
             Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                return SystemCallResults.Unhandled;
+            }
+
             ProcessManager.EnableKernelAccessToProcessMemory(CallerProcess);
 
             Device TheDevice = GetDevice(DeviceId);
@@ -330,6 +393,11 @@ namespace Kernel.Devices
 
         public static SystemCallResults ClaimDevice(ulong DeviceId, Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                return SystemCallResults.Unhandled;
+            }
+
             Device TheDevice = GetDevice(DeviceId);
 
             if (TheDevice == null)
@@ -349,6 +417,11 @@ namespace Kernel.Devices
 
         public static SystemCallResults ReleaseDevice(ulong DeviceId, Process CallerProcess)
         {
+            if (!Initialised)
+            {
+                return SystemCallResults.Unhandled;
+            }
+
             Device TheDevice = GetDevice(DeviceId);
 
             if (TheDevice == null)
@@ -372,6 +445,11 @@ namespace Kernel.Devices
 
         public static Device GetDevice(ulong Id)
         {
+            if (!Initialised)
+            {
+                return null;
+            }
+
             for (int i = 0; i < Devices.Count; i++)
             {
                 Device aDevice = (Device)Devices[i];

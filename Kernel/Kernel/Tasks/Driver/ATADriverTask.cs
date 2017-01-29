@@ -30,6 +30,8 @@ namespace Kernel.Tasks.Driver
 
                 BasicConsole.WriteLine("ATA Driver > Executing.");
 
+                DeviceManager.InitForProcess();
+
                 try
                 {
                     BasicConsole.WriteLine("ATA Driver > Initialising ATA Manager...");

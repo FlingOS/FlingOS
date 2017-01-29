@@ -314,10 +314,14 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine(" > Initialising device manager...");
                 DeviceManager.Init();
-
+                DeviceManager.InitForProcess();
+                
                 BasicConsole.WriteLine(" > Starting Idle process...");
                 Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false, null);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
+
+                BasicConsole.WriteLine(" > Registering PIT device...");
+                DeviceManager.RegisterDevice(PIT.ThePIT);
 
                 BasicConsole.WriteLine(" > Setting up VGA...");
                 VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);

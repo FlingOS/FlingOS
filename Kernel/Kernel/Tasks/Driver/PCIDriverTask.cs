@@ -1,4 +1,5 @@
 ﻿using Kernel.Consoles;
+using Kernel.Devices;
 using Kernel.PCI;
 
 namespace Kernel.Tasks.Driver
@@ -22,6 +23,8 @@ namespace Kernel.Tasks.Driver
                 console.Connect();
 
                 BasicConsole.WriteLine("PCI Driver > Executing.");
+
+                DeviceManager.InitForProcess();
 
                 try
                 {

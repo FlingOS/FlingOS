@@ -182,6 +182,10 @@ namespace Kernel.FileSystems
             for (int j = 0; j < MappingPrefixes.Length; j++)
             {
                 BasicConsole.Write(MappingPrefixes[j]);
+                if (j < MappingPrefixes.Length - 1)
+                {
+                    BasicConsole.Write(" ");
+                }
             }
             BasicConsole.WriteLine();
         }

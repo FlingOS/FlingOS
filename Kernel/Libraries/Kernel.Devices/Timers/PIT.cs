@@ -630,7 +630,6 @@ namespace Kernel.Devices.Timers
             if (ThePIT == null)
             {
                 ThePIT = new PIT();
-                DeviceManager.RegisterDevice(ThePIT);
             }
             ThePIT.Enable();
         }

@@ -35,6 +35,8 @@ namespace Kernel.Tasks.Driver
 
                 BasicConsole.WriteLine("USB Driver > Executing.");
 
+                DeviceManager.InitForProcess();
+
                 try
                 {
                     BasicConsole.WriteLine("USB Driver > Initialising PCI Manager...");
