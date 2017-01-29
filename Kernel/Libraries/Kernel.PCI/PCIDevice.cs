@@ -701,8 +701,11 @@ namespace Kernel.PCI
         public void WriteRegister8(byte aRegister, byte value)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
+            uint xValue = ReadRegister32((byte)(aRegister & 0xFC));
+            int regOffsetBits = aRegister % 4 * 8;
+            xValue = (xValue & ~(0xFFu << regOffsetBits)) | ((uint)value << regOffsetBits);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            IOPort.doWrite_Byte((ushort)(PCI_IO.ConfigDataPort.Port + (aRegister & 0x03)), value);
+            PCI_IO.ConfigDataPort.Write_UInt32(xValue);
         }
 
         /// <summary>
@@ -727,8 +730,11 @@ namespace Kernel.PCI
         public void WriteRegister16(byte aRegister, ushort value)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
+            uint xValue = ReadRegister32((byte)(aRegister & 0xFC));
+            int regOffsetBits = aRegister % 4 * 8;
+            xValue = (xValue & ~(0xFFFFu << regOffsetBits)) | ((uint)value << regOffsetBits);
             PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            PCI_IO.ConfigDataPort.Write_UInt16(value);
+            PCI_IO.ConfigDataPort.Write_UInt32(xValue);
         }
 
         /// <summary>
