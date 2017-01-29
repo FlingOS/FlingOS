@@ -56,7 +56,7 @@ namespace Kernel.VGA
         public readonly IOPort DACIndexForReadData = new IOPort(0x3C7);
         public readonly IOPort DACIndexForWriteData = new IOPort(0x3C8);
         public readonly IOPort DACData = new IOPort(0x3C9);
-        public readonly IOPort DACState = new IOPort(0x3C7);
+        public readonly IOPort DACState;
 
         public readonly IOPort FeatureControlRead = new IOPort(0x3CA);
         public readonly IOPort FeatureControlWriteColour = new IOPort(0x3DA);
@@ -67,8 +67,16 @@ namespace Kernel.VGA
         public readonly IOPort CRTControllerDataColour = new IOPort(0x3D5);
         public readonly IOPort CRTControllerDataMono = new IOPort(0x3B5);
 
-        public readonly IOPort InputStatus0 = new IOPort(0x3C2);
-        public readonly IOPort InputStatus1Colour = new IOPort(0x3DA); // If Bit 0 (Mono mode) of MiscellaneousOutput set, this is 0x3BA
-        public readonly IOPort InputStatus1Mono = new IOPort(0x3BA);
+        public readonly IOPort InputStatus0;
+        public readonly IOPort InputStatus1Colour; // If Bit 0 (Mono mode) of MiscellaneousOutput set, this is 0x3BA
+        public readonly IOPort InputStatus1Mono;
+
+        public VGAIOPorts()
+        {
+            DACState = DACIndexForReadData;
+            InputStatus0 = MiscellaneousOutputWrite;
+            InputStatus1Colour = FeatureControlWriteColour;
+            InputStatus1Mono = FeatureControlWriteMono;
+        }
     }
 }
