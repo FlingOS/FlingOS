@@ -118,7 +118,7 @@ namespace Kernel.ATA
             ushort BAR1Address = (ushort)(IsSecondary ? 0x0374 : 0x03F4);
             Data = new IOPort(BAR0Address);
             Error = new IOPort(BAR0Address, 1);
-            Features = new IOPort(BAR0Address, 1);
+            Features = Error;
             SectorCount = new IOPort(BAR0Address, 2);
             //Logical block address
             LBA0 = new IOPort(BAR0Address, 3); //Lo-bits
@@ -128,7 +128,7 @@ namespace Kernel.ATA
             //Write - command
             Command = new IOPort(BAR0Address, 7);
             //Read - status
-            Status = new IOPort(BAR0Address, 7);
+            Status = Command;
 
             Control = new IOPort(BAR1Address, 2);
         }
