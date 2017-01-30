@@ -138,7 +138,7 @@ namespace Kernel.USB.HCIs
         protected IOPort USBINTR;
         protected IOPort USBSTS;
 
-        public UHCI(PCIDeviceNormal aPCIDevice)
+        public UHCI(PCIVirtualNormalDevice aPCIDevice)
             : base(aPCIDevice, "UHCI USB Controller")
         {
 #if UHCI_TRACE

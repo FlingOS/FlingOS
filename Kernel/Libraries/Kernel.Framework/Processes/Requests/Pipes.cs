@@ -49,7 +49,8 @@ namespace Kernel.Framework.Processes.Requests.Pipes
         /// </summary>
         Standard,
         Storage,
-        File
+        File,
+        PCI
     }
 
     /// <summary>
@@ -71,7 +72,9 @@ namespace Kernel.Framework.Processes.Requests.Pipes
         Storage_Data_Out,
         File_Command,
         File_Data_In,
-        File_Data_Out
+        File_Data_Out,
+        PCI_PortAccess_In,
+        PCI_PortAccess_Out
     }
 
     /// <summary>

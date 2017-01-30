@@ -39,9 +39,6 @@ namespace Kernel.Tasks.Driver
 
                 try
                 {
-                    BasicConsole.WriteLine("USB Driver > Initialising PCI Manager...");
-                    PCIManager.Init();
-
                     BasicConsole.WriteLine("USB Driver > Initialising USB Manager...");
                     USBManager.Init();
 
@@ -54,8 +51,16 @@ namespace Kernel.Tasks.Driver
 
                     while (!Terminating)
                     {
-                        BasicConsole.WriteLine("USB Driver > Initialising USB HCIs...");
-                        USBManager.InitHCIs();
+                        try
+                        {
+                            BasicConsole.WriteLine("USB Driver > Initialising USB HCIs...");
+                            USBManager.InitHCIs();
+                        }
+                        catch
+                        {
+                            BasicConsole.WriteLine("USB Driver > Error initialising HCIs!");
+                            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                        }
 
                         BasicConsole.WriteLine("USB Driver > Outputting USB info...");
                         OutputUSB();

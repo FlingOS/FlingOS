@@ -57,7 +57,7 @@ namespace Kernel.USB.HCIs
         /// <summary>
         ///     The underlying PCI device for the host controller.
         /// </summary>
-        protected PCIDeviceNormal pciDevice;
+        protected PCIVirtualNormalDevice pciDevice;
 
         /// <summary>
         ///     The number of root ports read from the host controller information.
@@ -71,7 +71,7 @@ namespace Kernel.USB.HCIs
 
         public HCIStatus Status { get; protected set; }
 
-        public PCIDeviceNormal ThePCIDevice
+        public PCIVirtualNormalDevice ThePCIDevice
         {
             get { return pciDevice; }
         }
@@ -80,15 +80,15 @@ namespace Kernel.USB.HCIs
         ///     Initializes a new generic host controller interface using the specified PCI device.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the HCI device.</param>
-        public HCI(PCIDeviceNormal aPCIDevice, string name)
+        public HCI(PCIVirtualNormalDevice aPCIDevice, string name)
             : base(DeviceGroup.USB, DeviceClass.Controller, DeviceSubClass.USB, name, new uint[3], true)
         {
             Status = HCIStatus.Unset;
 
             pciDevice = aPCIDevice;
-            Info[0] = pciDevice.Info[0];
-            Info[1] = pciDevice.Info[1];
-            Info[2] = pciDevice.Info[2];
+            Info[0] = pciDevice.bus;
+            Info[1] = pciDevice.slot;
+            Info[2] = pciDevice.function;
 
             for (byte i = 0; i < RootPortCount; i++)
             {

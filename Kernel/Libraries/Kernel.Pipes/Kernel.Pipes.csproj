@@ -100,6 +100,8 @@
     <Compile Include="File\FileDataOutpoint.cs" />
     <Compile Include="File\FilePipeCommand.cs" />
     <Compile Include="File\FilePipeDataHeader.cs" />
+    <Compile Include="PCI\PCIPortAccessInpoint.cs" />
+    <Compile Include="PCI\PCIPortAccessOutpoint.cs" />
     <Compile Include="Pipe.cs" />
     <Compile Include="PipeInpoint.cs" />
     <Compile Include="PipeManager.cs" />

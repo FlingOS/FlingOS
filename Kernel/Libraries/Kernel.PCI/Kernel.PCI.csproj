@@ -84,12 +84,15 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PCIAccessor.cs" />
     <Compile Include="PCIBaseAddress.cs" />
     <Compile Include="PCIDevice.cs" />
     <Compile Include="PCIDeviceBridge.cs" />
     <Compile Include="PCIDeviceCardbus.cs" />
     <Compile Include="PCIDeviceNormal.cs" />
     <Compile Include="PCIManager.cs" />
+    <Compile Include="PCIVirtualDevice.cs" />
+    <Compile Include="PCIVirtualNormalDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +107,10 @@
     <ProjectReference Include="..\Kernel.Devices\Kernel.Devices.csproj">
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kernel.Pipes\Kernel.Pipes.csproj">
+      <Project>{f64a12df-0514-4f93-90c7-5e86b0a35f86}</Project>
+      <Name>Kernel.Pipes</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
