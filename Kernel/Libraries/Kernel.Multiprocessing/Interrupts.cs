@@ -173,6 +173,9 @@ namespace Kernel.Interrupts
                 mask &= bitMask;
                 //Port 0xA1 for slave PIC
                 IOPort.doWrite_Byte(0xA1, mask);
+                
+                // Enable IRQ2 to enable interrupts from slave PIC
+                EnableIRQ(2);
             }
             //Else we send the info to the master PIC
             else
@@ -202,6 +205,12 @@ namespace Kernel.Interrupts
                 byte bitMask = (byte)(1u << num);
                 mask |= bitMask;
                 IOPort.doWrite_Byte(0xA1, mask);
+
+                if (mask == 0)
+                {
+                    // Disable IRQ2 to disable interrupts from slave PIC
+                    DisableIRQ(2);
+                }
             }
             else
             {
