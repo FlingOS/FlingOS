@@ -206,7 +206,7 @@ namespace Kernel.Interrupts
                 mask |= bitMask;
                 IOPort.doWrite_Byte(0xA1, mask);
 
-                if (mask == 0)
+                if (mask == 0xFF)
                 {
                     // Disable IRQ2 to disable interrupts from slave PIC
                     DisableIRQ(2);
