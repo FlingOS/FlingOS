@@ -122,9 +122,34 @@ namespace Kernel.PCI
             ClassCode = ReadRegister8(0x0B);
             HeaderType = (PCIDevice.PCIHeaderType)ReadRegister8(0x0E);
             
-            BasicConsole.WriteLine((String)"PCI Virtual Device: Header type: " + (byte)HeaderType);
-            BasicConsole.WriteLine((String)"PCI Virtual Device:  Class code: " + ClassCode);
-            BasicConsole.WriteLine((String)"PCI Virtual Device:   Sub class: " + Subclass);
+            //BasicConsole.WriteLine((String)"PCI Virtual Device: Header type: " + (byte)HeaderType);
+            //BasicConsole.WriteLine((String)"PCI Virtual Device:  Class code: " + ClassCode);
+            //BasicConsole.WriteLine((String)"PCI Virtual Device:   Sub class: " + Subclass);
+        }
+
+        /// <summary>
+        ///     Initialises a new, generic, virtual PCI device.
+        /// </summary>
+        /// <param name="bus">The PCI bus number.</param>
+        /// <param name="slot">The PCI slot number.</param>
+        /// <param name="function">The PCI function number.</param>
+        [NoDebug]
+        public PCIVirtualDevice(uint bus, uint slot, uint function,
+            PCIDevice.PCIHeaderType headertype, byte classcode, byte subclass)
+        {
+            PCIAccessor.Init();
+
+            this.bus = bus;
+            this.slot = slot;
+            this.function = function;
+
+            Subclass = subclass;
+            ClassCode = classcode;
+            HeaderType = headertype;
+
+            //BasicConsole.WriteLine((String)"PCI Virtual Device: Header type: " + (byte)HeaderType);
+            //BasicConsole.WriteLine((String)"PCI Virtual Device:  Class code: " + ClassCode);
+            //BasicConsole.WriteLine((String)"PCI Virtual Device:   Sub class: " + Subclass);
         }
 
         public void LoadRemainingRegisters()

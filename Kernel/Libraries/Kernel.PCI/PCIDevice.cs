@@ -355,7 +355,7 @@ namespace Kernel.PCI
         /// <param name="name">The human-readable name of the device.</param>
         [NoDebug]
         public PCIDevice(uint bus, uint slot, uint function, String name)
-            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3] { bus, slot, function }, false)
+            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[6], false)
         {
             this.bus = bus;
             this.slot = slot;
@@ -388,6 +388,13 @@ namespace Kernel.PCI
             InterruptPIN = (PCIInterruptPIN)ReadRegister8(0x3D);
 
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
+
+            Info[0] = bus;
+            Info[1] = slot;
+            Info[2] = function;
+            Info[3] = (byte)HeaderType;
+            Info[4] = ClassCode;
+            Info[5] = Subclass;
         }
 
         /// <summary>

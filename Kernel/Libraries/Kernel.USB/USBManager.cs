@@ -127,7 +127,7 @@ namespace Kernel.USB
             }
 
             List AllDevices = DeviceManager.GetDeviceList();
-            BasicConsole.WriteLine((String)"InitHCIs: Device count: " + AllDevices.Count);
+            //BasicConsole.WriteLine((String)"InitHCIs: Device count: " + AllDevices.Count);
             List HCIPCIDevices = new List();
             for (int i = 0; i < AllDevices.Count; i++)
             {
@@ -138,16 +138,16 @@ namespace Kernel.USB
 
                     if (aDevice.Class == DeviceClass.Generic && aDevice.SubClass == DeviceSubClass.PCI)
                     {
-                        BasicConsole.WriteLine("USBManager: Claiming potential device...");
+                        //BasicConsole.WriteLine("USBManager: Claiming potential device...");
                         if (DeviceManager.ClaimDevice(aDevice))
                         {
                             bool release = true;
 
-                            BasicConsole.WriteLine("USBManager: Filling device info...");
+                            //BasicConsole.WriteLine("USBManager: Filling device info...");
                             if (DeviceManager.FillDeviceInfo(aDevice))
                             {
-                                BasicConsole.WriteLine("USBManager: Creating PCI Virtual Device...");
-                                PCIVirtualDevice pciDevice = new PCIVirtualDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2]);
+                                //BasicConsole.WriteLine("USBManager: Creating PCI Virtual Device...");
+                                PCIVirtualDevice pciDevice = new PCIVirtualDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2], (PCIDevice.PCIHeaderType)aDevice.Info[3], (byte)aDevice.Info[4], (byte)aDevice.Info[5]);
                                 
                                 if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Normal)
                                 {
@@ -157,7 +157,7 @@ namespace Kernel.USB
                                         //0x03 = USB controllers
                                         if (pciDevice.Subclass == 0x03)
                                         {
-                                            pciDevice = new PCIVirtualNormalDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2]);
+                                            pciDevice = new PCIVirtualNormalDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2], (PCIDevice.PCIHeaderType)aDevice.Info[3], (byte)aDevice.Info[4], (byte)aDevice.Info[5]);
 
                                             pciDevice.LoadRemainingRegisters();
                                             HCIPCIDevices.Add(pciDevice);
@@ -173,7 +173,7 @@ namespace Kernel.USB
 
                             if (release)
                             {
-                                BasicConsole.WriteLine("USBManager: Releasing device.");
+                                //BasicConsole.WriteLine("USBManager: Releasing device.");
                                 if (!DeviceManager.ReleaseDevice(aDevice))
                                 {
                                     BasicConsole.WriteLine("Error! USBManager couldn't release PCI device!");

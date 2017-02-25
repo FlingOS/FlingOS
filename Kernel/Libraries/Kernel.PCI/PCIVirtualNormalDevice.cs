@@ -7,7 +7,7 @@ namespace Kernel.PCI
         /// <summary>
         ///     The base address of the PCI device.
         /// </summary>
-        public PCIBaseAddress[] BaseAddresses { get; }
+        public PCIBaseAddress[] BaseAddresses { get; private set; }
 
         /// <summary>
         ///     The CardbusCISPointer of the device.
@@ -53,6 +53,24 @@ namespace Kernel.PCI
         [NoDebug]
         public PCIVirtualNormalDevice(uint bus, uint slot, uint function)
             : base(bus, slot, function)
+        {
+            Init();
+        }
+
+        /// <summary>
+        ///     Initialises a new PCIDeviceNormal instance.
+        /// </summary>
+        /// <param name="bus">The PCI device's Bus number.</param>
+        /// <param name="slot">The PCI device's Slot number.</param>
+        /// <param name="function">The PCI device's Function number.</param>
+        public PCIVirtualNormalDevice(uint bus, uint slot, uint function,
+            PCIDevice.PCIHeaderType headertype, byte classcode, byte subclass)
+            : base(bus, slot, function, headertype, classcode, subclass)
+        {
+            Init();
+        }
+
+        private void Init()
         {
             BaseAddresses = new PCIBaseAddress[6];
             BaseAddresses[0] = new PCIBaseAddress(ReadRegister32(0x10), GetSize(0));
