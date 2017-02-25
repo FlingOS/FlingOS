@@ -218,7 +218,20 @@ namespace Kernel.FileSystems
                 BasicConsole.WriteLine();
             }
         }
-        
+
+        //TODO:
+        //  - Create Directory
+        //  - Delete Directory
+        //  - File Info
+        //  - Create File
+        //  - Delete File
+        //  - Open File
+        //  - Close File
+        //  - Read File
+        //  - Seek File
+        //  - Write File
+        //  - Resize File
+
         #endregion
 
         #region Static
