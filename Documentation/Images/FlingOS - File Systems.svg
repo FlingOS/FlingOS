@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1040.0" height="800.0" viewBox="10.0 -10.0 1040.0 800.0" version="1.1">
+<rect x="10.0" y="-10.0" width="1040.0" height="800.0" fill="rgb(255,255,255)"/>
+<polygon id="s198140801" points="380.00003,20.0 659.9999,20.0 660.0,639.99994 380.00015,639.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t198140801">
+<text x="416.5" y="45.075195" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="207.0">File System Driver</text>
+</g>
+</polygon>
+<polygon id="s105308858" points="820.0001,500.0 1019.99963,500.0 1020.0001,760.0 820.0,759.9995 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t105308858">
+<text x="858.50006" y="525.0752" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="123.0">Disk Driver</text>
+</g>
+</polygon>
+<polygon id="s24603948" points="40.000008,160.0 279.99997,160.0 280.00003,279.99997 40.000004,280.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t24603948">
+<text x="123.000015" y="185.0752" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="74.0">Kernel</text>
+</g>
+</polygon>
+<polygon id="s20043196" points="60.000004,479.99997 259.9999,479.99997 260.00003,619.99976 60.000008,620.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0">
+<g id="t20043196">
+<text x="96.000015" y="505.0752" font-family="Helvetica" font-weight="bold" fill="rgb(0,0,0)" font-size="25" textLength="128.0">Application</text>
+</g>
+</polygon>
+<g id="s259513235">
+<polygon id="s259513235" points="59.999996,200.0 259.99997,200.0 259.99997,260.0 59.999996,260.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t259513235">
+<text x="94.999985" y="233.87207" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="130.0">File System Accessor</text>
+</g>
+</g>
+<g id="s13518226">
+<polygon id="s13518226" points="420.00003,199.99998 620.0,199.99998 619.99976,259.99997 420.00003,260.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t13518226">
+<text x="441.0" y="233.87207" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="158.0">FileSystemManagerClient</text>
+</g>
+</g>
+<g id="s32656227">
+<polygon id="s32656227" points="420.00003,80.0 620.0001,80.0 620.0,139.99995 420.00003,140.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t32656227">
+<text x="458.50006" y="113.87207" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="123.0">FileSystemManager</text>
+</g>
+</g>
+<g id="s228328478">
+<polygon id="s228328478" points="440.0,320.0 600.0001,320.0 599.99963,380.0 440.0,380.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t228328478">
+<text x="485.00006" y="353.87207" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="70.0">File System</text>
+</g>
+</g>
+<g id="s31659263">
+<polygon id="s31659263" points="460.0,440.0 580.0,440.0 579.99976,500.0 460.0,500.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t31659263">
+<text x="493.0" y="473.87207" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="54.0">Partition</text>
+</g>
+</g>
+<g id="s35788628">
+<polygon id="s35788628" points="439.99997,560.0 599.99976,560.0 599.99976,620.0 439.99997,620.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t35788628">
+<text x="451.99988" y="593.8721" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="136.0">StorageControllerDisk</text>
+</g>
+</g>
+<g id="s50919079">
+<polygon id="s50919079" points="840.0,560.0 1000.0,560.0 999.9998,619.9999 840.0,620.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t50919079">
+<text x="865.0" y="593.8721" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="110.0">StorageController</text>
+</g>
+</g>
+<g id="s30723652">
+<polygon id="s30723652" points="860.0,679.9999 980.0003,679.9999 980.0004,739.99976 860.0,739.99976 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t30723652">
+<text x="874.00024" y="713.8719" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="92.0">Disks / Devices</text>
+</g>
+</g>
+<g id="s18612643">
+<polygon id="s18612643" points="79.99998,539.9999 240.0,539.9999 239.99994,599.99976 79.99998,599.99976 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t18612643">
+<text x="98.0" y="573.8719" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="124.0">FileSystemAccessor</text>
+</g>
+</g>
+<g id="la173003468">
+<path id="s173003468" d="M 520.0,139.99997 520.0,199.99998 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s55571386" d="M 512.2694,190.82188 520.0,199.99998 527.7306,190.82188 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la241490982">
+<path id="s241490982" d="M 259.99997,230.0 420.00003,230.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0"/>
+<path id="s19505771" d="M 269.17807,222.2694 259.99997,230.0 269.17807,237.7306 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s133755336" d="M 410.82193,237.7306 420.00003,230.0 410.82193,222.26938 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t241490982">
+<text x="271.0" y="220.70996" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="138.0">Stat + Pipe File Access</text>
+</g>
+</g>
+<g id="la142511264">
+<path id="s142511264" d="M 519.9999,260.0 520.00006,320.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s123343457" d="M 527.7305,269.17807 519.9999,260.0 512.2693,269.17813 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s184127878" d="M 512.2694,310.82193 520.00006,320.0 527.73065,310.82187 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la8048729">
+<path id="s8048729" d="M 519.9998,380.0 520.0,440.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s171833927" d="M 527.73047,389.17807 519.9998,380.0 512.2692,389.17813 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s143614580" d="M 512.26935,430.82193 520.0,440.0 527.7306,430.82187 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la201267477">
+<path id="s201267477" d="M 519.9999,500.0 519.9999,560.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s247755677" d="M 527.73047,509.1781 519.9999,500.0 512.2693,509.1781 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s223166482" d="M 512.2693,550.8219 519.9999,560.0 527.73047,550.8219 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la169558886">
+<path id="s169558886" d="M 599.99976,590.0 840.0,590.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0"/>
+<path id="s55964643" d="M 609.17786,582.2694 599.99976,590.0 609.17786,597.7306 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s8008160" d="M 830.8219,597.7306 840.0,590.0 830.8219,582.2694 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t169558886">
+<text x="676.9999" y="580.70996" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="86.0">Storage Pipes</text>
+</g>
+</g>
+<g id="la8406058">
+<path id="s8406058" d="M 919.9999,619.9999 920.0001,679.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s41528473" d="M 927.7305,629.178 919.9999,619.9999 912.2693,629.17804 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s129715038" d="M 912.2695,670.8218 920.0001,679.9999 927.7307,670.8217 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+</g>
+<g id="la124354663">
+<path id="s124354663" d="M 239.99998,549.9998 420.00003,260.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0"/>
+<path id="s74050367" d="M 238.27194,538.1249 239.99998,549.9998 251.40842,546.27856 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<path id="s142642188" d="M 421.72806,271.87494 420.00003,260.0 408.59158,263.72125 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t124354663">
+<text x="281.0" y="404.99988" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="98.0">Pipe File Access</text>
+</g>
+</g>
+<g id="la229484283">
+<path id="s229484283" d=" M239.99998,200.0  C239.15651,153.83643 348.4233,71.00778 420.00003,110.0 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0"/>
+<path id="s112163157" d="M 232.103,190.96465 239.99998,200.0 247.56163,190.6822 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t229484283">
+<text x="248.84244" y="123.066574" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="108.0">InitFS system call</text>
+</g>
+</g>
+<g id="la181398738">
+<path id="s181398738" d="M 159.99998,260.0 160.0,539.9999 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)" stroke-dasharray="7.0 7.0"/>
+<path id="s208453482" d="M 167.73059,269.1781 159.99998,260.0 152.26938,269.1781 " fill="none" stroke-width="2.0" stroke="rgb(0,0,0)"/>
+<g id="t181398738">
+<text x="139.0" y="381.41986" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="42.0">StatFS</text>
+<text x="137.5" y="399.99994" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="45.0">system</text>
+<text x="149.5" y="418.58002" font-family="Helvetica" fill="rgb(0,0,0)" font-size="14" textLength="21.0">call</text>
+</g>
+</g>
+</svg>
