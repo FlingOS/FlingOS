@@ -355,11 +355,11 @@ namespace Kernel.PCI
         /// <param name="name">The human-readable name of the device.</param>
         [NoDebug]
         public PCIDevice(uint bus, uint slot, uint function, String name)
-            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3], false)
+            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3] { bus, slot, function }, false)
         {
-            Info[0] = this.bus = bus;
-            Info[1] = this.slot = slot;
-            Info[2] = this.function = function;
+            this.bus = bus;
+            this.slot = slot;
+            this.function = function;
 
 #if PCI_TRACE || COMPILER_TRACE
             ushort vendorID = ReadRegister16(0x00);

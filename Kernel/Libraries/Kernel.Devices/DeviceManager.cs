@@ -104,7 +104,14 @@ namespace Kernel.Devices
 
                 ulong DeviceId;
                 result = SystemCalls.RegisterDevice(descriptor, out DeviceId);
-                TheDevice.Id = DeviceId;
+                if (result == SystemCallResults.OK)
+                {
+                    TheDevice.Id = DeviceId;
+                }
+                else
+                {
+                    BasicConsole.WriteLine("DeviceManager: Error! Failed to register device! Device Id not updated.");
+                }
             }
             finally
             {

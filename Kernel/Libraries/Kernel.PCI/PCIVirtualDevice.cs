@@ -135,6 +135,12 @@ namespace Kernel.PCI
             InterruptPIN = (PCIDevice.PCIInterruptPIN)ReadRegister8(0x3D);
 
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
+
+            BasicConsole.WriteLine((String)"PCI Virtual Device:   Vendor ID: " + VendorID);
+            BasicConsole.WriteLine((String)"PCI Virtual Device:   Device ID: " + DeviceID);
+            BasicConsole.WriteLine((String)"PCI Virtual Device:  Class code: " + ClassCode);
+            BasicConsole.WriteLine((String)"PCI Virtual Device:   Sub class: " + Subclass);
+            BasicConsole.WriteLine((String)"PCI Virtual Device: Header type: " + (byte)HeaderType);
         }
         
         /// <summary>

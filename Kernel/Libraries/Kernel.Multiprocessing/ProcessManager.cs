@@ -603,9 +603,15 @@ namespace Kernel.Multiprocessing
 
         public static bool Semaphore_Signal(int id, Process aProcess)
         {
+            //BasicConsole.WriteLine("Semaphore_Signal : Verifying...");
             if (Semaphore_VerifyOwner(id, aProcess))
             {
+                //BasicConsole.WriteLine("Semaphore_Signal : Passed verification. Signalling...");
+
                 ((Semaphore)Semaphores[id]).SignalOnBehalf();
+
+                //BasicConsole.WriteLine("Semaphore_Signal : Signalled.");
+
                 return true;
             }
             else
