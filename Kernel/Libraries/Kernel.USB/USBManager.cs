@@ -92,7 +92,7 @@ namespace Kernel.USB
 
         public static void Init()
         {
-            IgnoreUSB10and11Devices = true;
+            IgnoreUSB10and11Devices = false;
             UpdateRequired = false;
             HCIDevices = new List(3);
             Devices = new List(5);

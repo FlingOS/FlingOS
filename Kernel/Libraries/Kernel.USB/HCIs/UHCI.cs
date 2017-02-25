@@ -26,7 +26,7 @@
 
 #endregion
 
-//#define UHCI_TRACE
+#define UHCI_TRACE
 
 using System.Runtime.InteropServices;
 using Kernel.Framework;
@@ -639,7 +639,8 @@ namespace Kernel.USB.HCIs
             if ((val & UHCI_Consts.STS_USBINT) != 0)
             {
 #if UHCI_TRACE
-                BasicConsole.WriteLine(((Framework.String)"UHCI Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
+                BasicConsole.WriteLine("UHCI Frame");
+                //BasicConsole.WriteLine(((Framework.String)"UHCI Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
 #endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_USBINT); // reset interrupt
                 TransactionsCompleted++;
@@ -1247,17 +1248,17 @@ namespace Kernel.USB.HCIs
         private static void* GetPhysicalAddress(uint vAddr)
         {
             uint address = 0xFFFFFFFF;
-            BasicConsole.WriteLine("Getting physical address of: " + (String)vAddr);
+            //BasicConsole.WriteLine("Getting physical address of: " + (String)vAddr);
             SystemCallResults result = SystemCalls.GetPhysicalAddress(vAddr, out address);
             if (result != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Error! UHCI cannot get physical address.");
                 ExceptionMethods.Throw(new Exception("UHCI cannot get physical address."));
             }
-            else
-            {
-                BasicConsole.WriteLine("Physical address is: " + (String)address);
-            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("Physical address is: " + (String)address);
+            //}
             return (void*)address;
         }
     }
