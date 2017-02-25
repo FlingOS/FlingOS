@@ -36,6 +36,7 @@ using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
 using Kernel.Devices;
 using Kernel.Devices.Keyboards;
+using Kernel.Devices.Serial;
 using Kernel.Devices.Timers;
 using Kernel.FileSystems;
 using Kernel.Framework;
@@ -242,7 +243,7 @@ namespace Kernel.Tasks
 
             try
             {
-                BasicConsole.WriteLine("Initialising kernel ISRs...");
+                BasicConsole.WriteLine("> Initialising kernel ISRs...");
                 ProcessManager.CurrentProcess.ISRHandler = HandleISR;
                 ProcessManager.CurrentProcess.SwitchProcessForISRs = false;
                 ProcessManager.CurrentProcess.ISRsToHandle.Set(48);
@@ -316,6 +317,15 @@ namespace Kernel.Tasks
                 Process IdleProcess1 = ProcessManager.CreateProcess(IdleTask.Main, "Idle Task", false, null);
                 ProcessManager.RegisterProcess(IdleProcess1, Scheduler.Priority.ZeroTimed);
 
+                BasicConsole.WriteLine(" > Initialising device manager...");
+                DeviceManager.Init();
+                DeviceManager.InitForProcess();
+
+                BasicConsole.WriteLine(" > Registering PIT device...");
+                DeviceManager.RegisterDevice(PIT.ThePIT);
+
+                BasicConsole.WriteLine(" > Registering COM1 device...");
+                DeviceManager.RegisterDevice(Serial.COM1);
 
                 BasicConsole.WriteLine(" > Setting up VGA...");
                 VGA.VGA TheVGA = VGA.VGA.GetConfiguredInstance(T_80x25.Instance, Jupitor.Instance);
@@ -327,11 +337,7 @@ namespace Kernel.Tasks
                 {
                     BasicConsole.WriteLine(" > Failed to start test thread.");
                 }
-
-
-                BasicConsole.WriteLine(" > Initialising device manager...");
-                DeviceManager.Init();
-
+                
 #if DEBUG
                 //BasicConsole.WriteLine(" > Starting Debugger thread...");
                 //Debug.Debugger.MainThread = ProcessManager.CurrentProcess.CreateThread(Debug.Debugger.Main, "Debugger");
@@ -981,7 +987,7 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 else
                                 {
-                                    BasicConsole.WriteLine("First page mapped physical address: " + (Framework.String)Hardware.VirtMemManager.GetPhysicalAddress(Param2));
+                                    BasicConsole.WriteLine("First page mapped physical address: " + (String)VirtualMemoryManager.GetPhysicalAddress(Param2));
                                 }
 #endif
                             }
@@ -1172,12 +1178,29 @@ namespace Kernel.Tasks
                     // Param1: Id
                 {
                     int waitResult = ProcessManager.Semaphore_Wait((int)Param1, CallerProcess, CallerThread);
+                    if (waitResult == -1)
+                    {
+                        BasicConsole.WriteLine("Error! Wait Semaphore result == -1?!");
+                    }
                     result = waitResult == -1
                         ? SystemCallResults.Fail
                         : (waitResult == 1 ? SystemCallResults.OK : SystemCallResults.OK_NoWake);
                 }
 
                     #endregion
+
+                    break;
+                case SystemCallNumbers.SignalSemaphore:
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Signal semaphore");
+#endif
+                    // Param1: Id
+                    {
+                        bool signalResult = ProcessManager.Semaphore_Signal((int)Param1,
+                            ProcessManager.GetProcessById(CallerProcess.Id));
+                        result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
+                    }
 
                     break;
                 case SystemCallNumbers.RegisterDevice:
@@ -1581,6 +1604,11 @@ namespace Kernel.Tasks
 
             if (result == SystemCallResults.Deferred || result == SystemCallResults.Deferred_PermitActions)
             {
+                if (DeferredSyscallsInfo_Unqueued.Count == 0)
+                {
+                    BasicConsole.WriteLine("Error! Deferring system call is going to fail because there are no deferred syscall info objects left unqueued.");
+                }
+
                 //BasicConsole.WriteLine("Deferring syscall...");
                 //BasicConsole.WriteLine("Popping unqueued info object...");
                 DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
@@ -2168,12 +2196,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Signal semaphore");
 #endif
-                    // Param1: Id
-                {
-                    bool signalResult = ProcessManager.Semaphore_Signal((int)param1,
-                        ProcessManager.GetProcessById(callerProcessId));
-                    result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
-                }
+                    result = SystemCallResults.Deferred;
 
                     #endregion
 

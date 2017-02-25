@@ -109,10 +109,6 @@
       <Project>{f7de5ac3-c4ad-4240-91ce-87c1e5eb7b7e}</Project>
       <Name>Kernel.Devices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kernel.IO\Kernel.IO.csproj">
-      <Project>{9feb0b47-9730-44fa-a5cb-0e47194176f0}</Project>
-      <Name>Kernel.IO</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -115,7 +115,7 @@ namespace Kernel.Pipes
                             BasicConsole.WriteLine("BasicInPipe > CreatePipe: Failed!");
                             break;
                         case SystemCallResults.OK:
-                            BasicConsole.WriteLine("BasicInPipe > CreatePipe: Succeeded.");
+                            //BasicConsole.WriteLine("BasicInPipe > CreatePipe: Succeeded.");
                             PipeId = RequestPtr->Result.Id;
 
                             //BasicConsole.Write("BasicInPipe > CreatePipe: New pipe id = ");

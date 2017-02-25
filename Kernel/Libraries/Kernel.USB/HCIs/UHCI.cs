@@ -26,12 +26,12 @@
 
 #endregion
 
-//#define UHCI_TRACE
+#define UHCI_TRACE
 
 using System.Runtime.InteropServices;
 using Kernel.Framework;
 using Kernel.Framework.Processes;
-using Kernel.IO;
+using Kernel.Devices;
 using Kernel.PCI;
 using Kernel.Utilities;
 using Utils = Kernel.Utilities.ConstantsUtils;
@@ -138,7 +138,7 @@ namespace Kernel.USB.HCIs
         protected IOPort USBINTR;
         protected IOPort USBSTS;
 
-        public UHCI(PCIDeviceNormal aPCIDevice)
+        public UHCI(PCIVirtualNormalDevice aPCIDevice)
             : base(aPCIDevice, "UHCI USB Controller")
         {
 #if UHCI_TRACE
@@ -639,7 +639,8 @@ namespace Kernel.USB.HCIs
             if ((val & UHCI_Consts.STS_USBINT) != 0)
             {
 #if UHCI_TRACE
-                BasicConsole.WriteLine(((Framework.String)"UHCI Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
+                BasicConsole.WriteLine("UHCI Frame");
+                //BasicConsole.WriteLine(((Framework.String)"UHCI Frame: ") + FRNUM.Read_UInt16() + " - USB transaction completed");
 #endif
                 USBSTS.Write_UInt16(UHCI_Consts.STS_USBINT); // reset interrupt
                 TransactionsCompleted++;
@@ -1247,17 +1248,17 @@ namespace Kernel.USB.HCIs
         private static void* GetPhysicalAddress(uint vAddr)
         {
             uint address = 0xFFFFFFFF;
-            BasicConsole.WriteLine("Getting physical address of: " + (String)vAddr);
+            //BasicConsole.WriteLine("Getting physical address of: " + (String)vAddr);
             SystemCallResults result = SystemCalls.GetPhysicalAddress(vAddr, out address);
             if (result != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("Error! UHCI cannot get physical address.");
                 ExceptionMethods.Throw(new Exception("UHCI cannot get physical address."));
             }
-            else
-            {
-                BasicConsole.WriteLine("Physical address is: " + (String)address);
-            }
+            //else
+            //{
+            //    BasicConsole.WriteLine("Physical address is: " + (String)address);
+            //}
             return (void*)address;
         }
     }

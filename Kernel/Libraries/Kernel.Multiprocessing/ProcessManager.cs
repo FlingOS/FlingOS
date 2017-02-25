@@ -594,15 +594,29 @@ namespace Kernel.Multiprocessing
             {
                 return ((Semaphore)Semaphores[id]).WaitOnBehalf(aProcess, aThread) ? 1 : 0;
             }
+            else
+            {
+                BasicConsole.WriteLine("Error! Semaphore_VerifyOwner failed: ProcessId: " + (String)aProcess.Id + "ThreadId: " + aThread.Id + ", SemaphoreId: " + id);
+            }
             return -1;
         }
 
         public static bool Semaphore_Signal(int id, Process aProcess)
         {
+            //BasicConsole.WriteLine("Semaphore_Signal : Verifying...");
             if (Semaphore_VerifyOwner(id, aProcess))
             {
+                //BasicConsole.WriteLine("Semaphore_Signal : Passed verification. Signalling...");
+
                 ((Semaphore)Semaphores[id]).SignalOnBehalf();
+
+                //BasicConsole.WriteLine("Semaphore_Signal : Signalled.");
+
                 return true;
+            }
+            else
+            {
+                BasicConsole.WriteLine("Error! Semaphore_VerifyOwner failed: ProcessId: " + (String)aProcess.Id + ", SemaphoreId: " + id);
             }
             return false;
         }

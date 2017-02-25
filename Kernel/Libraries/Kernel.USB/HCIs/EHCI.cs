@@ -726,7 +726,7 @@ namespace Kernel.USB.HCIs
         ///     Initialises a new EHCI device using the specified PCI device. Includes starting the host controller.
         /// </summary>
         /// <param name="aPCIDevice">The PCI device that represents the physical EHCI device.</param>
-        public EHCI(PCIDeviceNormal aPCIDevice)
+        public EHCI(PCIVirtualNormalDevice aPCIDevice)
             : base(aPCIDevice, "EHCI USB Controller")
         {
 #if EHCI_TESTS

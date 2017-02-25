@@ -29,6 +29,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Drivers.Compiler.Attributes;
 using Kernel.Consoles;
+using Kernel.Devices;
 using Kernel.Devices.Keyboards;
 using Kernel.Framework;
 using Kernel.Framework.Collections;
@@ -73,6 +74,8 @@ namespace Kernel.Tasks
         {
             Helpers.ProcessInit("Window Manager", out GCThreadId);
 
+            DeviceManager.InitForProcess();
+            
             // Initialise connected pipes list
             ConnectedPipes = new List();
 

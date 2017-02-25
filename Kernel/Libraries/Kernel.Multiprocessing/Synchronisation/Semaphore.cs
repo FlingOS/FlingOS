@@ -92,11 +92,19 @@ namespace Kernel.Multiprocessing.Synchronisation
             if (notLocked)
             {
                 count--;
+                //String str = "Semaphore not locked: Process/thread identifier: 0x-------- --------";
+                //ExceptionMethods.FillString((uint)identifier, 58, str);
+                //ExceptionMethods.FillString((uint)(identifier >> 32), 67, str);
+                //BasicConsole.WriteLine(str);
             }
             else
             {
                 aThread._EnterSleep(Thread.IndefiniteSleep);
                 WaitingThreads.Add(identifier);
+                //String str = "Semaphore added waiting process/thread identifier: 0x-------- --------";
+                //ExceptionMethods.FillString((uint)identifier, 60, str);
+                //ExceptionMethods.FillString((uint)(identifier >> 32), 69, str);
+                //BasicConsole.WriteLine(str);
             }
             ExclLock.Exit();
             return notLocked;
@@ -104,7 +112,11 @@ namespace Kernel.Multiprocessing.Synchronisation
 
         public void SignalOnBehalf()
         {
+            //BasicConsole.WriteLine("SignalOnBehalf: Enter exclusion lock...");
+
             ExclLock.Enter();
+
+            //BasicConsole.WriteLine("SignalOnBehalf: Entered.");
 
             if (WaitingThreads.Count > 0)
             {
@@ -114,17 +126,26 @@ namespace Kernel.Multiprocessing.Synchronisation
                 {
                     identifier = WaitingThreads[0];
                     WaitingThreads.RemoveAt(0);
-                    //BasicConsole.Write("Identifier: ");
-                    //BasicConsole.WriteLine(identifier);
+                    //String str = "Semaphore next process/thread identifier: 0x-------- --------";
+                    //ExceptionMethods.FillString((uint)identifier, 51, str);
+                    //ExceptionMethods.FillString((uint)(identifier >> 32), 60, str);
+                    //BasicConsole.WriteLine(str);
                 } while (!ProcessManager.WakeThread((uint)(identifier >> 32), (uint)identifier) &&
                          WaitingThreads.Count > 0);
             }
             else if (count < limit || limit == -1)
             {
+                //String str = "Semaphore no next process/thread";
+                //BasicConsole.WriteLine(str);
+
                 count++;
             }
 
+            //BasicConsole.WriteLine("SignalOnBehalf: Exiting exclusion lock...");
+
             ExclLock.Exit();
+
+            //BasicConsole.WriteLine("SignalOnBehalf: Exited.");
         }
     }
 }

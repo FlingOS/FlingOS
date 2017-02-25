@@ -90,12 +90,15 @@ namespace Kernel.USB
         /// </summary>
         public static List Devices;
 
+        private static UInt64List DeviceIdsChecked;
+
         public static void Init()
         {
             IgnoreUSB10and11Devices = true;
             UpdateRequired = false;
             HCIDevices = new List(3);
             Devices = new List(5);
+            DeviceIdsChecked = new UInt64List(5);
 
             if (SystemCalls.CreateSemaphore(0, out UpdateSemaphoreId) != SystemCallResults.OK)
             {
@@ -124,31 +127,39 @@ namespace Kernel.USB
             }
 
             List AllDevices = DeviceManager.GetDeviceList();
+            //BasicConsole.WriteLine((String)"InitHCIs: Device count: " + AllDevices.Count);
             List HCIPCIDevices = new List();
             for (int i = 0; i < AllDevices.Count; i++)
             {
                 Device aDevice = (Device)AllDevices[i];
-                if (!aDevice.Claimed)
+                if (!aDevice.Claimed && DeviceIdsChecked.IndexOf(aDevice.Id) == -1)
                 {
+                    DeviceIdsChecked.Add(aDevice.Id);
+
                     if (aDevice.Class == DeviceClass.Generic && aDevice.SubClass == DeviceSubClass.PCI)
                     {
+                        //BasicConsole.WriteLine("USBManager: Claiming potential device...");
                         if (DeviceManager.ClaimDevice(aDevice))
                         {
                             bool release = true;
 
+                            //BasicConsole.WriteLine("USBManager: Filling device info...");
                             if (DeviceManager.FillDeviceInfo(aDevice))
                             {
-                                PCIDevice pciDevice = new PCIDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2],
-                                    "Generic PCI Device");
+                                //BasicConsole.WriteLine("USBManager: Creating PCI Virtual Device...");
+                                PCIVirtualDevice pciDevice = new PCIVirtualDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2], (PCIDevice.PCIHeaderType)aDevice.Info[3], (byte)aDevice.Info[4], (byte)aDevice.Info[5]);
+                                
                                 if (pciDevice.HeaderType == PCIDevice.PCIHeaderType.Normal)
                                 {
-                                    pciDevice = new PCIDeviceNormal(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2]);
                                     //0x0C = Serial bus controllers
                                     if (pciDevice.ClassCode == 0x0C)
                                     {
                                         //0x03 = USB controllers
                                         if (pciDevice.Subclass == 0x03)
                                         {
+                                            pciDevice = new PCIVirtualNormalDevice(aDevice.Info[0], aDevice.Info[1], aDevice.Info[2], (PCIDevice.PCIHeaderType)aDevice.Info[3], (byte)aDevice.Info[4], (byte)aDevice.Info[5]);
+
+                                            pciDevice.LoadRemainingRegisters();
                                             HCIPCIDevices.Add(pciDevice);
                                             release = false;
                                         }
@@ -162,6 +173,7 @@ namespace Kernel.USB
 
                             if (release)
                             {
+                                //BasicConsole.WriteLine("USBManager: Releasing device.");
                                 if (!DeviceManager.ReleaseDevice(aDevice))
                                 {
                                     BasicConsole.WriteLine("Error! USBManager couldn't release PCI device!");
@@ -178,7 +190,7 @@ namespace Kernel.USB
 
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)HCIPCIDevices[i];
+                PCIVirtualDevice aDevice = (PCIVirtualDevice)HCIPCIDevices[i];
                 //xHCI = 0x30
                 if (aDevice.ProgIF == 0x30)
                 {
@@ -196,7 +208,7 @@ namespace Kernel.USB
             }
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)HCIPCIDevices[i];
+                PCIVirtualDevice aDevice = (PCIVirtualDevice)HCIPCIDevices[i];
                 //EHCI = 0x20
                 if (aDevice.ProgIF == 0x20)
                 {
@@ -205,9 +217,8 @@ namespace Kernel.USB
                     BasicConsole.WriteLine("EHCI detected.");
 #endif
                     NumEHCIDevices++;
-
-                    PCIDeviceNormal EHCI_PCIDevice = (PCIDeviceNormal)aDevice;
-                    EHCI_PCIDevice.Claimed = true;
+                    
+                    PCIVirtualNormalDevice EHCI_PCIDevice = (PCIVirtualNormalDevice)aDevice;
 
                     //BasicConsole.SetTextColour(BasicConsole.warning_colour);
                     //BasicConsole.WriteLine("WARNING! EHCI device support disabled.");
@@ -221,7 +232,7 @@ namespace Kernel.USB
             }
             for (int i = 0; i < HCIPCIDevices.Count; i++)
             {
-                PCIDevice aDevice = (PCIDevice)HCIPCIDevices[i];
+                PCIVirtualDevice aDevice = (PCIVirtualDevice)HCIPCIDevices[i];
                 //UHCI = 0x00
                 if (aDevice.ProgIF == 0x00)
                 {
@@ -231,9 +242,8 @@ namespace Kernel.USB
 #endif
                     NumUHCIDevices++;
 
-                    PCIDeviceNormal UHCI_PCIDevice = (PCIDeviceNormal)aDevice;
-                    UHCI_PCIDevice.Claimed = true;
-
+                    PCIVirtualNormalDevice UHCI_PCIDevice = (PCIVirtualNormalDevice)aDevice;
+                    
                     UHCI newUHCI = new UHCI(UHCI_PCIDevice);
                     HCIDevices.Add(newUHCI);
 
@@ -255,6 +265,8 @@ namespace Kernel.USB
                     NumOHCIDevices++;
                 }
             }
+
+            BasicConsole.WriteLine("USBManager: Done InitHCI.");
         }
 
         public static void NotifyDevicesNeedUpdate()

@@ -141,7 +141,7 @@ namespace Drivers.Compiler.Architectures.x86
 
                 //Compare high bytes
                 conversionState.Append(new Cmp {Arg1 = "EDX", Arg2 = "ECX"});
-                //A high bytes > B high bytes? Jump to true case.
+                //A high bytes > B high bytes? Jump to true case. (Unsigned or signed comparison as appropriate)
                 conversionState.Append(new Jmp
                 {
                     JumpType = JmpOp.JumpGreaterThan,
@@ -149,7 +149,7 @@ namespace Drivers.Compiler.Architectures.x86
                     Extension = "True",
                     UnsignedTest = unsignedComparison
                 });
-                //A high bytes < B high bytes? Jump to else case.
+                //A high bytes < B high bytes? Jump to else case. (Unsigned or signed comparison as appropriate)
                 conversionState.Append(new Jmp
                 {
                     JumpType = JmpOp.JumpLessThan,
@@ -160,13 +160,13 @@ namespace Drivers.Compiler.Architectures.x86
                 //Otherwise, A high bytes = B high bytes
                 //So compare low bytes
                 conversionState.Append(new Cmp {Arg1 = "EAX", Arg2 = "EBX"});
-                //A low bytes <= B low bytes? Jump to else case.
+                //A low bytes <= B low bytes? Jump to else case. (Unsigned comparison)
                 conversionState.Append(new Jmp
                 {
                     JumpType = JmpOp.JumpLessThanEqual,
                     DestILPosition = currOpPosition,
                     Extension = "Else",
-                    UnsignedTest = unsignedComparison
+                    UnsignedTest = true
                 });
 
                 //Otherwise A > B.

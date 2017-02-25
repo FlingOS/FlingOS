@@ -27,7 +27,7 @@
 #endregion
 
 using Kernel.Framework;
-using Kernel.IO;
+using Kernel.Devices;
 using Kernel.VGA;
 
 namespace Kernel.Consoles
@@ -39,16 +39,6 @@ namespace Kernel.Consoles
     /// </summary>
     public unsafe class VGAConsole : Console
     {
-        /// <summary>
-        ///     The command port for manipulating the VGA text-mode cursor.
-        /// </summary>
-        protected IOPort CursorCmdPort = new IOPort(0x3D4);
-
-        /// <summary>
-        ///     The data port for manipulating the VGA text-mode cursor.
-        /// </summary>
-        protected IOPort CursorDataPort = new IOPort(0x3D5);
-
         /// <summary>
         ///     A pointer to the start of the (character-based) video memory.
         /// </summary>
@@ -157,11 +147,7 @@ namespace Kernel.Consoles
                 //  (not number of bytes).
                 ushort offset = (ushort)(line*ScreenLineWidth + character);
                 //Output the high-byte
-                CursorCmdPort.Write_Byte(14);
-                CursorDataPort.Write_Byte((byte)(offset >> 8));
-                //Output the low-byte
-                CursorCmdPort.Write_Byte(15);
-                CursorDataPort.Write_Byte((byte)offset);
+                TheVGA.UpdateCursorOffset(offset);
             }
         }
 

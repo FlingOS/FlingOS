@@ -1,4 +1,5 @@
 ﻿using Kernel.Consoles;
+using Kernel.Devices;
 using Kernel.PCI;
 
 namespace Kernel.Tasks.Driver
@@ -23,6 +24,8 @@ namespace Kernel.Tasks.Driver
 
                 BasicConsole.WriteLine("PCI Driver > Executing.");
 
+                DeviceManager.InitForProcess();
+
                 try
                 {
                     BasicConsole.WriteLine("PCI Driver > Initialising PCI Manager...");
@@ -30,6 +33,9 @@ namespace Kernel.Tasks.Driver
 
                     BasicConsole.WriteLine("PCI Driver > Enumerating PCI devices...");
                     PCIManager.EnumerateDevices();
+
+                    BasicConsole.WriteLine("PCI Driver > Starting accessors thread...");
+                    PCIManager.StartAccessorsThread();
 
                     BasicConsole.WriteLine("PCI Driver > Outputting PCI info...");
                     OutputPCI();

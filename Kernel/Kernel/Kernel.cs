@@ -85,9 +85,7 @@ namespace Kernel
                 Scheduler.Init();
 
                 Serial.InitCOM1();
-                Serial.InitCOM2();
-                Serial.InitCOM3();
-
+                
                 BasicConsole.SecondaryOutput = BasicConsole_SecondaryOutput;
                 BasicConsole.SecondaryOutputEnabled = true;
 

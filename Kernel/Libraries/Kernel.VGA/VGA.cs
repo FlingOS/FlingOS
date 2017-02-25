@@ -625,5 +625,15 @@ namespace Kernel.VGA
             SetCell(0, 10, 'd', ForeColour, BackColour);
             SetCell(0, 11, '!', ForeColour, BackColour);
         }
+
+        /// <summary>
+        ///     Sets the cursor position to the specified offset.
+        /// </summary>
+        /// <param name="offset">The new offset value.</param>
+        public void UpdateCursorOffset(ushort offset)
+        {
+            Registers.CursorLocationHigh = (byte)(offset >> 8);
+            Registers.CursorLocationLow = (byte)(offset);
+        }
     }
 }

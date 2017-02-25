@@ -30,7 +30,6 @@ using System;
 using Drivers.Compiler.Attributes;
 using Kernel.Devices;
 using Kernel.Framework.Processes.Requests.Devices;
-using Kernel.IO;
 using PCI_IO = Kernel.PCI.PCIManager;
 using String = Kernel.Framework.String;
 
@@ -356,11 +355,11 @@ namespace Kernel.PCI
         /// <param name="name">The human-readable name of the device.</param>
         [NoDebug]
         public PCIDevice(uint bus, uint slot, uint function, String name)
-            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[3], false)
+            : base(DeviceGroup.Unkown, DeviceClass.Generic, DeviceSubClass.PCI, name, new uint[6], false)
         {
-            Info[0] = this.bus = bus;
-            Info[1] = this.slot = slot;
-            Info[2] = this.function = function;
+            this.bus = bus;
+            this.slot = slot;
+            this.function = function;
 
 #if PCI_TRACE || COMPILER_TRACE
             ushort vendorID = ReadRegister16(0x00);
@@ -389,6 +388,13 @@ namespace Kernel.PCI
             InterruptPIN = (PCIInterruptPIN)ReadRegister8(0x3D);
 
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
+
+            Info[0] = bus;
+            Info[1] = slot;
+            Info[2] = function;
+            Info[3] = (byte)HeaderType;
+            Info[4] = ClassCode;
+            Info[5] = Subclass;
         }
 
         /// <summary>
@@ -688,8 +694,7 @@ namespace Kernel.PCI
         public byte ReadRegister8(byte aRegister)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
-            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            return (byte)((PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8)) & 0xFF);
+            return (byte)(PCI_IO.AccessPorts(xAddr, true, 1, 0) >> (aRegister % 4 * 8));
         }
 
         /// <summary>
@@ -701,8 +706,7 @@ namespace Kernel.PCI
         public void WriteRegister8(byte aRegister, byte value)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
-            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            PCI_IO.ConfigDataPort.Write_Byte(value);
+            PCI_IO.AccessPorts(xAddr, false, 1, value);
         }
 
         /// <summary>
@@ -714,8 +718,7 @@ namespace Kernel.PCI
         public ushort ReadRegister16(byte aRegister)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
-            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            return (ushort)((PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8)) & 0xFFFF);
+            return (ushort)(PCI_IO.AccessPorts(xAddr, true, 2, 0) >> (aRegister % 4 * 8));
         }
 
         /// <summary>
@@ -727,8 +730,7 @@ namespace Kernel.PCI
         public void WriteRegister16(byte aRegister, ushort value)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
-            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            PCI_IO.ConfigDataPort.Write_UInt16(value);
+            PCI_IO.AccessPorts(xAddr, false, 2, value);
         }
 
         /// <summary>
@@ -740,8 +742,7 @@ namespace Kernel.PCI
         public uint ReadRegister32(byte aRegister)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
-            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            return PCI_IO.ConfigDataPort.Read_UInt32() >> (aRegister%4*8);
+            return (PCI_IO.AccessPorts(xAddr, true, 4, 0) >> (aRegister % 4 * 8));
         }
 
         /// <summary>
@@ -753,8 +754,7 @@ namespace Kernel.PCI
         public void WriteRegister32(byte aRegister, uint value)
         {
             uint xAddr = GetAddressBase(bus, slot, function) | (uint)(aRegister & 0xFC);
-            PCI_IO.ConfigAddressPort.Write_UInt32(xAddr);
-            PCI_IO.ConfigDataPort.Write_UInt32(value);
+            PCI_IO.AccessPorts(xAddr, false, 4, value);
         }
 
         #endregion

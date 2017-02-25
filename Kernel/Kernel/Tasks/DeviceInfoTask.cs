@@ -71,6 +71,8 @@ namespace Kernel.Tasks
 
                 BasicConsole.WriteLine("DI > Executing.");
 
+                DeviceManager.InitForProcess();
+
                 #region Real Time Clock initialisation
 
                 //TODO: This is x86 specific
