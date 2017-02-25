@@ -19,7 +19,10 @@ namespace Kernel.PCI
             if (Outpoint == null)
             {
                 Outpoint = new PCIPortAccessOutpoint(1, true);
+            }
 
+            if (Inpoint == null)
+            { 
                 int numOutpoints;
                 SystemCallResults SysCallResult;
                 BasicOutpoint.GetNumPipeOutpoints(out numOutpoints, out SysCallResult, PipeClasses.PCI,
@@ -31,7 +34,7 @@ namespace Kernel.PCI
                     BasicOutpoint.GetOutpointDescriptors(numOutpoints, out SysCallResult, out OutpointDescriptors,
                         PipeClasses.PCI, PipeSubclasses.PCI_PortAccess_Out);
 
-                    if (SysCallResult == SystemCallResults.OK && OutpointDescriptors.Length > 0)
+                    if (SysCallResult == SystemCallResults.OK)
                     {
                         PipeOutpointDescriptor Descriptor = OutpointDescriptors[0];
                         
@@ -75,7 +78,7 @@ namespace Kernel.PCI
                     if (Inpoint.ReadData(out Result))
                     {
                         //BasicConsole.WriteLine("PCIAccessor: AccessPorts: Result read. Returning...");
-                        BasicConsole.WriteLine("PCIAccessor: AccessPorts: Result read. Value: " + (String)Result);
+                        //BasicConsole.WriteLine("PCIAccessor: AccessPorts: Result read. Value: " + (String)Result);
                         return Result;
                     }
                     else

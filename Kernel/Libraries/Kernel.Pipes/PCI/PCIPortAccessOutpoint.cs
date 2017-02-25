@@ -48,8 +48,8 @@ namespace Kernel.Pipes.PCI
 
         public void SendCommand(int PipeId, uint Address, bool Read, byte DataSize, uint Data = 0)
         {
-            BasicConsole.WriteLine("PCIPortAccessOutpoint: Sending address: " + (String)Address);
-            BasicConsole.WriteLine("PCIPortAccessOutpoint: Sending data: " + (String)Data);
+            //BasicConsole.WriteLine("PCIPortAccessOutpoint: Sending address: " + (String)Address);
+            //BasicConsole.WriteLine("PCIPortAccessOutpoint: Sending data: " + (String)Data);
             byte[] buffer = new byte[10];
             buffer[0] = (byte)(Address >> 0);
             buffer[1] = (byte)(Address >> 8);

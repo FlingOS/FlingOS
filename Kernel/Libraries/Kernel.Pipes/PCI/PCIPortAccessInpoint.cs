@@ -64,8 +64,8 @@ namespace Kernel.Pipes.PCI
                 Data = (uint)ReadBuffer[6] | ((uint)ReadBuffer[7] << 8) | ((uint)ReadBuffer[8] << 16) |
                        ((uint)ReadBuffer[9] << 24);
 
-                BasicConsole.WriteLine("PCIPortAccessInpoint: Read address: " + (String)Address);
-                BasicConsole.WriteLine("PCIPortAccessInpoint: Read data: " + (String)Data);
+                //BasicConsole.WriteLine("PCIPortAccessInpoint: Read address: " + (String)Address);
+                //BasicConsole.WriteLine("PCIPortAccessInpoint: Read data: " + (String)Data);
 
                 return true;
             }

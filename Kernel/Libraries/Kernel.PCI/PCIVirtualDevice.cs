@@ -23,12 +23,12 @@ namespace Kernel.PCI
         /// <summary>
         ///     The device's VendorID.
         /// </summary>
-        public ushort VendorID { get; }
+        public ushort VendorID { get; private set; }
 
         /// <summary>
         ///     The device's DeviceID.
         /// </summary>
-        public ushort DeviceID { get; }
+        public ushort DeviceID { get; private set; }
 
         /// <summary>
         ///     Reads / writes the command register.
@@ -56,7 +56,7 @@ namespace Kernel.PCI
         /// <summary>
         ///     The device's ProgIF.
         /// </summary>
-        public byte ProgIF { get; }
+        public byte ProgIF { get; private set; }
 
         /// <summary>
         ///     The device's Subclass.
@@ -81,7 +81,7 @@ namespace Kernel.PCI
         /// <summary>
         ///     The device's HeaderType.
         /// </summary>
-        public PCIDevice.PCIHeaderType HeaderType { get; private set; }
+        public PCIDevice.PCIHeaderType HeaderType { get; }
 
         /// <summary>
         ///     The device's BIST.
@@ -118,31 +118,34 @@ namespace Kernel.PCI
             this.slot = slot;
             this.function = function;
 
+            Subclass = ReadRegister8(0x0A);
+            ClassCode = ReadRegister8(0x0B);
+            HeaderType = (PCIDevice.PCIHeaderType)ReadRegister8(0x0E);
+            
+            BasicConsole.WriteLine((String)"PCI Virtual Device: Header type: " + (byte)HeaderType);
+            BasicConsole.WriteLine((String)"PCI Virtual Device:  Class code: " + ClassCode);
+            BasicConsole.WriteLine((String)"PCI Virtual Device:   Sub class: " + Subclass);
+        }
+
+        public void LoadRemainingRegisters()
+        {
             VendorID = ReadRegister16(0x00);
             DeviceID = ReadRegister16(0x02);
 
             RevisionID = ReadRegister8(0x08);
             ProgIF = ReadRegister8(0x09);
-            Subclass = ReadRegister8(0x0A);
-            ClassCode = ReadRegister8(0x0B);
 
             CacheLineSize = ReadRegister8(0x0C);
             LatencyTimer = ReadRegister8(0x0D);
-            HeaderType = (PCIDevice.PCIHeaderType)ReadRegister8(0x0E);
+
             BIST = (PCIDevice.PCIBISTs)ReadRegister8(0x0F);
 
             InterruptLine = ReadRegister8(0x3C);
             InterruptPIN = (PCIDevice.PCIInterruptPIN)ReadRegister8(0x3D);
 
             DeviceExists = (uint)VendorID != 0xFFFF && (uint)DeviceID != 0xFFFF;
-
-            BasicConsole.WriteLine((String)"PCI Virtual Device:   Vendor ID: " + VendorID);
-            BasicConsole.WriteLine((String)"PCI Virtual Device:   Device ID: " + DeviceID);
-            BasicConsole.WriteLine((String)"PCI Virtual Device:  Class code: " + ClassCode);
-            BasicConsole.WriteLine((String)"PCI Virtual Device:   Sub class: " + Subclass);
-            BasicConsole.WriteLine((String)"PCI Virtual Device: Header type: " + (byte)HeaderType);
         }
-        
+
         /// <summary>
         ///     Calculates the base address for a PCI device.
         /// </summary>

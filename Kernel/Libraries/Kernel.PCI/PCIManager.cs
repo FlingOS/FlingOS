@@ -77,8 +77,13 @@ namespace Kernel.PCI
             ConfigDataPort = new IOPort(0xCFC);
             Devices = new List();
 
+            PortAccessSemaphoreId = -1;
+        }
+
+        public static void StartAccessorsThread()
+        {
             AccessOutpoint = new PCIPortAccessOutpoint(-1, false);
-            
+
             if (SystemCalls.CreateSemaphore(1, out PortAccessSemaphoreId) != SystemCallResults.OK)
             {
                 BasicConsole.WriteLine("PCI Manager > Failed to create semaphore!");
@@ -198,7 +203,7 @@ namespace Kernel.PCI
                         //BasicConsole.WriteLine("PCIManager: ManageAccessor: Accessed ports.");
                         if (Read)
                         {
-                            BasicConsole.WriteLine("PCIManager: ManageAccessor: Sending data result..." + (String)Data);
+                            //BasicConsole.WriteLine("PCIManager: ManageAccessor: Sending data result..." + (String)Data);
                             AccessOutpoint.SendData(OutPipeId, Data);
                             //BasicConsole.WriteLine("PCIManager: ManageAccessor: Result sent.");
                         }
@@ -221,71 +226,90 @@ namespace Kernel.PCI
         {
             uint Result = 0;
 
-            if (SystemCalls.WaitSemaphore(PortAccessSemaphoreId) == SystemCallResults.OK)
+            if (PortAccessSemaphoreId != -1)
             {
-                try
-                {
-                    ConfigAddressPort.Write_UInt32(Address);
+                //BasicConsole.WriteLine("PCIManager: AccessPorts: Wait semaphore...");
+                SystemCallResults WaitResult = SystemCalls.WaitSemaphore(PortAccessSemaphoreId);
+                //BasicConsole.WriteLine("PCIManager: AccessPorts: Wait semaphore done.");
 
-                    if (Read)
+                if (WaitResult == SystemCallResults.OK)
+                {
+                    try
                     {
-                        switch (DataSize)
-                        {
-                            case 1:
-                                Result = ConfigDataPort.Read_Byte();
-                                break;
-                            case 2:
-                                Result = ConfigDataPort.Read_UInt16();
-                                break;
-                            case 4:
-                                Result = ConfigDataPort.Read_UInt32();
-                                break;
-                            default:
-                                BasicConsole.WriteLine("PCIManager: AccessPorts: Bad data size.");
-                                ExceptionMethods.Throw(
-                                    new NotSupportedException("Can only read 1, 2, 4 bytes from PCI register ports."));
-                                Result = 0;
-                                break;
-                        }
+                        Result = DoAccessPorts(Address, Read, DataSize, Data, Result);
                     }
-                    else
+                    finally
                     {
-                        switch (DataSize)
+                        if (SystemCalls.SignalSemaphore(PortAccessSemaphoreId) != SystemCallResults.OK)
                         {
-                            case 1:
-                                ConfigDataPort.Write_Byte((byte)Data);
-                                break;
-                            case 2:
-                                ConfigDataPort.Write_UInt16((ushort)Data);
-                                break;
-                            case 4:
-                                ConfigDataPort.Write_UInt32(Data);
-                                break;
-                            default:
-                                BasicConsole.WriteLine("PCIManager: AccessPorts: Bad data size.");
-                                ExceptionMethods.Throw(
-                                    new NotSupportedException("Can only read 1, 2, 4 bytes from PCI register ports."));
-                                break;
+                            BasicConsole.WriteLine("PCIManager: AccessPorts: Couldn't signal lock.");
+                            ExceptionMethods.Throw(
+                                new Exception("Could not release lock of PCI register ports."));
                         }
                     }
                 }
-                finally
+                else
                 {
-                    if (SystemCalls.SignalSemaphore(PortAccessSemaphoreId) != SystemCallResults.OK)
-                    {
-                        BasicConsole.WriteLine("PCIManager: AccessPorts: Couldn't signal lock.");
-                        ExceptionMethods.Throw(
-                            new Exception("Could not release lock of PCI register ports."));
-                    }
+                    BasicConsole.WriteLine("PCIManager: AccessPorts: Couldn't obtain lock. SemaphoreId=" +
+                                           (String)PortAccessSemaphoreId + ", WaitResult=" + (String)(int)WaitResult);
+                    ExceptionMethods.Throw(
+                        new Exception("Could not obtain lock to access PCI register ports. SemaphoreId=" +
+                                      (String)PortAccessSemaphoreId + ", WaitResult=" + (String)(int)WaitResult));
                 }
             }
             else
             {
-                BasicConsole.WriteLine("PCIManager: AccessPorts: Couldn't obtain lock.");
-                ExceptionMethods.Throw(
-                    new Exception("Could not obtain lock to access PCI register ports."));
+                Result = DoAccessPorts(Address, Read, DataSize, Data, Result);
             }
 
+            return Result;
+        }
+
+        private static uint DoAccessPorts(uint Address, bool Read, byte DataSize, uint Data, uint Result)
+        {
+            ConfigAddressPort.Write_UInt32(Address);
+
+            if (Read)
+            {
+                switch (DataSize)
+                {
+                    case 1:
+                        Result = ConfigDataPort.Read_UInt32();
+                        break;
+                    case 2:
+                        Result = ConfigDataPort.Read_UInt32();
+                        break;
+                    case 4:
+                        Result = ConfigDataPort.Read_UInt32();
+                        break;
+                    default:
+                        BasicConsole.WriteLine("PCIManager: AccessPorts: Bad data size.");
+                        ExceptionMethods.Throw(
+                            new NotSupportedException("Can only read 1, 2, 4 bytes from PCI register ports."));
+                        Result = 0;
+                        break;
+                }
+            }
+            else
+            {
+                switch (DataSize)
+                {
+                    case 1:
+                        ConfigDataPort.Write_Byte((byte)Data);
+                        break;
+                    case 2:
+                        ConfigDataPort.Write_UInt16((ushort)Data);
+                        break;
+                    case 4:
+                        ConfigDataPort.Write_UInt32(Data);
+                        break;
+                    default:
+                        BasicConsole.WriteLine("PCIManager: AccessPorts: Bad data size.");
+                        ExceptionMethods.Throw(
+                            new NotSupportedException("Can only read 1, 2, 4 bytes from PCI register ports."));
+                        break;
+                }
+            }
             return Result;
         }
     }

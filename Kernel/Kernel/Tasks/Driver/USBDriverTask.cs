@@ -1,6 +1,7 @@
 ﻿using Kernel.Consoles;
 using Kernel.Devices;
 using Kernel.Framework;
+using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
 using Kernel.PCI;
 using Kernel.USB;
@@ -58,8 +59,11 @@ namespace Kernel.Tasks.Driver
                         }
                         catch
                         {
-                            BasicConsole.WriteLine("USB Driver > Error initialising HCIs!");
-                            BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                            if (!(ExceptionMethods.CurrentException is NotSupportedException))
+                            {
+                                BasicConsole.WriteLine("USB Driver > Error initialising HCIs!");
+                                BasicConsole.WriteLine(ExceptionMethods.CurrentException.Message);
+                            }
                         }
 
                         BasicConsole.WriteLine("USB Driver > Outputting USB info...");
