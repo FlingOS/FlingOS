@@ -594,6 +594,10 @@ namespace Kernel.Multiprocessing
             {
                 return ((Semaphore)Semaphores[id]).WaitOnBehalf(aProcess, aThread) ? 1 : 0;
             }
+            else
+            {
+                BasicConsole.WriteLine("Error! Semaphore_VerifyOwner failed: ProcessId: " + (String)aProcess.Id + "ThreadId: " + aThread.Id + ", SemaphoreId: " + id);
+            }
             return -1;
         }
 
@@ -603,6 +607,10 @@ namespace Kernel.Multiprocessing
             {
                 ((Semaphore)Semaphores[id]).SignalOnBehalf();
                 return true;
+            }
+            else
+            {
+                BasicConsole.WriteLine("Error! Semaphore_VerifyOwner failed: ProcessId: " + (String)aProcess.Id + ", SemaphoreId: " + id);
             }
             return false;
         }

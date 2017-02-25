@@ -987,7 +987,7 @@ namespace Kernel.Tasks
 #if DSC_TRACE
                                 else
                                 {
-                                    BasicConsole.WriteLine("First page mapped physical address: " + (Framework.String)Hardware.VirtMemManager.GetPhysicalAddress(Param2));
+                                    BasicConsole.WriteLine("First page mapped physical address: " + (String)VirtualMemoryManager.GetPhysicalAddress(Param2));
                                 }
 #endif
                             }
@@ -1178,12 +1178,29 @@ namespace Kernel.Tasks
                     // Param1: Id
                 {
                     int waitResult = ProcessManager.Semaphore_Wait((int)Param1, CallerProcess, CallerThread);
+                    if (waitResult == -1)
+                    {
+                        BasicConsole.WriteLine("Error! Wait Semaphore result == -1?!");
+                    }
                     result = waitResult == -1
                         ? SystemCallResults.Fail
                         : (waitResult == 1 ? SystemCallResults.OK : SystemCallResults.OK_NoWake);
                 }
 
                     #endregion
+
+                    break;
+                case SystemCallNumbers.SignalSemaphore:
+
+#if DSC_TRACE
+                    BasicConsole.WriteLine("DSC: Signal semaphore");
+#endif
+                    // Param1: Id
+                    {
+                        bool signalResult = ProcessManager.Semaphore_Signal((int)Param1,
+                            ProcessManager.GetProcessById(CallerProcess.Id));
+                        result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
+                    }
 
                     break;
                 case SystemCallNumbers.RegisterDevice:
@@ -1587,6 +1604,11 @@ namespace Kernel.Tasks
 
             if (result == SystemCallResults.Deferred || result == SystemCallResults.Deferred_PermitActions)
             {
+                if (DeferredSyscallsInfo_Unqueued.Count == 0)
+                {
+                    BasicConsole.WriteLine("Error! Deferring system call is going to fail because there are no deferred syscall info objects left unqueued.");
+                }
+
                 //BasicConsole.WriteLine("Deferring syscall...");
                 //BasicConsole.WriteLine("Popping unqueued info object...");
                 DeferredSyscallInfo info = (DeferredSyscallInfo)DeferredSyscallsInfo_Unqueued.Pop();
@@ -2174,12 +2196,7 @@ namespace Kernel.Tasks
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : Signal semaphore");
 #endif
-                    // Param1: Id
-                {
-                    bool signalResult = ProcessManager.Semaphore_Signal((int)param1,
-                        ProcessManager.GetProcessById(callerProcessId));
-                    result = signalResult ? SystemCallResults.OK : SystemCallResults.Fail;
-                }
+                    result = SystemCallResults.Deferred;
 
                     #endregion
 
