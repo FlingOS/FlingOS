@@ -110,6 +110,7 @@
     <Compile Include="Processes\Requests\Devices.cs" />
     <Compile Include="Processes\Requests\Pipes.cs" />
     <Compile Include="Processes\Requests\Processes.cs" />
+    <Compile Include="Processes\Synchronisation\Lockable.cs" />
     <Compile Include="Processes\SystemCalls_Callers.cs" />
     <Compile Include="Processes\SystemCalls_Enums.cs" />
     <Compile Include="String.cs" />
