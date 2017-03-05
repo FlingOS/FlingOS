@@ -132,7 +132,7 @@ namespace Kernel.USB.HCIs
         protected IOPort SOFMOD;
 
         protected uint TransactionsCompleted;
-        protected byte* usbBaseAddress;
+        protected ushort usbBaseAddress;
 
         protected IOPort USBCMD;
         protected IOPort USBINTR;
@@ -146,46 +146,12 @@ namespace Kernel.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            usbBaseAddress = pciDevice.BaseAddresses[4].BaseAddress();
+            usbBaseAddress = (ushort)pciDevice.BaseAddresses[4].BaseAddress();
 
 #if UHCI_TRACE
             BasicConsole.WriteLine(((Framework.String)"UHCI: usbBaseAddress=") + (uint)usbBaseAddress);
 #endif
-
-            bool isUSBPageAlreadyMapped = false;
-            SystemCallResults checkUSBPageResult =
-                SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
-            if (checkUSBPageResult != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Error! UHCI cannot check USB Base Address.");
-                ExceptionMethods.Throw(new Exception("UHCI cannot check USB Base Address."));
-            }
-
-            if (!isUSBPageAlreadyMapped)
-            {
-                uint actualAddress = 0xFFFFFFFF;
-                SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(
-                    (uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
-                if (mapUSBPageResult != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("Error! UHCI cannot map USB Base Address.");
-                    ExceptionMethods.Throw(new Exception("UHCI cannot map USB Base Address."));
-                }
-                usbBaseAddress = (byte*)actualAddress;
-            }
-            else
-            {
-                uint actualAddress = 0xFFFFFFFF;
-                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000,
-                    out actualAddress);
-                if (getUSBPageResult != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("Error! UHCI cannot get USB Base Address.");
-                    ExceptionMethods.Throw(new Exception("UHCI cannot get USB Base Address."));
-                }
-                usbBaseAddress = (byte*)actualAddress;
-            }
-
+      
             RootPortCount = UHCI_Consts.PORTMAX;
             EnabledPorts = false;
 
@@ -210,49 +176,9 @@ namespace Kernel.USB.HCIs
             }
         }
 
-        protected ushort MapPort(uint portOffset)
+        private ushort MapPort(ushort portOffset)
         {
-            uint portAddr = (uint)(usbBaseAddress + portOffset);
-
-            if ((portAddr & 0xFFFFF000) !=
-                ((uint)usbBaseAddress & 0xFFFFF000))
-            {
-                bool isUSBPageAlreadyMapped = false;
-                SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped(
-                    portAddr & 0xFFFFF000, out isUSBPageAlreadyMapped);
-                if (checkUSBPageResult != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("Error! UHCI cannot check USB Port Address.");
-                    ExceptionMethods.Throw(new Exception("UHCI cannot check USB Port Address."));
-                }
-
-                if (!isUSBPageAlreadyMapped)
-                {
-                    uint actualAddress = 0xFFFFFFFF;
-                    SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(portAddr & 0xFFFFF000,
-                        1, out actualAddress);
-                    if (mapUSBPageResult != SystemCallResults.OK)
-                    {
-                        BasicConsole.WriteLine("Error! UHCI cannot map USB Port Address.");
-                        ExceptionMethods.Throw(new Exception("UHCI cannot map USB Port Address."));
-                    }
-                    portAddr = actualAddress;
-                }
-                else
-                {
-                    uint actualAddress = 0xFFFFFFFF;
-                    SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress(portAddr & 0xFFFFF000,
-                        out actualAddress);
-                    if (getUSBPageResult != SystemCallResults.OK)
-                    {
-                        BasicConsole.WriteLine("Error! UHCI cannot get USB Port Address.");
-                        ExceptionMethods.Throw(new Exception("UHCI cannot get USB Port Address."));
-                    }
-                    portAddr = actualAddress;
-                }
-            }
-
-            return (ushort)portAddr;
+            return (ushort)(usbBaseAddress + portOffset);
         }
 
         internal override void Start()
