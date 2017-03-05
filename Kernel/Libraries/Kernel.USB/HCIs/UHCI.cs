@@ -26,7 +26,7 @@
 
 #endregion
 
-#define UHCI_TRACE
+//#define UHCI_TRACE
 
 using System.Runtime.InteropServices;
 using Kernel.Framework;
@@ -132,7 +132,7 @@ namespace Kernel.USB.HCIs
         protected IOPort SOFMOD;
 
         protected uint TransactionsCompleted;
-        protected byte* usbBaseAddress;
+        protected ushort usbBaseAddress;
 
         protected IOPort USBCMD;
         protected IOPort USBINTR;
@@ -146,46 +146,12 @@ namespace Kernel.USB.HCIs
             BasicConsole.DelayOutput(5);
 #endif
 
-            usbBaseAddress = pciDevice.BaseAddresses[4].BaseAddress();
+            usbBaseAddress = (ushort)pciDevice.BaseAddresses[4].BaseAddress();
 
 #if UHCI_TRACE
             BasicConsole.WriteLine(((Framework.String)"UHCI: usbBaseAddress=") + (uint)usbBaseAddress);
 #endif
-
-            bool isUSBPageAlreadyMapped = false;
-            SystemCallResults checkUSBPageResult =
-                SystemCalls.IsPhysicalAddressMapped((uint)usbBaseAddress & 0xFFFFF000, out isUSBPageAlreadyMapped);
-            if (checkUSBPageResult != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("Error! UHCI cannot check USB Base Address.");
-                ExceptionMethods.Throw(new Exception("UHCI cannot check USB Base Address."));
-            }
-
-            if (!isUSBPageAlreadyMapped)
-            {
-                uint actualAddress = 0xFFFFFFFF;
-                SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(
-                    (uint)usbBaseAddress & 0xFFFFF000, 1, out actualAddress);
-                if (mapUSBPageResult != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("Error! UHCI cannot map USB Base Address.");
-                    ExceptionMethods.Throw(new Exception("UHCI cannot map USB Base Address."));
-                }
-                usbBaseAddress = (byte*)actualAddress;
-            }
-            else
-            {
-                uint actualAddress = 0xFFFFFFFF;
-                SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress((uint)usbBaseAddress & 0xFFFFF000,
-                    out actualAddress);
-                if (getUSBPageResult != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("Error! UHCI cannot get USB Base Address.");
-                    ExceptionMethods.Throw(new Exception("UHCI cannot get USB Base Address."));
-                }
-                usbBaseAddress = (byte*)actualAddress;
-            }
-
+      
             RootPortCount = UHCI_Consts.PORTMAX;
             EnabledPorts = false;
 
@@ -210,49 +176,9 @@ namespace Kernel.USB.HCIs
             }
         }
 
-        protected ushort MapPort(uint portOffset)
+        private ushort MapPort(ushort portOffset)
         {
-            uint portAddr = (uint)(usbBaseAddress + portOffset);
-
-            if ((portAddr & 0xFFFFF000) !=
-                ((uint)usbBaseAddress & 0xFFFFF000))
-            {
-                bool isUSBPageAlreadyMapped = false;
-                SystemCallResults checkUSBPageResult = SystemCalls.IsPhysicalAddressMapped(
-                    portAddr & 0xFFFFF000, out isUSBPageAlreadyMapped);
-                if (checkUSBPageResult != SystemCallResults.OK)
-                {
-                    BasicConsole.WriteLine("Error! UHCI cannot check USB Port Address.");
-                    ExceptionMethods.Throw(new Exception("UHCI cannot check USB Port Address."));
-                }
-
-                if (!isUSBPageAlreadyMapped)
-                {
-                    uint actualAddress = 0xFFFFFFFF;
-                    SystemCallResults mapUSBPageResult = SystemCalls.RequestPhysicalPages(portAddr & 0xFFFFF000,
-                        1, out actualAddress);
-                    if (mapUSBPageResult != SystemCallResults.OK)
-                    {
-                        BasicConsole.WriteLine("Error! UHCI cannot map USB Port Address.");
-                        ExceptionMethods.Throw(new Exception("UHCI cannot map USB Port Address."));
-                    }
-                    portAddr = actualAddress;
-                }
-                else
-                {
-                    uint actualAddress = 0xFFFFFFFF;
-                    SystemCallResults getUSBPageResult = SystemCalls.GetVirtualAddress(portAddr & 0xFFFFF000,
-                        out actualAddress);
-                    if (getUSBPageResult != SystemCallResults.OK)
-                    {
-                        BasicConsole.WriteLine("Error! UHCI cannot get USB Port Address.");
-                        ExceptionMethods.Throw(new Exception("UHCI cannot get USB Port Address."));
-                    }
-                    portAddr = actualAddress;
-                }
-            }
-
-            return (ushort)portAddr;
+            return (ushort)(usbBaseAddress + portOffset);
         }
 
         internal override void Start()
@@ -627,8 +553,15 @@ namespace Kernel.USB.HCIs
 
             ushort val = USBSTS.Read_UInt16();
 
+#if UHCI_TRACE
+            String valStr = "USBSTS: 0x--------";
+            ExceptionMethods.FillString(val, 17, valStr);
+            BasicConsole.WriteLine(valStr);
+#endif 
+
             if (val == 0) // Interrupt came from another UHCI device
             {
+                BasicConsole.WriteLine("No status indicators - returning from interrupt handler.");
                 return;
             }
 
@@ -928,7 +861,7 @@ namespace Kernel.USB.HCIs
                 (UHCITransaction)((USBTransaction)transfer.transactions[0]).underlyingTz;
             UHCITransaction lastTransaction =
                 (UHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-            UHCI_qTD.SetIntOnComplete(lastTransaction.qTD, true); // We want an interrupt after complete transfer
+            UHCI_qTD.SetIntOnComplete(lastTransaction.qTD, true); // We want an interrupt after the last complete transfer
             CreateQH((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint)transfer.underlyingTransferData,
                 firstTransaction.qTD);
 
@@ -938,15 +871,15 @@ namespace Kernel.USB.HCIs
             BasicConsole.WriteLine("    Transactions data:");
             for (int i = 0; i < transfer.transactions.Count; i++)
             {
+                UHCITransaction AUhciTransaction = (UHCITransaction)((USBTransaction)transfer.transactions[i]).underlyingTz;
+
                 BasicConsole.Write(" ");
                 BasicConsole.Write(i);
                 BasicConsole.WriteLine(" : ");
                 BasicConsole.WriteLine("  - qTD:");
-                BasicConsole.DumpMemory(
-                    ((UHCITransaction)((USBTransaction)transfer.transactions[i]).underlyingTz).qTD, sizeof(UHCI_qTD_Struct));
+                BasicConsole.DumpMemory(AUhciTransaction.qTD, sizeof(UHCI_qTD_Struct));
                 BasicConsole.WriteLine("  - qTDBuffer:");
-                BasicConsole.DumpMemory(
-                    ((UHCITransaction)((USBTransaction)transfer.transactions[i]).underlyingTz).qTDBuffer, 16);
+                BasicConsole.DumpMemory(AUhciTransaction.qTDBuffer, 16);
             }
             BasicConsole.DelayOutput(60);
 
@@ -960,7 +893,7 @@ namespace Kernel.USB.HCIs
                 {
                     USBTransaction elem = (USBTransaction)transfer.transactions[j];
                     UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
-                    uT.qTD->u1 = uT.qTD->u1 & 0xFF00FFFF;
+                    uT.qTD->u1 = uT.qTD->u1 & 0xFF01FFFF;
                     UHCI_qTD.SetActive(uT.qTD, true);
                 }
 
@@ -999,7 +932,7 @@ namespace Kernel.USB.HCIs
                     {
                         USBTransaction elem = (USBTransaction)transfer.transactions[j];
                         UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
-                        active = active || ((uT.qTD->u1 & 0x00FF0000) == 0x00800000);
+                        active = active || ((uT.qTD->u1 & 0x00FE0000) == 0x00800000);
                     }
 
                     SystemCalls.SleepThread(50);
@@ -1013,7 +946,7 @@ namespace Kernel.USB.HCIs
                 FrameList[0] = UHCI_Consts.BIT_T;
 
                 if (timeout == 0 ||
-                    TransactionsCompleted != transfer.transactions.Count)
+                    TransactionsCompleted != 1) // Last transaction should have completed
                 {
 #if UHCI_TRACE
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
@@ -1299,14 +1232,14 @@ namespace Kernel.USB.HCIs
         // TD CONTROL AND STATUS  (DWORD 1)
         //public UInt32 actualLength      : 11; //  0-10
         //public UInt32 reserved1         :  5; // 11-15
-        //public UInt32 reserved2         :  1; //    16
-        //public UInt32 bitstuffError     :  1; //    17
-        //public UInt32 crc_timeoutError  :  1; //    18
-        //public UInt32 nakReceived       :  1; //    19
-        //public UInt32 babbleDetected    :  1; //    20
-        //public UInt32 dataBufferError   :  1; //    21
-        //public UInt32 stall             :  1; //    22
-        //public UInt32 active            :  1; //    23
+        //public UInt32 reserved2         :  1; //    16 -- 1
+        //public UInt32 bitstuffError     :  1; //    17    2
+        //public UInt32 crc_timeoutError  :  1; //    18    4
+        //public UInt32 nakReceived       :  1; //    19    8
+        //public UInt32 babbleDetected    :  1; //    20 -- 1
+        //public UInt32 dataBufferError   :  1; //    21    2
+        //public UInt32 stall             :  1; //    22    4
+        //public UInt32 active            :  1; //    23 ** 8
         //public UInt32 intOnComplete     :  1; //    24
         //public UInt32 isochrSelect      :  1; //    25
         //public UInt32 lowSpeedDevice    :  1; //    26

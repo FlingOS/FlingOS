@@ -111,6 +111,12 @@ namespace Kernel.Tasks.Driver
         /// </summary>
         private static void OutputUSB()
         {
+            UnicodeString NullUnicodeString = new UnicodeString()
+            {
+                StringType = 0x00,
+                Value = "[NULL]"
+            };
+
             console.WriteLine((String)"USB system initialised.        HCIs : " + USBManager.HCIDevices.Count);
             console.WriteLine((String)"                              UHCIs : " + USBManager.NumUHCIDevices);
             console.WriteLine((String)"                              OHCIs : " + USBManager.NumOHCIDevices);
@@ -230,11 +236,11 @@ namespace Kernel.Tasks.Driver
                     console.Write(".");
                     console.WriteLine_AsDecimal(usbDeviceInfo.releaseNumber & 0xFF);
                     console.Write("Manufacturer:      ");
-                    console.WriteLine(usbDeviceInfo.ManufacturerString.Value);
+                    console.WriteLine((usbDeviceInfo.ManufacturerString ?? NullUnicodeString).Value);
                     console.Write("Product:           ");
-                    console.WriteLine(usbDeviceInfo.ProductString.Value);
+                    console.WriteLine((usbDeviceInfo.ProductString ?? NullUnicodeString).Value);
                     console.Write("Serial number:     ");
-                    console.WriteLine(usbDeviceInfo.SerialNumberString.Value);
+                    console.WriteLine((usbDeviceInfo.SerialNumberString ?? NullUnicodeString).Value);
                     console.Write("Number of config.: ");
                     console.WriteLine_AsDecimal(usbDeviceInfo.numConfigurations); // number of possible configurations
                     console.Write("MSDInterfaceNum:   ");

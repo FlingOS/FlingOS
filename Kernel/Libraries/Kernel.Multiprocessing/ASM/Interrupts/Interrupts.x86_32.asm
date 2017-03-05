@@ -38,7 +38,7 @@ push dword ebp
 mov dword ebp, esp
 
 mov byte al, [ebp+8]
-test al, 0
+test al, 0xFF
 mov al, 0x20
 jz .Zero
 out 0xA0, al

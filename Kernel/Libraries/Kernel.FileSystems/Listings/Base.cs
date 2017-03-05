@@ -27,13 +27,14 @@
 #endregion
 
 using Kernel.Framework;
+using Kernel.Framework.Processes.Synchronisation;
 
 namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents any listing - a directory or a file.
     /// </summary>
-    public abstract class Base : Object
+    public abstract class Base : Lockable
     {
         /// <summary>
         ///     Whether this listing is a directory or not.
@@ -77,6 +78,7 @@ namespace Kernel.FileSystems
         /// <param name="aName">The name of the listing.</param>
         /// <param name="isDirectory">Whether the listing is a directory or not.</param>
         protected Base(FileSystem aFileSystem, Directory parent, String aName, bool isDirectory)
+            : base(1)
         {
             TheFileSystem = aFileSystem;
             Name = aName;

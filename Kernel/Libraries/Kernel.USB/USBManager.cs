@@ -632,6 +632,7 @@ namespace Kernel.USB
             usbDev.numConfigurations = d->numConfigurations;
             ((Endpoint)usbDev.Endpoints[0]).MPS = d->MaxPacketSize;
 
+            //TODO: These don't work for UHCI for some reason
             usbDev.ManufacturerString = GetUnicodeStringDescriptor(usbDev, usbDev.manufacturerStringID);
             usbDev.ProductString = GetUnicodeStringDescriptor(usbDev, usbDev.productStringID);
             usbDev.SerialNumberString = GetUnicodeStringDescriptor(usbDev, usbDev.serialNumberStringID);
@@ -694,6 +695,7 @@ namespace Kernel.USB
                             config.NumInterfaces = descriptor->numInterfaces;
                             if (currentConfig == config.Selector)
                             {
+                                //TODO: This doesn't work for UHCI for some reason
                                 config.Description = GetUnicodeStringDescriptor(device, descriptor->configuration);
                             }
                             else
@@ -721,6 +723,7 @@ namespace Kernel.USB
                             interf.Class = descriptor->interfaceClass;
                             interf.Subclass = descriptor->interfaceSubclass;
                             interf.Protocol = descriptor->interfaceProtocol;
+                            //TODO: This doesn't work for UHCI for some reason
                             interf.Description = GetUnicodeStringDescriptor(device, descriptor->StringIndex);
                             interf.NumEndpoints = descriptor->numEndpoints;
                             device.Interfaces.Add(interf);

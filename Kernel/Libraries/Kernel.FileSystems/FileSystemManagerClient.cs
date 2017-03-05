@@ -30,6 +30,7 @@ using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Processes;
 using Kernel.Pipes.File;
+using Exception = System.Exception;
 
 namespace Kernel.FileSystems
 {
@@ -109,25 +110,66 @@ namespace Kernel.FileSystems
             Directory Listing = Directory.Find(Path);
             if (Listing != null)
             {
-                List Listings = Listing.GetListings();
-                String Output = "";
-                for (int i = 0; i < Listings.Count; i++)
+                if (Listing.Locked)
                 {
-                    Base AListing = (Base)Listings[i];
-                    if (AListing.IsDirectory)
-                    {
-                        Output += AListing.Name + FileSystemManager.PathDelimiter;
-                    }
-                    else
-                    {
-                        Output += AListing.Name;
-                    }
-                    if (i < Listings.Count - 1)
-                    {
-                        Output += "\n";
-                    }
+                    DataOutPipe.WriteString(DataOutPipeId, "<LOCKED>\\");
                 }
-                DataOutPipe.WriteString(DataOutPipeId, Output);
+                else
+                {
+                    String Output = "";
+
+                    Listing.Lock();
+
+                    try
+                    {
+                        List Listings = Listing.GetListings();
+                        for (int i = 0; i < Listings.Count; i++)
+                        {
+                            Base AListing = (Base)Listings[i];
+                            if (AListing.Locked)
+                            {
+                                if (AListing.IsDirectory)
+                                {
+                                    Output += "<LOCKED>" + FileSystemManager.PathDelimiter;
+                                }
+                                else
+                                {
+                                    Output += "<LOCKED>";
+                                }
+                            }
+                            else
+                            {
+                                AListing.Lock();
+                                try
+                                {
+                                    if (AListing.IsDirectory)
+                                    {
+                                        Output += AListing.Name + FileSystemManager.PathDelimiter;
+                                    }
+                                    else
+                                    {
+                                        Output += AListing.Name;
+                                    }
+                                }
+                                finally
+                                {
+                                    AListing.Unlock();
+                                }
+                            }
+
+                            if (i < Listings.Count - 1)
+                            {
+                                Output += "\n";
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        Listing.Unlock();
+                    }
+
+                    DataOutPipe.WriteString(DataOutPipeId, Output);
+                }
             }
             else
             {
