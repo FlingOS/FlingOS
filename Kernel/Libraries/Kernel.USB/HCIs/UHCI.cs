@@ -854,7 +854,7 @@ namespace Kernel.USB.HCIs
                 (UHCITransaction)((USBTransaction)transfer.transactions[0]).underlyingTz;
             UHCITransaction lastTransaction =
                 (UHCITransaction)((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-            UHCI_qTD.SetIntOnComplete(lastTransaction.qTD, true); // We want an interrupt after complete transfer
+            UHCI_qTD.SetIntOnComplete(lastTransaction.qTD, true); // We want an interrupt after the last complete transfer
             CreateQH((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint)transfer.underlyingTransferData,
                 firstTransaction.qTD);
 
@@ -864,15 +864,15 @@ namespace Kernel.USB.HCIs
             BasicConsole.WriteLine("    Transactions data:");
             for (int i = 0; i < transfer.transactions.Count; i++)
             {
+                UHCITransaction AUhciTransaction = (UHCITransaction)((USBTransaction)transfer.transactions[i]).underlyingTz;
+
                 BasicConsole.Write(" ");
                 BasicConsole.Write(i);
                 BasicConsole.WriteLine(" : ");
                 BasicConsole.WriteLine("  - qTD:");
-                BasicConsole.DumpMemory(
-                    ((UHCITransaction)((USBTransaction)transfer.transactions[i]).underlyingTz).qTD, sizeof(UHCI_qTD_Struct));
+                BasicConsole.DumpMemory(AUhciTransaction.qTD, sizeof(UHCI_qTD_Struct));
                 BasicConsole.WriteLine("  - qTDBuffer:");
-                BasicConsole.DumpMemory(
-                    ((UHCITransaction)((USBTransaction)transfer.transactions[i]).underlyingTz).qTDBuffer, 16);
+                BasicConsole.DumpMemory(AUhciTransaction.qTDBuffer, 16);
             }
             BasicConsole.DelayOutput(60);
 
@@ -886,7 +886,7 @@ namespace Kernel.USB.HCIs
                 {
                     USBTransaction elem = (USBTransaction)transfer.transactions[j];
                     UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
-                    uT.qTD->u1 = uT.qTD->u1 & 0xFF00FFFF;
+                    uT.qTD->u1 = uT.qTD->u1 & 0xFF01FFFF;
                     UHCI_qTD.SetActive(uT.qTD, true);
                 }
 
@@ -925,7 +925,7 @@ namespace Kernel.USB.HCIs
                     {
                         USBTransaction elem = (USBTransaction)transfer.transactions[j];
                         UHCITransaction uT = (UHCITransaction)elem.underlyingTz;
-                        active = active || ((uT.qTD->u1 & 0x00FF0000) == 0x00800000);
+                        active = active || ((uT.qTD->u1 & 0x00FE0000) == 0x00800000);
                     }
 
                     SystemCalls.SleepThread(50);
@@ -939,7 +939,7 @@ namespace Kernel.USB.HCIs
                 FrameList[0] = UHCI_Consts.BIT_T;
 
                 if (timeout == 0 ||
-                    TransactionsCompleted != transfer.transactions.Count)
+                    TransactionsCompleted != 1) // Last transaction should have completed
                 {
 #if UHCI_TRACE
                     BasicConsole.SetTextColour(BasicConsole.error_colour);
