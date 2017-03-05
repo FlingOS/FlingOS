@@ -26,7 +26,7 @@
 
 #endregion
 
-#define UHCI_TRACE
+//#define UHCI_TRACE
 
 using System.Runtime.InteropServices;
 using Kernel.Framework;
@@ -553,8 +553,15 @@ namespace Kernel.USB.HCIs
 
             ushort val = USBSTS.Read_UInt16();
 
+#if UHCI_TRACE
+            String valStr = "USBSTS: 0x--------";
+            ExceptionMethods.FillString(val, 17, valStr);
+            BasicConsole.WriteLine(valStr);
+#endif 
+
             if (val == 0) // Interrupt came from another UHCI device
             {
+                BasicConsole.WriteLine("No status indicators - returning from interrupt handler.");
                 return;
             }
 
@@ -1225,14 +1232,14 @@ namespace Kernel.USB.HCIs
         // TD CONTROL AND STATUS  (DWORD 1)
         //public UInt32 actualLength      : 11; //  0-10
         //public UInt32 reserved1         :  5; // 11-15
-        //public UInt32 reserved2         :  1; //    16
-        //public UInt32 bitstuffError     :  1; //    17
-        //public UInt32 crc_timeoutError  :  1; //    18
-        //public UInt32 nakReceived       :  1; //    19
-        //public UInt32 babbleDetected    :  1; //    20
-        //public UInt32 dataBufferError   :  1; //    21
-        //public UInt32 stall             :  1; //    22
-        //public UInt32 active            :  1; //    23
+        //public UInt32 reserved2         :  1; //    16 -- 1
+        //public UInt32 bitstuffError     :  1; //    17    2
+        //public UInt32 crc_timeoutError  :  1; //    18    4
+        //public UInt32 nakReceived       :  1; //    19    8
+        //public UInt32 babbleDetected    :  1; //    20 -- 1
+        //public UInt32 dataBufferError   :  1; //    21    2
+        //public UInt32 stall             :  1; //    22    4
+        //public UInt32 active            :  1; //    23 ** 8
         //public UInt32 intOnComplete     :  1; //    24
         //public UInt32 isochrSelect      :  1; //    25
         //public UInt32 lowSpeedDevice    :  1; //    26
