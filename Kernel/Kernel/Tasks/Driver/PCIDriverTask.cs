@@ -37,8 +37,28 @@ namespace Kernel.Tasks.Driver
                     BasicConsole.WriteLine("PCI Driver > Starting accessors thread...");
                     PCIManager.StartAccessorsThread();
 
-                    BasicConsole.WriteLine("PCI Driver > Outputting PCI info...");
-                    OutputPCI();
+                    //BasicConsole.WriteLine("PCI Driver > Outputting PCI info...");
+                    //OutputPCI();
+
+                    AMDPCNetII pcnet = null;
+                    for (int i = 0; i < PCIManager.Devices.Count; i++)
+                    {
+                        PCIDevice aDevice = (PCIDevice)PCIManager.Devices[i];
+                        if (aDevice.VendorID == 0x1022 && aDevice.DeviceID == 0x2000)
+                        {
+                            pcnet = new AMDPCNetII(aDevice.bus, aDevice.slot, aDevice.function);
+                            BasicConsole.WriteLine("PCI Driver > Found an AMDPCNetII...");
+                        }
+                    }
+
+                    if (pcnet != null)
+                    {
+                        if (pcnet.Init())
+                          pcnet.Start();
+
+                        while (true) { };
+                    }
+
                 }
                 catch
                 {
