@@ -26,7 +26,7 @@
 
 #endregion
 
-//#define USB_TRACE
+#define USB_TRACE
 
 using Kernel.Devices;
 using Kernel.Framework;
@@ -94,7 +94,7 @@ namespace Kernel.USB
 
         public static void Init()
         {
-            IgnoreUSB10and11Devices = true;
+            IgnoreUSB10and11Devices = false;
             UpdateRequired = false;
             HCIDevices = new List(3);
             Devices = new List(5);
@@ -864,7 +864,8 @@ namespace Kernel.USB
                     if (descriptor->length > 0)
                     {
                         int totalLangs = 0;
-                        for (int i = 0; i < 10; i++)
+                        int possibleNumLangs = (descriptor->length - 2)/2;
+                        for (int i = 0; i < possibleNumLangs; i++)
                         {
                             if (descriptor->languageID[i] >= 0x0400 && descriptor->languageID[i] <= 0x0465)
                             {
@@ -878,7 +879,7 @@ namespace Kernel.USB
                         };
 
                         totalLangs = 0;
-                        for (int i = 0; i < 10; i++)
+                        for (int i = 0; i < possibleNumLangs; i++)
                         {
                             if (descriptor->languageID[i] >= 0x0400 && descriptor->languageID[i] <= 0x0465)
                             {
