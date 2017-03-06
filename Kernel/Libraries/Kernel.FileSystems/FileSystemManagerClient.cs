@@ -45,6 +45,8 @@ namespace Kernel.FileSystems
 
         public bool Terminating = false;
 
+        private List OwnedListings = new List(10);
+
         public unsafe void Manage()
         {
             while (!Terminating)
