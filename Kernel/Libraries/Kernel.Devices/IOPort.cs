@@ -69,7 +69,7 @@ namespace Kernel.Devices
             Port = (ushort)(aBase + anOffset);
             Id = (ulong)(Port + 1);
 
-            BasicConsole.WriteLine((String)"IOPort: Creating port: " + Port);
+            //BasicConsole.WriteLine((String)"IOPort: Creating port: " + Port);
             if (ProcessManager.CurrentProcess != null)
             {
                 // Note: Assumptions: Serial ports were registered first, serial ports have id == portnum+1

@@ -26,7 +26,7 @@
 
 #endregion
 
-#define USB_TRACE
+//#define USB_TRACE
 
 using Kernel.Devices;
 using Kernel.Framework;

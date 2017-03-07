@@ -296,8 +296,8 @@ namespace Kernel.Devices
 
             Devices.Add(NewDevice);
 
-            BasicConsole.Write("Registering new device:");
-            BasicConsole.WriteLine(NewDevice.Id);
+            //BasicConsole.Write("Registering new device:");
+            //BasicConsole.WriteLine(NewDevice.Id);
             //BasicConsole.WriteLine((uint)NewDevice.Group);
             //BasicConsole.WriteLine((uint)NewDevice.Class);
             //BasicConsole.WriteLine((uint)NewDevice.SubClass);
