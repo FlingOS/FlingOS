@@ -26,7 +26,7 @@
 
 #endregion
 
-#define USB_TRACE
+//#define USB_TRACE
 
 using Kernel.Devices;
 using Kernel.Framework;
@@ -42,9 +42,8 @@ namespace Kernel.USB
 {
     //TODO: Read Benjamin Lunt's book "USB: The Universal Serial Bus (FYSOS: Operating System Design Book 8)"
     //  It contains a lot of practical points about USB implementation which this driver fails to account for.
-    //  For example, this driver does not follow the practice of requesting the first 8 bytes of descriptors,
-    //  to get the length info, then requesting the remaining bytes. Nor does it separately send the STATUS
-    //  packet at the end of a successful request. 
+    //  For example, this driver always sends the STATUS packet. It does not separately send the STATUS packet 
+    //  at the end of a successful request (and in theory, not at all for failed requests (maybe? Read the book)). 
     //
     //  For this driver to be 100% proper, it should be modified to include Lunt's practical notes. However,
     //  this is only the low-level USB driver which will be superseded by the proper USB driver in the full 
@@ -307,7 +306,7 @@ namespace Kernel.USB
             deviceInf.Interfaces = new List(1);
             deviceInf.Endpoints = new List(1);
             deviceInf.Endpoints.Add(new Endpoint());
-            ((Endpoint)deviceInf.Endpoints[0]).MPS = 64;
+            ((Endpoint)deviceInf.Endpoints[0]).MPS = (ushort)((port.speed == USBPortSpeed.Full || port.speed == USBPortSpeed.Low) ? 8u : 64u);
             ((Endpoint)deviceInf.Endpoints[0]).Type = Endpoint.Types.BIDIR;
             ((Endpoint)deviceInf.Endpoints[0]).Toggle = false;
 #if USB_TRACE
@@ -446,16 +445,16 @@ namespace Kernel.USB
                     return;
                 }
 
+
 #if USB_TRACE
                 DBGMSG("Got config descriptor.");
                 BasicConsole.DelayOutput(4);
 #endif
-
                 byte wantedConfig = 1;
                 SetConfiguration(deviceInfo, wantedConfig); // set first configuration
 
 #if USB_TRACE
-    // Debug check: Check configuration set properly
+                // Debug check: Check configuration set properly
                 byte config = GetConfiguration(deviceInfo);
                 if (config == wantedConfig)
                 {
@@ -463,10 +462,12 @@ namespace Kernel.USB
                 }
                 else
                 {
-                    DBGMSG(((Framework.String)"Configuration not OK! wantedConfig=") + wantedConfig + ", config=" + config);
+                    DBGMSG(((Framework.String)"Configuration not OK! wantedConfig=") + wantedConfig + ", config=" +
+                            config);
                 }
                 BasicConsole.DelayOutput(10);
 #endif
+
                 // Hub device
                 if (hub)
                 {
@@ -482,6 +483,7 @@ namespace Kernel.USB
                     //  this device entirely.
                     USBDevice NewDevice = new USBDevice(deviceInfo, DeviceGroup.USB, DeviceClass.Generic,
                         DeviceSubClass.USB, "USB Hub", true);
+                    
                     DeviceManager.RegisterDevice(NewDevice);
                     Devices.Add(NewDevice);
                 }
@@ -495,6 +497,7 @@ namespace Kernel.USB
                     try
                     {
                         MassStorageDevice NewDevice = new MassStorageDevice(deviceInfo);
+
                         DeviceManager.RegisterDevice(NewDevice);
                         Devices.Add(NewDevice);
                     }
@@ -517,6 +520,7 @@ namespace Kernel.USB
                     //  this device entirely.
                     USBDevice NewDevice = new USBDevice(deviceInfo, DeviceGroup.USB, DeviceClass.Generic,
                         DeviceSubClass.USB, "Unknown USB Device", true);
+
                     DeviceManager.RegisterDevice(NewDevice);
                     Devices.Add(NewDevice);
                 }
@@ -631,8 +635,7 @@ namespace Kernel.USB
             usbDev.serialNumberStringID = d->serialNumber;
             usbDev.numConfigurations = d->numConfigurations;
             ((Endpoint)usbDev.Endpoints[0]).MPS = d->MaxPacketSize;
-
-            //TODO: These don't work for UHCI for some reason
+            
             usbDev.ManufacturerString = GetUnicodeStringDescriptor(usbDev, usbDev.manufacturerStringID);
             usbDev.ProductString = GetUnicodeStringDescriptor(usbDev, usbDev.productStringID);
             usbDev.SerialNumberString = GetUnicodeStringDescriptor(usbDev, usbDev.serialNumberStringID);
@@ -643,191 +646,217 @@ namespace Kernel.USB
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
-        public static bool GetConfigurationDescriptors(USBDeviceInfo device)
+        public static bool GetConfigurationDescriptors(USBDeviceInfo device, ushort knownLength = 0)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR Config");
 #endif
 
-            //64 byte buffer
-            ushort bufferSize = 64;
-            byte* buffer = (byte*)Heap.AllocZeroed(bufferSize, "USBManager: GetConfigDescriptor");
-
             bool success = false;
 
-            try
+            if (knownLength == 0)
             {
-                USBTransfer transfer = new USBTransfer();
-                device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
-                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 2, 0, 0, bufferSize);
-                device.hc.INTransaction(transfer, false, buffer, 64);
-                device.hc.OUTTransaction(transfer, true, null, 0);
-                device.hc.IssueTransfer(transfer);
+                USBPortSpeed speed = device.hc.GetPort(device.portNum).speed;
+                ushort bufferSize = (ushort)(speed == USBPortSpeed.Full || speed == USBPortSpeed.Low ? 8u : 64u);
+                ConfigurationDescriptor* buffer =
+                    (ConfigurationDescriptor*)Heap.AllocZeroed(bufferSize, "USBManager : GetConfigurationDescriptors (1)");
 
-                success = transfer.success;
-
-                if (transfer.success)
+                try
                 {
-                    byte currentConfig = GetConfiguration(device);
+                    USBTransfer transfer = new USBTransfer();
+                    device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
+                    device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 2, 0, 0, bufferSize);
+                    device.hc.INTransaction(transfer, false, buffer, bufferSize);
+                    device.hc.OUTTransaction(transfer, true, null, 0);
+                    device.hc.IssueTransfer(transfer);
 
-                    // parse to config (len=9,type=2), interface (len=9,type=4) or endpoint (len=7,type=5)
-#if USB_TRACE
-                    DBGMSG("---------------------------------------------------------------------");
-#endif
-                    byte* addr = buffer;
-                    byte* lastByte = addr + bufferSize;
-
-                    ushort numEndpoints = 1;
-                    // First pass. Retrieve usb_interfaceDescriptor which contains the number of endpoints
-                    while (addr < lastByte)
+                    if (transfer.success)
                     {
-                        byte type = *(addr + 1);
-                        byte length = *addr;
+                        success = GetConfigurationDescriptors(device, buffer->totalLength);
+                    }
+                }
+                finally
+                {
+                    Heap.Free(buffer);
+                }
+            }
+            else
+            {
+                ushort bufferSize = knownLength;
+                byte* buffer = (byte*)Heap.AllocZeroed(bufferSize, "USBManager: GetConfigurationDescriptors (2)");
 
-                        if (length == 9 && type == 2)
+                try
+                {
+                    USBTransfer transfer = new USBTransfer();
+                    device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
+                    device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 2, 0, 0, bufferSize);
+                    device.hc.INTransaction(transfer, false, buffer, bufferSize);
+                    device.hc.OUTTransaction(transfer, true, null, 0);
+                    device.hc.IssueTransfer(transfer);
+
+                    success = transfer.success;
+
+                    if (transfer.success)
+                    {
+                        byte currentConfig = GetConfiguration(device);
+
+                        // parse to config (len=9,type=2), interface (len=9,type=4) or endpoint (len=7,type=5)
+#if USB_TRACE
+                        DBGMSG("---------------------------------------------------------------------");
+#endif
+                        byte* addr = buffer;
+                        byte* lastByte = addr + bufferSize;
+
+                        ushort numEndpoints = 1;
+                        // First pass. Retrieve usb_interfaceDescriptor which contains the number of endpoints
+                        while (addr < lastByte)
                         {
-                            ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*)addr;
+                            byte type = *(addr + 1);
+                            byte length = *addr;
 
-                            Configuration config = new Configuration();
-                            config.Attribs = (Configuration.Attributes)descriptor->attributes;
-                            config.Selector = descriptor->configurationValue;
-                            config.MaxPower = descriptor->maxPower;
-                            config.NumInterfaces = descriptor->numInterfaces;
-                            if (currentConfig == config.Selector)
+                            if (length == 9 && type == 2)
                             {
-                                //TODO: This doesn't work for UHCI for some reason
-                                config.Description = GetUnicodeStringDescriptor(device, descriptor->configuration);
+                                ConfigurationDescriptor* descriptor = (ConfigurationDescriptor*)addr;
+
+                                Configuration config = new Configuration();
+                                config.Attribs = (Configuration.Attributes)descriptor->attributes;
+                                config.Selector = descriptor->configurationValue;
+                                config.MaxPower = descriptor->maxPower;
+                                config.NumInterfaces = descriptor->numInterfaces;
+                                if (currentConfig == config.Selector)
+                                {
+                                    config.Description = GetUnicodeStringDescriptor(device, descriptor->configuration);
+                                }
+                                else
+                                {
+                                    config.Description = new UnicodeString
+                                    {
+                                        StringType = 0,
+                                        Value = "[Unable to load at this time]"
+                                    };
+                                }
+
+                                device.Configurations.Add(config);
+
+#if USB_TRACE
+                                ShowConfiguration(config);
+#endif
+                            }
+                            else if (length == 9 && type == 4)
+                            {
+                                InterfaceDescriptor* descriptor = (InterfaceDescriptor*)addr;
+
+                                Interface interf = new Interface();
+                                interf.InterfaceNumber = descriptor->interfaceNumber;
+                                interf.AlternateSetting = descriptor->alternateSetting;
+                                interf.Class = descriptor->interfaceClass;
+                                interf.Subclass = descriptor->interfaceSubclass;
+                                interf.Protocol = descriptor->interfaceProtocol;
+                                interf.Description = GetUnicodeStringDescriptor(device, descriptor->StringIndex);
+                                interf.NumEndpoints = descriptor->numEndpoints;
+                                device.Interfaces.Add(interf);
+
+#if USB_TRACE
+                                ShowInterface(interf);
+#endif
+
+                                if (interf.Class == 8)
+                                {
+                                    // store interface number for mass storage transfers
+                                    device.MSD_InterfaceNum = interf.InterfaceNumber;
+                                    device.InterfaceClass = interf.Class;
+                                    device.InterfaceSubclass = interf.Subclass;
+                                }
+
+                                numEndpoints += interf.NumEndpoints;
+                            }
+                            else if (length == 7 && type == 5)
+                            {
+                                //Skip endpoints in first pass
                             }
                             else
                             {
-                                config.Description = new UnicodeString
+#if USB_TRACE
+                                DBGMSG(((Framework.String)"Unknown descriptor: Length=") + length + ", Type=" + type);
+#endif
+                                if (length == 0)
                                 {
-                                    StringType = 0,
-                                    Value = "[Unable to load at this time]"
-                                };
+                                    break;
+                                }
                             }
-
-                            device.Configurations.Add(config);
-
-#if USB_TRACE
-                            ShowConfiguration(config);
-#endif
+                            addr += length;
                         }
-                        else if (length == 9 && type == 4)
+
+                        Object endpointZero = device.Endpoints[0];
+                        device.Endpoints.Empty();
+                        device.Endpoints.Add(endpointZero);
+                        for (int i = 0; i < numEndpoints - 1; i++)
                         {
-                            InterfaceDescriptor* descriptor = (InterfaceDescriptor*)addr;
+                            device.Endpoints.Add(new Endpoint());
+                        }
 
-                            Interface interf = new Interface();
-                            interf.InterfaceNumber = descriptor->interfaceNumber;
-                            interf.AlternateSetting = descriptor->alternateSetting;
-                            interf.Class = descriptor->interfaceClass;
-                            interf.Subclass = descriptor->interfaceSubclass;
-                            interf.Protocol = descriptor->interfaceProtocol;
-                            //TODO: This doesn't work for UHCI for some reason
-                            interf.Description = GetUnicodeStringDescriptor(device, descriptor->StringIndex);
-                            interf.NumEndpoints = descriptor->numEndpoints;
-                            device.Interfaces.Add(interf);
+                        // Second pass. Fill in endpoint information
+                        addr = buffer;
+                        while (addr < lastByte)
+                        {
+                            byte type = *(addr + 1);
+                            byte length = *addr;
 
-#if USB_TRACE
-                            ShowInterface(interf);
-#endif
-
-                            if (interf.Class == 8)
+                            if (length == 7 && type == 5)
                             {
-                                // store interface number for mass storage transfers
-                                device.MSD_InterfaceNum = interf.InterfaceNumber;
-                                device.InterfaceClass = interf.Class;
-                                device.InterfaceSubclass = interf.Subclass;
-                            }
+                                EndpointDescriptor* descriptor = (EndpointDescriptor*)addr;
 
-                            numEndpoints += interf.NumEndpoints;
-                        }
-                        else if (length == 7 && type == 5)
-                        {
-                            //Skip endpoints in first pass
-                        }
-                        else
-                        {
+                                byte ep_id = (byte)(descriptor->endpointAddress & 0xF);
 #if USB_TRACE
-                            DBGMSG(((Framework.String)"Unknown descriptor: Length=") + length + ", Type=" + type);
+                                if (ep_id >= numEndpoints)
+                                {
+                                    DBGMSG("ep_id >= numEndpoints!!");
+                                }
 #endif
-                            if (length == 0)
+                                Endpoint endpoint = (Endpoint)device.Endpoints[ep_id];
+
+                                endpoint.MPS = descriptor->maxPacketSize;
+                                endpoint.Type = Endpoint.Types.BIDIR; // Can be overwritten below
+                                endpoint.Address = (byte)(descriptor->endpointAddress & 0xF);
+                                endpoint.Attributes = descriptor->attributes;
+                                endpoint.Interval = descriptor->interval;
+
+                                // store endpoint numbers for IN/OUT mass storage transfers, attributes must be 0x2, because there are also endpoints with attributes 0x3(interrupt)
+                                if ((descriptor->endpointAddress & 0x80) > 0 && descriptor->attributes == 0x2)
+                                {
+                                    if (ep_id < 3)
+                                    {
+                                        device.MSD_INEndpointID = ep_id;
+                                    }
+                                    endpoint.Type = Endpoint.Types.IN;
+                                }
+
+                                if ((descriptor->endpointAddress & 0x80) == 0 && descriptor->attributes == 0x2)
+                                {
+                                    if (ep_id < 3)
+                                    {
+                                        device.MSD_OUTEndpointID = ep_id;
+                                    }
+                                    endpoint.Type = Endpoint.Types.OUT;
+                                }
+
+#if USB_TRACE
+                                ShowEndpoint(endpoint);
+#endif
+                            }
+                            else if (length == 0)
                             {
                                 break;
                             }
+
+                            addr += length;
                         }
-                        addr += length;
-                    }
-
-                    Object endpointZero = device.Endpoints[0];
-                    device.Endpoints.Empty();
-                    device.Endpoints.Add(endpointZero);
-                    for (int i = 0; i < numEndpoints - 1; i++)
-                    {
-                        device.Endpoints.Add(new Endpoint());
-                    }
-
-                    // Second pass. Fill in endpoint information
-                    addr = buffer;
-                    while (addr < lastByte)
-                    {
-                        byte type = *(addr + 1);
-                        byte length = *addr;
-
-                        if (length == 7 && type == 5)
-                        {
-                            EndpointDescriptor* descriptor = (EndpointDescriptor*)addr;
-
-                            byte ep_id = (byte)(descriptor->endpointAddress & 0xF);
-#if USB_TRACE
-                            if (ep_id >= numEndpoints)
-                            {
-                                DBGMSG("ep_id >= numEndpoints!!");
-                            }
-#endif
-                            Endpoint endpoint = (Endpoint)device.Endpoints[ep_id];
-
-                            endpoint.MPS = descriptor->maxPacketSize;
-                            endpoint.Type = Endpoint.Types.BIDIR; // Can be overwritten below
-                            endpoint.Address = (byte)(descriptor->endpointAddress & 0xF);
-                            endpoint.Attributes = descriptor->attributes;
-                            endpoint.Interval = descriptor->interval;
-
-                            // store endpoint numbers for IN/OUT mass storage transfers, attributes must be 0x2, because there are also endpoints with attributes 0x3(interrupt)
-                            if ((descriptor->endpointAddress & 0x80) > 0 && descriptor->attributes == 0x2)
-                            {
-                                if (ep_id < 3)
-                                {
-                                    device.MSD_INEndpointID = ep_id;
-                                }
-                                endpoint.Type = Endpoint.Types.IN;
-                            }
-
-                            if ((descriptor->endpointAddress & 0x80) == 0 && descriptor->attributes == 0x2)
-                            {
-                                if (ep_id < 3)
-                                {
-                                    device.MSD_OUTEndpointID = ep_id;
-                                }
-                                endpoint.Type = Endpoint.Types.OUT;
-                            }
-
-#if USB_TRACE
-                            ShowEndpoint(endpoint);
-#endif
-                        }
-                        else if (length == 0)
-                        {
-                            break;
-                        }
-
-                        addr += length;
                     }
                 }
-            }
-            finally
-            {
-                Heap.Free(buffer);
+                finally
+                {
+                    Heap.Free(buffer);
+                }
             }
 
             return success;
@@ -838,71 +867,103 @@ namespace Kernel.USB
         /// </summary>
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
-        public static StringInfo GetDeviceStringDescriptor(USBDeviceInfo device)
+        public static StringInfo GetDeviceStringDescriptor(USBDeviceInfo device, ushort knownLength = 0)
         {
 #if USB_TRACE
             DBGMSG("USB: GET_DESCRIPTOR string");
 #endif
 
             StringInfo result = null;
-            StringDescriptor* descriptor =
-                (StringDescriptor*)
-                    Heap.AllocZeroed((uint)sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
 
-            try
+            if (knownLength == 0)
             {
-                ushort size = (ushort)sizeof(StringDescriptor);
-                USBTransfer transfer = new USBTransfer();
-                device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, 64);
-                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, 0, 0, size);
-                device.hc.INTransaction(transfer, false, descriptor, size);
-                device.hc.OUTTransaction(transfer, true, null, 0);
-                device.hc.IssueTransfer(transfer);
+                StringDescriptor* descriptor =
+                    (StringDescriptor*)
+                        Heap.AllocZeroed((uint)sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
 
-                if (transfer.success)
+                try
                 {
-                    if (descriptor->length > 0)
+                    USBPortSpeed speed = device.hc.GetPort(device.portNum).speed;
+
+                    ushort size = (ushort)(speed == USBPortSpeed.Full || speed == USBPortSpeed.Low ? 8u : 64u);
+                    USBTransfer transfer = new USBTransfer();
+                    device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, knownLength);
+                    device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, 0, 0, size);
+                    device.hc.INTransaction(transfer, false, descriptor, size);
+                    device.hc.OUTTransaction(transfer, true, null, 0);
+                    device.hc.IssueTransfer(transfer);
+
+                    if (transfer.success)
                     {
-                        int totalLangs = 0;
-                        int possibleNumLangs = (descriptor->length - 2)/2;
-                        for (int i = 0; i < possibleNumLangs; i++)
-                        {
-                            if (descriptor->languageID[i] >= 0x0400 && descriptor->languageID[i] <= 0x0465)
-                            {
-                                totalLangs++;
-                            }
-                        }
-
-                        result = new StringInfo
-                        {
-                            LanguageIds = new ushort[totalLangs]
-                        };
-
-                        totalLangs = 0;
-                        for (int i = 0; i < possibleNumLangs; i++)
-                        {
-                            if (descriptor->languageID[i] >= 0x0400 && descriptor->languageID[i] <= 0x0465)
-                            {
-                                result.LanguageIds[totalLangs++] = descriptor->languageID[i];
-                            }
-                        }
+                        result = GetDeviceStringDescriptor(device, descriptor->length);
                     }
-                    else
-                    {
-                        result = new StringInfo
-                        {
-                            LanguageIds = new ushort[0]
-                        };
-                    }
-
-#if USB_TRACE
-                    ShowString(result);
-#endif
+                }
+                finally
+                {
+                    Heap.Free(descriptor);
                 }
             }
-            finally
+            else
             {
-                Heap.Free(descriptor);
+                StringDescriptor* descriptor =
+                    (StringDescriptor*)
+                        Heap.AllocZeroed((uint)sizeof(StringDescriptor), "USBManager : GetDeviceStringDescriptor");
+
+                try
+                {
+                    ushort size = knownLength;
+                    USBTransfer transfer = new USBTransfer();
+                    device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, knownLength);
+                    device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, 0, 0, size);
+                    device.hc.INTransaction(transfer, false, descriptor, size);
+                    device.hc.OUTTransaction(transfer, true, null, 0);
+                    device.hc.IssueTransfer(transfer);
+
+                    if (transfer.success)
+                    {
+                        if (descriptor->length > 0)
+                        {
+                            int totalLangs = 0;
+                            int possibleNumLangs = (descriptor->length - 2)/2;
+                            for (int i = 0; i < possibleNumLangs; i++)
+                            {
+                                if (descriptor->languageID[i] >= 0x0400 && descriptor->languageID[i] <= 0x0465)
+                                {
+                                    totalLangs++;
+                                }
+                            }
+
+                            result = new StringInfo
+                            {
+                                LanguageIds = new ushort[totalLangs]
+                            };
+
+                            totalLangs = 0;
+                            for (int i = 0; i < possibleNumLangs; i++)
+                            {
+                                if (descriptor->languageID[i] >= 0x0400 && descriptor->languageID[i] <= 0x0465)
+                                {
+                                    result.LanguageIds[totalLangs++] = descriptor->languageID[i];
+                                }
+                            }
+                        }
+                        else
+                        {
+                            result = new StringInfo
+                            {
+                                LanguageIds = new ushort[0]
+                            };
+                        }
+
+#if USB_TRACE
+                        ShowString(result);
+#endif
+                    }
+                }
+                finally
+                {
+                    Heap.Free(descriptor);
+                }
             }
 
             return result;
@@ -914,7 +975,7 @@ namespace Kernel.USB
         /// <param name="device">The device info of the device to get the descriptor from.</param>
         /// <param name="stringIndex">The index of the string descriptor to get.</param>
         /// <returns>True if USB transfer completed successfully. Otherwise, false.</returns>
-        public static UnicodeString GetUnicodeStringDescriptor(USBDeviceInfo device, byte stringIndex)
+        public static UnicodeString GetUnicodeStringDescriptor(USBDeviceInfo device, byte stringIndex, ushort knownLength = 0)
         {
 #if USB_TRACE
             DBGMSG(((Framework.String)"USB: GET_DESCRIPTOR string, endpoint: 0 stringIndex: ") + stringIndex);
@@ -935,39 +996,67 @@ namespace Kernel.USB
                 Value = "[Failed to load]"
             };
 
-            //64 byte buffer
-            ushort bufferSize = 64;
-            StringDescriptorUnicode* buffer =
-                (StringDescriptorUnicode*)Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor");
-
-            try
+            if (knownLength == 0)
             {
-                USBTransfer transfer = new USBTransfer();
-                device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
-                device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, stringIndex, 0x0409, bufferSize);
-                device.hc.INTransaction(transfer, false, buffer, bufferSize);
-                device.hc.OUTTransaction(transfer, true, null, 0);
-                device.hc.IssueTransfer(transfer);
+                USBPortSpeed speed = device.hc.GetPort(device.portNum).speed;
+                ushort bufferSize = (ushort)(speed == USBPortSpeed.Full || speed == USBPortSpeed.Low ? 8u : 64u);
+                StringDescriptorUnicode* buffer =
+                    (StringDescriptorUnicode*)Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor (1)");
 
-                if (transfer.success)
+                try
                 {
-                    result = new UnicodeString
-                    {
-                        StringType = buffer->descriptorType,
-                        Value =
-                            buffer->length > 0
-                                ? ByteConverter.GetASCIIStringFromUTF16(buffer->widechar, 0, buffer->length)
-                                : ""
-                    };
+                    USBTransfer transfer = new USBTransfer();
+                    device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
+                    device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, stringIndex, 0x0409, bufferSize);
+                    device.hc.INTransaction(transfer, false, buffer, bufferSize);
+                    device.hc.OUTTransaction(transfer, true, null, 0);
+                    device.hc.IssueTransfer(transfer);
 
-#if USB_TRACE
-                    ShowUnicodeString(result);
-#endif
+                    if (transfer.success)
+                    {
+                        result = GetUnicodeStringDescriptor(device, stringIndex, buffer->length);
+                    }
+                }
+                finally
+                {
+                    Heap.Free(buffer);
                 }
             }
-            finally
+            else
             {
-                Heap.Free(buffer);
+                ushort bufferSize = knownLength;
+                StringDescriptorUnicode* buffer =
+                    (StringDescriptorUnicode*)Heap.AllocZeroed(bufferSize, "USBManager : GetUnicodeStringDescriptor (2)");
+
+                try
+                {
+                    USBTransfer transfer = new USBTransfer();
+                    device.hc.SetupTransfer(device, transfer, USBTransferType.Control, 0, bufferSize);
+                    device.hc.SETUPTransaction(transfer, 8, 0x80, 6, 3, stringIndex, 0x0409, bufferSize);
+                    device.hc.INTransaction(transfer, false, buffer, bufferSize);
+                    device.hc.OUTTransaction(transfer, true, null, 0);
+                    device.hc.IssueTransfer(transfer);
+
+                    if (transfer.success)
+                    {
+                        result = new UnicodeString
+                        {
+                            StringType = buffer->descriptorType,
+                            Value =
+                                buffer->length > 0
+                                    ? ByteConverter.GetASCIIStringFromUTF16(buffer->widechar, 0, buffer->length)
+                                    : ""
+                        };
+
+#if USB_TRACE
+                        ShowUnicodeString(result);
+#endif
+                    }
+                }
+                finally
+                {
+                    Heap.Free(buffer);
+                }
             }
 
             return result;

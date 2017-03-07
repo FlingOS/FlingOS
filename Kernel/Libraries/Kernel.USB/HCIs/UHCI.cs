@@ -106,7 +106,7 @@ namespace Kernel.USB.HCIs
 
         public static uint BIT_T = Utils.BIT(0);
         public static uint BIT_QH = Utils.BIT(1);
-        public static uint BIT_Vf = Utils.BIT(2);
+        public static uint BIT_DEPTH_FIRST = Utils.BIT(2);
 
         public static int NUMBER_OF_UHCI_RETRIES = 3;
     }
@@ -559,9 +559,11 @@ namespace Kernel.USB.HCIs
             BasicConsole.WriteLine(valStr);
 #endif 
 
-            if (val == 0) // Interrupt came from another UHCI device
+            if (val == 0) // Interrupt came from another HCI device
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("No status indicators - returning from interrupt handler.");
+#endif
                 return;
             }
 
@@ -765,7 +767,8 @@ namespace Kernel.USB.HCIs
 
             uT.qTD = CreateQTD_SETUP((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint*)1, toggle,
                 tokenBytes, type, req, hiVal, loVal, index, length, transfer.device.address, transfer.endpoint,
-                transfer.packetSize);
+                transfer.packetSize,
+                GetPort(transfer.device.portNum).speed == USBPortSpeed.Low);
             uT.qTDBuffer = uT.qTD->virtBuffer;
 
             if (transfer.transactions.Count > 0)
@@ -773,7 +776,7 @@ namespace Kernel.USB.HCIs
                 UHCITransaction uLastTransaction =
                     (UHCITransaction)
                         ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_DEPTH_FIRST;
                 // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
@@ -793,7 +796,8 @@ namespace Kernel.USB.HCIs
             uT.inLength = length;
 
             uT.qTD = CreateQTD_IO((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint*)1, UHCI_Consts.TD_IN,
-                toggle, length, transfer.device.address, transfer.endpoint, transfer.packetSize);
+                toggle, length, transfer.device.address, transfer.endpoint, transfer.packetSize,
+                GetPort(transfer.device.portNum).speed == USBPortSpeed.Low);
             uT.qTDBuffer = uT.qTD->virtBuffer;
 
             if (transfer.transactions.Count > 0)
@@ -801,7 +805,7 @@ namespace Kernel.USB.HCIs
                 UHCITransaction uLastTransaction =
                     (UHCITransaction)
                         ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_DEPTH_FIRST;
                 // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
@@ -821,7 +825,8 @@ namespace Kernel.USB.HCIs
             uT.inLength = 0;
 
             uT.qTD = CreateQTD_IO((UHCI_QueueHead_Struct*)transfer.underlyingTransferData, (uint*)1,
-                UHCI_Consts.TD_OUT, toggle, length, transfer.device.address, transfer.endpoint, transfer.packetSize);
+                UHCI_Consts.TD_OUT, toggle, length, transfer.device.address, transfer.endpoint, transfer.packetSize,
+                GetPort(transfer.device.portNum).speed == USBPortSpeed.Low);
             uT.qTDBuffer = uT.qTD->virtBuffer;
 
             if (buffer != null && length != 0)
@@ -834,7 +839,7 @@ namespace Kernel.USB.HCIs
                 UHCITransaction uLastTransaction =
                     (UHCITransaction)
                         ((USBTransaction)transfer.transactions[transfer.transactions.Count - 1]).underlyingTz;
-                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                uLastTransaction.qTD->next = ((uint)GetPhysicalAddress(uT.qTD) & 0xFFFFFFF0) | UHCI_Consts.BIT_DEPTH_FIRST;
                 // build TD queue
                 uLastTransaction.qTD->q_next = uT.qTD;
             }
@@ -1038,7 +1043,7 @@ namespace Kernel.USB.HCIs
 
             if ((uint)next != Utils.BIT(0))
             {
-                td->next = ((uint)GetPhysicalAddress(next) & 0xFFFFFFF0) | UHCI_Consts.BIT_Vf;
+                td->next = ((uint)GetPhysicalAddress(next) & 0xFFFFFFF0) | UHCI_Consts.BIT_DEPTH_FIRST;
                 td->q_next = (UHCI_qTD_Struct*)next;
             }
             else
@@ -1047,8 +1052,6 @@ namespace Kernel.USB.HCIs
             }
 
             UHCI_qTD.SetActive(td, true); // to be executed
-            UHCI_qTD.SetPacketID(td, UHCI_Consts.TD_SETUP);
-            UHCI_qTD.SetMaxLength(td, 0x3F); // 64 byte // uhci, rev. 1.1, page 24
 
             return td;
         }
@@ -1068,7 +1071,7 @@ namespace Kernel.USB.HCIs
 
         protected UHCI_qTD_Struct* CreateQTD_SETUP(UHCI_QueueHead_Struct* uQH, uint* next, bool toggle,
             ushort tokenBytes, byte type, byte req, byte hiVal, byte loVal, ushort i, ushort length, byte device,
-            byte endpoint, uint packetSize)
+            byte endpoint, uint packetSize, bool lowSpeed)
         {
 #if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Create qTD SETUP");
@@ -1083,6 +1086,7 @@ namespace Kernel.USB.HCIs
             UHCI_qTD.SetEndpoint(td, endpoint);
             UHCI_qTD.SetMaxLength(td, (ushort)(tokenBytes - 1));
             UHCI_qTD.SetC_ERR(td, 0x3);
+            UHCI_qTD.SetLowSpeedDevice(td, lowSpeed);
 
             //TODO: The following todo makes no sense anymore...
             //T O D O: *buffer = 
@@ -1099,7 +1103,7 @@ namespace Kernel.USB.HCIs
         }
 
         protected UHCI_qTD_Struct* CreateQTD_IO(UHCI_QueueHead_Struct* uQH, uint* next, byte direction, bool toggle,
-            ushort tokenBytes, byte device, byte endpoint, uint packetSize)
+            ushort tokenBytes, byte device, byte endpoint, uint packetSize, bool lowSpeed)
         {
 #if UHCI_TRACE
             BasicConsole.WriteLine("UHCI: Create qTD IO");
@@ -1123,6 +1127,7 @@ namespace Kernel.USB.HCIs
             UHCI_qTD.SetC_ERR(td, 0x3);
             UHCI_qTD.SetDeviceAddress(td, device);
             UHCI_qTD.SetEndpoint(td, endpoint);
+            UHCI_qTD.SetLowSpeedDevice(td, lowSpeed);
 
             AllocQTDbuffer(td);
 
@@ -1301,6 +1306,31 @@ namespace Kernel.USB.HCIs
             else
             {
                 qTD->u1 &= ~Utils.BIT(24);
+            }
+        }
+
+        public static bool GetLowSpeedDevice(UHCI_qTD_Struct* qTD)
+        {
+            return (qTD->u1 & Utils.BIT(26)) != 0;
+        }
+
+        public static void SetLowSpeedDevice(UHCI_qTD_Struct* qTD, bool val)
+        {
+            if (val)
+            {
+#if UHCI_TRACE
+                BasicConsole.WriteLine("UHCI: Lowspeed transaction");
+#endif
+
+                qTD->u1 |= Utils.BIT(26);
+            }
+            else
+            {
+#if UHCI_TRACE
+                BasicConsole.WriteLine("UHCI: Not lowspeed transaction");
+#endif
+
+                qTD->u1 &= ~Utils.BIT(26);
             }
         }
 
