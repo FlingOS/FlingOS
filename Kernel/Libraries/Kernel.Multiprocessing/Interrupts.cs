@@ -29,6 +29,7 @@
 using System.Runtime.InteropServices;
 using Drivers.Compiler.Attributes;
 using Kernel.Framework;
+using Kernel.Framework.Processes;
 using Kernel.IO;
 using Kernel.Multiprocessing;
 
@@ -280,7 +281,7 @@ namespace Kernel.Interrupts
                             BasicConsole.WriteLine(
                                 "Error! handlerProcess.ISRHandler is null but is set to handle the ISR.");
                         }
-                        else if (handlerProcess.ISRHandler(ISRNum) == 0)
+                        else if (HandleResult(handlerProcess.ISRHandler(ISRNum), handlerProcess))
                         {
                             break;
                         }
@@ -323,7 +324,7 @@ namespace Kernel.Interrupts
                             BasicConsole.WriteLine(
                                 "Error! handlerProcess.IRQHandler is null but is set to handle the IRQ.");
                         }
-                        else if (handlerProcess.IRQHandler(IRQNum) == 0)
+                        else if (HandleResult(handlerProcess.IRQHandler(IRQNum), handlerProcess))
                         {
                             break;
                         }
@@ -339,6 +340,24 @@ namespace Kernel.Interrupts
 
                 EndIRQ(IRQNum > 7);
             }
+        }
+
+        private static bool HandleResult(int result, Process handlerProcess)
+        {
+            byte ActionByte = (byte)(result & 0xFF);
+            uint ValueWord = (uint)(result & 0xFFFFFF00) >> 8;
+            SystemCallResults ResultCall = (SystemCallResults)ActionByte;
+
+            if (ResultCall == SystemCallResults.RequestAction_SignalSemaphore)
+            {
+                ProcessManager.Semaphore_Signal((int)ValueWord, handlerProcess);
+            }
+            else if (ResultCall == SystemCallResults.RequestAction_WakeThread)
+            {
+                ProcessManager.WakeThread(handlerProcess, ValueWord);
+            }
+
+            return ResultCall != SystemCallResults.OK_PermitActions && ResultCall != SystemCallResults.Deferred_PermitActions;
         }
 
         /// <summary>
