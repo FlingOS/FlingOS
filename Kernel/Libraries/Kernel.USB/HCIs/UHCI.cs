@@ -559,9 +559,11 @@ namespace Kernel.USB.HCIs
             BasicConsole.WriteLine(valStr);
 #endif 
 
-            if (val == 0) // Interrupt came from another UHCI device
+            if (val == 0) // Interrupt came from another HCI device
             {
+#if UHCI_TRACE
                 BasicConsole.WriteLine("No status indicators - returning from interrupt handler.");
+#endif
                 return;
             }
 
