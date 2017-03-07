@@ -30,16 +30,15 @@ using Kernel.Framework;
 using Kernel.Framework.Collections;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes;
+using Kernel.Framework.Processes.Synchronisation;
 
 namespace Kernel.FileSystems
 {
     /// <summary>
     ///     Represents a file system which must exist within a partition.
     /// </summary>
-    public abstract class FileSystem : Object
+    public abstract class FileSystem : Lockable
     {
-        public int ActionSemaphoreId;
-
         /// <summary>
         ///     Whether the file system is valid or not.
         /// </summary>
@@ -76,26 +75,11 @@ namespace Kernel.FileSystems
         /// </summary>
         /// <param name="aPartition">The partition in which the partition resides.</param>
         public FileSystem(Partition aPartition)
+            : base(1)
         {
             thePartition = aPartition;
-
-            if (SystemCalls.CreateSemaphore(1, out ActionSemaphoreId) != SystemCallResults.OK)
-            {
-                BasicConsole.WriteLine("File System > Failed to create a semaphore!");
-                ExceptionMethods.Throw(new NullReferenceException());
-            }
         }
-
-        public bool Lock()
-        {
-            return SystemCalls.WaitSemaphore(ActionSemaphoreId) == SystemCallResults.OK;
-        }
-
-        public bool Unlock()
-        {
-            return SystemCalls.SignalSemaphore(ActionSemaphoreId) == SystemCallResults.OK;
-        }
-
+        
         /// <summary>
         ///     Gets the listing for the specified path.
         /// </summary>

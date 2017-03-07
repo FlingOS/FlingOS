@@ -709,9 +709,8 @@ namespace Kernel.USB
 
         /// <summary>
         ///     The language IDs or value bytes of the string.
-        ///     This has been determined, through testing, to require a max length 10 bytes. Not sure if this is proper though.
         /// </summary>
-        public fixed ushort languageID [10];
+        public fixed ushort languageID [126];
     }
 
     public class UnicodeString : Object
