@@ -107,6 +107,7 @@
     <Compile Include="Heap_Kernel.cs" />
     <Compile Include="Object.cs" />
     <Compile Include="ObjectUtilities.cs" />
+    <Compile Include="Processes\InterruptUtils.cs" />
     <Compile Include="Processes\Requests\Devices.cs" />
     <Compile Include="Processes\Requests\Pipes.cs" />
     <Compile Include="Processes\Requests\Processes.cs" />

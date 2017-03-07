@@ -2,6 +2,7 @@
 using Kernel.Devices;
 using Kernel.PCI;
 using Drivers.Compiler.Attributes;
+using Kernel.Framework;
 
 namespace Kernel.Tasks.Driver
 {
@@ -58,7 +59,7 @@ namespace Kernel.Tasks.Driver
         private static bool inInt = false;
         private static uint MissedInt = 0;
 
-        private static bool Terminating;
+        private static int ReceivedSemaphoreId;
 
         [NoDebug]
         public AMDPCNetII(uint bus, uint slot, uint function)
@@ -66,14 +67,18 @@ namespace Kernel.Tasks.Driver
         {
             BasicConsole.WriteLine("AMDPCNetII > Constructor...");
         }
-        
+
         public bool Init()
         {
-            Terminating = false;
-
             BasicConsole.WriteLine("AMDPCNetII > Initialization...");
-            
+
             Claimed = true;
+
+            SystemCallResults Result = SystemCalls.CreateSemaphore(-1, out ReceivedSemaphoreId);
+            if (Result != SystemCallResults.OK)
+            {
+                ExceptionMethods.Throw(new Exception("Couldn't create the necessary semaphore!"));
+            }
 
             if ((Command & PCIDevice.PCICommand.Master) == PCIDevice.PCICommand.Master)
                 BasicConsole.WriteLine("AMDPCNetII > Bus mastering already enabled");
@@ -202,12 +207,13 @@ namespace Kernel.Tasks.Driver
 
             SystemCalls.RegisterIRQHandler(InterruptLine, HandleIRQ);
 
-			BasicConsole.WriteLine("AMDPCNetII > Init card...");
+            BasicConsole.WriteLine("AMDPCNetII > Init card...");
             // Init card
             write_csr32(0, CSR0_INIT | CSR0_IENA);
             SystemCalls.SleepThread(100);
 
-            while (!InitDone) {
+            while (!InitDone)
+            {
                 BasicConsole.Write("AMDPCNetII > CSR0: ");
                 BasicConsole.WriteLine(read_csr32(0));
                 SystemCalls.SleepThread(1000);
@@ -233,13 +239,13 @@ namespace Kernel.Tasks.Driver
 
             return true;
         }
-       
+
         public void Start()
         {
             BasicConsole.WriteLine("AMDPCNetII > Starting...");
 
             write_csr32(0, CSR0_IENA | CSR0_STRT);
-            
+
             byte[] ARP = new byte[64];
 
             ARP[0] = 0xFF;  // Broadcast
@@ -297,17 +303,18 @@ namespace Kernel.Tasks.Driver
             ARP[41] = 254;
 
             SendPacket(ARP);
-            
-            while (!Terminating)
+
+            bool Terminated = false;
+            while (!Terminated) // Don't use while (true), it crash OS
             {
                 BasicConsole.Write("AMDPCNetII > CSR0: ");
                 BasicConsole.WriteLine(read_csr32(0));
                 BasicConsole.Write("AMDPPCNetII > MissedInt: ");
                 BasicConsole.WriteLine(MissedInt);
-                SystemCalls.SleepThread(1000);
+                SystemCalls.WaitSemaphore(ReceivedSemaphoreId);
             }
         }
-        
+
         private void* GetPhysicalAddress(void* vAddr)
         {
             return GetPhysicalAddress((uint)vAddr);
@@ -391,6 +398,8 @@ namespace Kernel.Tasks.Driver
 
         private static int HandleIRQ(uint IRQNum)
         {
+            bool signalSemaphore = false;
+
             if (!inInt)
             {
                 inInt = true;
@@ -406,41 +415,59 @@ namespace Kernel.Tasks.Driver
                     if ((read_csr32(0) & (CSR0_TINT)) == CSR0_TINT) // Frame sent
                     {
                         BasicConsole.WriteLine("AMDPCNetII > Frame sent");
+                        write_csr32(0, read_csr32(0) | (CSR0_TINT));
                     }
-                    if ((read_csr32(0) & (CSR0_RINT)) == CSR0_RINT) // Frame received
+                    else
                     {
-                        BasicConsole.WriteLine("AMCPCNetII > Frame received");
-
-                        write_csr32(0, CSR0_BABL | CSR0_CERR | CSR0_MISS | CSR0_MERR | CSR0_IDON | CSR0_IENA);
-                        /*
-                        while (driver_owns(RX_DE_start, RX_buffer_id))
+                        if ((read_csr32(0) & (CSR0_RINT)) == CSR0_RINT) // Frame received
                         {
-                            ushort len = (*(ushort*)(RX_DE_start + (RX_buffer_id * DE_size) + 4));
+                            BasicConsole.WriteLine("AMCPCNetII > Frame received");
 
-                            //NetworkPacket packet = new NetworkPacket();
-                            //packet.data = new byte[len];
+                            write_csr32(0, CSR0_BABL | CSR0_CERR | CSR0_MISS | CSR0_MERR | CSR0_IDON | CSR0_IENA);
 
-                            //for (uint i = 0; i < packet.data.Length; i++)
-                            //    packet.data[i] = (*(byte*)(pcnet_rx_de_start[pcnet_rx_buffer_id * pcnet_de_size] + i));
+                            while (driver_owns(RX_DE_start, RX_buffer_id))
+                            {
+                                ushort len = (*(ushort*)(RX_DE_start + (RX_buffer_id * DE_size) + 4));
 
-                            (*(byte*)(RX_DE_start + (RX_buffer_id * DE_size + 7))) = 0x80;
+                                //NetworkPacket packet = new NetworkPacket();
+                                //packet.data = new byte[len];
 
-                            RX_buffer_id = next_rx_index(RX_buffer_id);
+                                //for (uint i = 0; i < packet.data.Length; i++)
+                                //    packet.data[i] = (*(byte*)(pcnet_rx_de_start[pcnet_rx_buffer_id * pcnet_de_size] + i));
+
+                                (*(byte*)(RX_DE_start + (RX_buffer_id * DE_size + 7))) = 0x80;
+
+                                RX_buffer_id = next_rx_index(RX_buffer_id);
+                            }
+                            write_csr32(0, read_csr32(0) | (CSR0_RINT));
+
+                            signalSemaphore = true;
                         }
-                        */
-                    }
-                    while (((read_csr32(0) & (CSR0_ERR | CSR0_RINT | CSR0_TINT)) != 0x0))
-                    {
-                        // Acknowledge all of the current interrupt sources
-                        write_csr32(0, (read_csr32(0) & ~(CSR0_IENA | CSR0_TDMD | CSR0_STOP | CSR0_STRT | CSR0_INIT)));
-                        //dump_csr(csr);
+                        else
+                        {
+                            while (((read_csr32(0) & (CSR0_ERR | CSR0_RINT | CSR0_TINT)) != 0x0))
+                            {
+                                // Acknowledge all of the current interrupt sources
+                                write_csr32(0, (read_csr32(0) & ~(CSR0_IENA | CSR0_TDMD | CSR0_STOP | CSR0_STRT | CSR0_INIT)));
+                            }
+                        }
                     }
                 }
                 inInt = false;
             }
             else
                 MissedInt++;
-            return 0;
+
+            BasicConsole.WriteLine("AMDPCNetII > Leave Interrupt");
+
+            if (signalSemaphore)
+            {
+                return InterruptUtils.ConstructInterruptResult(SystemCallResults.RequestAction_SignalSemaphore, (uint)ReceivedSemaphoreId);
+            }
+            else
+            {
+                return InterruptUtils.ConstructInterruptResult(SystemCallResults.OK, 0);
+            }
         }
 
         private static bool SendPacket(byte[] data)

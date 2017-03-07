@@ -9,7 +9,7 @@
                 return (int)SystemCallResults.Fail;
             }
 
-            return (int)((uint)SystemCallResults.Fail | (value << 8));
+            return (int)((uint)result | (value << 8));
         }
     }
 }
