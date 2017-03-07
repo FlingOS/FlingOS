@@ -218,12 +218,12 @@ namespace Kernel.Framework.Processes
         /// <summary>
         ///     The system call was not handled by any process.
         /// </summary>
-        Unhandled = 0xC0DEC0DE,
+        Unhandled = 0xFF,
 
         /// <summary>
         ///     The system call was handled successfully.
         /// </summary>
-        OK = 0xC1DEC1DE,
+        OK = 0, // Must be 0 for various IRQ/ISR routines that return 0
 
         /// <summary>
         ///     The system call was deferred for later processing.
@@ -231,7 +231,7 @@ namespace Kernel.Framework.Processes
         /// <remarks>
         ///     This is only supposed to be seen within the core OS. A caller should never see this value.
         /// </remarks>
-        Deferred = 0xC2DEC2DE,
+        Deferred,
 
         /// <summary>
         ///     The system call failed.
@@ -245,7 +245,7 @@ namespace Kernel.Framework.Processes
         ///         Note that an error may be a permissions failure of some description or it may be an actual exception.
         ///     </para>
         /// </remarks>
-        Fail = 0xC3DEC3DE,
+        Fail,
 
         /// <summary>
         ///     The system call was handled successfully but other system call handlers are also allowed to process the
@@ -254,7 +254,7 @@ namespace Kernel.Framework.Processes
         /// <remarks>
         ///     This is only supposed to be seen within the core OS. A caller should never see this value.
         /// </remarks>
-        OK_PermitActions = 0xC4DEC4DE,
+        OK_PermitActions,
 
         /// <summary>
         ///     The system call was deferred but other system call handlers are also allowed to process the
@@ -263,7 +263,7 @@ namespace Kernel.Framework.Processes
         /// <remarks>
         ///     This is only supposed to be seen within the core OS. A caller should never see this value.
         /// </remarks>
-        Deferred_PermitActions = 0xC5DEC5DE,
+        Deferred_PermitActions,
 
         /// <summary>
         ///     The system call was unhandled but the handler method is requesting another thread is woken.
@@ -277,7 +277,7 @@ namespace Kernel.Framework.Processes
         ///         this cannot also handle the system call.
         ///     </para>
         /// </remarks>
-        RequestAction_WakeThread = 0xC6DEC6DE,
+        RequestAction_WakeThread,
 
         /// <summary>
         ///     The system call was unhandled but the handler method is requesting a semaphore be signalled.
@@ -291,11 +291,11 @@ namespace Kernel.Framework.Processes
         ///         this cannot also handle the system call.
         ///     </para>
         /// </remarks>
-        RequestAction_SignalSemaphore = 0xC7DEC7DE,
+        RequestAction_SignalSemaphore,
 
         /// <summary>
         ///     The system call was handled successfully but the thread should not be woken.
         /// </summary>
-        OK_NoWake = 0xC8DEC8DE
+        OK_NoWake
     }
 }
