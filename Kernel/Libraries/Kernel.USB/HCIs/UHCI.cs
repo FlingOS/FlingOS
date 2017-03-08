@@ -110,11 +110,7 @@ namespace Kernel.USB.HCIs
 
         public static int NUMBER_OF_UHCI_RETRIES = 3;
     }
-
-    //TODO: Something is wrong with this UHCI driver.
-    //  - Interrupts never occur
-    //  Literally no ideas why!
-
+    
     public unsafe class UHCI : HCI
     {
         protected bool EnabledPorts;
