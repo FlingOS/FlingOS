@@ -33,6 +33,7 @@ using Kernel.Framework.Collections;
 using Kernel.Framework.Exceptions;
 using Kernel.Framework.Processes.Requests.Devices;
 using Kernel.IO;
+using Kernel.Multiprocessing;
 
 namespace Kernel.Devices.Timers
 {
@@ -487,6 +488,11 @@ namespace Kernel.Devices.Timers
         {
             return RegisterHandler(new PITHandler(Handler, State, TimeoutNS, Recurring));
         }
+        [NoDebug]
+        public int RegisterHandler(TimerHandler Handler, long TimeoutNS, bool Recurring, IObject State, uint TargetProcessId)
+        {
+            return RegisterHandler(new PITHandler(Handler, State, TimeoutNS, Recurring, true, TargetProcessId));
+        }
 
         /// <summary>
         ///     Registers the specified handler for the timer 0 interrupt.
@@ -539,6 +545,10 @@ namespace Kernel.Devices.Timers
             //    BasicConsole.WriteLine("Debug Point 2");
             //}
 
+            Process currProcess = ProcessManager.CurrentProcess;
+            Thread currThread = ProcessManager.CurrentThread;
+            bool switched = false;
+            
             uint T0Delay = T0DelyNS;
             PITHandler hndlr = null;
             for (int i = ActiveHandlers.Count - 1; i >= 0; i--)
@@ -578,8 +588,25 @@ namespace Kernel.Devices.Timers
                     //if (Processes.ProcessManager.Processes.Count > 1)
                     //    BasicConsole.WriteLine("PIT: 7");
 
+                    if (hndlr.SwitchProcess)
+                    {
+                        ProcessManager.SwitchProcess(hndlr.ProcessId, ProcessManager.THREAD_DONT_CARE);
+                        switched = true;
+                    }
+                    else if (switched)
+                    {
+                        ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
+                        switched = false;
+                    }
+
                     hndlr.HandleTrigger(hndlr.state);
+
                 }
+            }
+
+            if (switched)
+            {
+                ProcessManager.SwitchProcess(currProcess.Id, (int)currThread.Id);
             }
         }
 
@@ -697,6 +724,9 @@ namespace Kernel.Devices.Timers
         /// </summary>
         internal IObject state;
 
+        internal bool SwitchProcess;
+        internal uint ProcessId;
+
         /// <summary>
         ///     The handler Id.
         /// </summary>
@@ -712,13 +742,15 @@ namespace Kernel.Devices.Timers
         /// <param name="aState">The state object to pass to the handler.</param>
         /// <param name="NanosecondsTimeout">The timeout, in nanoseconds.</param>
         /// <param name="Recurring">Whether the handler should repeat or not.</param>
-        public PITHandler(TimerHandler HandleOnTrigger, IObject aState, long NanosecondsTimeout, bool Recurring)
+        public PITHandler(TimerHandler HandleOnTrigger, IObject aState, long NanosecondsTimeout, bool Recurring, bool switchProcess = false, uint processId = 0)
         {
             HandleTrigger = HandleOnTrigger;
             this.NanosecondsTimeout = NanosecondsTimeout;
             NSRemaining = this.NanosecondsTimeout;
             this.Recurring = Recurring;
             state = aState;
+            SwitchProcess = switchProcess;
+            ProcessId = processId;
         }
 
         /// <summary>

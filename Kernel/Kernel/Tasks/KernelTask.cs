@@ -291,6 +291,8 @@ namespace Kernel.Tasks
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.GetDeviceInfo);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ClaimDevice);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.ReleaseDevice);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.RegisterTimerEvent);
+                ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.DeregisterTimerEvent);
 
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.StatFS);
                 ProcessManager.CurrentProcess.SyscallsToHandle.Set((int)SystemCallNumbers.InitFS);
@@ -1407,6 +1409,34 @@ namespace Kernel.Tasks
                     #endregion
 
                     break;
+
+                case SystemCallNumbers.RegisterTimerEvent:
+
+                    #region Register Timer Event
+
+#if DFSC_TRACE
+                    BasicConsole.WriteLine("DFSC: Register Timer Event");
+#endif
+                    Return2 = (uint)PIT.ThePIT.RegisterHandler((TimerHandler)ObjectUtilities.GetObject((void*)Param1), ((long)(Param2 & 0x7FFFFFFF) << 32) | Param3, (Param2 & 0x80000000) == 0x80000000, null, CallerProcess.Id);
+                    result = SystemCallResults.OK;
+
+                    #endregion
+
+                    break;
+                case SystemCallNumbers.DeregisterTimerEvent:
+
+                    #region Deregister Timer Event
+
+#if DFSC_TRACE
+                    BasicConsole.WriteLine("DFSC: Deregister Timer Event");
+#endif
+                    PIT.ThePIT.UnregisterHandler((int)Param2);
+                    result = SystemCallResults.OK;
+
+                    #endregion
+
+                    break;
+
                 default:
 //#if DSC_TRACE
                     BasicConsole.WriteLine("DSC: Unrecognised call number.");
@@ -2304,6 +2334,31 @@ namespace Kernel.Tasks
 
 #if SYSCALLS_TRACE
                     BasicConsole.WriteLine("System call : File System Status (StatFS)");
+#endif
+                    result = SystemCallResults.Deferred;
+
+                    #endregion
+
+                    break;
+
+                case SystemCallNumbers.RegisterTimerEvent:
+
+                    #region Register Timer Event
+
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Register Timer Event");
+#endif
+                    result = SystemCallResults.Deferred;
+
+                    #endregion
+
+                    break;
+                case SystemCallNumbers.DeregisterTimerEvent:
+
+                    #region Deregister Timer Event
+
+#if SYSCALLS_TRACE
+                    BasicConsole.WriteLine("System call : Deregister Timer Event");
 #endif
                     result = SystemCallResults.Deferred;
 

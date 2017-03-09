@@ -28,6 +28,13 @@
 
 namespace Kernel.Framework
 {
+    /// <summary>
+    ///     The delegate type for a timer event handler method. An example of a timer event
+    ///     is a one-shot countdown expiring or a periodic/recurring countdown ticking.
+    /// </summary>
+    /// <param name="State">The state object that was provided when the handler was registered.</param>
+    public delegate void TimerHandler(IObject State);
+
     public class TimeSpan : Object
     {
         private readonly long seconds;

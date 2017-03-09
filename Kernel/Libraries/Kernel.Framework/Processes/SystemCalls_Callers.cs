@@ -861,6 +861,29 @@ namespace Kernel.Framework.Processes
             UpTime = ((long)Return3 << 32) | Return2;
             return (SystemCallResults)Return1;
         }
+        
+        [NoGC]
+        public static SystemCallResults RegisterTimerEvent(TimerHandler handler, long TimeoutNS, bool Recurring, out int EventId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.RegisterTimerEvent, (uint)ObjectUtilities.GetHandle(handler), ((uint)(TimeoutNS >> 32) & 0x7FFFFFFF) | (Recurring ? 0x80000000 : 0x0), (uint)TimeoutNS, ref Return1, ref Return2, ref Return3, ref Return4);
+            EventId = (int)Return2;
+            return (SystemCallResults)Return1;
+        }
+
+        [NoGC]
+        public static SystemCallResults DeregisterTimerEvent(int EventId)
+        {
+            uint Return1 = 0;
+            uint Return2 = 0;
+            uint Return3 = 0;
+            uint Return4 = 0;
+            Call(SystemCallNumbers.DeregisterTimerEvent, (uint)EventId, 0, 0, ref Return1, ref Return2, ref Return3, ref Return4);
+            return (SystemCallResults)Return1;
+        }
 
         #endregion
 

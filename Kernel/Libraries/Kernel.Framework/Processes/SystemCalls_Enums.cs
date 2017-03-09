@@ -202,7 +202,10 @@ namespace Kernel.Framework.Processes
         ReleaseDevice,
 
         StatFS,
-        InitFS
+        InitFS,
+
+        RegisterTimerEvent,
+        DeregisterTimerEvent
     }
 
     /// <summary>
