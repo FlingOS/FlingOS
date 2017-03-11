@@ -112,6 +112,7 @@
     <Compile Include="VGAIOPorts.cs" />
     <Compile Include="VGAMemory.cs" />
     <Compile Include="VGARegisters.cs" />
+    <Compile Include="VMWare\SVGAII.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">
@@ -125,6 +126,10 @@
     <ProjectReference Include="..\Kernel.Framework\Kernel.Framework.csproj">
       <Project>{66c9b617-b6d9-4006-a7f9-e1df62ed30ad}</Project>
       <Name>Kernel.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kernel.PCI\Kernel.PCI.csproj">
+      <Project>{02d891e8-4aaa-48fa-8608-5135fb4dc493}</Project>
+      <Name>Kernel.PCI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
