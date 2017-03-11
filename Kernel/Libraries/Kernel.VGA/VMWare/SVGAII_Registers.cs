@@ -38,12 +38,12 @@ namespace Kernel.VGA.VMWare
             _2 = 2
         }
 
-        public enum ID : uint
+        public enum ID : int
         {
-            _0 = (MAGIC << 8) | VERSION._0,
-            _1 = (MAGIC << 8) | VERSION._1,
-            _2 = (MAGIC << 8) | VERSION._2,
-            INVALID = 0xFFFFFFFF
+            _0 = unchecked((int)(MAGIC << 8) | VERSION._0),
+            _1 = unchecked((int)(MAGIC << 8) | VERSION._1),
+            _2 = unchecked((int)(MAGIC << 8) | VERSION._2),
+            INVALID = -1
         }
 
         public enum PORTS : ushort
@@ -62,7 +62,7 @@ namespace Kernel.VGA.VMWare
             FENCE_GOAL = 0x4
         }
 
-        public enum Registers
+        public enum Registers : uint
         {
             ID = 0,
             ENABLE = 1,
@@ -129,28 +129,29 @@ namespace Kernel.VGA.VMWare
             FRAMEBUFFER = 0xFFFFFFFE
         }
 
+        [Flags]
         public enum Capabilities : uint
         {
-            CAP_NONE = 0x00000000,
-            CAP_RECT_COPY = 0x00000002,
-            CAP_CURSOR = 0x00000020,
-            CAP_CURSOR_BYPASS = 0x00000040,
-            CAP_CURSOR_BYPASS_2 = 0x00000080,
-            CAP_8BIT_EMULATION = 0x00000100,
-            CAP_ALPHA_CURSOR = 0x00000200,
-            CAP_3D = 0x00004000,
-            CAP_EXTENDED_FIFO = 0x00008000,
-            CAP_MULTIMON = 0x00010000,
-            CAP_PITCHLOCK = 0x00020000,
-            CAP_IRQMASK = 0x00040000,
-            CAP_DISPLAY_TOPOLOGY = 0x00080000,
-            CAP_GMR = 0x00100000,
-            CAP_TRACES = 0x00200000,
-            CAP_GMR2 = 0x00400000,
-            CAP_SCREEN_OBJECT_2 = 0x00800000
+            NONE = 0x00000000,
+            RECT_COPY = 0x00000002,
+            CURSOR = 0x00000020,
+            CURSOR_BYPASS = 0x00000040,
+            CURSOR_BYPASS_2 = 0x00000080,
+            EMULATION_8BIT = 0x00000100,
+            ALPHA_CURSOR = 0x00000200,
+            _3D = 0x00004000,
+            EXTENDED_FIFO = 0x00008000,
+            MULTIMON = 0x00010000,
+            PITCHLOCK = 0x00020000,
+            IRQMASK = 0x00040000,
+            DISPLAY_TOPOLOGY = 0x00080000,
+            GMR = 0x00100000,
+            TRACES = 0x00200000,
+            GMR2 = 0x00400000,
+            SCREEN_OBJECT_2 = 0x00800000
         }
 
-        public enum FIFO : uint
+        public enum FIFO : int
         {
 
             MIN = 0,
@@ -165,6 +166,7 @@ namespace Kernel.VGA.VMWare
             HWVERSION_3D,
 
             PITCHLOCK,
+
 
             CURSOR_ON,
             CURSOR_X,
@@ -257,7 +259,7 @@ namespace Kernel.VGA.VMWare
             BLANKING = 0x10
         }
 
-        public enum FIFO_CommandId : byte
+        public enum FIFO_Command : uint
         {
             INVALID_CMD = 0,
             UPDATE = 1,
