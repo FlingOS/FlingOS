@@ -112,7 +112,13 @@
     <Compile Include="VGAIOPorts.cs" />
     <Compile Include="VGAMemory.cs" />
     <Compile Include="VGARegisters.cs" />
+    <Compile Include="VMWare\GMR.cs" />
+    <Compile Include="VMWare\Screen.cs" />
     <Compile Include="VMWare\SVGAII.cs" />
+    <Compile Include="VMWare\SVGAII_Escape.cs" />
+    <Compile Include="VMWare\SVGAII_Mouse.cs" />
+    <Compile Include="VMWare\SVGAII_Overlay.cs" />
+    <Compile Include="VMWare\SVGAII_Registers.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Drivers\Compiler\Drivers.Compiler.csproj">

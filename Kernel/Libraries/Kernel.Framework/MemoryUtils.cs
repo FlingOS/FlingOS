@@ -43,12 +43,51 @@ namespace Kernel.Utilities
         /// <param name="length">The amount of memory to copy.</param>
         [NoGC]
         [NoDebug]
-        public static void MemCpy_32(byte* dest, byte* src, uint length)
+        [PluggedMethod(ASMFilePath = null)]
+        public static void MemCpy(byte* dest, byte* src, uint length)
         {
             for (uint i = 0; i < length; i++)
             {
                 dest[i] = src[i];
             }
+        }
+
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void MemCpy16(ushort* dest, ushort* src, uint length)
+        {
+        }
+
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void MemCpy32(uint* dest, uint* src, uint length)
+        {
+        }
+
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void MemSet(byte* dest, byte value, uint length)
+        {
+            
+        }
+
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void MemSet16(ushort* dest, ushort value, uint length)
+        {
+
+        }
+
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void MemSet32(uint* dest, uint value, uint length)
+        {
+
         }
 
         /// <summary>
@@ -77,12 +116,7 @@ namespace Kernel.Utilities
         [NoDebug]
         public static void* ZeroMem(void* ptr, uint size)
         {
-            byte* bPtr = (byte*)ptr;
-            byte* bEndPtr = (byte*)ptr + size;
-            while (bPtr < bEndPtr)
-            {
-                *bPtr++ = 0;
-            }
+            MemSet((byte*)ptr, 0, size);
             return ptr;
         }
 

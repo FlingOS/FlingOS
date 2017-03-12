@@ -1801,7 +1801,7 @@ namespace Kernel.USB.HCIs
                 // The transaction's output buffer has been allocated so it as aligned correctly
                 //  where as there is no guarantee the output buffer passed to us has been so we
                 //  must copy the data across.
-                MemoryUtils.MemCpy_32(theQTD.Buffer0VirtAddr, (byte*)buffer, length);
+                MemoryUtils.MemCpy(theQTD.Buffer0VirtAddr, (byte*)buffer, length);
 
 #if EHCI_TRACE
                 BasicConsole.WriteLine("EHCI: OUTTransaction - Buffer0:");
@@ -2039,7 +2039,7 @@ namespace Kernel.USB.HCIs
                                                ", inLength=" + transaction.inLength + ", Data to copy: ");
 #endif
                     // Copy the memory
-                    MemoryUtils.MemCpy_32((byte*)transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
+                    MemoryUtils.MemCpy((byte*)transaction.inBuffer, theQTD.Buffer0VirtAddr, transaction.inLength);
 
 #if EHCI_TRACE
     //for (int i = 0; i < transaction.inLength; i++)
