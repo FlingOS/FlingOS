@@ -505,5 +505,11 @@ namespace Kernel.VGA.VMWare
             public uint OffsetPages;
             public uint NumPages;
         }
+
+        public struct FIFO_CommandWithId
+        {
+            public uint id;
+            public uint fence;
+        }
     }
 }

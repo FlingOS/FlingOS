@@ -40,7 +40,7 @@
             public uint CommandType;
             public uint StreamId;
         }
-
+        
         public struct FIFO_EscapeCommandVideoBase
         {
             public uint Command;
@@ -49,21 +49,28 @@
 
         public struct FIFO_EscapeCommandVideoFlush
         {
-            FIFO_EscapeCommandVideoBase VideoCommand;
+            public FIFO_EscapeCommandVideoBase VideoCommand;
         }
 
         public struct FIFO_EscapeCommandVideoSetRegs
         {
-            FIFO_EscapeCommandVideoBase VideoCommand;
+            public FIFO_EscapeCommandVideoBase VideoCommand;
 
             public VideoSetRegsItem Item0;
         }
 
         public unsafe struct FIFO_EscapeCommandVideoSetAllRegs
         {
-            FIFO_EscapeCommandVideoBase VideoCommand;
+            public FIFO_EscapeCommandVideoBase VideoCommand;
             
             public VideoSetRegsItem Item0;
+        }
+
+        public struct Header
+        {
+            public uint cmd;
+            public uint nsid;
+            public uint size;
         }
     }
 }
