@@ -124,3 +124,39 @@ mov ecx, [esp+4]
 rep stosd
 
 ret
+
+
+
+
+GLOBAL method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicExchange_NAMEEND__System_UInt32_AMP__System_UInt32_AMP__:function
+
+method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicExchange_NAMEEND__System_UInt32_AMP__System_UInt32_AMP__:
+
+; +4 = Mem Ptr memory
+; +8 = Mem Ptr value
+
+mov eax, [esp+4]
+mov ebx, [esp+8]
+
+mov ecx, [ebx]
+xchg [eax], ecx
+mov [ebx], ecx
+
+ret
+
+
+
+
+GLOBAL method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicOR_NAMEEND__System_UInt32_AMP__System_UInt32_:function
+
+method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicOR_NAMEEND__System_UInt32_AMP__System_UInt32_:
+
+; +4 = Mem Ptr memory
+; +8 = Mem Ptr value
+
+mov eax, [esp+4]
+mov ebx, [esp+8]
+
+lock or [eax], ebx
+
+ret

@@ -90,6 +90,23 @@ namespace Kernel.Utilities
 
         }
 
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void AtomicExchange(ref uint x, ref uint y)
+        {
+
+        }
+
+        [NoGC]
+        [NoDebug]
+        [PluggedMethod(ASMFilePath = null)]
+        public static void AtomicOR(ref uint x, uint y)
+        {
+
+        }
+
+
         /// <summary>
         ///     Copies the specified amount of memory from the source to the dest.
         /// </summary>
