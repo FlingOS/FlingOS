@@ -236,14 +236,11 @@ namespace Kernel.Tasks.Driver
                     console.Write(".");
                     console.WriteLine_AsDecimal(usbDeviceInfo.releaseNumber & 0xFF);
                     console.Write("Manufacturer:      ");
-                    console.Write((usbDeviceInfo.ManufacturerString ?? NullUnicodeString).Value);
-                    console.WriteLine();
+                    console.WriteLine((usbDeviceInfo.ManufacturerString ?? NullUnicodeString).Value);
                     console.Write("Product:           ");
-                    console.Write((usbDeviceInfo.ProductString ?? NullUnicodeString).Value);
-                    console.WriteLine();
+                    console.WriteLine((usbDeviceInfo.ProductString ?? NullUnicodeString).Value);
                     console.Write("Serial number:     ");
-                    console.Write((usbDeviceInfo.SerialNumberString ?? NullUnicodeString).Value);
-                    console.WriteLine();
+                    console.WriteLine((usbDeviceInfo.SerialNumberString ?? NullUnicodeString).Value);
                     console.Write("Number of config.: ");
                     console.WriteLine_AsDecimal(usbDeviceInfo.numConfigurations); // number of possible configurations
                     console.Write("MSDInterfaceNum:   ");

@@ -39,7 +39,6 @@ namespace Kernel.Tasks
                 StartRequest->Name = NewProcName.GetCharPointer();
                 StartRequest->NameLength = NewProcName.Length;
                 StartRequest->CodePagesCount = 0;
-                //TODO: Direct access to VirtualMemoryManager from within the DeviceInfoTask is wrong...
                 uint[] DataPages = VirtualMemoryManager.GetBuiltInProcessVAddrs();
                 StartRequest->DataPages = (uint*)((byte*)ObjectUtilities.GetHandle(DataPages) + Array.FieldsBytesSize);
                 StartRequest->DataPagesCount = (uint)DataPages.Length;

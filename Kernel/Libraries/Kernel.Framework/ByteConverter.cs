@@ -28,7 +28,6 @@
 
 using Drivers.Compiler.Attributes;
 using Kernel.Framework.Exceptions;
-using Kernel.Utilities;
 
 namespace Kernel.Framework
 {
@@ -107,26 +106,25 @@ namespace Kernel.Framework
         ///     This method does not add the null termination character "\0" to the end of the bytes.
         /// </remarks>
         [NoDebug]
-        public static unsafe byte[] GetUTF16Bytes(String asciiString, int offset, int count)
+        public static byte[] GetUTF16Bytes(String asciiString, int offset, int count)
         {
             if (count == 0)
             {
                 return new byte[0];
             }
-            
-            if (offset + count > asciiString.Length)
+
+            byte[] result = new byte[count*2];
+            int endIndex = offset + count;
+            if (endIndex > asciiString.Length)
             {
                 ExceptionMethods.Throw(
                     new Exception("ByteConverter.GetUTF16Bytes: offset + count >= asciiString.length!"));
             }
-
-            byte[] result = new byte[count*2];
-
-            MemoryUtils.MemCpy(
-                (byte*)ObjectUtilities.GetHandle(result) + Array.FieldsBytesSize,
-                (byte*)(asciiString.GetCharPointer() + offset),
-                (uint)count * 2);
-            
+            for (int i = offset, j = 0; i < endIndex; i++, j += 2)
+            {
+                result[j] = (byte)asciiString[i];
+                result[j + 1] = (byte)(asciiString[i] >> 8);
+            }
             return result;
         }
 

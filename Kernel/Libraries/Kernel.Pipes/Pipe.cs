@@ -28,7 +28,6 @@
 
 using Kernel.Framework;
 using Kernel.Framework.Collections;
-using Kernel.Utilities;
 
 namespace Kernel.Pipes
 {
@@ -44,8 +43,6 @@ namespace Kernel.Pipes
         ///     The internal buffer of the pipe.
         /// </summary>
         private readonly byte[] Buffer;
-
-        private readonly byte* BufferPtr;
 
         /// <summary>
         ///     The Id of the pipe.
@@ -120,7 +117,6 @@ namespace Kernel.Pipes
             Inpoint = inpoint;
 
             Buffer = new byte[BufferSize];
-            BufferPtr = (byte*)ObjectUtilities.GetHandle(Buffer) + Array.FieldsBytesSize;
             DataAvailable = 0;
 
             ThreadsWaitingToRead = new UInt32Queue(5, true);
@@ -177,9 +173,12 @@ namespace Kernel.Pipes
                 return false;
             }
 
-            BytesRead = DataAvailable < length ? DataAvailable : length;
-            MemoryUtils.MemCpy(outBuffer + offset, BufferPtr + DataReadOffset, (uint)BytesRead);
-            DataReadOffset += BytesRead;
+            BytesRead = 0;
+            for (BytesRead = 0; BytesRead < DataAvailable && BytesRead < length; BytesRead++)
+            {
+                outBuffer[offset++] = Buffer[DataReadOffset++];
+            }
+
             DataAvailable -= BytesRead;
 
             if (DataAvailable == 0)
@@ -205,8 +204,10 @@ namespace Kernel.Pipes
                 return false;
             }
 
-            MemoryUtils.MemCpy(BufferPtr + DataWriteOffset, inBuffer + offset, (uint)length);
-            DataWriteOffset += length;
+            for (int i = 0; i < length; i++)
+            {
+                Buffer[DataWriteOffset++] = inBuffer[i + offset];
+            }
 
             DataReadOffset = 0;
             DataAvailable += length;
