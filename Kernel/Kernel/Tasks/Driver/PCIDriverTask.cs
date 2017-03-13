@@ -74,8 +74,8 @@ namespace Kernel.Tasks.Driver
                             Flags = (uint)(SVGAII_Registers.Screen.HAS_ROOT | SVGAII_Registers.Screen.IS_PRIMARY),
                             Size = new SVGAII_Registers.UnsignedDimensions()
                             {
-                                Width = 1920,
-                                Height = 1080
+                                Width = 960,
+                                Height = 540
                             },
                             Root = new SVGAII_Registers.SignedPoint()
                             {
@@ -92,7 +92,7 @@ namespace Kernel.Tasks.Driver
 
                         uint bytesPerPixel = (uint)bitsPerPixel >> 3;
                         uint fbBytesPerLine = screenObject.Size.Width * bytesPerPixel;
-                        uint fbSizeInBytes = fbBytesPerLine * screenObject.Size.Height;
+                        uint fbSizeInBytes = fbBytesPerLine * (screenObject.Size.Height + 10);
                         uint fbSizeInPages = (fbSizeInBytes + GMR.PAGE_MASK) / GMR.PAGE_SIZE;
 
                         uint fbFirstPage = gmr.DefineContiguous(svga, gmrId, fbSizeInPages);
@@ -126,33 +126,50 @@ namespace Kernel.Tasks.Driver
                             Bottom = (int)screenObject.Size.Height
                         };
 
-                        byte* cPtr = (byte*)fbPointer;
-                        uint GreyLevels = 50;
-                        uint Height = 50;
+                        fbSizeInBytes = fbSizeInBytes - (fbBytesPerLine * 10);
+
+                        byte* startPtr = (byte*)fbPointer;
+                        byte* maxCPtr = startPtr + fbSizeInBytes;
+                        
+                        uint GreyLevels = 135;
+                        uint Height = 270;
                         uint linesPerGreyIncrease = Height / GreyLevels;
                         uint bytesPerBand = fbBytesPerLine * linesPerGreyIncrease;
-                        for (uint i = 0; i < GreyLevels; i++, cPtr += bytesPerBand)
+
+                        byte* cPtr = startPtr;
+                        for (uint i = 40; i < GreyLevels + 40; i++, cPtr += bytesPerBand)
                         {
+                            if (cPtr >= maxCPtr)
+                            {
+                                cPtr = (byte*)fbPointer;
+                            }
+
                             MemoryUtils.MemSet(cPtr, (byte)i, bytesPerBand);
                         }
 
-                        uint GreyLevels2 = 256 - GreyLevels;
-                        Height = screenObject.Size.Height - Height;
-                        linesPerGreyIncrease = Height / GreyLevels2;
-                        bytesPerBand = fbBytesPerLine * linesPerGreyIncrease;
-                        uint end = GreyLevels2 + GreyLevels;
-                        for (uint i = GreyLevels; i < end; i++, cPtr += bytesPerBand)
+                        for (uint i = 40; i < GreyLevels + 40; i++, cPtr += bytesPerBand)
                         {
-                            MemoryUtils.MemSet(cPtr, (byte)i, bytesPerBand);
+                            if (cPtr >= maxCPtr)
+                            {
+                                cPtr = (byte*)fbPointer;
+                            }
+
+                            MemoryUtils.MemSet(cPtr, (byte)((GreyLevels + 80) - i), bytesPerBand);
                         }
 
-                        Screen.BlitFromGMRFB(svga, &blitOrigin, &blitDest, screenObject.Id);
-                        
-                        uint dmaFence = svga.InsertFence();
-                        
-                        svga.SyncToFence(dmaFence);
-                        
-                        MemoryUtils.MemSet((byte*)fbPointer, 0x42, fbSizeInBytes);
+                        MemoryUtils.MemCpy(maxCPtr, maxCPtr - fbBytesPerLine, fbBytesPerLine);
+
+                        while (!Terminating)
+                        {
+                            MemoryUtils.MemCpy(maxCPtr, startPtr, fbBytesPerLine * 10);
+                            MemoryUtils.MemCpy(startPtr, startPtr + (fbBytesPerLine * 10), fbSizeInBytes);
+
+                            Screen.BlitFromGMRFB(svga, &blitOrigin, &blitDest, screenObject.Id);
+
+                            uint dmaFence = svga.InsertFence();
+
+                            svga.SyncToFence(dmaFence);
+                        }
                     }
                 }
                 catch

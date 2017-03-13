@@ -182,7 +182,7 @@ namespace Kernel.VGA.VMWare
 
         public static int IRQHandler(uint irqNumber)
         {
-            BasicConsole.WriteLine("SVGA-II : IRQ");
+            //BasicConsole.WriteLine("SVGA-II : IRQ");
 
             uint flags = IRQStatusPort.Read_UInt32();
             if (flags == 0)
@@ -292,7 +292,7 @@ namespace Kernel.VGA.VMWare
 
             } while (flags == 0);
             
-            BasicConsole.WriteLine("SVGA-II : Finished waiting for IRQ.");
+            //BasicConsole.WriteLine("SVGA-II : Finished waiting for IRQ.");
 
             return flags;
         }
