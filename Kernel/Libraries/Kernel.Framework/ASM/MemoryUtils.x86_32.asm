@@ -132,11 +132,11 @@ GLOBAL method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicExch
 
 method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicExchange_NAMEEND__System_UInt32_AMP__System_UInt32_AMP__:
 
-; +4 = Mem Ptr memory
-; +8 = Mem Ptr value
+; +4 = Mem Ptr value
+; +8 = Mem Ptr memory
 
-mov eax, [esp+4]
-mov ebx, [esp+8]
+mov eax, [esp+8]
+mov ebx, [esp+4]
 
 mov ecx, [ebx]
 xchg [eax], ecx
@@ -151,11 +151,11 @@ GLOBAL method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicOR_N
 
 method_System_Void_RETEND_Kernel_Utilities_MemoryUtils_DECLEND_AtomicOR_NAMEEND__System_UInt32_AMP__System_UInt32_:
 
-; +4 = Mem Ptr memory
-; +8 = Mem Ptr value
+; +4 = Mem Ptr value
+; +8 = Mem Ptr memory
 
-mov eax, [esp+4]
-mov ebx, [esp+8]
+mov eax, [esp+8]
+mov ebx, [esp+4]
 
 lock or [eax], ebx
 

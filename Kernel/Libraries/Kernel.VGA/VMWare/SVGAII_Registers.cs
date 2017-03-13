@@ -250,9 +250,11 @@ namespace Kernel.VGA.VMWare
             NUM_REGS
         }
 
+        [Flags]
         public enum Screen : byte
         {
             MUST_BE_SET = 0x1,
+            HAS_ROOT = MUST_BE_SET,
             IS_PRIMARY = 0x2,
             FULLSCREEN_HINT = 0x4,
             DEACTIVATE = 0x8,

@@ -1,4 +1,5 @@
-﻿using Kernel.Devices;
+﻿using Drivers.Compiler.Attributes;
+using Kernel.Devices;
 using Kernel.Devices.Serial;
 using Kernel.Framework;
 using Kernel.Framework.Exceptions;
@@ -36,7 +37,7 @@ namespace Kernel.VGA.VMWare
         private uint VRAMSize;
 
         private SVGAII_Registers.ID DeviceVersionId;
-        private uint Capabilities;
+        public uint Capabilities;
 
         private uint Width;
         private uint Height;
@@ -60,9 +61,7 @@ namespace Kernel.VGA.VMWare
             ThePCIDevice = pciDevice;
 
             IOBase = (ushort)ThePCIDevice.BaseAddresses[0].BaseAddress();
-            FIFOMem = (uint*)ThePCIDevice.BaseAddresses[1].BaseAddress();
-            FBMem = ThePCIDevice.BaseAddresses[2].BaseAddress();
-
+            
             if (IndexPort == null)
             {
                 IndexPort = new IOPort(IOBase, (ushort)SVGAII_Registers.PORTS.INDEX);
@@ -80,8 +79,8 @@ namespace Kernel.VGA.VMWare
                 IRQStatusPort = new IOPort(IOBase, (ushort)SVGAII_Registers.PORTS.IRQ_STATUS);
             }
 
-            FIFO.BounceBuffer = (byte*)Heap.AllocZeroed(FIFOStruct.BounceBufferSize, "SVGA-II : Bounce Buffer");
-
+            FIFO.BounceBuffer = (byte*)AllocPages(FIFOStruct.BounceBufferSize / 4096);
+            
             DeviceVersionId = SVGAII_Registers.ID._2;
             do
             {
@@ -95,11 +94,15 @@ namespace Kernel.VGA.VMWare
             }
             while (DeviceVersionId >= SVGAII_Registers.ID._0);
 
-            if (DeviceVersionId <= SVGAII_Registers.ID.INVALID)
+            BasicConsole.WriteLine((String)"SVGA-II : Device Version Id: " + (uint)DeviceVersionId);
+            if ((int)DeviceVersionId < (int)SVGAII_Registers.ID._0)
             {
                 Error("Error negotiating SVGA device version.");
             }
 
+            FBMem = ThePCIDevice.BaseAddresses[1].BaseAddress();
+            FIFOMem = (uint*)ThePCIDevice.BaseAddresses[2].BaseAddress();
+            
             VRAMSize = ReadReg((uint)SVGAII_Registers.Registers.VRAM_SIZE);
             FBSize = ReadReg((uint)SVGAII_Registers.Registers.FB_SIZE);
             FIFOSize = ReadReg((uint)SVGAII_Registers.Registers.MEM_SIZE);
@@ -114,6 +117,19 @@ namespace Kernel.VGA.VMWare
                 Error("FIFO size too small.");
             }
 
+            uint temp;
+            if (SystemCalls.RequestPages((uint)FIFOMem & 0xFFFFF000, (uint)FIFOMem & 0xFFFFF000, (FIFOSize + 4095) / 4096, out temp) != SystemCallResults.OK)
+            {
+                Error("Couldn't allocate FIFOMem page.");
+            }
+            FIFOMem = (uint*)((byte*)temp + ((uint)FIFOMem & 0x00000FFF));
+
+            if (SystemCalls.RequestPages((uint)FBMem & 0xFFFFF000, (uint)FBMem & 0xFFFFF000, (FBSize + 4095) / 4096, out temp) != SystemCallResults.OK)
+            {
+                Error("Couldn't allocate FBMem page.");
+            }
+            FBMem = (byte*)temp + ((uint)FBMem & 0x00000FFF);
+            
             if (DeviceVersionId >= SVGAII_Registers.ID._1)
             {
                 Capabilities = ReadReg((uint)SVGAII_Registers.Registers.CAPABILITIES);
@@ -126,6 +142,9 @@ namespace Kernel.VGA.VMWare
                 IRQStatusPort.Write_UInt32(0xFF);
 
                 ClearIRQ();
+
+                BasicConsole.WriteLine((String)"SVGA-II : IRQNum=" + IRQNum);
+                BasicConsole.WriteLine((String)"SVGA-II : Registering IRQ handler...");
 
                 if (SystemCalls.RegisterIRQHandler(IRQNum, IRQHandler) != SystemCallResults.OK)
                 {
@@ -144,7 +163,17 @@ namespace Kernel.VGA.VMWare
             Enable();
         }
 
-        private void Error(String message)
+        private uint AllocPages(int count)
+        {
+            uint page;
+            if (SystemCalls.RequestPages((uint)count, out page) != SystemCallResults.OK)
+            {
+                Error("Couldn't allocate page.");
+            }
+            return page;
+        }
+
+        public void Error(String message)
         {
             message = "SVGA-II : " + message;
             BasicConsole.WriteLine(message);
@@ -176,13 +205,14 @@ namespace Kernel.VGA.VMWare
             FIFOMem[(int)SVGAII_Registers.FIFO.NEXT_CMD] = FIFOMem[(int)SVGAII_Registers.FIFO.MIN];
             FIFOMem[(int)SVGAII_Registers.FIFO.STOP] = FIFOMem[(int)SVGAII_Registers.FIFO.MIN];
 
+            WriteReg((uint)SVGAII_Registers.Registers.ENABLE, 1);
+
             if (HasFIFOCapability((uint)SVGAII_Registers.Capabilities.EXTENDED_FIFO) &&
                 IsFIFORegValid(SVGAII_Registers.FIFO.GUEST_3D_HWVERSION))
             {
                 BasicConsole.WriteLine("SVGA-II : Could support 3D hardware acceleration if desired.");
             }
 
-            WriteReg((uint)SVGAII_Registers.Registers.ENABLE, 1);
             WriteReg((uint)SVGAII_Registers.Registers.CONFIG_DONE, 1);
 
             if ((Capabilities & (uint)SVGAII_Registers.Capabilities.IRQMASK) != 0)
@@ -200,7 +230,7 @@ namespace Kernel.VGA.VMWare
 
                 if ((IRQ.Pending & (uint)SVGAII_Registers.IRQ_FLAGS.ANY_FENCE) == 0)
                 {
-                    Error("IRQ is present but not working.");
+                    Error((String)"IRQ is present but not working. IRQ.Pending=" + IRQ.Pending);
                 }
 
                 WaitForIRQ();
@@ -212,7 +242,7 @@ namespace Kernel.VGA.VMWare
             WriteReg((uint)SVGAII_Registers.Registers.ENABLE, 0);
         }
 
-        private void SetMode(uint width, uint height, uint bpp)
+        public void SetMode(uint width, uint height, uint bpp)
         {
             Width = width;
             Height = height;
@@ -262,6 +292,8 @@ namespace Kernel.VGA.VMWare
 
             } while (flags == 0);
             
+            BasicConsole.WriteLine("SVGA-II : Finished waiting for IRQ.");
+
             return flags;
         }
 
@@ -272,6 +304,7 @@ namespace Kernel.VGA.VMWare
 
         public bool HasFIFOCapability(uint capability)
         {
+            //BasicConsole.WriteLine((String)"FIFO Capabilities=" + FIFOMem[(uint)SVGAII_Registers.FIFO.CAPABILITIES]);
             return (FIFOMem[(uint)SVGAII_Registers.FIFO.CAPABILITIES] & capability) != 0;
         }
 
@@ -383,13 +416,14 @@ namespace Kernel.VGA.VMWare
             return header + 1;
         }
 
+        [NoGC]
         public void FIFOCommit(uint bytes)
         {
             uint* fifo = FIFOMem;
 
-            uint max = fifo[(int)SVGAII_Registers.FIFO.MAX];
-            uint min = fifo[(int)SVGAII_Registers.FIFO.MIN];
-            uint nextCmd = fifo[(int)SVGAII_Registers.FIFO.NEXT_CMD];
+            uint max = fifo[(uint)SVGAII_Registers.FIFO.MAX];
+            uint min = fifo[(uint)SVGAII_Registers.FIFO.MIN];
+            uint nextCmd = fifo[(uint)SVGAII_Registers.FIFO.NEXT_CMD];
             bool reservable = HasFIFOCapability((uint)SVGAII_Registers.FIFO_Capabilities.RESERVE);
 
             if (FIFO.ReservedSize == 0)
@@ -416,13 +450,13 @@ namespace Kernel.VGA.VMWare
 
                     while (bytes > 0)
                     {
-                        fifo[nextCmd / sizeof(uint*)] = *dword++;
+                        fifo[nextCmd / (uint)sizeof(uint*)] = *dword++;
                         nextCmd += (uint)sizeof(uint*);
                         if (nextCmd == max)
                         {
                             nextCmd = min;
                         }
-                        fifo[(int)SVGAII_Registers.FIFO.NEXT_CMD] = nextCmd;
+                        fifo[(uint)SVGAII_Registers.FIFO.NEXT_CMD] = nextCmd;
                         bytes -= (uint)sizeof(uint*);
                     }
                 }
@@ -435,12 +469,12 @@ namespace Kernel.VGA.VMWare
                 {
                     nextCmd -= max - min;
                 }
-                fifo[(int)SVGAII_Registers.FIFO.NEXT_CMD] = nextCmd;
+                fifo[(uint)SVGAII_Registers.FIFO.NEXT_CMD] = nextCmd;
             }
 
             if (reservable)
             {
-                fifo[(int)SVGAII_Registers.FIFO.RESERVED] = 0;
+                fifo[(uint)SVGAII_Registers.FIFO.RESERVED] = 0;
             }
         }
 
@@ -467,10 +501,11 @@ namespace Kernel.VGA.VMWare
             }
         }
 
-        private uint InsertFence()
+        public uint InsertFence()
         {
             if (!HasFIFOCapability((uint)SVGAII_Registers.FIFO_Capabilities.FENCE))
             {
+                BasicConsole.WriteLine("SVGA-II : No Fence capability.");
                 return 1;
             }
 
@@ -486,10 +521,12 @@ namespace Kernel.VGA.VMWare
             cmd->id = (uint)SVGAII_Registers.FIFO_Command.FENCE;
             cmd->fence = fence;
             
+            FIFOCommitAll();
+
             return fence;
         }
 
-        private void SyncToFence(uint fence)
+        public void SyncToFence(uint fence)
         {
             if (fence == 0)
             {
