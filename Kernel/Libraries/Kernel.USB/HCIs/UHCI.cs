@@ -827,7 +827,7 @@ namespace Kernel.USB.HCIs
 
             if (buffer != null && length != 0)
             {
-                MemoryUtils.MemCpy_32((byte*)uT.qTDBuffer, (byte*)buffer, length);
+                MemoryUtils.MemCpy((byte*)uT.qTDBuffer, (byte*)buffer, length);
             }
 
             if (transfer.transactions.Count > 0)
@@ -1005,7 +1005,7 @@ namespace Kernel.USB.HCIs
 
                         if (uT.inBuffer != null && uT.inLength != 0)
                         {
-                            MemoryUtils.MemCpy_32((byte*)uT.inBuffer, (byte*)uT.qTDBuffer, uT.inLength);
+                            MemoryUtils.MemCpy((byte*)uT.inBuffer, (byte*)uT.qTDBuffer, uT.inLength);
                         }
                     }
                 }
