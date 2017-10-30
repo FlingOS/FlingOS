@@ -653,7 +653,7 @@ namespace Kernel.PCI
                         {
                             return "SERCOS interface";
                         }
-                        else if (device.Subclass == 0x03)
+                        else if (device.Subclass == 0x09)
                         {
                             return "CANBUS";
                         }
