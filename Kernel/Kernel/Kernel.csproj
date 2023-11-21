@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kernel</RootNamespace>
     <AssemblyName>Kernel</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -203,8 +203,8 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
-  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
+  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" Architecture="x86" />
+  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" Architecture="x86" />
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
