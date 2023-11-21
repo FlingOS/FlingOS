@@ -203,8 +203,8 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
-  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" />
+  <UsingTask Condition="'$(Configuration)' == 'Debug'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Debug\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" Architecture="x86" />
+  <UsingTask Condition="'$(Configuration)' == 'Release'" AssemblyFile="$(SolutionDir)Drivers\Compiler\MSBuildTask\bin\Release\Drivers.Compiler.MSBuildTask.dll" TaskName="MSBuildTask.BuildTask" Architecture="x86" />
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
